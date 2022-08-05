@@ -17,7 +17,7 @@ class modmail(commands.Cog):
 
   @commands.Cog.listener()
   async def on_message(self, message):
-    audit_log = self.client.get_channel(980074784626982972)
+    mod_channel = self.client.get_channel(980074784626982972)
     if isinstance(message.channel, DMChannel):
       if not message.author.bot:
         if len(message.content) < 50:
@@ -33,13 +33,21 @@ class modmail(commands.Cog):
             embed.set_thumbnail(url=message.author.avatar)
           else:
             embed.set_thumbnail(url="https://cdn.discordapp.com/embed/avatars/0.png")
-          fields = [("ID:", message.author.id, True),
-                    ("Member:", " <@" + str(message.author.id) + ">", True),
-                    ("Message:", message.content, False)]
+          if len(message.content) > 940:
+            fields = [("ID:", message.author.id, True),
+                      ("Member:", " <@" + str(message.author.id) + ">", True),
+                      ("Message:", message.content[:940], False)]
+          else:
+            fields = [("ID:", message.author.id, True),
+                      ("Member:", " <@" + str(message.author.id) + ">", True),
+                      ("Message:", message.content, False)]
           for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
-          await audit_log.send(embed=embed)
-          await message.channel.send("Your modmail has been submitted!")           
+          if len(message.attachments) > 0:
+            for i in range(len(message.attachments)):
+              await mod_channel.send(message.attachments[i].url)
+          await mod_channel.send(embed=embed)
+          await message.channel.send("Your modmail has been submitted!")          
 
 def setup(client):
   client.add_cog(modmail(client))

@@ -1,9 +1,8 @@
 import nextcord
-from nextcord import Embed, Interaction
+from nextcord import Embed, Interaction, SlashOption
 from nextcord.ext import commands
 from datetime import datetime as timedate
 import datetime
-from typing import Optional
 from pytz import timezone
 
 intents = nextcord.Intents.all()
@@ -18,11 +17,11 @@ class info(commands.Cog):
   ###userinfo###########################################################
 
   @nextcord.slash_command(name="userinfo", description = "gives information about a user")
-  async def userinfo(self, interaction: Interaction, target: nextcord.Member):
+  async def userinfo(self, interaction: Interaction, *, target: nextcord.Member = SlashOption(description="The user to get information about", required=True)):
     if target == None:
       target = interaction.user
     embed = Embed(title="User Information",
-                  colour=nextcord.Color.from_rgb(33, 233, 200))
+                  colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = timedate.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -49,11 +48,11 @@ class info(commands.Cog):
   ###userinfo#alias###########################################################
 
   @nextcord.slash_command(name="ui", description = "gives information about a user (alias of /userinfo)")
-  async def ui(self, interaction: Interaction, target: nextcord.Member):
+  async def ui(self, interaction: Interaction, *, target: nextcord.Member = SlashOption(description="The user to get information about", required=True)):
     if target == None:
       target = interaction.user
     embed = Embed(title="User Information",
-                  colour=nextcord.Color.from_rgb(33, 233, 200))
+                  colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = timedate.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -82,7 +81,7 @@ class info(commands.Cog):
   @nextcord.slash_command(name="serverinfo", description = "gives information about this server")
   async def serverinfo(self, interaction: Interaction):
     embed = Embed(title="Server Information",
-                  colour=nextcord.Color.from_rgb(33, 233, 200))
+                  colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = timedate.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -93,7 +92,7 @@ class info(commands.Cog):
     unix_time1 = datetime.datetime.timestamp(time1)
     fields = [("ID:", interaction.guild.id, False),
               ("Members:", len(interaction.guild.members), True),
-              ("Owner:", interaction.guild.owner, True),
+              ("Owner:", interaction.guild.owner.mention, True),
               ("Channels:", str(len(interaction.guild.text_channels)) + " text, " + str(len(interaction.guild.voice_channels)) + " voice", True),
               ("Created at:", "<t:" + str(unix_time1)[:-2] + ">", True)]
     for name, value, inline in fields:
@@ -105,7 +104,7 @@ class info(commands.Cog):
   @nextcord.slash_command(name="si", description = "gives information about this server (alias of /serverinfo)")
   async def si(self, interaction: Interaction):
     embed = Embed(title="Server Information:\n" + str(interaction.guild),
-                  colour=nextcord.Color.from_rgb(33, 233, 200))
+                  colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = timedate.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -116,7 +115,7 @@ class info(commands.Cog):
     unix_time1 = datetime.datetime.timestamp(time1)
     fields = [("ID:", interaction.guild.id, False),
               ("Members:", len(interaction.guild.members), True),
-              ("Owner:", interaction.guild.owner, True),
+              ("Owner:", interaction.guild.owner.mention, True),
               ("Channels:", str(len(interaction.guild.text_channels)) + " text, " + str(len(interaction.guild.voice_channels)) + " voice", True),
               ("Created at:", "<t:" + str(unix_time1)[:-2] + ">", True)]
     for name, value, inline in fields:
@@ -126,10 +125,10 @@ class info(commands.Cog):
   ###avatar###########################################################
 
   @nextcord.slash_command(name="avatar", description = "posts someone's avatar")
-  async def avatar(self, interaction: Interaction, target: Optional[nextcord.Member]):
+  async def avatar(self, interaction: Interaction, *, target: nextcord.Member = SlashOption(description="The user to get their avatar from", required=False)):
     if target == None:
       target = interaction.user
-    embed = Embed(colour=nextcord.Color.from_rgb(33, 233, 200))
+    embed = Embed(colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = timedate.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))

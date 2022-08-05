@@ -1,6 +1,6 @@
 import os
 import nextcord
-from nextcord import Color, Embed, Interaction
+from nextcord import Color, Embed, Interaction, SlashOption
 from nextcord.ext import application_checks, commands
 from datetime import datetime
 from pytz import timezone
@@ -23,7 +23,7 @@ class custom(commands.Cog):
   
   @nextcord.slash_command(name = "custom", description = "create a custom command (the /c is added automatically)")
   @application_checks.has_any_role(587673639101661194)
-  async def custom(self, interaction: Interaction, commandname, content):
+  async def custom(self, interaction: Interaction, *, commandname = SlashOption(description="Future commandname", required=True), content = SlashOption(description="Output for command", required=True)):
     custom_commands = []
     for filename in os.listdir("./customcogs"):
       if filename.endswith(".py"):
@@ -47,7 +47,7 @@ class custom(commands.Cog):
       await interaction.response.send_message("Your custom command has been created!", ephemeral=True)
       
       audit_log = self.client.get_channel(829871264982106182)
-      embed = Embed(colour=nextcord.Color.from_rgb(33, 233, 200))
+      embed = Embed(colour=nextcord.Color.from_rgb(255, 166, 252))
       format = "%Y/%m/%d %H:%M:%S %Z"
       now_utc = datetime.now(timezone('UTC'))
       now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -82,7 +82,7 @@ class custom(commands.Cog):
 
   @nextcord.slash_command(name = "delcustom", description = "delete a custom command (the /c is added automatically)")
   @application_checks.has_any_role(587673639101661194)
-  async def delcustom(self, interaction: Interaction, commandname):
+  async def delcustom(self, interaction: Interaction, *, commandname = SlashOption(description="The custom command to be deleted", required=True)):
     custom_commands = []
     for filename in os.listdir("./customcogs"):
       if filename.endswith(".py"):
@@ -92,7 +92,7 @@ class custom(commands.Cog):
       await interaction.response.send_message("The command has been deleted.", ephemeral=True)
 
       audit_log = self.client.get_channel(829871264982106182)
-      embed = Embed(colour=nextcord.Color.from_rgb(33, 233, 200))
+      embed = Embed(colour=nextcord.Color.from_rgb(255, 166, 252))
       format = "%Y/%m/%d %H:%M:%S %Z"
       now_utc = datetime.now(timezone('UTC'))
       now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -138,7 +138,7 @@ class custom(commands.Cog):
     for i in range(len(sorted_custom_commands)):
       output += "/" + sorted_custom_commands[i].replace("_", " ") + "\n"
     embed = Embed(title="All Custom Commands",
-                  colour=nextcord.Color.from_rgb(33, 233, 200))
+                  colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))

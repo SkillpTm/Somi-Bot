@@ -1,15 +1,15 @@
 import os
 import nextcord
 from nextcord import Color, Embed, Interaction
-from nextcord.ext import application_checks, commands
+from nextcord.ext import application_checks, commands, tasks
 from datetime import datetime
 from pytz import timezone
 import sys
 from webserver import keep_alive
+from cogs.role_selection import roles
 
 intents = nextcord.Intents.all()
 
-print(os.getenv("Somi"))
 my_secret = os.environ['token']
 client = commands.Bot(intents=intents)
 
@@ -112,22 +112,30 @@ async def reload_error(ctx, error):
 @client.event
 async def on_ready():
   print('Logged in as {0.user}'.format(client))
-
   await client.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.listening, name='XOXO - The First Album'))
+  client.add_view(roles())
   
-  audit_log = client.get_channel(829871264982106182)
+###ping#me###############################################################################
+  
+@tasks.loop(count=1)
+async def ping_me(interaction: Interaction):
+  audit_log = client.get_channel(977261110107439154)
   embed = Embed(colour=Color.blue())
   format = "%Y/%m/%d %H:%M:%S %Z"
   now_utc = datetime.now(timezone('UTC'))
   now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
   embed.set_footer(text = now_korea.strftime(format), icon_url = "https://i.imgur.com/nqDFTTP.png")
   embed.set_author(name= "Bot Activity", icon_url="https://cdn.discordapp.com/avatars/939537452937412699/6c7a6979391619341789363fbee3dfe5.png")
-  fields = [("Restarted", "The bot is back online", True)]
+  fields = [("Shutdown", "The bot is about to shutdown because of rate limits", True)]
   for name, value, inline in fields:
     embed.add_field(name=name, value=value, inline=inline)
+  await audit_log.send("<@378214190378123264>")
   await audit_log.send(embed=embed)
 
-##################################################################################
-
 keep_alive()
-client.run(os.getenv('token'))
+
+try:
+  client.run(os.getenv('token'))
+except:
+  ping_me.start()
+  os.system("kill 1")

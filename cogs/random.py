@@ -1,5 +1,5 @@
 import nextcord
-from nextcord import Interaction
+from nextcord import Interaction, SlashOption
 from nextcord.ext import commands
 from datetime import datetime
 from pytz import timezone
@@ -40,7 +40,7 @@ class random_cog(commands.Cog):
   ###emoji###########################################################
 
   @nextcord.slash_command(name="emoji", description="make an emoji larger")
-  async def emoji(self, ctx, emoji):
+  async def emoji(self, ctx, *, emoji = SlashOption(description="Your emoji", required=True)):
     head, sep, tail = emoji[3:].partition(":")
     if emoji[1:].startswith("a"):
       emoji_url = "https://cdn.discordapp.com/emojis/" + tail[:-1] + ".gif"

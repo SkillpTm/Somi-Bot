@@ -16,7 +16,7 @@ class command_overview(commands.Cog):
   @nextcord.slash_command(name = "commandlist", description = "A list of all main commands")
   async def commandlist(self, interaction: Interaction):
     embed = Embed(title="A list of all main commands",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -32,7 +32,7 @@ class command_overview(commands.Cog):
   @nextcord.slash_command(name = "cl", description = "A list of all main commands")
   async def cl(self, interaction: Interaction):
     embed = Embed(title="A list of all commands",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -52,7 +52,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "about", description = "help for 'about'")
   async def help_about(self, interaction: Interaction):
     embed = Embed(title="Help for /about",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -68,7 +68,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "avatar", description = "help for 'avatar'")
   async def help_avatar(self, interaction: Interaction):
     embed = Embed(title="Help for /avatar",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -84,7 +84,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "bugs", description = "help for 'bugs'")
   async def help_bugs(self, interaction: Interaction):
     embed = Embed(title="Help for /bugs",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -100,7 +100,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "c", description = "help for 'c'")
   async def help_c(self, interaction: Interaction):
     embed = Embed(title="Help for /c",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -116,7 +116,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "coinflip", description = "help for 'coinflip'")
   async def help_coinflip(self, interaction: Interaction):
     embed = Embed(title="Help for /coinflip",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -132,7 +132,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "commandlist", description = "help for 'commandlist'")
   async def help_commandlist(self, interaction: Interaction):
     embed = Embed(title="Help for /commandlist",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -148,7 +148,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "cl", description = "help for 'cl'")
   async def help_cl(self, interaction: Interaction):
     embed = Embed(title="Help for /cl",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -164,7 +164,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "emoji", description = "help for 'emoji'")
   async def help_emoji(self, interaction: Interaction):
     embed = Embed(title="Help for /emoji",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -180,7 +180,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "help", description = "help for 'help'")
   async def help_help(self, interaction: Interaction):
     embed = Embed(title="Help for /help",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -196,7 +196,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "invite", description = "help for 'invite'")
   async def help_invite(self, interaction: Interaction):
     embed = Embed(title="Help for /invite",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -212,7 +212,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "keyword", description = "help for 'keyword'")
   async def help_keyword(self, interaction: Interaction):
     embed = Embed(title="Help for /keyword",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -228,7 +228,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "kst", description = "help for 'kst'")
   async def help_kst(self, interaction: Interaction):
     embed = Embed(title="Help for /kst",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -244,7 +244,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "levelroles", description = "help for 'levelroles'")
   async def help_levelroles(self, interaction: Interaction):
     embed = Embed(title="Help for /levelroles",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -260,7 +260,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "ping", description = "help for 'ping'")
   async def help_ping(self, interaction: Interaction):
     embed = Embed(title="Help for /ping",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -276,7 +276,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "serverinfo", description = "help for 'serverinfo'")
   async def help_serverinfo(self, interaction: Interaction):
     embed = Embed(title="Help for /serverinfo",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -292,7 +292,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "si", description = "help for 'si'")
   async def help_si(self, interaction: Interaction):
     embed = Embed(title="Help for /si",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -308,7 +308,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "somi", description = "help for 'somi'")
   async def help_somi(self, interaction: Interaction):
     embed = Embed(title="Help for /somi",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -324,7 +324,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "suggestions", description = "help for 'suggestions'")
   async def help_suggestions(self, interaction: Interaction):
     embed = Embed(title="Help for /suggestions",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -340,7 +340,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "userinfo", description = "help for 'userinfo'")
   async def help_userinfo(self, interaction: Interaction):
     embed = Embed(title="Help for /userinfo",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -356,7 +356,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "ui", description = "help for 'ui'")
   async def help_ui(self, interaction: Interaction):
     embed = Embed(title="Help for /ui",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -372,7 +372,7 @@ class command_overview(commands.Cog):
   @help.subcommand(name = "all", description = "help for all commands")
   async def help_all(self, interaction: Interaction):
     embed = Embed(title="Help for all commands",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))

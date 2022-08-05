@@ -17,33 +17,37 @@ class blackpink_378214190378123264(commands.Cog):
     user = await self.client.fetch_user("378214190378123264")
     if str(ctx.author.id) == "378214190378123264":
       return
-    if str(ctx.author.id) == "939537452937412699":
+    if ctx.author.bot:
       return
     if ctx.guild:
       if ctx.channel.id == 898969582608478209:
         return
-      elif ctx.channel.id == 562987593801793556:
+      if ctx.channel.id == 562987593801793556:
         return
-      elif ctx.channel.id == 829872518717243432:
+      if ctx.channel.id == 829872518717243432:
         return
-      elif ctx.channel.id == 829871264982106182:
+      if ctx.channel.id == 829871264982106182:
         return
-      elif ctx.channel.id == 980067444783730688:
-        return
-      else:
-        if "blackpink" in re.sub(":.*?:", "", str(ctx.content.lower())):
-          link = "https://discord.com/channels/" + str(ctx.guild.id) + "/" + str(ctx.channel.id) + "/" + str(ctx.id)
-          embed = Embed(title="Keyword notification",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
-          format = "%Y/%m/%d %H:%M:%S %Z"
-          now_utc = datetime.now(timezone("UTC"))
-          now_korea = now_utc.astimezone(timezone("Asia/Seoul"))
-          embed.set_footer(text = now_korea.strftime(format), icon_url = "https://i.imgur.com/nqDFTTP.png")
+      if "blackpink" in re.sub(":.*?:", "", str(ctx.content.lower())):
+        link = "https://discord.com/channels/" + str(ctx.guild.id) + "/" + str(ctx.channel.id) + "/" + str(ctx.id)
+        embed = Embed(title="Keyword notification: `blackpink`",
+                      colour=nextcord.Color.from_rgb(255, 166, 252))
+        format = "%Y/%m/%d %H:%M:%S %Z"
+        now_utc = datetime.now(timezone("UTC"))
+        now_korea = now_utc.astimezone(timezone("Asia/Seoul"))
+        embed.set_footer(text = now_korea.strftime(format), icon_url = "https://i.imgur.com/nqDFTTP.png")
+        if len(ctx.content) > 910:
+          fields = [("Reason:", "Your keyword: `blackpink` has been said in <#" + str(ctx.channel.id) + "> by <@" + str(ctx.author.id) + ">:", False),
+                    ("Message:", str(ctx.content[:910]) + "...  [Link](" + str(link) + ")", True)]
+        else:
           fields = [("Reason:", "Your keyword: `blackpink` has been said in <#" + str(ctx.channel.id) + "> by <@" + str(ctx.author.id) + ">:", False),
                     ("Message:", str(ctx.content) + "  [Link](" + str(link) + ")", True)]
-          for name, value, inline in fields:
-            embed.add_field(name=name, value=value, inline=inline)
-          await user.send(embed=embed)
+        for name, value, inline in fields:
+          embed.add_field(name=name, value=value, inline=inline)
+        await user.send(embed=embed)
+        if len(ctx.attachments) > 0:
+          for i in range(len(ctx.attachments)):
+            await user.send(ctx.attachments[i].url)
 
 def setup(client):
   client.add_cog(blackpink_378214190378123264(client))

@@ -15,12 +15,16 @@ For a mod command you have to add it into: /modcommandslist, /mcl, _filesystem.t
 ##############################################################
 
 [main folder]:
+
   (main.py):
     cog import()
     /restart
     /reload
     on_ready()
+    ping_me()
+
   [cogs]:
+
     (command_overview.py):
       /commandlist
       /cl
@@ -28,10 +32,13 @@ For a mod command you have to add it into: /modcommandslist, /mcl, _filesystem.t
       /help avatar
       /help bugs
       /help c
+      /help coinflip
       /help commandlist
       /help cl
+      /help emoji
       /help help
       /help invite
+      /help keyword
       /help kst
       /help levelroles
       /help ping
@@ -42,20 +49,29 @@ For a mod command you have to add it into: /modcommandslist, /mcl, _filesystem.t
       /help userinfo
       /help ui
       /help all
+
     (custom.py):
       /custom
       /delcustom
       /customlist
+
     (info.py):
       /userinfo
       /ui
       /serverinfo
       /si
       /avatar
+
     (keywords.py):
       /keyword add
       /keyword delete
       /keyword list
+
+    (link_embed.py):
+      on_message()
+        auto link embed()
+        reaction on ping()
+
     (logs.py):
       on_member_join()
         welcome message()
@@ -66,8 +82,9 @@ For a mod command you have to add it into: /modcommandslist, /mcl, _filesystem.t
         delete log()
       on_message_edit()
         edit log()
-      on_message()
-        auto link embed()
+      on_member_update()
+        name log()
+
     (mod.py):
       /mute
       /unmute
@@ -76,49 +93,50 @@ For a mod command you have to add it into: /modcommandslist, /mcl, _filesystem.t
       /ban
       /send
       /edit
+      /close
+      /unclose
       /modcommandlist
       /mcl
+
     (modmail.py):
       modmail()
+
     (random.py):
       /ping
       /kst
       /coinflip
       /emoji
+
+    (role_selection.py):
+      roleselection generation()
+
     (shutdown.py):
       /shutdown
+
     (textresponse.py):
       /somi
       /invite
       /about
       /levelroles
+
     (usersubmissions.py):
       /suggestions
       /bugs
+
   [custom_cogs]
+
   [keywords]
+
   (bugs.txt)
+
   (suggestions.txt)
+
   (_filesystem.txt)
+
   (maincommands.py):
     /c
     /help
+    /keyword
+    /reminders
+
   (webserver.py)
-
-content -> lower
-keyword -> lower
-filter through content
-if true -> pm content
-
-s = "That I ever did see. Dusty as the handle on the door"
-
-if "Dusty" in s:
-    print("query found")
-
-make log for added/removed keywords
-individual files
-always check for interaction.user
-
-keyword add -> check for folder (id as name) -> check for keyword
-keyword delete -> check for keyword
-keyword list

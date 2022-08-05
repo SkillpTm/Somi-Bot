@@ -30,14 +30,14 @@ class textresponse(commands.Cog):
 
   @nextcord.slash_command(name = "about", description = "Tells you about Somi bot")
   async def about(self, interaction: Interaction):
-    await interaction.response.send_message("Somi#6418 is a themed bot after the kpop soloist Jeon Somi written in Python. Originally it was created to fullfil all needs of Somicord (https://discord.gg/Frd7WYg) and its subcords. The bot was created by Skillp#0309 and is currently in version 1.0. You can report bugs with /bugs and make suggestions with /suggestions!")
+    await interaction.response.send_message("Somi#6418 is a themed bot after the kpop soloist Jeon Somi written in Python. Originally it was created to fullfil all needs of Somicord (https://discord.gg/Frd7WYg). The bot was created by Skillp#0309 and is currently in version 1.0. You can report bugs with /bugs and make suggestions with /suggestions!", ephemeral=True)
 
   ###levelroles###########################################################
 
   @nextcord.slash_command(name = "levelroles", description = "A list and explanation of level roles")
   async def modcommandlist(self, interaction: Interaction):
     embed = Embed(title="Level Roles",
-                        colour=nextcord.Color.from_rgb(33, 233, 200))
+                        colour=nextcord.Color.from_rgb(255, 166, 252))
     format = "%Y/%m/%d %H:%M:%S %Z"
     now_utc = datetime.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))

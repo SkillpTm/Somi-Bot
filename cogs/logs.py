@@ -77,19 +77,15 @@ class entering_leaving(commands.Cog):
 
   @commands.Cog.listener()
   async def on_message_delete(self, message):
-    if str(message.author.id) == "939537452937412699":
+    if message.author.bot:
       return
-    if str(message.author.id) == "962494471902203965":
+    if message.channel.id == 898969582608478209:
       return
-    if str(message.author.id) == "283848369250500608":
+    elif message.channel.id == 562987593801793556:
       return
-    if str(message.author.id) == "537353774205894676":
+    elif message.channel.id == 829872518717243432:
       return
-    if str(message.author.id) == "325387620266016768":
-      return
-    if str(message.author.id) == "155149108183695360":
-      return
-    if str(message.author.id) == "204255221017214977":
+    elif message.channel.id == 829871264982106182:
       return
     embed = Embed(description= "Deleted in: <#" + str(message.channel.id) + ">",
                   colour=Color.red())
@@ -101,27 +97,31 @@ class entering_leaving(commands.Cog):
       embed.set_author(name= str(message.author) + " deleted a message", icon_url=message.author.avatar)
     else:
       embed.set_author(name= str(message.author) + " deleted a message", icon_url="https://cdn.discordapp.com/embed/avatars/0.png")
-    embed.add_field(name = "Deleted message:", value = message.content, inline = True)
-    channel = self.client.get_channel(829871264982106182)
-    await channel.send(embed=embed)
+    if message.content == "":
+      pass
+    elif len(message.content) > 970:
+      embed.add_field(name = "Deleted message:", value = message.content[:970] + "...", inline = True)
+    else:
+      embed.add_field(name = "Deleted message:", value = message.content, inline = True)
+    audit_log = self.client.get_channel(829871264982106182)
+    await audit_log.send(embed=embed)
+    if len(message.attachments) > 0:
+      for i in range(len(message.attachments)):
+        await audit_log.send(message.attachments[i].url)
 
   ###edit#log###########################################################
 
   @commands.Cog.listener()
   async def on_message_edit(self, message_before, message_after):
-    if str(message_before.author.id) == "939537452937412699":
+    if message_before.author.bot:
       return
-    if str(message_before.author.id) == "962494471902203965":
+    if message_before.channel.id == 898969582608478209:
       return
-    if str(message_before.author.id) == "283848369250500608":
+    elif message_before.channel.id == 562987593801793556:
       return
-    if str(message_before.author.id) == "537353774205894676":
+    elif message_before.channel.id == 829872518717243432:
       return
-    if str(message_before.author.id) == "325387620266016768":
-      return
-    if str(message_before.author.id) == "155149108183695360":
-      return
-    if str(message_before.author.id) == "204255221017214977":
+    elif message_before.channel.id == 829871264982106182:
       return
     if message_before.content == message_after.content:
       return
@@ -136,58 +136,54 @@ class entering_leaving(commands.Cog):
       embed.set_author(name= str(message_before.author) + " edited a message", icon_url=message_before.author.avatar)
     else:
       embed.set_author(name= str(message_before.author) + " edited a message", icon_url="https://cdn.discordapp.com/embed/avatars/0.png")
-    fields = [("Before:", message_before.content, False),
+    if message_after.content == "":
+      pass
+    elif len(message_before.content + message_after.content) > 970:
+      fields = [("Before:", message_before.content[:485] + "...", False),
+              ("After:", message_after.content[:485] + "...", False)]
+    else:
+      fields = [("Before:", message_before.content, False),
               ("After:", message_after.content, False)]
     for name, value, inline in fields:
       embed.add_field(name=name, value=value, inline=inline)
-    channel = self.client.get_channel(829871264982106182)
-    await channel.send(embed=embed)
+    audit_log = self.client.get_channel(829871264982106182)
+    await audit_log.send(embed=embed)
+    if len(message_before.attachments) > 0:
+      for i in range(len(message_before.attachments)):
+        await audit_log.send(message_before.attachments[i].url)
 
-  ###auto#link#embed###########################################################
+  ###name#log###########################################################
 
   @commands.Cog.listener()
-  async def on_message(self, interaction: Interaction):
-    if str(interaction.author.id) == "939537452937412699":
+  async def on_member_update(self, before, after):
+    if before.bot:
       return
-    if self.client.user.mentioned_in(interaction):
-      await interaction.add_reaction("<a:aSomiBreathTaking:980083399005982801>")
-    if "https://discord.com/channels/" in str(interaction.content):
-      head, sep, tail = interaction.content.partition("https")
-      link = sep + tail
-      head2, sep2, tail2 = link.partition(" ")
-      only_link = head2
-      head3, sep3, tail3 = only_link.partition("channels/")
-      head4, sep4, tail4 = tail3.partition("/")
-      head5, sep5, tail5 = tail4.partition("/")
-      for channel in self.client.get_all_channels():
-        try:
-          msg = await channel.fetch_message(tail5)
-          correct_channel = channel
-        except:
-          continue
-      embed = Embed(description= "<#" + str(correct_channel.id) + "> - [Link](" + only_link + ")",
-                    colour=nextcord.Color.from_rgb(33, 233, 200))
-      if msg.author.avatar is not None:
-        embed.set_author(name= "Message embed", icon_url=msg.author.avatar)
-      else:
-        embed.set_author(name= "Message embed", icon_url="https://cdn.discordapp.com/embed/avatars/0.png")
-      format = "%Y/%m/%d %H:%M:%S %Z"
-      now_utc = timedate.now(timezone("UTC"))
-      now_korea = now_utc.astimezone(timezone("Asia/Seoul"))
-      embed.set_footer(text = now_korea.strftime(format), icon_url = "https://i.imgur.com/nqDFTTP.png")
-      if msg.attachments:
-        embed.set_image(url=msg.attachments[0].url)
-      if msg.content == "":
-        pass
-      elif len(msg.content) > 970:
-        fields = [(msg.author.name + " said:", msg.content[:970] + "...", False)]
-        for name, value, inline in fields:
-          embed.add_field(name=name, value=value, inline=inline)
-      else:
-        fields = [(msg.author.name + " said:", msg.content, False)]
-        for name, value, inline in fields:
-          embed.add_field(name=name, value=value, inline=inline)
-      await interaction.reply(embed=embed)
+    if before == after and before.nick == after.nick:
+      return
+    if before != after:
+      correct_before = before
+      correct_after = after
+      event = "Name ID"
+    elif before.nick != after.nick:
+      correct_before = before.nick
+      correct_after = after.nick
+      event = "Nickname"
+    audit_log = self.client.get_channel(829871264982106182)
+    embed = Embed(title=str(before) + " Changed Their " + event,
+                  colour=Color.yellow())
+    format = "%Y/%m/%d %H:%M:%S %Z"
+    now_utc = timedate.now(timezone('UTC'))
+    now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
+    embed.set_footer(text = now_korea.strftime(format), icon_url = "https://i.imgur.com/nqDFTTP.png")
+    if before.avatar is not None:
+      embed.set_thumbnail(url=before.avatar)
+    else:
+      embed.set_thumbnail(url="https://cdn.discordapp.com/embed/avatars/0.png")
+    fields = [(event + " before:", correct_before, False),
+              (event + " after", correct_after, False)]
+    for name, value, inline in fields:
+      embed.add_field(name=name, value=value, inline=inline)
+    await audit_log.send(embed=embed)
       
 def setup(client):
   client.add_cog(entering_leaving(client))

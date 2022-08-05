@@ -17,7 +17,7 @@ class itzy_378214190378123264(commands.Cog):
     user = await self.client.fetch_user("378214190378123264")
     if str(ctx.author.id) == "378214190378123264":
       return
-    if str(ctx.author.id) == "939537452937412699":
+    if ctx.author.bot:
       return
     if ctx.guild:
       if ctx.channel.id == 898969582608478209:
@@ -28,21 +28,26 @@ class itzy_378214190378123264(commands.Cog):
         return
       if ctx.channel.id == 829871264982106182:
         return
-      if ctx.channel.id == 980067444783730688:
-        return
       if "itzy" in re.sub(":.*?:", "", str(ctx.content.lower())):
         link = "https://discord.com/channels/" + str(ctx.guild.id) + "/" + str(ctx.channel.id) + "/" + str(ctx.id)
-        embed = Embed(title="Keyword notification",
-                      colour=nextcord.Color.from_rgb(33, 233, 200))
+        embed = Embed(title="Keyword notification: `itzy`",
+                      colour=nextcord.Color.from_rgb(255, 166, 252))
         format = "%Y/%m/%d %H:%M:%S %Z"
         now_utc = datetime.now(timezone("UTC"))
         now_korea = now_utc.astimezone(timezone("Asia/Seoul"))
         embed.set_footer(text = now_korea.strftime(format), icon_url = "https://i.imgur.com/nqDFTTP.png")
-        fields = [("Reason:", "Your keyword: `itzy` has been said in <#" + str(ctx.channel.id) + "> by <@" + str(ctx.author.id) + ">:", False),
-                  ("Message:", str(ctx.content) + "  [Link](" + str(link) + ")", True)]
+        if len(ctx.content) > 910:
+          fields = [("Reason:", "Your keyword: `itzy` has been said in <#" + str(ctx.channel.id) + "> by <@" + str(ctx.author.id) + ">:", False),
+                    ("Message:", str(ctx.content[:910]) + "...  [Link](" + str(link) + ")", True)]
+        else:
+          fields = [("Reason:", "Your keyword: `itzy` has been said in <#" + str(ctx.channel.id) + "> by <@" + str(ctx.author.id) + ">:", False),
+                    ("Message:", str(ctx.content) + "  [Link](" + str(link) + ")", True)]
         for name, value, inline in fields:
           embed.add_field(name=name, value=value, inline=inline)
         await user.send(embed=embed)
+        if len(ctx.attachments) > 0:
+          for i in range(len(ctx.attachments)):
+            await user.send(ctx.attachments[i].url)
 
 def setup(client):
   client.add_cog(itzy_378214190378123264(client))

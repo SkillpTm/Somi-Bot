@@ -32,7 +32,7 @@ class about(commands.Cog):
         print(f"{interaction.user}: /about")
 
         embed = Embed(title = "Information",
-                        description = f"""{self.client.user.mention} is a themed bot after the kpop soloist Jeon Somi written in Python using the [Nextcord API wrapper](https://asyncpraw.readthedocs.io/en/stable/).
+                        description = f"""{self.client.user.mention} is a themed bot after the kpop soloist Jeon Somi written in Python using the [Nextcord API wrapper](https://docs.nextcord.dev/en/stable/).
                                            Originally it was created to fullfil all needs of [Somicord]({SOMICORD_INVITE}).""",
                         colour=BOT_COLOR)
 
@@ -41,7 +41,7 @@ class about(commands.Cog):
         fields = [("Created by:", f"<@{SKILLP_ID}>", True),
                   ("Current version:", f"{CURRENT_VERSION}", True),
                   ("Uptime:", f"<t:{start_time}:R>", True),
-                  ("Invite:", f"This bot was created with a singular server in mind, meaning it isn't made to work in different servers at the same time. There are currently no plans to change this. For more information please message <@{SKILLP_ID}>", False),
+                  ("Invite:", f"This bot was created with a singular server in mind, meaning it isn't made to work in different servers at the same time. There are currently no plans to change this. For more information please message <@{SKILLP_ID}>.", False),
                   ("Issues:", "You can report bugs with /bugs and make suggestions with /suggestions!", False)]
 
         for name, value, inline in fields:

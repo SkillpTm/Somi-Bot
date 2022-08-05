@@ -3,6 +3,7 @@
 import nextcord
 from nextcord import Interaction
 from nextcord.ext import commands
+from time import time
 
 client = commands.Bot(intents=nextcord.Intents.all())
 
@@ -24,12 +25,17 @@ class ping(commands.Cog):
     @nextcord.slash_command(name = "ping", description = "shows the bot's ping")
     async def ping(self,
                    interaction: Interaction):
+        start = time()
         if not checks(interaction):
             return
 
         print(f"{interaction.user}: /ping")
 
-        await interaction.response.send_message(f"ping = {round(self.client.latency * 1000)}ms\nuptime = <t:{start_time}:R>")
+        message = await interaction.response.send_message(f"ping = {self.client.latency * 1000:,.0f}ms\nuptime = <t:{start_time}:R>")
+
+        end = time()
+        
+        await message.edit(f"DWSP latency (ping) = {self.client.latency * 1000:,.0f}ms\nResponse time: {(end-start) * 1000 :,.0f}ms\nUptime = <t:{start_time}:R>")
 
         uses_update("command_uses", "ping")
 

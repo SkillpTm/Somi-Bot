@@ -39,7 +39,7 @@ logger.addHandler(handler)
 
 @client.event
 async def on_ready():
-    print("Logged in as {0.user}".format(client))
+    print(f"Logged in as {client.user}")
     
     await client.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.listening, name='XOXO - The First Album'))
     
@@ -108,4 +108,4 @@ async def error(interaction: Interaction, error):
 
 
 
-client.run(os.getenv('TOKEN'))
+client.run(os.getenv('DISCORD_TOKEN'))

@@ -1,141 +1,111 @@
-import os
+###package#import###############################################################################
+
+import logging
 import nextcord
-from nextcord import Color, Embed, Interaction
-from nextcord.ext import application_checks, commands, tasks
-from datetime import datetime
-from pytz import timezone
-import sys
-from webserver import keep_alive
-from cogs.role_selection import roles
+from nextcord import Embed, Interaction
+from nextcord.ext import application_checks, commands
+import os
+from dotenv import load_dotenv
 
-intents = nextcord.Intents.all()
+load_dotenv()
 
-my_secret = os.environ['token']
-client = commands.Bot(intents=intents)
+client = commands.Bot(intents=nextcord.Intents.all())
+
+###self#imports###############################################################################
+
+from cogs.role_selection.role_selection import roles
+
+from database.database_command_uses import uses_update
+from utilities.maincommands import checks
+from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR, EXTENSION_FOLDERS
+from utilities.partial_commands import embed_kst_footer, embed_set_mod_author, restart_bot
 
 ###cog#import###############################################################################
 
-for extension in os.listdir("./cogs/"):
-  if extension.endswith(".py"):
-    client.load_extension(f'cogs.{extension[:-3]}')
+for folder in EXTENSION_FOLDERS:
+    for extension in os.listdir(f"./cogs/{folder}/"):
+        if extension.endswith(".py"):
+            client.load_extension(f"cogs.{folder}.{extension[:-3]}")
 
-for extension in os.listdir("./customcogs/"):
-  if extension.endswith(".py"):
-    client.load_extension(f'customcogs.{extension[:-3]}')
+###error#log###############################################################################
 
-for extension in os.listdir("./keywords/"):
-  if extension.endswith(".py"):
-    client.load_extension(f'keywords.{extension[:-3]}')
-
-###restart###############################################################################
-
-def restart_client(): 
-  os.execv(sys.executable, ['python'] + sys.argv)
-
-@client.slash_command(name="restart", description="restarts the entire bot")
-@application_checks.has_any_role(587673639101661194)
-async def restart(interaction: Interaction):
-  await interaction.response.send_message("Restarting bot...", ephemeral=True)
-
-  audit_log = client.get_channel(829871264982106182)
-  embed = Embed(colour=Color.blue())
-  format = "%Y/%m/%d %H:%M:%S %Z"
-  now_utc = datetime.now(timezone('UTC'))
-  now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
-  embed.set_footer(text = now_korea.strftime(format), icon_url = "https://i.imgur.com/nqDFTTP.png")
-  if interaction.user.avatar is not None:
-    embed.set_author(name= "Mod Activity", icon_url=interaction.user.avatar)
-  else:
-    embed.set_author(name= "Mod Activity", icon_url="https://cdn.discordapp.com/embed/avatars/0.png")
-  fields = [("/restart:", "<@" + str(interaction.user.id) + "> restarted the bot", True)]
-  for name, value, inline in fields:
-    embed.add_field(name=name, value=value, inline=inline)
-  await audit_log.send(embed=embed)
-
-  embed = Embed(colour=Color.blue())
-  format = "%Y/%m/%d %H:%M:%S %Z"
-  now_utc = datetime.now(timezone('UTC'))
-  now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
-  embed.set_footer(text = now_korea.strftime(format), icon_url = "https://i.imgur.com/nqDFTTP.png")
-  embed.set_author(name= "Bot Activity", icon_url="https://cdn.discordapp.com/avatars/939537452937412699/6c7a6979391619341789363fbee3dfe5.png")
-  fields = [("Shutdown", "The bot is about to shutdown", True)]
-  for name, value, inline in fields:
-    embed.add_field(name=name, value=value, inline=inline)
-  await audit_log.send(embed=embed)
-  
-  restart_client()
-
-@restart.error
-async def restart_error(ctx, error):
-    await ctx.send("Only <@&587673639101661194> can use this command", ephemeral=True)
-
-###reload###############################################################################
-  
-@client.slash_command(name="reload", description="reload the entire bot")
-@application_checks.has_any_role(587673639101661194)
-async def reload(interaction: Interaction):
-  for filename in os.listdir("./cogs"):
-    if filename.endswith(".py"):
-      print(filename)
-      client.reload_extension(f'cogs.{filename[:-3]}')
-  for filename in os.listdir("./customcogs"):
-    if filename.endswith(".py"):
-      print(filename)
-      client.reload_extension(f'customcogs.{filename[:-3]}')
-  for filename in os.listdir("./keywords"):
-    if filename.endswith(".py"):
-      print(filename)
-      client.reload_extension(f'keywords.{filename[:-3]}')
-  await interaction.response.send_message("Bot has been reloaded", ephemeral=True)
-
-  audit_log = client.get_channel(829871264982106182)
-  embed = Embed(colour=Color.blue())
-  format = "%Y/%m/%d %H:%M:%S %Z"
-  now_utc = datetime.now(timezone('UTC'))
-  now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
-  embed.set_footer(text = now_korea.strftime(format), icon_url = "https://i.imgur.com/nqDFTTP.png")
-  if interaction.user.avatar is not None:
-    embed.set_author(name= "Mod Activity", icon_url=interaction.user.avatar)
-  else:
-    embed.set_author(name= "Mod Activity", icon_url="https://cdn.discordapp.com/embed/avatars/0.png")
-  fields = [("/reload:", "<@" + str(interaction.user.id) + "> reloaded the bot", True)]
-  for name, value, inline in fields:
-    embed.add_field(name=name, value=value, inline=inline)
-  await audit_log.send(embed=embed)
-
-@reload.error
-async def reload_error(ctx, error):
-    await ctx.send("Only <@&587673639101661194> can use this command", ephemeral=True)
+logger = logging.getLogger('nextcord')
+logger.setLevel(logging.ERROR)
+handler = logging.FileHandler(filename='./storage/error.log', encoding='utf-8', mode='a')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 ###on#ready###############################################################################
 
 @client.event
 async def on_ready():
-  print('Logged in as {0.user}'.format(client))
-  await client.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.listening, name='XOXO - The First Album'))
-  client.add_view(roles())
-  
-###ping#me###############################################################################
-  
-@tasks.loop(count=1)
-async def ping_me(interaction: Interaction):
-  audit_log = client.get_channel(977261110107439154)
-  embed = Embed(colour=Color.blue())
-  format = "%Y/%m/%d %H:%M:%S %Z"
-  now_utc = datetime.now(timezone('UTC'))
-  now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
-  embed.set_footer(text = now_korea.strftime(format), icon_url = "https://i.imgur.com/nqDFTTP.png")
-  embed.set_author(name= "Bot Activity", icon_url="https://cdn.discordapp.com/avatars/939537452937412699/6c7a6979391619341789363fbee3dfe5.png")
-  fields = [("Shutdown", "The bot is about to shutdown because of rate limits", True)]
-  for name, value, inline in fields:
-    embed.add_field(name=name, value=value, inline=inline)
-  await audit_log.send("<@378214190378123264>")
-  await audit_log.send(embed=embed)
+    print("Logged in as {0.user}".format(client))
+    
+    await client.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.listening, name='XOXO - The First Album'))
+    
+    client.add_view(roles())
 
-keep_alive()
+###restart###############################################################################
 
-try:
-  client.run(os.getenv('token'))
-except:
-  ping_me.start()
-  os.system("kill 1")
+@client.slash_command(name="restart", description="restarts the entire bot")
+@application_checks.has_any_role(MODERATOR_ID)
+async def restart(interaction: Interaction):
+    if not checks(interaction):
+        return
+
+    print(f"{interaction.user}: /restart")
+
+    AUDIT_LOG = client.get_channel(AUDIT_LOG_ID)
+    
+    await interaction.response.send_message("Restarting bot...", ephemeral=True)
+    
+    embed = Embed(colour=MOD_COLOR)
+    embed_kst_footer(embed)
+    embed_set_mod_author(interaction, embed)
+    embed.add_field(name = "/restart:", value = f"{interaction.user.mention} restarted the bot", inline = True)
+
+    await AUDIT_LOG.send(embed=embed)
+
+    uses_update("mod_command_uses", "restart")
+    
+    restart_bot()
+
+@restart.error
+async def restart_error(interaction: Interaction, error):
+    await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+
+###reload###############################################################################
+    
+@client.slash_command(name="reload", description="reload the entire bot")
+@application_checks.has_any_role(MODERATOR_ID)
+async def reload(interaction: Interaction):
+    if not checks(interaction):
+        return
+
+    print(f"{interaction.user}: /reload")
+
+    AUDIT_LOG = client.get_channel(AUDIT_LOG_ID)
+
+    for folder in EXTENSION_FOLDERS:
+        for extension in os.listdir(f"./cogs/{folder}/"):
+            if extension.endswith(".py"):
+                client.reload_extension(f'cogs.{folder}.{extension[:-3]}')
+                
+    await interaction.response.send_message("The bot has been reloaded", ephemeral=True)
+
+    embed = Embed(colour=MOD_COLOR)
+    embed_kst_footer(embed)
+    embed_set_mod_author(interaction, embed)
+    embed.add_field(name = "/reload:", value = f"{interaction.user.mention} reloaded the bot", inline = True)
+    
+    await AUDIT_LOG.send(embed=embed)
+
+    uses_update("mod_command_uses", "reload")
+
+@reload.error
+async def error(interaction: Interaction, error):
+    await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+
+
+
+client.run(os.getenv('TOKEN'))

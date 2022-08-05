@@ -1,0 +1,27 @@
+Here are all the libaries used by Somi#6418:
+
+Wrappers:
+
+asyncpraw (Reddit API wrapper): https://asyncpraw.readthedocs.io/en/stable/
+lyricsgenius (Genius API wrapper): https://lyricsgenius.readthedocs.io/en/stable/
+nextcord (Discord API wrapper): https://docs.nextcord.dev/en/stable/
+spotipy (Spotify API wrapper): https://spotipy.readthedocs.io/en/master/
+
+
+
+Packages:
+
+asynico: https://docs.python.org/3/library/asyncio.html
+datetime: https://docs.python.org/3/library/datetime.html
+dotenv: https://pypi.org/project/python-dotenv/#getting-started
+humanfriendly: https://humanfriendly.readthedocs.io/en/latest/
+logging: https://docs.python.org/3/library/logging.html#module-logging
+pytz: https://pypi.org/project/pytz/
+os: https://docs.python.org/3/library/os.html
+random: https://docs.python.org/3/library/random.html
+re: https://docs.python.org/3/library/re.html
+requests: https://requests.readthedocs.io/en/latest/
+sqlite3: https://docs.python.org/3/library/sqlite3.html
+string: https://docs.python.org/3/library/string.html
+sys: https://docs.python.org/3/library/sys.html
+time: https://docs.python.org/3/library/time.html

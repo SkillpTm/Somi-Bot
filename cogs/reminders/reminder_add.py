@@ -1,0 +1,73 @@
+###package#import###############################################################################
+
+import nextcord
+from nextcord import Embed, Interaction, SlashOption
+from nextcord.ext import commands
+import random
+import string
+import time as unix_time
+
+client = commands.Bot(intents=nextcord.Intents.all())
+
+###self#imports###############################################################################
+
+from database.database_command_uses import uses_update
+from database.database_reminders import create_reminder
+from utilities.maincommands import checks
+from utilities.partial_commands import embed_kst_footer, embed_set_message_author, time_to_seconds
+from utilities.variables import BOT_COLOR
+
+
+
+class reminder_add(commands.Cog):
+
+    def __init__(self, client):
+        self.client = client
+
+    from utilities.maincommands import reminder
+
+    ###reminder#add###########################################################
+    
+    @reminder.subcommand(name = "add", description = "add a reminder to your reminder list")
+    async def reminder_add(self,
+                           interaction: Interaction,
+                           *,
+                           time: str = SlashOption(description="The time to be reminded in (input: xd and/or xh and/or xm and/or xs) Example: 5d7h28s)", required=True),
+                           reminder: str = SlashOption(description="What you want to be reminded about.", required=True)):
+        if not checks(interaction):
+            return
+
+        print(f"{interaction.user}: /reminder add {time}\n{reminder}")
+
+        total_seconds = time_to_seconds(time)
+
+        if total_seconds == 0:
+            await interaction.response.send_message(f"`{time}` is not a valid time period. Make sure to use the formating in the input description.", ephemeral=True)
+            return
+
+        reminder_time = int(unix_time.time()) + int(total_seconds)
+        delete_id = ""
+        counter = 0
+        while counter < 10:
+            delete_id += string.digits[random.randint(0, 9)]
+            counter += 1
+
+        embed = Embed(description = reminder,
+                      colour=BOT_COLOR)
+        embed_kst_footer(embed)
+        embed_set_message_author(interaction, embed, title_name = f"Reminder Set for {interaction.user}")
+        embed.add_field(name = "Time:", value = f"<t:{reminder_time}:F>", inline = False)
+
+        await interaction.response.send_message(embed=embed)
+
+        channel_id = self.client.get_channel(interaction.channel.id)
+        bot_reply = (await channel_id.history(limit=1).flatten())[0]
+
+        bot_reply_link = f"https://discord.com/channels/{bot_reply.guild.id}/{bot_reply.channel.id}/{bot_reply.id}"
+
+        create_reminder(interaction.user.id, reminder_time, bot_reply_link, delete_id, reminder.replace("'", "‘"))
+
+        uses_update("command_uses", "reminder add")
+
+def setup(client):
+    client.add_cog(reminder_add(client))

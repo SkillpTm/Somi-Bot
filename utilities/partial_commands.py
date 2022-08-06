@@ -150,13 +150,15 @@ def embed_get_userinfo(member, embed):
 
 
 
-def embed_get_serverinfo(interaction, embed):
+async def embed_get_serverinfo(client, interaction, embed):
     created_time = embed_get_server_create_time(interaction)
 
+    guild_with_counts = await client.fetch_guild(interaction.guild.id, with_counts=True)
+
     fields = [("ID:", interaction.guild.id, False),
-              ("Members:", len(interaction.guild.members), True),
               ("Owner:", interaction.guild.owner.mention, True),
-              ("Channels:", f"{len(interaction.guild.text_channels)} text, {len(interaction.guild.voice_channels)} voice", True),
+              ("Members:", f"Total: {interaction.guild.member_count}\nOnline: {guild_with_counts.approximate_presence_count}", True),
+              ("Channels:", f"Text: {len(interaction.guild.text_channels)}\nVoice: {len(interaction.guild.voice_channels)}", True),
               ("Created at:", f"<t:{created_time}>", True)]
 
     for name, value, inline in fields:

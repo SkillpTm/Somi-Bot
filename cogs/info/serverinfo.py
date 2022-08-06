@@ -30,11 +30,11 @@ class severinfo(commands.Cog):
 
         print(f"{interaction.user}: /serverinfo")
 
-        embed = Embed(title= f"Server Information: `{interaction.guild}`",
+        embed = Embed(title= f"Server Information: `{interaction.guild.name}`",
                       colour=BOT_COLOR)
         embed_kst_footer(embed)
         embed_set_server_icon(interaction, embed)
-        embed_get_serverinfo(interaction, embed)
+        await embed_get_serverinfo(self.client, interaction, embed)
 
         await interaction.send(embed=embed)
 
@@ -50,11 +50,11 @@ class severinfo(commands.Cog):
 
         print(f"{interaction.user}: /si")
 
-        embed = Embed(title= f"Server Information: `{interaction.guild}`",
+        embed = Embed(title= f"Server Information: `{interaction.guild.name}`",
                       colour=BOT_COLOR)
         embed_kst_footer(embed)
         embed_set_server_icon(interaction, embed)
-        embed_get_serverinfo(interaction, embed)
+        await embed_get_serverinfo(self.client, interaction, embed)
 
         await interaction.send(embed=embed)
 

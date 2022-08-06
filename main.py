@@ -17,15 +17,16 @@ from cogs.role_selection.role_selection import roles
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR, EXTENSION_FOLDERS, SKILLP_ID
+from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR, SKILLP_ID
 from utilities.partial_commands import embed_kst_footer, embed_set_mod_author, embed_set_somi_author, restart_bot
 
 ###cog#import###############################################################################
 
-for folder in EXTENSION_FOLDERS:
-    for extension in os.listdir(f"./cogs/{folder}/"):
-        if extension.endswith(".py"):
-            client.load_extension(f"cogs.{folder}.{extension[:-3]}")
+for folder in os.listdir(f"./cogs/"):
+    if os.path.isdir(f"./cogs/{folder}/"):
+        for extension in os.listdir(f"./cogs/{folder}/"):
+            if extension.endswith(".py"):
+                client.load_extension(f"cogs.{folder}.{extension[:-3]}")
 
 ###error#log###############################################################################
 
@@ -101,10 +102,11 @@ async def reload(interaction: Interaction):
 
     AUDIT_LOG = client.get_channel(AUDIT_LOG_ID)
 
-    for folder in EXTENSION_FOLDERS:
-        for extension in os.listdir(f"./cogs/{folder}/"):
-            if extension.endswith(".py"):
-                client.reload_extension(f'cogs.{folder}.{extension[:-3]}')
+    for folder in os.listdir(f"./cogs/"):
+        if os.path.isdir(f"./cogs/{folder}/"):
+            for extension in os.listdir(f"./cogs/{folder}/"):
+                if extension.endswith(".py"):
+                    client.reload_extension(f'cogs.{folder}.{extension[:-3]}')
                 
     await interaction.response.send_message("The bot has been reloaded", ephemeral=True)
 

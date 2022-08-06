@@ -96,15 +96,11 @@ def checks_max_word_length(message, embed, source):
 
         if len(message_content) > 990:
             embed.add_field(name = "Part 2:", value = message_content[990:1980], inline = False)
-
         if len(message_content) > 1980:
             embed.add_field(name = "Part 3:", value = message_content[1980:2960], inline = False)
-
         if len(message_content) > 1980:
             embed.add_field(name = "Part 4:", value = message_content[1980:2960], inline = False)
-
         if len(message_content) > 2960:
             embed.add_field(name = "Part 5:", value = message_content[2960:3940], inline = False)
-
         if len(message_content) > 3940:
             embed.add_field(name = "Part 6:", value = message_content[3940:], inline = False)

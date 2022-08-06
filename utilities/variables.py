@@ -115,25 +115,6 @@ MOD_COMMANDS = """
 
 
 
-EXTENSION_FOLDERS = [
-    "_global_data",
-    "command_overview",
-    "custom",
-    "info",
-    "keywords",
-    "logs",
-    "mod_commands",
-    "modmail",
-    "music",
-    "reminders",
-    "role_selection",
-    "simple",
-    "text_response",
-    "user_submissions",
-    "voicechannel"]
-
-
-
 ROLELIST = {
     UPDATES_ID: "UPDATES",
     LIVE_ID: "LIVE",

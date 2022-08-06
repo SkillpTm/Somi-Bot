@@ -289,14 +289,11 @@ async def message_object_generation(link, client):
     ids_in_link, sep2, tail2 = tail.partition(" ")
     link = sep + ids_in_link
     id_list = ids_in_link.split("/")
-    message_id = id_list[2]
-    for channel in client.get_all_channels():
-        try:
-            message = await channel.fetch_message(message_id)
-            correct_channel = channel
-        except:
-            continue
-    return message, correct_channel
+
+    channel = await client.fetch_channel(id_list[1])
+    message = await channel.fetch_message(id_list[2])
+
+    return message, channel
 
 
 

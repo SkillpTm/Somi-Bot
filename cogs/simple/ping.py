@@ -31,11 +31,11 @@ class ping(commands.Cog):
 
         print(f"{interaction.user}: /ping")
 
-        message = await interaction.response.send_message(f"ping = {self.client.latency * 1000:,.0f}ms\nuptime = <t:{start_time}:R>")
+        message = await interaction.response.send_message(f"ping = {self.client.latency * 1000:,.0f}ms\nuptime = <t:{start_time}:R>\nVisible Users: {len(self.client.users)}")
 
         end = time()
         
-        await message.edit(f"DWSP latency (ping) = {self.client.latency * 1000:,.0f}ms\nResponse time: {(end-start) * 1000 :,.0f}ms\nUptime = <t:{start_time}:R>")
+        await message.edit(f"DWSP latency (ping) = {self.client.latency * 1000:,.0f}ms\nResponse time: {(end-start) * 1000 :,.0f}ms\nUptime = <t:{start_time}:R>\nVisible Users:{len(self.client.users)}")
 
         uses_update("command_uses", "ping")
 

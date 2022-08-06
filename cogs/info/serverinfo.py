@@ -10,7 +10,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_set_server_icon, embed_get_server_unix_time, embed_get_serverinfo
+from utilities.partial_commands import embed_kst_footer, embed_set_server_icon, embed_get_serverinfo
 from utilities.variables import BOT_COLOR
 
 
@@ -34,8 +34,7 @@ class severinfo(commands.Cog):
                       colour=BOT_COLOR)
         embed_kst_footer(embed)
         embed_set_server_icon(interaction, embed)
-        unix_time = embed_get_server_unix_time(interaction)
-        embed_get_serverinfo(interaction, unix_time, embed)
+        embed_get_serverinfo(interaction, embed)
 
         await interaction.send(embed=embed)
 
@@ -55,8 +54,7 @@ class severinfo(commands.Cog):
                       colour=BOT_COLOR)
         embed_kst_footer(embed)
         embed_set_server_icon(interaction, embed)
-        unix_time = embed_get_server_unix_time(interaction)
-        embed_get_serverinfo(interaction, unix_time, embed)
+        embed_get_serverinfo(interaction, embed)
 
         await interaction.send(embed=embed)
 

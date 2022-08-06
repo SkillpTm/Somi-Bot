@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction, SlashOption
+from nextcord import ChannelType, Embed, Interaction, SlashOption
 from nextcord.ext import application_checks, commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -28,7 +28,7 @@ class send(commands.Cog):
                    interaction: Interaction,
                    *,
                    message: str = SlashOption(description="The message to be send by the bot", required=True),
-                   channel: nextcord.abc.GuildChannel = SlashOption(description="Channel in which the message will be send", required=False)):
+                   channel: nextcord.abc.GuildChannel = SlashOption(channel_types=[ChannelType.text, ChannelType.public_thread], description="Channel in which the message will be send", required=False)):
         if not checks(interaction):
             return
 

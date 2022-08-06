@@ -11,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
 from utilities.variables import AUDIT_LOG_ID
-from utilities.partial_commands import embed_kst_footer, embed_get_user_unix_time, embed_set_thumbnail
+from utilities.partial_commands import embed_kst_footer, embed_get_user_create_and_join_time, embed_set_thumbnail
 
 
 
@@ -37,12 +37,12 @@ class leave_log(commands.Cog):
                       colour=Color.red())
         embed_kst_footer(embed)
         embed_set_thumbnail(member, embed)
-        unix_time1, unix_time2 = embed_get_user_unix_time(member)
+        created_time, joined_time = embed_get_user_create_and_join_time(member)
 
         fields = [("ID:", member.id, False),
                   ("Name:", member.mention, True),
-                  ("Created at:", f"<t:{unix_time1}>", True),
-                  ("Joined at", f"<t:{unix_time2}>", True)]
+                  ("Created at:", f"<t:{created_time}>", True),
+                  ("Joined at", f"<t:{joined_time}>", True)]
 
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)

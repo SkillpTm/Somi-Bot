@@ -26,68 +26,66 @@ def embed_kst_footer(embed):
 
 
 
-def embed_get_user_unix_time(member):
+def embed_get_user_create_and_join_time(member):
     time1 = datetime.datetime.strptime(str(member.created_at.strftime("%m/%d/%Y %H:%M:%S")), "%m/%d/%Y %H:%M:%S")
-    unix_time1 = datetime.datetime.timestamp(time1)
+    created_time = datetime.datetime.timestamp(time1)
     
     time2 = datetime.datetime.strptime(str(member.joined_at.strftime("%m/%d/%Y %H:%M:%S")), "%m/%d/%Y %H:%M:%S")
-    unix_time2 = datetime.datetime.timestamp(time2)
+    joined_time = datetime.datetime.timestamp(time2)
     
-    return int(unix_time1), int(unix_time2)
+    return int(created_time), int(joined_time)
 
 
 
-def embed_get_server_unix_time(interaction):
+def embed_get_server_create_time(interaction):
     time = datetime.datetime.strptime(str(interaction.guild.created_at.strftime("%m/%d/%Y %H:%M:%S")), "%m/%d/%Y %H:%M:%S")
-    unix_time = datetime.datetime.timestamp(time)
+    created_time = datetime.datetime.timestamp(time)
     
-    return int(unix_time)
-
-
-
-def embed_get_member_join_unix_time(member):
-    time = datetime.datetime.strptime(str(member.created_at.strftime("%m/%d/%Y %H:%M:%S")), "%m/%d/%Y %H:%M:%S")
-    unix_time = datetime.datetime.timestamp(time)
-    
-    return int(unix_time)
+    return int(created_time)
 
 
     
 ###author#related###############################################################################
 
-def embed_set_message_author(message, embed, title_name):
+def embed_set_message_author(object, embed, title_name):
     try:
-        if message.author.avatar is not None:
-            embed.set_author(name= title_name, icon_url=message.author.avatar)
+        #If a message object gets parssed in
+        if object.author.avatar is not None:
+            embed.set_author(name= title_name, icon_url=object.author.avatar)
         else:
-            embed.set_author(name= title_name, icon_url=message.author.default_avatar)
+            embed.set_author(name= title_name, icon_url=object.author.default_avatar)
+
     except:
-        if message.user.avatar is not None:
-            embed.set_author(name= title_name, icon_url=message.user.avatar)
+        #If a member object gets parssed in
+        if object.user.avatar is not None:
+            embed.set_author(name= title_name, icon_url=object.user.avatar)
         else:
-            embed.set_author(name= title_name, icon_url=message.user.default_avatar)
+            embed.set_author(name= title_name, icon_url=object.user.default_avatar)
 
 
 
-def embed_set_mod_author(interaction, embed):
+def embed_set_mod_author(object, embed):
     try:
-        if interaction.user.avatar is not None:
-            embed.set_author(name= "Mod Activity", icon_url=interaction.user.avatar)
+        #If an interaction object gets parssed in
+        if object.user.avatar is not None:
+            embed.set_author(name= "Mod Activity", icon_url=object.user.avatar)
         else:
-            embed.set_author(name= "Mod Activity", icon_url=interaction.user.default_avatar)
+            embed.set_author(name= "Mod Activity", icon_url=object.user.default_avatar)
+
     except:
-        if interaction.avatar is not None:
-            embed.set_author(name= "Mod Activity", icon_url=interaction.avatar)
+        #If an user object gets parssed in
+        if object.avatar is not None:
+            embed.set_author(name= "Mod Activity", icon_url=object.avatar)
         else:
-            embed.set_author(name= "Mod Activity", icon_url=interaction.default_avatar)
+            embed.set_author(name= "Mod Activity", icon_url=object.default_avatar)
 
 
 
 def embed_set_somi_author(client, embed):
     if client.user.avatar is not None:
-        embed.set_author(name= "Bot Shutdown", icon_url=client.user.avatar)
+        embed.set_author(name= "Bot Activity", icon_url=client.user.avatar)
     else:
-        embed.set_author(name= "Bot Shutdown", icon_url=client.user.default_avatar)
+        embed.set_author(name= "Bot Activity", icon_url=client.user.default_avatar)
 
 
 
@@ -130,18 +128,20 @@ def embed_set_server_icon(interaction, embed):
 
 from utilities.variables import SERVER_ID
 
-def embed_get_userinfo(member, embed, unix_time1, unix_time2):
+def embed_get_userinfo(member, embed):
+    created_time, joined_time = embed_get_user_create_and_join_time(member)
+
     fields = []
     fields += [("ID", member.id, False),
                ("Name:", str(member), True),
                ("Top role", member.top_role.mention, True),
                ("Status", member.status, True),
-               ("Created at:", f"<t:{unix_time1}>", True)]
+               ("Created at:", f"<t:{created_time}>", True)]
 
     if member.id == SKILLP_ID and member.guild.id == SERVER_ID:
         fields += [("Joined at:", f"<t:{SKILLP_JOINED_UNIX_TIME}>", True)]
     else:
-        fields += [("Joined at:", f"<t:{unix_time2}>", True)]
+        fields += [("Joined at:", f"<t:{joined_time}>", True)]
 
     fields += [("Boosted", bool(member.premium_since), True)]
 
@@ -150,12 +150,14 @@ def embed_get_userinfo(member, embed, unix_time1, unix_time2):
 
 
 
-def embed_get_serverinfo(interaction, unix_time, embed):
+def embed_get_serverinfo(interaction, embed):
+    created_time = embed_get_server_create_time(interaction)
+
     fields = [("ID:", interaction.guild.id, False),
               ("Members:", len(interaction.guild.members), True),
               ("Owner:", interaction.guild.owner.mention, True),
               ("Channels:", f"{len(interaction.guild.text_channels)} text, {len(interaction.guild.voice_channels)} voice", True),
-              ("Created at:", f"<t:{unix_time}>", True)]
+              ("Created at:", f"<t:{created_time}>", True)]
 
     for name, value, inline in fields:
         embed.add_field(name=name, value=value, inline=inline)

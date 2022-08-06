@@ -10,7 +10,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_set_thumbnail, embed_get_title_name, embed_get_user_unix_time, embed_get_userinfo
+from utilities.partial_commands import embed_kst_footer, embed_set_thumbnail, embed_get_title_name, embed_get_userinfo
 
 
 
@@ -40,8 +40,7 @@ class userinfo(commands.Cog):
                       colour=member.color)
         embed_kst_footer(embed)
         embed_set_thumbnail(member, embed)
-        unix_time1, unix_time2 = embed_get_user_unix_time(member)
-        embed_get_userinfo(member, embed, unix_time1, unix_time2)
+        embed_get_userinfo(member, embed)
 
         await interaction.send(embed=embed)
 
@@ -68,8 +67,7 @@ class userinfo(commands.Cog):
                       colour=member.color)
         embed_kst_footer(embed)
         embed_set_thumbnail(member, embed)
-        unix_time1, unix_time2 = embed_get_user_unix_time(member)
-        embed_get_userinfo(member, embed, unix_time1, unix_time2)
+        embed_get_userinfo(member, embed)
 
         await interaction.send(embed=embed)
 

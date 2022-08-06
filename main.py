@@ -17,8 +17,8 @@ from cogs.role_selection.role_selection import roles
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR, EXTENSION_FOLDERS
-from utilities.partial_commands import embed_kst_footer, embed_set_mod_author, restart_bot
+from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR, EXTENSION_FOLDERS, SKILLP_ID
+from utilities.partial_commands import embed_kst_footer, embed_set_mod_author, embed_set_somi_author, restart_bot
 
 ###cog#import###############################################################################
 
@@ -44,6 +44,21 @@ async def on_ready():
     await client.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.listening, name='XOXO - The First Album'))
     
     client.add_view(roles())
+
+###on#close###############################################################################
+
+@client.event
+async def on_close():
+    print(f"Logging {client.user} out")
+
+    AUDIT_LOG = client.get_channel(AUDIT_LOG_ID)
+    
+    embed = Embed(colour=MOD_COLOR)
+    embed_kst_footer(embed)
+    embed_set_somi_author(client, embed)
+    embed.add_field(name = "Shutdown", value = "The bot is shutting down!", inline = True)
+
+    await AUDIT_LOG.send(content = f"<@{SKILLP_ID}>",embed=embed)
 
 ###restart###############################################################################
 

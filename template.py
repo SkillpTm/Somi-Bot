@@ -17,8 +17,11 @@ class (commands.Cog):
     def __init__(self, client):
         self.client = client
 
+<<<<<<< HEAD
     ### ###########################################################
 
+=======
+>>>>>>> parent of 322972a (Delete template.py)
 
 
 def setup(client):

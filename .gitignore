@@ -162,3 +162,4 @@ cython_debug/
 *.code-workspace
 *.db
 template.py
+bulk_messages.csv

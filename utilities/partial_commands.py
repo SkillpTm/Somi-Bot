@@ -337,3 +337,19 @@ def get_spotify_track_data(track_spotipy):
     cover_url = track_spotipy['album']['images'][0]['url']
 
     return track_url, track_name, album_url, album_name, artist_urls, artists_list, cover_url
+
+###bulk#csv###############################################################################
+
+import csv
+
+def make_bulk_messages_csv(messages):
+    with open('./storage/bulk_messages.csv', 'w') as file:
+        write = csv.writer(file)
+
+        write.writerow(["Author ID", "Author Name", "Content"])
+
+    for i in range(len(messages)):
+        with open('./storage/bulk_messages.csv', 'a') as file:
+            write = csv.writer(file)
+    
+            write.writerow([f"{messages[i].author.id}", f"{messages[i].author.name}", f"{messages[i].content}"])

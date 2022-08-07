@@ -9,6 +9,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 ###self#imports###############################################################################
 
 from database.database_command_uses import uses_update
+from database.drop_user_data import drop_user_data_in_database
 from utilities.maincommands import checks
 from utilities.variables import AUDIT_LOG_ID
 from utilities.partial_commands import embed_kst_footer, embed_get_user_create_and_join_time, embed_set_thumbnail
@@ -48,6 +49,8 @@ class leave_log(commands.Cog):
             embed.add_field(name=name, value=value, inline=inline)
 
         await AUDIT_LOG.send(embed=embed)
+
+        drop_user_data_in_database(member)
 
         uses_update("log_activations", "leave_log")
 

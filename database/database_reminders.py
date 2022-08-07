@@ -73,6 +73,7 @@ def delete_all_user_reminders(user_id):
     conn = sqlite3.connect(database_path)
 
     c = conn.cursor()
+    
     try:
         c.execute(f"SELECT COUNT(*) FROM user{user_id}")
         if c.fetchone() != (0,):

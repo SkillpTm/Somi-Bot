@@ -206,7 +206,7 @@ HELP_OUTPUT = {
                   f"This command will explain the level system of this server to you. It also includes a list of all roles with levels.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
     "lyrics": ["/lyrics (no parameters) // [Artist] AND [Song]\nExample: `/lyrics Jeon Somi XOXO`",
-                  f"This command posts to lyrics of the song you are listening to (only if your Spotify is connect to your Discord and you are online) or shows you the lyrics for the specified song.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
+                  f"This command posts the lyrics of the song you are listening to (only if your Spotify is connect to your Discord and you are online) or shows you the lyrics for the specified song.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
     "ping": ["/ping (no parameters)\nExample: `/ping`",
             f"This command shows you the bot's current ping.\nIf you continue to require further help please message <@{SKILLP_ID}>"],

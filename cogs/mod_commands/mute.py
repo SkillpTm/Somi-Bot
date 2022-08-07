@@ -57,11 +57,12 @@ class mute(commands.Cog):
         embed = Embed(colour=Color.yellow())
         embed_kst_footer(embed)
         embed_set_mod_author(interaction, embed)
+        embed.add_field(name = "/mute:", value = f"{interaction.user.mention} muted: {member.mention} for: `{time}`", inline = True)
 
         if reason != None:
-            embed.add_field(name = "/mute:", value = f"{interaction.user.mention} muted: {member.mention} for: `{time}`\nBecause: {reason[:900]}", inline = True)
+            embed.add_field(name = "Reason:", value = reason[:1000], inline = False)
         else:
-            embed.add_field(name = "/mute:", value = f"{interaction.user.mention} muted: {member.mention} for: `{time}`", inline = True)
+            pass
 
         await AUDIT_LOG.send(embed=embed)
 

@@ -11,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
 from utilities.partial_commands import embed_kst_footer, embed_set_mod_author, is_member_skillp, is_member_themself
-from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID
+from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, SKILLP_ID, SOMICORD_INVITE
 
 
 
@@ -40,21 +40,29 @@ class kick(commands.Cog):
             return
 
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
+        
+        if reason != None:
+            await member.send(f"You have been __**kicked**__ from `{member.guild.name}`\nFor the reason:\n`{reason[:3800]}`\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
+        else:
+            await member.send(f"You have been __**kicked**__ from `{member.guild.name}`\nThere was no provided reason.\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
 
         await member.kick(reason=reason)
 
         if reason != None:
-            await interaction.response.send_message(f"Succesfully kicked {member.mention} because: {reason}", ephemeral=True)
+            await interaction.response.send_message(f"Succesfully kicked {member.mention} because: `{reason[:4000]}`", ephemeral=True)
         else:
             await interaction.response.send_message(f"Succesfully kicked {member.mention}", ephemeral=True)
 
         embed = Embed(colour=Color.orange())
         embed_kst_footer(embed)
         embed_set_mod_author(interaction, embed)
+        embed.add_field(name = "/kick:", value = f"{interaction.user.mention} kicked: {member.mention}", inline = True)
+
         if reason != None:
-            embed.add_field(name = "/kick:", value = f"{interaction.user.mention} kicked: {member.mention}\nBecause: {reason}", inline = True)
+            embed.add_field(name = "Reason:", value = reason[:1000], inline = False)
         else:
-            embed.add_field(name = "/kick:", value = f"{interaction.user.mention} kicked: {member.mention}", inline = True)
+            pass
+            
         await AUDIT_LOG.send(embed=embed)
 
         uses_update("mod_command_uses", "kick")

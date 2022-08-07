@@ -343,13 +343,17 @@ def get_spotify_track_data(track_spotipy):
 import csv
 
 def make_bulk_messages_csv(messages):
+    messages.reverse()
+    format = "%Y/%m/%d %H:%M:%S"
+
     with open('./storage/bulk_messages.csv', 'w') as file:
         write = csv.writer(file)
 
-        write.writerow(["Author ID", "Author Name", "Content"])
+        write.writerow(["Author ID", "Author Name", "Send at", "Content"])
 
     for i in range(len(messages)):
         with open('./storage/bulk_messages.csv', 'a') as file:
             write = csv.writer(file)
+            message_send_time = messages[i].created_at.strftime(format)
     
-            write.writerow([f"{messages[i].author.id}", f"{messages[i].author.name}", f"{messages[i].content}"])
+            write.writerow([f"{messages[i].author.id}", f"{messages[i].author.name}", f"{message_send_time}", f"{messages[i].content}"])

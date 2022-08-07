@@ -97,6 +97,35 @@ class external_logs(commands.Cog):
         await AUDIT_LOG.send(embed=embed)
         await AUDIT_LOG.send(file=nextcord.File("./storage/bulk_messages.csv"))
 
+    ###on#member#kick###########################################################
+
+    @commands.Cog.listener()
+    async def on_member_remove(self,
+                               member):
+        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
+
+        guild = member.guild
+
+        async for entry in guild.audit_logs(limit=1):
+            if str(entry.action) != "AuditLogAction.kick":
+                return
+            if entry.user == self.client.user:
+                return
+
+        print(f"{entry.user}: External kick {entry.target}")
+
+        embed = Embed(colour=Color.red())
+        embed_kst_footer(embed)
+        embed_set_mod_author(entry, embed)
+
+        if entry.reason != None:
+            embed.add_field(name = "External kick:", value = f"{entry.user.mention} kicked: {entry.target.mention} without using {self.client.user.mention}", inline = False)
+            embed.add_field(name = "Reason:", value = entry.reason, inline = False)
+        else:
+            embed.add_field(name = "External kick:", value = f"{entry.user.mention} kicked: {entry.target.mention} without using {self.client.user.mention}", inline = False)
+
+        await AUDIT_LOG.send(embed=embed)
+
 
 
 def setup(client):

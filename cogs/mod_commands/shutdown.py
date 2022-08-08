@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Color, Embed, Interaction
+from nextcord import Color, Interaction
 from nextcord.ext import application_checks, commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -10,7 +10,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_set_mod_author
+from utilities.partial_commands import get_user_avatar, embed_builder
 from utilities.variables import MODERATOR_ID, AUDIT_LOG_ID
 
 
@@ -65,10 +65,15 @@ class shutdown(commands.Cog):
 
             AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
 
-            embed = Embed(colour=Color.orange())
-            embed_kst_footer(embed)
-            embed_set_mod_author(interaction, embed)
-            embed.add_field(name = "/shutdown:", value = f"{interaction.user.mention} shutdown the bot", inline = True)
+            member_avatar_url = get_user_avatar(interaction.user)
+
+            embed = embed_builder(color = Color.orange(),
+                                  author = "Mod Activity",
+                                  author_icon = member_avatar_url,
+
+                                  field_one_name = "/shutdown:",
+                                  field_one_value = f"{interaction.user.mention} shutdown the bot",
+                                  field_one_inline = False)
 
             await AUDIT_LOG.send(embed=embed)
 

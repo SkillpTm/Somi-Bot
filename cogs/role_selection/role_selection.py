@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction
+from nextcord import Interaction
 from nextcord.ext import commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -10,7 +10,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_set_message_author
+from utilities.partial_commands import get_user_avatar, embed_builder
 from utilities.variables import UPDATES_ID, LIVE_ID, SNS_ID, REDDIT_ID, ROLES_ID, BOT_COLOR, ROLELIST
 
 
@@ -70,14 +70,19 @@ class roles(nextcord.ui.View):
 
         rolelist = [i.mention for i in interaction.user.roles if i != interaction.guild.default_role]
         output = ""
-        
-        embed = Embed(colour=BOT_COLOR)
-        embed_kst_footer(embed)
-        embed_set_message_author(interaction, embed, title_name = f"Rolelist for {interaction.user}")
 
         for i in range(len(rolelist)):
             output += f"{i + 1}. {rolelist[i]}\n"
-        embed.add_field(name = "Roles:", value = f"{output[:1000]}", inline = True)
+
+        member_avatar_url = get_user_avatar(interaction.user)
+
+        embed = embed_builder(color = BOT_COLOR,
+                              author = f"Rolelist for {interaction.user}",
+                              author_icon = member_avatar_url,
+
+                              field_one_name = "Roles:",
+                              field_one_value = output[:1000],
+                              field_one_inline = True)
 
         await interaction.send(embed=embed, ephemeral=True)
 
@@ -97,17 +102,23 @@ class role_selection(commands.Cog):
 
         messages = await ROLES_CHANNEL.history(limit=100).flatten()
 
-        if messages == []:
-            print("roelist() generated")
-
-            embed = Embed(title="Role selection",
-                          colour=BOT_COLOR)
-            embed.add_field(name = "Info Roles", value = f"Info roles will ping you for a certain event. The currtent info roles are:\n<@&{UPDATES_ID}>: Informs you about big news (like a comeback).\n<@&{LIVE_ID}>: Informs you about a SNS update.\n<@&{SNS_ID}>: Informs you about a live from Somi.\n<@&{REDDIT_ID}>: Informs you about a new post on r/Somi.", inline = False)
-            embed.add_field(name = "How It Works", value = 'Click the button of the role you want down below. If you want to get rid of a role afterwards just click the button again. If you are unsure about your current roles press the button "ROLES".', inline = False)
-
-            await ROLES_CHANNEL.send(embed=embed, view=roles())
-        else:
+        if not messages == []:
             return
+
+        print("roelist() generated")
+
+        embed = embed_builder(title = "Role selection",
+                              color = BOT_COLOR,
+
+                              field_one_name = "Info Roles",
+                              field_one_value = f"Info roles will ping you for a certain event. The currtent info roles are:\n<@&{UPDATES_ID}>: Informs you about big news (like a comeback).\n<@&{LIVE_ID}>: Informs you about a SNS update.\n<@&{SNS_ID}>: Informs you about a live from Somi.\n<@&{REDDIT_ID}>: Informs you about a new post on r/Somi.",
+                              field_one_inline = False,
+
+                              field_two_name = "How It Works",
+                              field_two_value = 'Click the button of the role you want down below. If you want to get rid of a role afterwards just click the button again. If you are unsure about your current roles press the button "ROLES".',
+                              field_two_inline = False)
+
+        await ROLES_CHANNEL.send(embed=embed, view=roles())
 
 def setup(client):
     client.add_cog(role_selection(client))

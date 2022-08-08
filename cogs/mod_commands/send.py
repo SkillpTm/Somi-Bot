@@ -10,7 +10,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_set_mod_author
+from utilities.partial_commands import embed_kst_footer, embed_set_mod_author, get_user_avatar, embed_builder
 from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR
 
 
@@ -42,11 +42,16 @@ class send(commands.Cog):
         message_object = await channel.send(message)
         await interaction.response.send_message(f"Message sent in: {channel.mention} - [Link]({message_object.jump_url})", ephemeral=True)
 
-        embed = Embed(description= f"{interaction.user.mention} sent a bot message in: {channel.mention} - [Link]({message_object.jump_url})",
-                      colour=MOD_COLOR)
-        embed_kst_footer(embed)
-        embed_set_mod_author(interaction, embed)
-        embed.add_field(name = "Message:", value = message[:1000], inline = False)
+        member_avatar_url = get_user_avatar(interaction.user)
+
+        embed = embed_builder(description = f"{interaction.user.mention} sent a bot message in: {channel.mention} - [Link]({message_object.jump_url})",
+            	              color = MOD_COLOR,
+                              author = "Mod Activity",
+                              author_icon = member_avatar_url,
+
+                              field_one_name = "Message:",
+                              field_one_value = message,
+                              field_one_inline = False)
 
         await AUDIT_LOG.send(embed=embed)
 

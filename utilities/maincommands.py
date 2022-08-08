@@ -36,26 +36,17 @@ async def custom(interaction: Interaction):
 
 def checks(interaction):
     try:
-        if interaction.guild.id == SERVER_ID and interaction.author.bot == False:
-            return True
-        else:
-            return False
+        return interaction.guild.id == SERVER_ID and interaction.author.bot == False
     except:
         pass
 
     try:
-        if interaction.guild.id == SERVER_ID and interaction.user.bot == False:
-            return True
-        else:
-            return False
+        return interaction.guild.id == SERVER_ID and interaction.user.bot == False
     except:
         pass
 
     try:
-        if interaction.guild.id == SERVER_ID and interaction.bot == False:
-            return True
-        else:
-            return False
+        return interaction.guild.id == SERVER_ID and interaction.bot == False
     except:
         pass
 
@@ -64,9 +55,7 @@ def checks(interaction):
 
 
 def checks_forbidden_channels(interaction):
-    if interaction.channel.id in MOD_CHANNELS.values():
-        return False
-    return True
+    return not interaction.channel.id in MOD_CHANNELS.values()
 
 
 

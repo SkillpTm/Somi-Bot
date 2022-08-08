@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Color, Embed, Interaction, DMChannel
+from nextcord import Interaction, DMChannel
 from nextcord.ext import commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -10,7 +10,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks_max_word_length
-from utilities.partial_commands import embed_kst_footer, embed_set_thumbnail, embed_attachments
+from utilities.partial_commands import get_user_avatar, embed_attachments, embed_builder
 from utilities.variables import MOD_CHANNEL_ID, MOD_COLOR
 
 class Question_Modmail(nextcord.ui.View):
@@ -58,19 +58,26 @@ class modmail(commands.Cog):
 
                     MOD_CHANNEL = self.client.get_channel(MOD_CHANNEL_ID)
 
-                    embed = Embed(title = f"Modmail by {message.author}",
-                                  colour=MOD_COLOR)
-                    embed_kst_footer(embed)
-                    embed_set_thumbnail(message.author, embed)
+                    member_avatar_url = get_user_avatar(message.author)
 
-                    embed.add_field(name = "ID:", value = message.author.id, inline = True)
-                    embed.add_field(name = "Member:", value = f"{message.author.mention}", inline = True)
+                    embed = embed_builder(title = f"Modmail by {message.author}",
+                                          color = MOD_COLOR,
+                                          thumbnail = member_avatar_url,
+
+                                          field_one_name = "ID:",
+                                          field_one_value = message.author.id,
+                                          field_one_inline = True,
+
+                                          field_two_name = "Member:",
+                                          field_two_value = f"{message.author.mention}",
+                                          field_two_inline = True)
 
                     checks_max_word_length(message, embed, source = "modmail")
 
                     if view.value is None:
                         await message.channel.send("Your modmail has **not** been submitted!")
                         return
+
                     elif view.value:
                         print(f"{message.author}: modmail()\n{message.content}")
 

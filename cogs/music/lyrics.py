@@ -16,6 +16,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
+from utilities.partial_commands import embed_builder
 from utilities.variables import GENIUS_COLOR, GENIUS_ICON
 
 
@@ -64,17 +65,14 @@ class lyrics(commands.Cog):
             await interaction.response.send_message("The Genius search failed, please search with different criteria again!", ephemeral=True)
             return
 
-        embed = Embed(title = f"{genius_song.title}",
-                      url = genius_song_url,
-                      description = genius_song_lyrics[:4096],
-                      colour=GENIUS_COLOR)
-        try:
-            embed.set_thumbnail(url = genius_song.header_image_thumbnail_url)
-        except:
-            pass
-        
-        embed.set_author(name= f"{genius_song.artist}", icon_url=GENIUS_ICON)
-        embed.set_footer(text = "Lyrics powered by Genius")
+        embed = embed_builder(title = f"{genius_song.title}",
+                              title_url = genius_song_url,
+                              description = genius_song_lyrics[:4096],
+                              color = GENIUS_COLOR,
+                              thumbnail = genius_song.header_image_thumbnail_url,
+                              author = f"{genius_song.artist}",
+                              author_icon = GENIUS_ICON,
+                              footer = "Lyrics powered by Genius")
 
         await interaction.response.send_message(embed=embed)
 

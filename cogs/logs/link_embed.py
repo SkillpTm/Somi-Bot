@@ -73,7 +73,7 @@ class on_message(commands.Cog):
             else:
                 message_content = f"{message.content[:990]}..."
 
-            embed = embed_builder(despcription = f"{correct_channel.mention} - [Link]({link})",
+            embed = embed_builder(description = f"{correct_channel.mention} - [Link]({link})",
                                   color = nextcord.Color.from_rgb(255, 166, 252),
                                   author = "Message Embed",
                                   author_icon = member_avatar_url,

@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction
+from nextcord import Interaction
 from nextcord.ext import commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -11,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_command_uses import uses_update
 from database.database_reminders import list_reminder
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_set_message_author
+from utilities.partial_commands import get_user_avatar, embed_builder
 from utilities.variables import BOT_COLOR
 
 
@@ -33,7 +33,7 @@ class reminder_list(commands.Cog):
 
         print(f"{interaction.user}: /reminder list")
 
-        amount, reminder_times, bot_reply_links, delete_ids = list_reminder(interaction.user.id)
+        amount, reminder_times, bot_reply_links, delete_ids, clean_reminders = list_reminder(interaction.user.id)
 
         if amount == 0:
             await interaction.response.send_message("You don't have any reminders.", ephemeral=True)
@@ -42,15 +42,22 @@ class reminder_list(commands.Cog):
 
             return
 
+        output = ""
         i = 0
 
-        embed = Embed(colour=BOT_COLOR)
-        embed_kst_footer(embed)
-        embed_set_message_author(interaction, embed, title_name = f"Reminder List for {interaction.user}")
-
-        while i < amount and i < 9: #Field limit = 10
-            embed.add_field(name = f"{i + 1}. Reminder:", value = f"<t:{reminder_times[i]}:F> // ID: {delete_ids[i]} - [Link]({bot_reply_links[i]})", inline = False)
+        while i < amount and i < 25: #Field limit = 25
+            if len(clean_reminders[i]) > 30:
+                output += f"<t:{reminder_times[i]}:F> // ID: {delete_ids[i]} - [Link]({bot_reply_links[i]})\nReminder: `{clean_reminders[i][:30]}...`\n\n"
+            else:
+                output += f"<t:{reminder_times[i]}:F> // ID: {delete_ids[i]} - [Link]({bot_reply_links[i]})\nReminder: `{clean_reminders[i][:30]}`\n\n"
             i += 1
+
+        member_avatar_url = get_user_avatar(interaction.user)
+
+        embed = embed_builder(description = output[:4096],
+                              color = BOT_COLOR,
+                              author = f"Reminder List for {interaction.user}",
+                              author_icon = member_avatar_url)
 
         await interaction.response.send_message(embed=embed)
 

@@ -35,7 +35,7 @@ class delete_log(commands.Cog):
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
         member_avatar_url = get_user_avatar(message.author)
 
-        embed = embed_builder(despcription = f"{message.author.mention} deleted a message in: {message.channel.mention}",
+        embed = embed_builder(description = f"{message.author.mention} deleted a message in: {message.channel.mention}",
                               color = Color.red(),
                               author = "Message Deleted",
                               author_icon = member_avatar_url)

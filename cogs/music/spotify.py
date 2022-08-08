@@ -2,7 +2,7 @@
 
 import os
 import nextcord
-from nextcord import Embed, Interaction, SlashOption, Spotify
+from nextcord import Interaction, SlashOption, Spotify
 from nextcord.ext import commands
 import spotipy
 from dotenv import load_dotenv
@@ -15,7 +15,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_get_title_name, get_spotify_track_data
+from utilities.partial_commands import embed_get_title_name, get_spotify_track_data, embed_builder
 from utilities.variables import SPOTIFY_ICON
 
 
@@ -66,12 +66,12 @@ class spotify(commands.Cog):
                     i += 1
 
                 artists = ", ".join(map(str,artists_with_urls))
-                
-                embed = Embed(colour=activity.color,
-                              description=f"[{track_name}]({track_url})\non [{album_name}]({album_url})\nby {artists}")
-                embed_kst_footer(embed)
-                embed.set_author(name= f"{title_name} is listening to:", icon_url=SPOTIFY_ICON)
-                embed.set_thumbnail(url=cover_url)
+
+                embed = embed_builder(description = f"[{track_name}]({track_url})\non [{album_name}]({album_url})\nby {artists}",
+                                      color = activity.color,
+                                      thumbnail = cover_url,
+                                      author = f"{title_name} is listening to:",
+                                      author_icon = SPOTIFY_ICON)
 
                 await interaction.send(embed=embed)
 
@@ -116,11 +116,11 @@ class spotify(commands.Cog):
 
                 artists = ", ".join(map(str,artists_with_urls))
                 
-                embed = Embed(colour=activity.color,
-                              description=f"[{track_name}]({track_url})\non [{album_name}]({album_url})\nby {artists}")
-                embed_kst_footer(embed)
-                embed.set_author(name= f"{title_name} is listening to:", icon_url=SPOTIFY_ICON)
-                embed.set_thumbnail(url=cover_url)
+                embed = embed_builder(description = f"[{track_name}]({track_url})\non [{album_name}]({album_url})\nby {artists}",
+                                      color = activity.color,
+                                      thumbnail = cover_url,
+                                      author = f"{title_name} is listening to:",
+                                      author_icon = SPOTIFY_ICON)
 
                 await interaction.send(embed=embed)
 

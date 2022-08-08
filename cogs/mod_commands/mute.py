@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Color, Embed, Interaction, SlashOption
+from nextcord import Color, Interaction, SlashOption
 from nextcord.ext import application_checks, commands
 from datetime import timedelta
 
@@ -11,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_set_mod_author, is_member_skillp, is_member_themself, time_to_seconds
+from utilities.partial_commands import get_user_avatar, is_member_skillp, is_member_themself, time_to_seconds, embed_builder
 from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID
 
 
@@ -49,20 +49,25 @@ class mute(commands.Cog):
             return
 
         await member.edit(timeout=nextcord.utils.utcnow()+timedelta(seconds=total_seconds))
+
         if reason != None:
             await interaction.response.send_message(f"{member.mention} has been muted because: {reason}", ephemeral=True)
         else:
             await interaction.response.send_message(f"{member.mention} has been muted", ephemeral=True)
 
-        embed = Embed(colour=Color.yellow())
-        embed_kst_footer(embed)
-        embed_set_mod_author(interaction, embed)
-        embed.add_field(name = "/mute:", value = f"{interaction.user.mention} muted: {member.mention} for: `{time}`", inline = True)
+        member_avatar_url = get_user_avatar(interaction.user)
 
-        if reason != None:
-            embed.add_field(name = "Reason:", value = reason[:1000], inline = False)
-        else:
-            pass
+        embed = embed_builder(color = Color.yellow(),
+                              author = "Mod Activity",
+                              author_icon = member_avatar_url,
+
+                              field_one_name = "/mute:",
+                              field_one_value = f"{interaction.user.mention} muted: {member.mention} for: `{time}`",
+                              field_one_inline = False,
+
+                              field_two_name = "Reason:",
+                              field_two_value = reason,
+                              field_two_inline = False)
 
         await AUDIT_LOG.send(embed=embed)
 
@@ -94,10 +99,15 @@ class mute(commands.Cog):
             await interaction.response.send_message(f"{member.mention} wasn't muted", ephemeral=True)
             return
 
-        embed = Embed(colour=Color.green())
-        embed_kst_footer(embed)
-        embed_set_mod_author(interaction, embed)
-        embed.add_field(name = "/unmute:", value = f"{interaction.user.mention} unmuted: {member.mention}", inline = True)
+        member_avatar_url = get_user_avatar(interaction.user)
+
+        embed = embed_builder(color = Color.green(),
+                              author = "Mod Activity",
+                              author_icon = member_avatar_url,
+
+                              field_one_name = "/unmute:",
+                              field_one_value = f"{interaction.user.mention} unmuted: {member.mention}",
+                              field_one_inline = False)
 
         await AUDIT_LOG.send(embed=embed)
 

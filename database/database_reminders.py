@@ -110,25 +110,29 @@ def list_reminder(user_id):
         conn.close()
         return 0, [], [], []
 
-    c.execute(f"SELECT * FROM user{user_id}")
+    c.execute(f"SELECT * FROM user{user_id} ORDER BY reminder_time ASC")
     all_reminders = c.fetchall()
 
     amount = len(all_reminders)
     reminder_times = []
     bot_reply_links = []
     delete_ids = []
+    clean_reminders = []
 
-    for reminder_time in all_reminders:
-        reminder_times.append(reminder_time[0])
+    for reminder in all_reminders:
+        reminder_times.append(reminder[0])
 
-    for bot_reply_link in all_reminders:
-        bot_reply_links.append(bot_reply_link[1])
+    for reminder in all_reminders:
+        bot_reply_links.append(reminder[1])
 
-    for delete_id in all_reminders:
-        delete_ids.append(delete_id[2])
+    for reminder in all_reminders:
+        delete_ids.append(reminder[2])
+
+    for reminder in all_reminders:
+        clean_reminders.append(reminder[3])
 
     conn.close()
-    return amount, reminder_times, bot_reply_links, delete_ids
+    return amount, reminder_times, bot_reply_links, delete_ids, clean_reminders
 
 ###reminder###########################################################
 

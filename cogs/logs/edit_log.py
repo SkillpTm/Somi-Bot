@@ -41,7 +41,7 @@ class edit_log(commands.Cog):
         if len(message_before.content) < 1000 and len(message_after.content) < 1000:
             member_avatar_url = get_user_avatar(message_before.author)
 
-            embed = embed_builder(despcription = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
+            embed = embed_builder(description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
                                   color = Color.yellow(),
                                   author = "Message Edited",
                                   author_icon = member_avatar_url,
@@ -59,12 +59,12 @@ class edit_log(commands.Cog):
         else:
             member_avatar_url = get_user_avatar(message_before.author)
 
-            embed_before = embed_builder(despcription = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
+            embed_before = embed_builder(description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
                                          color = Color.yellow(),
                                          author = "Message Edited: Before",
                                          author_icon = member_avatar_url)
 
-            embed_after = embed_builder(despcription = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
+            embed_after = embed_builder(description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
                                         color = Color.yellow(),
                                         author = "Message Edited: After",
                                         author_icon = member_avatar_url)

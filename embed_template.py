@@ -2,7 +2,7 @@
 
         embed = embed_builder(title = ,
                               title_url = ,
-                              despcription = ,
+                              description = ,
                               color = ,
                               thumbnail = ,
                               image = ,

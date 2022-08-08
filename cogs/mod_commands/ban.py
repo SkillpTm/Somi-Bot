@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Color, Embed, Interaction, SlashOption
+from nextcord import Color, Interaction, SlashOption
 from nextcord.ext import application_checks, commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -10,7 +10,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_set_mod_author, is_member_skillp, is_member_themself
+from utilities.partial_commands import get_user_avatar, is_member_skillp, is_member_themself, embed_builder
 from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, SKILLP_ID
 
 
@@ -42,9 +42,9 @@ class ban(commands.Cog):
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
 
         if reason != None:
-            await member.send(f"You have been __**banned**__ from '{member.guild.name}'\nFor the reason:\n`{reason[:3800]}`\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
+            await member.send(f"You have been __**banned**__ from `{member.guild.name}`\nFor the reason:\n`{reason[:3800]}`\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
         else:
-            await member.send(f"You have been __**banned**__ from '{member.guild.name}'\nThere was no provided reason.\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
+            await member.send(f"You have been __**banned**__ from `{member.guild.name}`\nThere was no provided reason.\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
 
         await member.ban(reason=reason)
 
@@ -53,15 +53,19 @@ class ban(commands.Cog):
         else:
             await interaction.response.send_message(f"Succesfully banned <@{member.id}>", ephemeral=True)
 
-        embed = Embed(colour=Color.red())
-        embed_kst_footer(embed)
-        embed_set_mod_author(interaction, embed)
-        embed.add_field(name = "/ban:", value = f"{interaction.user.mention} banned: {member.mention}", inline = False)
+        member_avatar_url = get_user_avatar(interaction.user)
 
-        if reason != None:
-            embed.add_field(name = "Reason:", value = reason[:1000], inline = False)
-        else:
-            pass
+        embed = embed_builder(color = Color.red(),
+                              author = "Mod Activity",
+                              author_icon = member_avatar_url,
+
+                              field_one_name = "/ban:",
+                              field_one_value = f"{interaction.user.mention} banned: {member.mention}",
+                              field_one_inline = False,
+
+                              field_two_name = "Reason:",
+                              field_two_value = reason,
+                              field_two_inline = False)
 
         await AUDIT_LOG.send(embed=embed)
 
@@ -85,7 +89,7 @@ class ban(commands.Cog):
         print(f"{interaction.user}: /unban {member_id}")
 
         try:
-            member = await self.client.fetch_user(member_id)
+            user = await self.client.fetch_user(member_id)
         except:
             await interaction.response.send_message(f"`{member_id[:4000]}` isn't a discord user", ephemeral=True)
             return
@@ -93,16 +97,22 @@ class ban(commands.Cog):
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
 
         try:
-            await interaction.guild.unban(member)
-            await interaction.response.send_message(f"{member.mention} has been unbanned", ephemeral=True)
+            await interaction.guild.unban(user)
+            await interaction.response.send_message(f"{user.mention} has been unbanned", ephemeral=True)
         except:
-            await interaction.response.send_message(f"{member.mention} wasn't banned", ephemeral=True)
+            await interaction.response.send_message(f"{user.mention} wasn't banned", ephemeral=True)
             return
 
-        embed = Embed(colour=Color.green())
-        embed_kst_footer(embed)
-        embed_set_mod_author(interaction, embed)
-        embed.add_field(name = "/unban:", value = f"{interaction.user.mention} unbanned: {member.mention}", inline = True)
+        member_avatar_url = get_user_avatar(interaction.user)
+
+        embed = embed_builder(color = Color.green(),
+                              author = "Mod Activity",
+                              author_icon = member_avatar_url,
+
+                              field_one_name = "/unban:",
+                              field_one_value = f"{interaction.user.mention} unbanned: {user.mention}",
+                              field_one_inline = True)
+
         await AUDIT_LOG.send(embed=embed)
 
         uses_update("mod_command_uses", "unban")

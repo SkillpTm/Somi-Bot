@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction, SlashOption
+from nextcord import Interaction, SlashOption
 from nextcord.ext import commands
 import random
 import string
@@ -14,7 +14,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_command_uses import uses_update
 from database.database_reminders import create_reminder
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_set_message_author, time_to_seconds
+from utilities.partial_commands import get_user_avatar, time_to_seconds, embed_builder
 from utilities.variables import BOT_COLOR
 
 
@@ -52,11 +52,16 @@ class reminder_add(commands.Cog):
             delete_id += string.digits[random.randint(0, 9)]
             counter += 1
 
-        embed = Embed(description = reminder,
-                      colour=BOT_COLOR)
-        embed_kst_footer(embed)
-        embed_set_message_author(interaction, embed, title_name = f"Reminder Set for {interaction.user}")
-        embed.add_field(name = "Time:", value = f"<t:{reminder_time}:F>", inline = False)
+        member_avatar_url = get_user_avatar(interaction.user)
+
+        embed = embed_builder(description = reminder,
+                              color = BOT_COLOR,
+                              author = f"Reminder Set for {interaction.user}",
+                              author_icon = member_avatar_url,
+
+                              field_one_name = "Time:",
+                              field_one_value = f"<t:{reminder_time}:F>",
+                              field_one_inline = False)
 
         await interaction.response.send_message(embed=embed)
 

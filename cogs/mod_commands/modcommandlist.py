@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction
+from nextcord import Interaction
 from nextcord.ext import application_checks, commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -10,7 +10,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer
+from utilities.partial_commands import embed_builder
 from utilities.variables import MODERATOR_ID, MOD_COMMANDS, BOT_COLOR
 
 
@@ -31,10 +31,12 @@ class modcommandlist(commands.Cog):
 
         print(f"{interaction.user}: /modcommandlist")
 
-        embed = Embed(title="A list of all mod commands",
-                      colour=BOT_COLOR)
-        embed_kst_footer(embed)
-        embed.add_field(name = "Commands:", value = MOD_COMMANDS, inline = True)
+        embed = embed_builder(title = "A list of all mod commands",
+                              color = BOT_COLOR,
+
+                              field_one_name = "Commands:",
+                              field_one_value = MOD_COMMANDS,
+                              field_one_inline = False)
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
@@ -55,10 +57,12 @@ class modcommandlist(commands.Cog):
 
         print(f"{interaction.user}: /mcl")
 
-        embed = Embed(title="A list of all mod commands",
-                      colour=BOT_COLOR)
-        embed_kst_footer(embed)
-        embed.add_field(name = "Commands:", value = MOD_COMMANDS, inline = True)
+        embed = embed_builder(title = "A list of all mod commands",
+                              color = BOT_COLOR,
+
+                              field_one_name = "Commands:",
+                              field_one_value = MOD_COMMANDS,
+                              field_one_inline = False)
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
 

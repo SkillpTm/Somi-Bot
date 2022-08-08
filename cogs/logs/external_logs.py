@@ -98,7 +98,7 @@ class external_logs(commands.Cog):
                               author_url = member_avatar_url,
 
                               field_one_name = "External purge:",
-                              field_one_value = f"{entry.user.mention} purged: `{len(messages)} message` in {entry.target.mention}without using {self.client.user.mention}",
+                              field_one_value = f"{entry.user.mention} purged: `{len(messages)} message(s)` in {entry.target.mention}without using {self.client.user.mention}",
                               field_one_inline = False,
 
                               field_two_name = "Note:",

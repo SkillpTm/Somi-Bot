@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction, SlashOption
+from nextcord import Interaction, SlashOption
 from nextcord.ext import application_checks, commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -10,7 +10,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_set_mod_author
+from utilities.partial_commands import get_user_avatar, embed_builder
 from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, LEVELROLES, MOD_COLOR
 
 
@@ -51,14 +51,20 @@ class vcaccess(commands.Cog):
 
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
 
-        embed = Embed(colour=MOD_COLOR)
-        embed_kst_footer(embed)
-        embed_set_mod_author(interaction, embed)
-
         if permissions_added:
-            embed.add_field(name = "/vcaccess:", value = f"{interaction.user.mention} gave {member.mention} access to all voice channels", inline = False)
+            action_text = f"{interaction.user.mention} gave {member.mention} access to all voice channels"
         else:
-            embed.add_field(name = "/vcaccess:", value = f"{interaction.user.mention} took access from all voice channels of {member.mention} away", inline = False)
+            action_text = f"{interaction.user.mention} took access from all voice channels of {member.mention} away"
+
+        member_avatar_url = get_user_avatar(interaction.user)
+
+        embed = embed_builder(color = MOD_COLOR,
+                              author = "Mod Activity",
+                              author_icon = member_avatar_url,
+
+                              field_one_name = "/vcaccess:",
+                              field_one_value = action_text,
+                              field_one_inline = False)
 
         await AUDIT_LOG.send(embed=embed)
 

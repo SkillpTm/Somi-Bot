@@ -57,7 +57,7 @@ class reddit(commands.Cog):
                 else:
                     thumbnail_url = SUBREDDIT_ICON
 
-                embed = embed_builder(despcription = f"[New Post in **r/{subreddit.display_name}**](https://www.reddit.com{submission.permalink})",
+                embed = embed_builder(description = f"[New Post in **r/{subreddit.display_name}**](https://www.reddit.com{submission.permalink})",
                                       color = REDDIT_COLOR,
                                       thumbnail = thumbnail_url,
                                       author = "Subreddit Update",

@@ -1,8 +1,7 @@
 ###package#import###############################################################################
 
-import csv
 import nextcord
-from nextcord import Color, Embed, Interaction, SlashOption
+from nextcord import Color, Interaction, SlashOption
 from nextcord.ext import application_checks, commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -12,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
 from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID
-from utilities.partial_commands import embed_kst_footer, embed_set_mod_author, make_bulk_messages_csv
+from utilities.partial_commands import get_user_avatar, make_bulk_messages_csv, embed_builder
 
 
 
@@ -45,16 +44,19 @@ class purge(commands.Cog):
 
         make_bulk_messages_csv(messages)
 
-        embed = Embed(colour=Color.yellow())
-        embed_kst_footer(embed)
-        embed_set_mod_author(interaction, embed)
+        member_avatar_url = get_user_avatar(interaction.user)
 
-        if amount == 1:
-            embed.add_field(name = "/purge:", value = f"{interaction.user.mention} purged: `{amount} message` in {interaction.channel.mention}", inline = False)
-        else:
-            embed.add_field(name = "/purge:", value = f"{interaction.user.mention} purged: `{amount} messages` in {interaction.channel.mention}", inline = False)
+        embed = embed_builder(color = Color.yellow(),
+                              author = "Mod Activity",
+                              author_icon = member_avatar_url,
 
-        embed.add_field(name = "Note:", value = "It is possible that there is no CSV after this message or that messages are missing. This is due to the messages not being cached anymore. In this case there is nothing I can do.", inline = False)
+                              field_one_name = "/purge:",
+                              field_one_value = f"{interaction.user.mention} purged: `{amount} message(s)` in {interaction.channel.mention}",
+                              field_one_inline = False,
+                              
+                              field_two_name = "Note:",
+                              field_two_value = "It is possible that there is no CSV after this message or that messages are missing. This is due to the messages not being cached anymore. In this case there is nothing I can do.",
+                              field_two_inline = False)
 
         await AUDIT_LOG.send(embed=embed)
         await AUDIT_LOG.send(file=nextcord.File("./storage/bulk_messages.csv"))

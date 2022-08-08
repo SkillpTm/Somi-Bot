@@ -67,7 +67,7 @@ class keyword(commands.Cog):
 
                     embed = embed_builder(title = f"Keyword Notification: `{output_keywords}`",
                                           title_url = interaction.jump_url,
-                                          despcription = f"{keywords_info}\n\n__**Message:**__\n{interaction.content}"[:4096],
+                                          description = f"{keywords_info}\n\n__**Message:**__\n{interaction.content}"[:4096],
                                           color = BOT_COLOR)
 
                     await embed_attachments(noti_user, interaction, embed, link_embed = False)

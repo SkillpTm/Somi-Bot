@@ -422,7 +422,7 @@ from nextcord import Embed
 
 def embed_builder(title = Embed.Empty,
                   title_url = Embed.Empty,
-                  despcription = Embed.Empty,
+                  description = Embed.Empty,
                   color = Embed.Empty,
                   thumbnail = Embed.Empty,
                   image = Embed.Empty,
@@ -461,7 +461,7 @@ def embed_builder(title = Embed.Empty,
                   field_seven_inline = False):
     embed = Embed(title = title,
                   url = title_url,
-                  description = despcription,
+                  description = description,
                   color = color)
 
     embed.set_thumbnail(url = thumbnail)
@@ -491,6 +491,6 @@ def embed_builder(title = Embed.Empty,
     for i in range(len(fields)):
         if not "" == fields[i][0] and not None == fields[i][0] and not Embed.Empty == fields[i][0]:
             if not "" == fields[i][1] and not None == fields[i][1] and not Embed.Empty == fields[i][1]:
-                embed.add_field(name=fields[i][0], value=fields[i][1], inline=fields[i][2])
+                embed.add_field(name = f"{fields[i][0]}"[:49], value = f"{fields[i][1]}"[:975], inline = fields[i][2])
 
     return embed

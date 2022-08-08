@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction
+from nextcord import Interaction
 from nextcord.ext import commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -11,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_command_uses import uses_update
 from database.database_custom import list_custom
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_set_server_icon_author
+from utilities.partial_commands import get_user_avatar, embed_builder
 from utilities.variables import BOT_COLOR
 
 
@@ -42,17 +42,21 @@ class custom_list(commands.Cog):
 
             return
 
+        member_avatar_url = get_user_avatar(interaction.user)
         output = ""
         i = 0
-
-        embed = Embed(colour=BOT_COLOR)
-        embed_kst_footer(embed)
-        embed_set_server_icon_author(interaction, embed)
 
         while i < amount:
             output += f"/cc `{all_commandnames[i]}`\n"
             i += 1
-        embed.add_field(name = "Custom commands:", value = output, inline = True)
+
+        embed = embed_builder(color = BOT_COLOR,
+                              author = f"Custom command list for {interaction.guild}",
+                              author_icon = member_avatar_url,
+
+                              field_one_name = "Custom commands:",
+                              field_one_value = output[:1000],
+                              field_one_inline = True)
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
 

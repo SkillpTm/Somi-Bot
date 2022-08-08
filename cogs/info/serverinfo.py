@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction
+from nextcord import Interaction
 from nextcord.ext import commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -10,7 +10,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_set_server_icon, embed_get_serverinfo
+from utilities.partial_commands import get_serverinfo_embed
 from utilities.variables import BOT_COLOR
 
 
@@ -30,11 +30,7 @@ class severinfo(commands.Cog):
 
         print(f"{interaction.user}: /serverinfo")
 
-        embed = Embed(title= f"Server Information: `{interaction.guild.name}`",
-                      colour=BOT_COLOR)
-        embed_kst_footer(embed)
-        embed_set_server_icon(interaction, embed)
-        await embed_get_serverinfo(self.client, interaction, embed)
+        embed = await get_serverinfo_embed(self.client, interaction)
 
         await interaction.send(embed=embed)
 
@@ -50,11 +46,7 @@ class severinfo(commands.Cog):
 
         print(f"{interaction.user}: /si")
 
-        embed = Embed(title= f"Server Information: `{interaction.guild.name}`",
-                      colour=BOT_COLOR)
-        embed_kst_footer(embed)
-        embed_set_server_icon(interaction, embed)
-        await embed_get_serverinfo(self.client, interaction, embed)
+        embed = await get_serverinfo_embed(self.client, interaction)
 
         await interaction.send(embed=embed)
 

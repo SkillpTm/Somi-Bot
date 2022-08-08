@@ -9,7 +9,7 @@ import sys
 
 ###self#imports###############################################################################
 
-from utilities.variables import CLOCK_ICON, SKILLP_ID, DEFAULT_PFP, SKILLP_JOINED_UNIX_TIME
+from utilities.variables import BOT_COLOR, CLOCK_ICON, SKILLP_ID, DEFAULT_PFP, SKILLP_JOINED_UNIX_TIME
 
 
 
@@ -26,7 +26,7 @@ def embed_kst_footer(embed):
 
 
 
-def embed_get_user_create_and_join_time(member):
+def get_user_create_and_join_time(member):
     time1 = datetime.datetime.strptime(str(member.created_at.strftime("%m/%d/%Y %H:%M:%S")), "%m/%d/%Y %H:%M:%S")
     created_time = datetime.datetime.timestamp(time1)
     
@@ -34,6 +34,9 @@ def embed_get_user_create_and_join_time(member):
     joined_time = datetime.datetime.timestamp(time2)
     
     return int(created_time), int(joined_time)
+
+def embed_get_user_create_and_join_time(member):
+    pass
 
 
 
@@ -97,12 +100,29 @@ def embed_set_server_icon_author(interaction, embed):
 
 
 
+
 def embed_get_title_name(member):
+    pass
+
+
+
+def get_nick_else_name(member):
     if member.nick != None:
-        title_name = member.nick
+        name = member.nick
     else:
-        title_name = member.name
-    return title_name
+        name = member.name
+
+    return name
+
+
+
+def get_user_avatar(member):
+    if member.avatar is not None:
+        member_avatar_url = member.avatar
+    else:
+        member_avatar_url = member.default_avatar
+
+    return member_avatar_url
 
 
         
@@ -115,54 +135,92 @@ def embed_set_thumbnail(member, embed):
         embed.set_thumbnail(url=member.default_avatar)
 
 
-
-def embed_set_server_icon(interaction, embed):
-    if interaction.guild.icon is not None:
-        embed.set_thumbnail(url=interaction.guild.icon)
-    else:
-        embed.set_thumbnail(url=DEFAULT_PFP)
-
-
         
 ###info#related###############################################################################
 
 from utilities.variables import SERVER_ID
 
-def embed_get_userinfo(member, embed):
-    created_time, joined_time = embed_get_user_create_and_join_time(member)
-
-    fields = []
-    fields += [("ID", member.id, False),
-               ("Name:", str(member), True),
-               ("Top role", member.top_role.mention, True),
-               ("Status", member.status, True),
-               ("Created at:", f"<t:{created_time}>", True)]
+def get_userinfo_embed(member):
+    created_time, joined_time = get_user_create_and_join_time(member)
+    name = get_nick_else_name(member)
+    member_avatar_url = get_user_avatar(member)
 
     if member.id == SKILLP_ID and member.guild.id == SERVER_ID:
-        fields += [("Joined at:", f"<t:{SKILLP_JOINED_UNIX_TIME}>", True)]
+        join_time = f"<t:{SKILLP_JOINED_UNIX_TIME}>"
     else:
-        fields += [("Joined at:", f"<t:{joined_time}>", True)]
+        join_time = f"<t:{joined_time}>"
 
-    fields += [("Boosted", bool(member.premium_since), True)]
+    embed = embed_builder(title = f"User Information: `{name}`",
+                          color = member.color,
+                          thumbnail = member_avatar_url,
 
-    for name, value, inline in fields:
-        embed.add_field(name=name, value=value, inline=inline)
+                          field_one_name = "ID",
+                          field_one_value = member.id,
+                          field_one_inline = False,
+                                            
+                          field_two_name = "Name:",
+                          field_two_value = member,
+                          field_two_inline = True,
+                                            
+                          field_three_name = "Top role",
+                          field_three_value = member.top_role.mention,
+                          field_three_inline = True,
+                                            
+                          field_four_name = "Status",
+                          field_four_value = member.status,
+                          field_four_inline = True,
+                                            
+                          field_five_name = "Created at:",
+                          field_five_value = f"<t:{created_time}>",
+                          field_five_inline = True,
+                                            
+                          field_six_name = "Joined at:",
+                          field_six_value = join_time,
+                          field_six_inline = True,
+
+                          field_seven_name = "Boosted",
+                          field_seven_value = bool(member.premium_since),
+                          field_seven_inline = True)
+    
+    return embed
 
 
 
-async def embed_get_serverinfo(client, interaction, embed):
+async def get_serverinfo_embed(client, interaction):
     created_time = embed_get_server_create_time(interaction)
 
     guild_with_counts = await client.fetch_guild(interaction.guild.id, with_counts=True)
 
-    fields = [("ID:", interaction.guild.id, False),
-              ("Owner:", interaction.guild.owner.mention, True),
-              ("Members:", f"Total: {interaction.guild.member_count}\nOnline: {guild_with_counts.approximate_presence_count}", True),
-              ("Channels:", f"Text: {len(interaction.guild.text_channels)}\nVoice: {len(interaction.guild.voice_channels)}", True),
-              ("Created at:", f"<t:{created_time}>", True)]
+    if interaction.guild.icon is not None:
+        server_icon_url = interaction.guild.icon
+    else:
+        server_icon_url = DEFAULT_PFP
 
-    for name, value, inline in fields:
-        embed.add_field(name=name, value=value, inline=inline)
+    embed = embed_builder(title = f"Server Information: `{interaction.guild.name}`",
+                          color = BOT_COLOR,
+                          thumbnail = server_icon_url,
+
+                          field_one_name = "ID:",
+                          field_one_value = interaction.guild.id,
+                          field_one_inline = False,
+                                            
+                          field_two_name = "Owner:",
+                          field_two_value = interaction.guild.owner.mention,
+                          field_two_inline = True,
+                                            
+                          field_three_name = "Members:",
+                          field_three_value = f"Total: {interaction.guild.member_count}\nOnline: {guild_with_counts.approximate_presence_count}",
+                          field_three_inline = True,
+                                            
+                          field_four_name = "Channels:",
+                          field_four_value = f"Text: {len(interaction.guild.text_channels)}\nVoice: {len(interaction.guild.voice_channels)}",
+                          field_four_inline = True,
+                                            
+                          field_five_name = "Created at:",
+                          field_five_value = f"<t:{created_time}>",
+                          field_five_inline = True)
+
+    return embed
 
 
 
@@ -357,3 +415,82 @@ def make_bulk_messages_csv(messages):
             message_send_time = messages[i].created_at.strftime(format)
     
             write.writerow([f"{messages[i].author.id}", f"{messages[i].author.name}", f"{message_send_time}", f"{messages[i].content}"])
+
+###embed#builder###############################################################################
+
+from nextcord import Embed
+
+def embed_builder(title = Embed.Empty,
+                  title_url = Embed.Empty,
+                  despcription = Embed.Empty,
+                  color = Embed.Empty,
+                  thumbnail = Embed.Empty,
+                  image = Embed.Empty,
+                  author = Embed.Empty,
+                  author_url = Embed.Empty,
+                  author_icon = Embed.Empty,
+                  footer = Embed.Empty,
+                  footer_icon = Embed.Empty,
+
+                  field_one_name = Embed.Empty,
+                  field_one_value = Embed.Empty,
+                  field_one_inline = False,
+                                    
+                  field_two_name = Embed.Empty,
+                  field_two_value = Embed.Empty,
+                  field_two_inline = False,
+                                    
+                  field_three_name = Embed.Empty,
+                  field_three_value = Embed.Empty,
+                  field_three_inline = False,
+                                    
+                  field_four_name = Embed.Empty,
+                  field_four_value = Embed.Empty,
+                  field_four_inline = False,
+                                    
+                  field_five_name = Embed.Empty,
+                  field_five_value = Embed.Empty,
+                  field_five_inline = False,
+                                    
+                  field_six_name = Embed.Empty,
+                  field_six_value = Embed.Empty,
+                  field_six_inline = False,
+
+                  field_seven_name = Embed.Empty,
+                  field_seven_value = Embed.Empty,
+                  field_seven_inline = False):
+    embed = Embed(title = title,
+                  url = title_url,
+                  description = despcription,
+                  color = color)
+
+    embed.set_thumbnail(url = thumbnail)
+
+    embed.set_image(url = image)
+
+    if author != Embed.Empty:
+        embed.set_author(name = author, url = author_url, icon_url = author_icon)
+
+    if footer == Embed.Empty:
+        format = "%Y/%m/%d %H:%M:%S %Z"
+        now_utc = timedate.now(timezone('UTC'))
+        now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
+
+        embed.set_footer(text = now_korea.strftime(format), icon_url = CLOCK_ICON)
+    else:
+        embed.set_footer(text = footer, icon_url = footer_icon)
+
+    fields = [[field_one_name, field_one_value, field_one_inline],
+              [field_two_name, field_two_value, field_two_inline],
+              [field_three_name, field_three_value, field_three_inline],
+              [field_four_name, field_four_value, field_four_inline],
+              [field_five_name, field_five_value, field_five_inline],
+              [field_six_name, field_six_value, field_six_inline],
+              [field_seven_name, field_seven_value, field_seven_inline]]
+
+    for i in range(len(fields)):
+        if not "" == fields[i][0] and not None == fields[i][0] and not Embed.Empty == fields[i][0]:
+            if not "" == fields[i][1] and not None == fields[i][1] and not Embed.Empty == fields[i][1]:
+                embed.add_field(name=fields[i][0], value=fields[i][1], inline=fields[i][2])
+
+    return embed

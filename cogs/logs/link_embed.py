@@ -9,9 +9,9 @@ client = commands.Bot(intents=nextcord.Intents.all())
 ###self#imports###############################################################################
 
 from database.database_command_uses import uses_update
-from utilities.maincommands import checks, checks_max_word_length
+from utilities.maincommands import checks
 from utilities.variables import REACTION_EMOTE, SOMIONLY_EMOTE, SOMI_F
-from utilities.partial_commands import embed_kst_footer, embed_set_message_author, embed_attachments, message_object_generation
+from utilities.partial_commands import get_user_avatar, embed_attachments, message_object_generation, embed_builder
 
 
 
@@ -66,11 +66,21 @@ class on_message(commands.Cog):
             link, body, tail = link3.partition(" ")
             message ,correct_channel = await message_object_generation(link, self.client)
 
-            embed = Embed(description= f"{correct_channel.mention} - [Link]({link})",
-                          colour=nextcord.Color.from_rgb(255, 166, 252))
-            embed_kst_footer(embed)
-            embed_set_message_author(message, embed, "Message Embed")
-            checks_max_word_length(message, embed, source = "link_embed")
+            member_avatar_url = get_user_avatar(message.author)
+
+            if len(message.content) < 990:
+                message_content = message.content
+            else:
+                message_content = f"{message.content[:990]}..."
+
+            embed = embed_builder(despcription = f"{correct_channel.mention} - [Link]({link})",
+                                  color = nextcord.Color.from_rgb(255, 166, 252),
+                                  author = "Message Embed",
+                                  author_icon = member_avatar_url,
+
+                                  field_one_name = f"{message.author.name} said:",
+                                  field_one_value = message_content,
+                                  field_one_inline = False)
 
             await embed_attachments(interaction.channel, message, embed, link_embed = True)
 

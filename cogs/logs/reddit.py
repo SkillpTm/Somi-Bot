@@ -2,7 +2,6 @@
 
 import datetime
 import nextcord
-from nextcord import Embed
 from nextcord.ext import commands
 import asyncpraw
 from pytz import timezone
@@ -18,6 +17,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_reddit import get_history_ids, add_new_id_to_database
 from database.database_command_uses import uses_update
+from utilities.partial_commands import embed_builder
 from utilities.variables import REDDIT_ID, REDDIT_FEED_ID, SUBREDDIT_ICON, REDDIT_COLOR, CLOCK_ICON, REDDIT_ICON
 
 
@@ -48,20 +48,22 @@ class reddit(commands.Cog):
 
                 REDDIT_FEED = self.client.get_channel(REDDIT_FEED_ID)
 
-                embed = Embed(description = f"[New Post in **r/{subreddit.display_name}**](https://www.reddit.com{submission.permalink})",
-                              colour=REDDIT_COLOR)
-
-                if not subreddit.icon_img == "":
-                    embed.set_thumbnail(url=subreddit.icon_img)
-                else:
-                    embed.set_thumbnail(url=SUBREDDIT_ICON)
-
-                embed.set_author(name= "Subreddit Update", icon_url = REDDIT_ICON)
-
                 format = "%Y/%m/%d %H:%M:%S %Z"
                 post_utc = datetime.datetime.fromtimestamp(submission.created_utc)
-                now_korea = post_utc.astimezone(timezone('Asia/Seoul'))
-                embed.set_footer(text = now_korea.strftime(format), icon_url = CLOCK_ICON)
+                post_time = post_utc.astimezone(timezone('Asia/Seoul'))
+
+                if not subreddit.icon_img == "":
+                    thumbnail_url = subreddit.icon_img
+                else:
+                    thumbnail_url = SUBREDDIT_ICON
+
+                embed = embed_builder(despcription = f"[New Post in **r/{subreddit.display_name}**](https://www.reddit.com{submission.permalink})",
+                                      color = REDDIT_COLOR,
+                                      thumbnail = thumbnail_url,
+                                      author = "Subreddit Update",
+                                      author_icon = REDDIT_ICON,
+                                      footer = post_time.strftime(format),
+                                      footer_icon = CLOCK_ICON)
 
                 clean_flair = re.sub(":.*?:", "", str(submission.link_flair_text))
                 

@@ -11,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
 from utilities.variables import AUDIT_LOG_ID
-from utilities.partial_commands import embed_kst_footer, embed_set_thumbnail
+from utilities.partial_commands import get_user_avatar, embed_builder
 
 
 
@@ -44,13 +44,20 @@ class name_log(commands.Cog):
             correct_before = before
             correct_after = after
             event = "Name ID"
-            
-        embed = Embed(title=f"{before} Changed Their {event}",
-                      colour=Color.yellow())
-        embed_kst_footer(embed)
-        embed_set_thumbnail(before, embed)
-        embed.add_field(name = f"{event} before:", value = correct_before, inline = False)
-        embed.add_field(name = f"{event} after", value = correct_after, inline = False)
+
+        member_avatar_url = get_user_avatar(before)
+
+        embed = embed_builder(title = f"{before} Changed Their {event}",
+                              color = Color.yellow(),
+                              thumbnail = member_avatar_url,
+
+                              field_one_name = f"{event} before:",
+                              field_one_value = correct_before,
+                              field_one_inline = False,
+
+                              field_two_name = f"{event} after:",
+                              field_two_value = correct_after,
+                              field_two_inline = False)
 
         await AUDIT_LOG.send(embed=embed)
 

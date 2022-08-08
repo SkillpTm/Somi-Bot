@@ -2,7 +2,7 @@
 
 import logging
 import nextcord
-from nextcord import Embed, Interaction
+from nextcord import Interaction
 from nextcord.ext import application_checks, commands
 import os
 from dotenv import load_dotenv
@@ -18,7 +18,7 @@ from cogs.role_selection.role_selection import roles
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
 from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR, SKILLP_ID
-from utilities.partial_commands import embed_kst_footer, embed_set_mod_author, embed_set_somi_author, restart_bot
+from utilities.partial_commands import get_user_avatar, restart_bot, embed_builder
 
 ###cog#import###############################################################################
 
@@ -53,11 +53,15 @@ async def on_close():
     print(f"Logging {client.user} out")
 
     AUDIT_LOG = client.get_channel(AUDIT_LOG_ID)
-    
-    embed = Embed(colour=MOD_COLOR)
-    embed_kst_footer(embed)
-    embed_set_somi_author(client, embed)
-    embed.add_field(name = "Shutdown", value = "The bot is shutting down!", inline = True)
+    member_avatar_url = get_user_avatar(client)
+
+    embed = embed_builder(color = MOD_COLOR,
+                          author = "Bot Activity",
+                          author_icon = member_avatar_url,
+
+                          field_one_name = "Shutdown",
+                          field_one_value = "The bot is shutting down!",
+                          field_one_inline = True)
 
     await AUDIT_LOG.send(content = f"<@{SKILLP_ID}>",embed=embed)
 
@@ -72,13 +76,17 @@ async def restart(interaction: Interaction):
     print(f"{interaction.user}: /restart")
 
     AUDIT_LOG = client.get_channel(AUDIT_LOG_ID)
+    member_avatar_url = get_user_avatar(interaction.user)
     
     await interaction.response.send_message("Restarting bot...", ephemeral=True)
-    
-    embed = Embed(colour=MOD_COLOR)
-    embed_kst_footer(embed)
-    embed_set_mod_author(interaction, embed)
-    embed.add_field(name = "/restart:", value = f"{interaction.user.mention} restarted the bot", inline = True)
+
+    embed = embed_builder(color = MOD_COLOR,
+                          author = "Mod Activity",
+                          author_icon = member_avatar_url,
+
+                          field_one_name = "/restart:",
+                          field_one_value = f"{interaction.user.mention} restarted the bot",
+                          field_one_inline = True)
 
     await AUDIT_LOG.send(embed=embed)
 
@@ -100,8 +108,6 @@ async def reload(interaction: Interaction):
 
     print(f"{interaction.user}: /reload")
 
-    AUDIT_LOG = client.get_channel(AUDIT_LOG_ID)
-
     for folder in os.listdir(f"./cogs/"):
         if os.path.isdir(f"./cogs/{folder}/"):
             for extension in os.listdir(f"./cogs/{folder}/"):
@@ -110,10 +116,16 @@ async def reload(interaction: Interaction):
                 
     await interaction.response.send_message("The bot has been reloaded", ephemeral=True)
 
-    embed = Embed(colour=MOD_COLOR)
-    embed_kst_footer(embed)
-    embed_set_mod_author(interaction, embed)
-    embed.add_field(name = "/reload:", value = f"{interaction.user.mention} reloaded the bot", inline = True)
+    AUDIT_LOG = client.get_channel(AUDIT_LOG_ID)
+    member_avatar_url = get_user_avatar(interaction.user)
+
+    embed = embed_builder(color = MOD_COLOR,
+                          author = "Mod Activity",
+                          author_icon = member_avatar_url,
+
+                          field_one_name = "/reload:",
+                          field_one_value = f"{interaction.user.mention} reloaded the bot",
+                          field_one_inline = True)
     
     await AUDIT_LOG.send(embed=embed)
 

@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction
+from nextcord import Interaction
 from nextcord.ext import commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -11,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
 from utilities.variables import HELP_OPTIONS, HELP_OUTPUT, BOT_COLOR
-from utilities.partial_commands import embed_kst_footer
+from utilities.partial_commands import embed_builder
 
 class HelpDropdownView(nextcord.ui.View):
     @nextcord.ui.select(placeholder = "Select a command", min_values=1, max_values=1, options = HELP_OPTIONS)
@@ -23,11 +23,16 @@ class HelpDropdownView(nextcord.ui.View):
 
         print(f"{interaction.user}: /help {selection}")
 
-        embed = Embed(title = f"Help for /{selection}",
-                      colour=BOT_COLOR)
-        embed_kst_footer(embed)
-        embed.add_field(name = "Syntax:", value = HELP_OUTPUT[selection][0], inline = False)
-        embed.add_field(name = "Info:", value = HELP_OUTPUT[selection][1], inline = False)
+        embed = embed_builder(title = f"Help for /{selection}",
+                              color = BOT_COLOR,
+
+                              field_one_name = "Syntax:",
+                              field_one_value = HELP_OUTPUT[selection][0],
+                              field_one_inline = False,
+
+                              field_two_name = "Info:",
+                              field_two_value = HELP_OUTPUT[selection][1],
+                              field_two_inline = False)
 
         await interaction.edit(content=None, embed=embed)
 

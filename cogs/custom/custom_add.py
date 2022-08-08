@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction, SlashOption
+from nextcord import Interaction, SlashOption
 from nextcord.ext import application_checks, commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -12,7 +12,7 @@ from database.database_command_uses import uses_update
 from database.database_custom import create_custom_command
 from utilities.maincommands import checks
 from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR
-from utilities.partial_commands import embed_kst_footer, embed_set_mod_author, restart_bot, make_input_command_clean
+from utilities.partial_commands import get_user_avatar, restart_bot, make_input_command_clean, embed_builder
 
 
 
@@ -56,12 +56,19 @@ class custom_add(commands.Cog):
         await interaction.response.send_message(f"Your custom command with the name `{clean_commandname}` has been created.", ephemeral=True)
 
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
+        member_avatar_url = get_user_avatar(interaction.user)
 
-        embed = Embed(colour=MOD_COLOR)
-        embed_kst_footer(embed)
-        embed_set_mod_author(interaction, embed)
-        embed.add_field(name = "/custom add:", value = f"{interaction.user.mention} added: `{clean_commandname}` as a custom command", inline = False)
-        embed.add_field(name = "Command text:", value = commandtext, inline = False)
+        embed = embed_builder(color = MOD_COLOR,
+                              author = "Mod Activity",
+                              author_icon = member_avatar_url,
+
+                              field_one_name = "/custom add:",
+                              field_one_value = f"{interaction.user.mention} added: `{clean_commandname}` as a custom command",
+                              field_one_inline = False,
+
+                              field_two_name = "Command text:",
+                              field_two_value = commandtext[:1000],
+                              field_two_inline = False)
 
         await AUDIT_LOG.send(embed=embed)
 

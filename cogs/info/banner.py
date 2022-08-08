@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction, SlashOption
+from nextcord import Interaction, SlashOption
 from nextcord.ext import commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -10,7 +10,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_get_title_name
+from utilities.partial_commands import get_nick_else_name, embed_builder
 from utilities.variables import BOT_COLOR
 
 
@@ -36,23 +36,21 @@ class banner(commands.Cog):
             member = interaction.guild.get_member(interaction.user.id)
         user = await self.client.fetch_user(member.id)
 
-        title_name = embed_get_title_name(member)
+        name = get_nick_else_name(member)
 
         try:
             if user.banner.url is None:
-                await interaction.response.send_message(f"The user `{title_name}` doesn't have a banner", ephemeral=True)
+                await interaction.response.send_message(f"The user `{name}` doesn't have a banner", ephemeral=True)
                 return
         except:
-            await interaction.response.send_message(f"The user `{title_name}` doesn't have a banner", ephemeral=True)
+            await interaction.response.send_message(f"The user `{name}` doesn't have a banner", ephemeral=True)
             return
-            
-        embed = Embed(title= f"Banner of: `{title_name}`",
-                      url = user.banner.url,
-                      colour=BOT_COLOR)
-        embed_kst_footer(embed)
 
-        embed.set_image(url=user.banner.url)
-
+        embed = embed_builder(title = f"Banner of: `{name}`",
+                              title_url = user.banner.url,
+                              color = BOT_COLOR,
+                              image = user.banner.url)
+        
         await interaction.send(embed=embed)
 
         uses_update("command_uses", "banner")

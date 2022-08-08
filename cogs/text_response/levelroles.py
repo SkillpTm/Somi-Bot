@@ -34,7 +34,7 @@ class levelroles(commands.Cog):
                       colour=BOT_COLOR)
         embed_kst_footer(embed)
 
-        fields = [("What are level roles?", "If you send a message you receive a few xp points. These xp points will eventually make you level up and at certain levels you get level roles.", False),
+        fields = [("What are level roles?", "If you send a message you receive a few xp points. These xp points will eventually make you level up and at certain levels you get level roles. You can see your level by using `_level`", False),
                   ("Role list:", f"Level 40-∞: <@&{XOXO_ID}>\nLevel 30-39: <@&{DUMB_DUMB_ID}>\nLevel 20-29: <@&{WHAT_YOU_WAITING_FOR_ID}>\nLevel 10-19: <@&{BIRTHDAY_ID}>\nLevel 3-9: <@&{OUTTA_MY_HEAD_ID}>", False),
                   ("Perks:", f"These level roles only give you a different color and put you higher on the members list. The only exception is: From your first level role on (<@&{OUTTA_MY_HEAD_ID}>) you will be allowed to send pictures/video, upload files and your links will have embeds.", False)]
 

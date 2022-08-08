@@ -70,8 +70,6 @@ def checks_forbidden_channels(interaction):
 
 
 
-from utilities.variables import SKILLP_ID
-
 def checks_max_word_length(message, embed, source):
     if source != "reminder":
         message_content = message.content
@@ -79,15 +77,9 @@ def checks_max_word_length(message, embed, source):
         message_content = message
 
     if message_content != "":
-        if source == "link_embed" and len(message_content) < 990:
-            embed.add_field(name = f"{message.author.name} said:", value = message_content[:990], inline = False)
-            return
-        elif source == "link_embed" and len(message_content) > 990:
-            embed.add_field(name = f"{message.author.name} said:", value = f"{message_content[:990]} ...", inline = False)
-            return
-        elif source == "delete_log":
+        if source == "delete_log":
             embed.add_field(name = "Deleted message:", value = message_content[:990], inline = True)
-        elif source == "modmail" or source == "keywords":
+        elif source == "modmail":
             embed.add_field(name = "Message:", value = message_content[:990], inline = False)
         elif source == "edit_log before":
             embed.add_field(name = "Before:", value = message_content[:1000], inline = False)

@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction
+from nextcord import Interaction
 from nextcord.ext import commands
 import re
 
@@ -11,8 +11,8 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from database.database_keywords import get_keywords
-from utilities.maincommands import checks, checks_forbidden_channels, checks_max_word_length
-from utilities.partial_commands import embed_kst_footer, embed_attachments
+from utilities.maincommands import checks, checks_forbidden_channels
+from utilities.partial_commands import embed_attachments, embed_builder
 from utilities.variables import BOT_COLOR
 
 
@@ -58,19 +58,17 @@ class keyword(commands.Cog):
 
                     noti_user = await self.client.fetch_user(key)
 
-                    embed = Embed(title = f"Keyword Notification: `{output_keywords}`",
-                                  url = interaction.jump_url,
-                                  colour=BOT_COLOR)
-                    embed_kst_footer(embed)
-
                     print(f"{interaction.author}: keyword() {noti_user}\n{output_keywords}")
-                    
-                    if multiple_keywords:
-                        embed.add_field(name = "Reason:", value = f"Your keywords: `{output_keywords}` have been mentioned in {interaction.channel.mention} by {interaction.author.mention}:", inline = False)
-                    elif not multiple_keywords:
-                        embed.add_field(name = "Reason:", value = f"Your keyword: `{output_keywords}` has been mentioned in {interaction.channel.mention} by {interaction.author.mention}:", inline = False)
 
-                    checks_max_word_length(interaction, embed, source = "keywords")
+                    if multiple_keywords:
+                        keywords_info = f"Your keywords: `{output_keywords}` have been mentioned in {interaction.channel.mention} by {interaction.author.mention}:"
+                    elif not multiple_keywords:
+                        keywords_info = f"Your keyword: `{output_keywords}` has been mentioned in {interaction.channel.mention} by {interaction.author.mention}:"
+
+                    embed = embed_builder(title = f"Keyword Notification: `{output_keywords}`",
+                                          title_url = interaction.jump_url,
+                                          despcription = f"{keywords_info}\n\n__**Message:**__\n{interaction.content}"[:4096],
+                                          color = BOT_COLOR)
 
                     await embed_attachments(noti_user, interaction, embed, link_embed = False)
 

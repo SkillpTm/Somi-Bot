@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Color, Embed
+from nextcord import Color
 from nextcord.ext import commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -11,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
 from utilities.variables import AUDIT_LOG_ID, SOMMUNGCHI_ID, WELCOME_CHANNEL_ID, WELCOME_GIF
-from utilities.partial_commands import embed_kst_footer, embed_get_user_create_and_join_time, embed_set_thumbnail
+from utilities.partial_commands import get_user_avatar, get_user_create_and_join_time, embed_builder
 
 
 
@@ -25,8 +25,7 @@ class join_log(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self,
                              member):
-        interaction = member
-        if not checks(interaction):
+        if not checks(member):
             return
 
         print(f"join_log() {member}")
@@ -40,19 +39,24 @@ class join_log(commands.Cog):
     ###join#log###########################################################
 
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
+        member_avatar_url = get_user_avatar(member)
+        created_time, joined_time = get_user_create_and_join_time(member)
 
-        embed = Embed(title = f"New Member Joined: `{member}`",
-                      colour=Color.green())
-        embed_kst_footer(embed)
-        embed_set_thumbnail(member, embed)
-        created_time, joined_time = embed_get_user_create_and_join_time(member)
-        
-        fields = [("ID:", member.id, False),
-                  ("Name:", member.mention, True),
-                  ("Created at:", f"<t:{created_time}>", True)]
-        
-        for name, value, inline in fields:
-            embed.add_field(name=name, value=value, inline=inline)
+        embed = embed_builder(title = f"New Member Joined: `{member}`",
+                              color = Color.green(),
+                              thumbnail = member_avatar_url,
+
+                              field_one_name = "ID:",
+                              field_one_value = member.id,
+                              field_one_inline = False,
+
+                              field_two_name = "Name:",
+                              field_two_value = member.mention,
+                              field_two_inline = True,
+                              
+                              field_three_name = "Created at:",
+                              field_three_value = f"<t:{created_time}>",
+                              field_three_inline = True)
 
         await AUDIT_LOG.send(embed=embed)
 

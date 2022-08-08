@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction
+from nextcord import Interaction
 from nextcord.ext import commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -11,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_command_uses import uses_update
 from database.database_keywords import list_keyword
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_set_message_author, embed_get_title_name
+from utilities.partial_commands import get_nick_else_name, get_user_avatar, embed_builder
 from utilities.variables import BOT_COLOR
 
 
@@ -42,16 +42,21 @@ class keyword_list(commands.Cog):
         output = ""
         i = 0
 
-        title_name = embed_get_title_name(interaction.user)
-
-        embed = Embed(colour=BOT_COLOR)
-        embed_kst_footer(embed)
-        embed_set_message_author(interaction, embed, f"Keyword List for: {title_name}")
-
         while i < amount:
             output += f"{i + 1}. `{keywords_list[i]}`\n"
             i += 1
-        embed.add_field(name = "Keywords:", value = output[:1000], inline = True)
+
+        member = interaction.guild.get_member(interaction.user.id)
+        name = get_nick_else_name(member)
+        member_avatar_url = get_user_avatar(interaction.user)
+
+        embed = embed_builder(color = BOT_COLOR,
+                              author = f"Keyword List for: `{name}`",
+                              author_icon = member_avatar_url,
+
+                              field_one_name = "Keywords:",
+                              field_one_value = output[:1000],
+                              field_one_inline = True)
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
 

@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction, SlashOption
+from nextcord import Interaction, SlashOption
 from nextcord.ext import commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -10,7 +10,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_get_title_name
+from utilities.partial_commands import get_nick_else_name, get_user_avatar, embed_builder
 from utilities.variables import BOT_COLOR
 
 
@@ -35,19 +35,14 @@ class avatar(commands.Cog):
         if member == None:
             member = interaction.guild.get_member(interaction.user.id)
         
-        if member.avatar is not None:
-            member_avatar = member.avatar
-        else:
-            member_avatar = member.default_avatar
+        member_avatar_url = get_user_avatar(member)
 
-        title_name = embed_get_title_name(member)
+        name = get_nick_else_name(member)
 
-        embed = Embed(title = f"Avatar of: `{title_name}`",
-                      url = member_avatar,
-                      colour=BOT_COLOR)
-        embed_kst_footer(embed)
-
-        embed.set_image(url=member_avatar)
+        embed = embed_builder(title = f"Avatar of: `{name}`",
+                              title_url = member_avatar_url,
+                              color = BOT_COLOR,
+                              image = member_avatar_url)
 
         await interaction.send(embed=embed)
 

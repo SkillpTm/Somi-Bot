@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Color, Embed
+from nextcord import Color
 from nextcord.ext import commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -11,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks, checks_forbidden_channels, checks_max_word_length
 from utilities.variables import AUDIT_LOG_ID
-from utilities.partial_commands import embed_kst_footer, embed_set_message_author, embed_attachments
+from utilities.partial_commands import embed_attachments, get_user_avatar, embed_builder
 
 
 
@@ -39,51 +39,38 @@ class edit_log(commands.Cog):
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
 
         if len(message_before.content) < 1000 and len(message_after.content) < 1000:
+            member_avatar_url = get_user_avatar(message_before.author)
 
-            embed = Embed(description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
-                            colour=Color.yellow())
-            embed_kst_footer(embed)
-            embed_set_message_author(message_before, embed, title_name = "Message Edited")
+            embed = embed_builder(despcription = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
+                                  color = Color.yellow(),
+                                  author = "Message Edited",
+                                  author_icon = member_avatar_url,
 
-            if message_before.content == "":
-                before_content = "`No content`"
-            else:
-                before_content = message_before.content
+                                  field_one_name = "Before:",
+                                  field_one_value = message_before.content[:1000],
+                                  field_one_inline = False,
 
-            if message_after.content == "":
-                after_content = "`No content`"
-            else:
-                after_content = message_after.content
-
-            embed.add_field(name = "Before:", value = before_content[:1000], inline = False)
-            embed.add_field(name = "After:", value = after_content[:1000], inline = False)
+                                  field_two_name = "After:",
+                                  field_two_value = message_after.content[:1000],
+                                  field_two_inline = False)
 
             await embed_attachments(target_channel = AUDIT_LOG, message = message_before, embed = embed)
 
         else:
-            embed_before = Embed(description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
-                            colour=Color.yellow())
-            embed_after = Embed(description = f"{message_after.author.mention} edited a message in: {message_after.channel.mention} - [Link]({message_after.jump_url})",
-                            colour=Color.yellow())
+            member_avatar_url = get_user_avatar(message_before.author)
 
-            embed_kst_footer(embed = embed_before)
-            embed_kst_footer(embed = embed_after)
+            embed_before = embed_builder(despcription = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
+                                         color = Color.yellow(),
+                                         author = "Message Edited: Before",
+                                         author_icon = member_avatar_url)
 
-            embed_set_message_author(message = message_before, embed = embed_before, title_name = "Message Edited: Before")
-            embed_set_message_author(message = message_after, embed = embed_after, title_name = "Message Edited: After")
+            embed_after = embed_builder(despcription = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
+                                        color = Color.yellow(),
+                                        author = "Message Edited: After",
+                                        author_icon = member_avatar_url)
 
-            if message_before.content == "":
-                before_content = "`No content`"
-            else:
-                before_content = message_before.content
-
-            if message_after.content == "":
-                after_content = "`No content`"
-            else:
-                after_content = message_after.content
-
-            checks_max_word_length(message = message_before, embed = embed_before, source = "edit_log before")
-            checks_max_word_length(message = message_after, embed = embed_after, source = "edit_log after")
+            checks_max_word_length(message_before, embed_before, source = "edit_log before")
+            checks_max_word_length(message_after, embed_after, source = "edit_log after")
 
             await AUDIT_LOG.send(embed=embed_before)
             await embed_attachments(target_channel = AUDIT_LOG, message = message_after, embed = embed_after)

@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction, SlashOption
+from nextcord import Interaction, SlashOption
 from nextcord.ext import commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -10,7 +10,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_set_thumbnail, embed_get_title_name, embed_get_userinfo
+from utilities.partial_commands import get_userinfo_embed
 
 
 
@@ -34,13 +34,7 @@ class userinfo(commands.Cog):
         if member == None:
             member = interaction.guild.get_member(interaction.user.id)
 
-        title_name = embed_get_title_name(member)
-
-        embed = Embed(title = f"User Information: `{title_name}`",
-                      colour=member.color)
-        embed_kst_footer(embed)
-        embed_set_thumbnail(member, embed)
-        embed_get_userinfo(member, embed)
+        embed = get_userinfo_embed(member)
 
         await interaction.send(embed=embed)
 
@@ -61,13 +55,7 @@ class userinfo(commands.Cog):
         if member == None:
             member = interaction.guild.get_member(interaction.user.id)
 
-        title_name = embed_get_title_name(member)
-
-        embed = Embed(title = f"User Information: `{title_name}`",
-                      colour=member.color)
-        embed_kst_footer(embed)
-        embed_set_thumbnail(member, embed)
-        embed_get_userinfo(member, embed)
+        embed = get_userinfo_embed(member)
 
         await interaction.send(embed=embed)
 

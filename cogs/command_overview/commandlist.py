@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction
+from nextcord import Interaction
 from nextcord.ext import commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -11,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
 from utilities.variables import COMMAND_LIST, BOT_COLOR
-from utilities.partial_commands import embed_kst_footer
+from utilities.partial_commands import embed_builder
 
 
 
@@ -30,11 +30,16 @@ class commandlist(commands.Cog):
 
         print(f"{interaction.user}: /commandlist")
 
-        embed = Embed(title="A list of all main commands",
-                      colour=BOT_COLOR)
-        embed_kst_footer(embed)
-        embed.add_field(name = "Commands:", value = COMMAND_LIST, inline = True)
-        embed.add_field(name = "Help:", value = "Explanations for singular commands can be found by typing `/help`", inline = False)
+        embed = embed_builder(title = "A list of all main commands",
+                              color = BOT_COLOR,
+
+                              field_one_name = "Commands:",
+                              field_one_value = COMMAND_LIST,
+                              field_one_inline = True,
+
+                              field_two_name = "Help:",
+                              field_two_value = "Explanations for singular commands can be found by typing `/help`",
+                              field_two_inline = False)
         
         await interaction.send(embed=embed, ephemeral=True)
 
@@ -50,11 +55,16 @@ class commandlist(commands.Cog):
 
         print(f"{interaction.user}: /cl")
 
-        embed = Embed(title="A list of all main commands",
-                      colour=BOT_COLOR)
-        embed_kst_footer(embed)
-        embed.add_field(name = "Commands:", value = COMMAND_LIST, inline = True)
-        embed.add_field(name = "Help:", value = "Explanations for singular commands can be found by typing `/help`", inline = False)
+        embed = embed_builder(title = "A list of all main commands",
+                              color = BOT_COLOR,
+
+                              field_one_name = "Commands:",
+                              field_one_value = COMMAND_LIST,
+                              field_one_inline = True,
+
+                              field_two_name = "Help:",
+                              field_two_value = "Explanations for singular commands can be found by typing `/help`",
+                              field_two_inline = False)
         
         await interaction.send(embed=embed, ephemeral=True)
 

@@ -10,7 +10,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer, embed_set_mod_author, get_user_avatar, embed_builder
+from utilities.partial_commands import get_user_avatar, embed_builder
 from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR
 
 
@@ -90,12 +90,20 @@ class send(commands.Cog):
 
         print(f"{interaction.user}: /edit {message_id}\nBefore: {msg.content}\nAfter: {message}")
 
-        embed = Embed(description= f"{interaction.user.mention} edited a bot message in: {correct_channel.mention} - [Link]({msg.jump_url})",
-                      colour=MOD_COLOR)
-        embed_kst_footer(embed)
-        embed_set_mod_author(interaction, embed)
-        embed.add_field(name = "Before:", value = msg.content[:1000], inline = False)
-        embed.add_field(name = "After:", value = message[:1000], inline = False)
+        member_avatar_url = get_user_avatar(interaction.user)
+
+        embed = embed_builder(description = f"{interaction.user.mention} edited a bot message in: {correct_channel.mention} - [Link]({msg.jump_url})",
+            	              color = MOD_COLOR,
+                              author = "Mod Activity",
+                              author_icon = member_avatar_url,
+
+                              field_one_name = "Before:",
+                              field_one_value = msg.content[:1000],
+                              field_one_inline = False,
+                              
+                              field_two_name = "Before:",
+                              field_two_value = message[:1000],
+                              field_two_inline = False)
 
         await msg.edit(content=message)
         await interaction.response.send_message(f"Message edited in: {correct_channel.mention} - [Link]({msg.jump_url})", ephemeral=True)

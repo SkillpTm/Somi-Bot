@@ -11,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_command_uses import uses_update
 from database.database_bugs_suggestions import submit_suggestion
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_kst_footer
+from utilities.partial_commands import get_kst_time_stamp
 
 
 
@@ -30,14 +30,14 @@ class SuggestionsSubmissionModal(nextcord.ui.Modal):
         self.add_item(self.suggestion)
 
     async def callback(self, interaction: Interaction):
-        now_korea, format = embed_kst_footer(embed = None)
+        kst_timestamp = get_kst_time_stamp(source = "/suggestions")
 
         print(f"{interaction.user}: /suggestions submission:\n{self.suggestion.value}")
 
         server_id = interaction.guild.id
         user_id = interaction.user.id
         user_name = str(interaction.user)
-        submission_time = now_korea.strftime(format)
+        submission_time = kst_timestamp
         bug_report = self.suggestion.value
 
         submit_suggestion(server_id, user_id, user_name.replace("'", "‘"), submission_time, bug_report.replace("'", "‘"))

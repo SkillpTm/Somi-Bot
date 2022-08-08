@@ -15,7 +15,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_get_title_name, get_spotify_track_data, embed_builder
+from utilities.partial_commands import get_nick_else_name, get_spotify_track_data, embed_builder
 from utilities.variables import SPOTIFY_ICON
 
 
@@ -48,7 +48,7 @@ class spotify(commands.Cog):
         if member == None:
             member = interaction.guild.get_member(interaction.user.id)
         
-        title_name = embed_get_title_name(member)
+        name = get_nick_else_name(member)
 
         print(f"{interaction.user}: /spotify {member}")
 
@@ -70,7 +70,7 @@ class spotify(commands.Cog):
                 embed = embed_builder(description = f"[{track_name}]({track_url})\non [{album_name}]({album_url})\nby {artists}",
                                       color = activity.color,
                                       thumbnail = cover_url,
-                                      author = f"{title_name} is listening to:",
+                                      author = f"{name} is listening to:",
                                       author_icon = SPOTIFY_ICON)
 
                 await interaction.send(embed=embed)
@@ -79,8 +79,7 @@ class spotify(commands.Cog):
 
                 return
 
-        embed_get_title_name(member)
-        await interaction.response.send_message(f"`{title_name}` isn't listening to anything on Spotify right now.", ephemeral=True)
+        await interaction.response.send_message(f"`{name}` isn't listening to anything on Spotify right now.", ephemeral=True)
 
         uses_update("command_uses", "spotify")
 
@@ -97,7 +96,7 @@ class spotify(commands.Cog):
         if member == None:
             member = interaction.guild.get_member(interaction.user.id)
         
-        title_name = embed_get_title_name(member)
+        name = get_nick_else_name(member)
 
         print(f"{interaction.user}: /sf {member}")
 
@@ -119,7 +118,7 @@ class spotify(commands.Cog):
                 embed = embed_builder(description = f"[{track_name}]({track_url})\non [{album_name}]({album_url})\nby {artists}",
                                       color = activity.color,
                                       thumbnail = cover_url,
-                                      author = f"{title_name} is listening to:",
+                                      author = f"{name} is listening to:",
                                       author_icon = SPOTIFY_ICON)
 
                 await interaction.send(embed=embed)
@@ -128,7 +127,7 @@ class spotify(commands.Cog):
 
                 return
 
-        await interaction.response.send_message(f"`{title_name}` isn't listening to anything on Spotify right now.", ephemeral=True)
+        await interaction.response.send_message(f"`{name}` isn't listening to anything on Spotify right now.", ephemeral=True)
 
         uses_update("command_uses", "sf")
 

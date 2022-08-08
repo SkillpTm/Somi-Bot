@@ -12,6 +12,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
+from utilities.partial_commands import get_kst_time_stamp
 
 
 
@@ -28,11 +29,9 @@ class kst(commands.Cog):
 
         print(f"{interaction.user}: /kst")
 
-        format = "Date: `%Y/%m/%d`\nTime: `%H:%M:%S %Z`"
-        now_utc = datetime.now(timezone('UTC'))
-        now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
+        kst_timestamp = get_kst_time_stamp(source = "/kst")
 
-        await interaction.response.send_message(now_korea.strftime(format))
+        await interaction.response.send_message(kst_timestamp)
 
         uses_update("command_uses", "kst")
 

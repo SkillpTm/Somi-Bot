@@ -15,14 +15,17 @@ from utilities.variables import BOT_COLOR, CLOCK_ICON, SKILLP_ID, DEFAULT_PFP, S
 
 ###time#related###############################################################################
 
-def embed_kst_footer(embed):
-    format = "%Y/%m/%d %H:%M:%S %Z"
+def get_kst_time_stamp(source):
+    if source == "/kst":
+        format = "Date: `%Y/%m/%d`\nTime: `%H:%M:%S %Z`"
+    else:
+        format = "%Y/%m/%d %H:%M:%S %Z"
+
     now_utc = timedate.now(timezone('UTC'))
     now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
-    try:
-        embed.set_footer(text = now_korea.strftime(format), icon_url = CLOCK_ICON)
-    except:
-        return now_korea, format
+    kst_timestamp = now_korea.strftime(format)
+
+    return kst_timestamp
 
 
 
@@ -35,9 +38,6 @@ def get_user_create_and_join_time(member):
     
     return int(created_time), int(joined_time)
 
-def embed_get_user_create_and_join_time(member):
-    pass
-
 
 
 def embed_get_server_create_time(interaction):
@@ -48,63 +48,7 @@ def embed_get_server_create_time(interaction):
 
 
     
-###author#related###############################################################################
-
-def embed_set_message_author(object, embed, title_name):
-    try:
-        #If a message object gets parssed in
-        if object.author.avatar is not None:
-            embed.set_author(name= title_name, icon_url=object.author.avatar)
-        else:
-            embed.set_author(name= title_name, icon_url=object.author.default_avatar)
-
-    except:
-        #If a member object gets parssed in
-        if object.user.avatar is not None:
-            embed.set_author(name= title_name, icon_url=object.user.avatar)
-        else:
-            embed.set_author(name= title_name, icon_url=object.user.default_avatar)
-
-
-
-def embed_set_mod_author(object, embed):
-    try:
-        #If an interaction object gets parssed in
-        if object.user.avatar is not None:
-            embed.set_author(name= "Mod Activity", icon_url=object.user.avatar)
-        else:
-            embed.set_author(name= "Mod Activity", icon_url=object.user.default_avatar)
-
-    except:
-        #If an user object gets parssed in
-        if object.avatar is not None:
-            embed.set_author(name= "Mod Activity", icon_url=object.avatar)
-        else:
-            embed.set_author(name= "Mod Activity", icon_url=object.default_avatar)
-
-
-
-def embed_set_somi_author(client, embed):
-    if client.user.avatar is not None:
-        embed.set_author(name= "Bot Activity", icon_url=client.user.avatar)
-    else:
-        embed.set_author(name= "Bot Activity", icon_url=client.user.default_avatar)
-
-
-
-def embed_set_server_icon_author(interaction, embed):
-    if interaction.guild.icon is not None:
-        embed.set_author(name= f"Custom command list for {interaction.guild}", icon_url=interaction.guild.icon)
-    else:
-        embed.set_author(name= f"Custom command list for {interaction.guild}", icon_url=DEFAULT_PFP)
-
-
-
-
-def embed_get_title_name(member):
-    pass
-
-
+###user#attribute#getter###############################################################################
 
 def get_nick_else_name(member):
     if member.nick != None:
@@ -123,16 +67,6 @@ def get_user_avatar(member):
         member_avatar_url = member.default_avatar
 
     return member_avatar_url
-
-
-        
-###thumbnail#related###############################################################################
-
-def embed_set_thumbnail(member, embed):
-    if member.avatar is not None:
-        embed.set_thumbnail(url=member.avatar)
-    else:
-        embed.set_thumbnail(url=member.default_avatar)
 
 
         

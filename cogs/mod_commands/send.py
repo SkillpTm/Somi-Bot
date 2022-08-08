@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import ChannelType, Embed, Interaction, SlashOption
+from nextcord import ChannelType, Interaction, SlashOption
 from nextcord.ext import application_checks, commands
 
 client = commands.Bot(intents=nextcord.Intents.all())
@@ -27,7 +27,7 @@ class send(commands.Cog):
     async def send(self,
                    interaction: Interaction,
                    *,
-                   message: str = SlashOption(description="The message to be send by the bot", required=True),
+                   message: str = SlashOption(description="The message to be send by the bot", required=True, min_length=1, max_length=1000),
                    channel: nextcord.abc.GuildChannel = SlashOption(channel_types=[ChannelType.text, ChannelType.public_thread], description="Channel in which the message will be send", required=False)):
         if not checks(interaction):
             return
@@ -68,8 +68,8 @@ class send(commands.Cog):
     async def edit(self,
                    interaction: Interaction,
                    *,
-                   message_id = SlashOption(description="ID of the message to be edited", required=True),
-                   message = SlashOption(description="The new message to be edited by the bot", required=True)):
+                   message_id: int = SlashOption(description="ID of the message to be edited", required=True, min_value=1, max_value=None),
+                   message: str = SlashOption(description="The new message to be edited by the bot", required=True, min_length=1, max_length=1000)):
         if not checks(interaction):
             return
 
@@ -98,11 +98,11 @@ class send(commands.Cog):
                               author_icon = member_avatar_url,
 
                               field_one_name = "Before:",
-                              field_one_value = msg.content[:1000],
+                              field_one_value = msg.content,
                               field_one_inline = False,
                               
                               field_two_name = "Before:",
-                              field_two_value = message[:1000],
+                              field_two_value = message,
                               field_two_inline = False)
 
         await msg.edit(content=message)

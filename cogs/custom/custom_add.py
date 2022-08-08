@@ -30,22 +30,14 @@ class custom_add(commands.Cog):
     async def custom_add(self,
                          interaction: Interaction,
                          *,
-                         commandname: str = SlashOption(description="new custom command name", required=True),
-                         commandtext: str = SlashOption(description="The content of the new custom command", required=True)):
+                         commandname: str = SlashOption(description="new custom command name", required=True, min_length=2, max_length=32),
+                         commandtext: str = SlashOption(description="The content of the new custom command", required=True, min_length=2, max_length=1000)):
         if not checks(interaction):
             return
 
         print(f"{interaction.user}: /custom add {commandname}\n{commandtext}")
 
         clean_commandname = make_input_command_clean(commandname)
-
-        if len(clean_commandname) > 31:
-            await interaction.response.send_message("Your custom command name needs to be smaller than 32 characters!", ephemeral=True)
-            return
-
-        if len(commandtext) > 799:
-            await interaction.response.send_message("Your `commandtext` needs to be smaller than 800 characters!", ephemeral=True)
-            return
 
         added = create_custom_command(interaction.guild.id, clean_commandname, commandtext)
 
@@ -67,7 +59,7 @@ class custom_add(commands.Cog):
                               field_one_inline = False,
 
                               field_two_name = "Command text:",
-                              field_two_value = commandtext[:1000],
+                              field_two_value = commandtext,
                               field_two_inline = False)
 
         await AUDIT_LOG.send(embed=embed)

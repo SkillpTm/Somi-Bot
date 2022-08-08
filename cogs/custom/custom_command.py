@@ -29,7 +29,7 @@ class custom_command(commands.Cog):
     async def customcommand(self,
                             interaction: Interaction,
                             *,
-                            commandname: str = SlashOption(description=description_commands, required=True)):
+                            commandname: str = SlashOption(description=description_commands, required=True, min_length=2, max_length=32)):
         if not checks(interaction):
             return
 
@@ -54,7 +54,7 @@ class custom_command(commands.Cog):
     async def cc(self,
                  interaction: Interaction,
                  *,
-                 commandname = SlashOption(description=description_commands, required=True)):
+                 commandname: str = SlashOption(description=description_commands, required=True, min_length=2, max_length=32)):
         if not checks(interaction):
             return
 

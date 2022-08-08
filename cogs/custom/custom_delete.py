@@ -30,7 +30,7 @@ class custom_delete(commands.Cog):
     async def custom_delete(self,
                             interaction: Interaction,
                             *,
-                            commandname: str = SlashOption(description="custom command to be deleted", required=True)):
+                            commandname: str = SlashOption(description="custom command to be deleted", required=True, min_length=2, max_length=32)):
         if not checks(interaction):
             return
 
@@ -58,7 +58,7 @@ class custom_delete(commands.Cog):
                               field_one_inline = False,
                               
                               field_two_name = "Command text:",
-                              field_two_value = commandtext[:1000],
+                              field_two_value = commandtext,
                               field_two_inline = False)
 
         await AUDIT_LOG.send(embed=embed)

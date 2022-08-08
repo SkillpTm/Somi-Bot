@@ -27,15 +27,11 @@ class purge(commands.Cog):
     async def purge(self,
                     interaction: Interaction,
                     *,
-                    amount: int = SlashOption(description="Amount of messages to be purged", required=True)):
+                    amount: int = SlashOption(description="Amount of messages to be purged", required=True, min_value=1, max_value=1000)):
         if not checks(interaction):
             return
 
         print(f"{interaction.user}: /purge {amount}")
-
-        if type(amount) != int:
-            await interaction.response.send_message("Make sure that your purge amount is a number!", ephemeral=True)
-            return
 
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
 

@@ -25,7 +25,7 @@ class emoji(commands.Cog):
     async def emoji(self,
                     interaction: Interaction,
                     *,
-                    emoji: str = SlashOption(description="Your emoji", required=True)):
+                    emoji: str = SlashOption(description="Your emoji", required=True, min_length=1, max_length=100)):
         if not checks(interaction):
             return
 

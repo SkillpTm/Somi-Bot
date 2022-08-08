@@ -28,7 +28,7 @@ class ban(commands.Cog):
                   interaction: Interaction,
                   *,
                   member: nextcord.Member = SlashOption(description="Member to be banned", required=True),
-                  reason: str = SlashOption(description="Reason for the ban", required=False)):
+                  reason: str = SlashOption(description="Reason for the ban", required=False, min_length=2, max_length=1000)):
         if not checks(interaction):
             return
 
@@ -42,14 +42,14 @@ class ban(commands.Cog):
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
 
         if reason != None:
-            await member.send(f"You have been __**banned**__ from `{member.guild.name}`\nFor the reason:\n`{reason[:3800]}`\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
+            await member.send(f"You have been __**banned**__ from `{member.guild.name}`\nFor the reason:\n`{reason}`\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
         else:
             await member.send(f"You have been __**banned**__ from `{member.guild.name}`\nThere was no provided reason.\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
 
         await member.ban(reason=reason)
 
         if reason != None:
-            await interaction.response.send_message(f"Succesfully banned <@{member.id}> because: `{reason[:4000]}`", ephemeral=True)
+            await interaction.response.send_message(f"Succesfully banned <@{member.id}> because: `{reason}`", ephemeral=True)
         else:
             await interaction.response.send_message(f"Succesfully banned <@{member.id}>", ephemeral=True)
 
@@ -82,7 +82,7 @@ class ban(commands.Cog):
     async def unban(self,
                     interaction: Interaction,
                     *,
-                    member_id = SlashOption(description="User ID of user to be unbanned", required=True)):
+                    member_id: int = SlashOption(description="User ID of user to be unbanned", required=True, min_value=1, max_value=None)):
         if not checks(interaction):
             return
 
@@ -91,7 +91,7 @@ class ban(commands.Cog):
         try:
             user = await self.client.fetch_user(member_id)
         except:
-            await interaction.response.send_message(f"`{member_id[:4000]}` isn't a discord user", ephemeral=True)
+            await interaction.response.send_message(f"`{member_id}` isn't a valid discord user id", ephemeral=True)
             return
 
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)

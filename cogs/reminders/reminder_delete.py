@@ -48,7 +48,7 @@ class reminder_delete(commands.Cog):
     async def reminder_delete(self,
                               interaction: Interaction,
                               *,
-                              reminder_id: int = SlashOption(description="the id of the remidner to be deleted or 'ALL'", required=True)):
+                              reminder_id: int = SlashOption(description="the id of the remidner to be deleted or 'ALL'", required=True, min_value=1000000000, max_value=9999999999)):
         if not checks(interaction):
             return
 

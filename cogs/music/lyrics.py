@@ -32,8 +32,8 @@ class lyrics(commands.Cog):
     async def spotify(self,
                       interaction: Interaction,
                       *,
-                      artist: str = SlashOption(description="The artist you want a song to see the lyrics of", required=False),
-                      song: str = SlashOption(description="The song of that artist you want the lyrics of", required=False)):
+                      artist: str = SlashOption(description="The artist you want a song to see the lyrics of", required=False, min_length=1, max_length=100),
+                      song: str = SlashOption(description="The song of that artist you want the lyrics of", required=False, min_length=1, max_length=100)):
         if not checks(interaction):
             return
 

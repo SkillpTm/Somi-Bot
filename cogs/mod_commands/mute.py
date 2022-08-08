@@ -29,8 +29,8 @@ class mute(commands.Cog):
                    interaction: Interaction,
                    *,
                    member: nextcord.Member = SlashOption(description="The member to be muted", required=True),
-                   time: str = SlashOption(description="The time to mute the member for (input: xd and/or xh and/or xm and/or xs) Example: 5d7h28s)", required=True),
-                   reason: str = SlashOption(description="Reason for the mute", required=False)):
+                   time: str = SlashOption(description="The time to mute the member for (input: xd and/or xh and/or xm and/or xs) Example: 5d7h28s)", required=True, min_length=2, max_length=16),
+                   reason: str = SlashOption(description="Reason for the mute", required=False, min_length=2, max_length=1000)):
         if not checks(interaction):
             return
 
@@ -45,7 +45,7 @@ class mute(commands.Cog):
         total_seconds = time_to_seconds(time)
 
         if total_seconds == 0 or total_seconds > 2419200: #28d in seconds
-            await interaction.response.send_message(f"`{time[:3900]}` is not a valid time period. Make sure to use the formating in the input description and that your time period is smaller than 28d.", ephemeral=True)
+            await interaction.response.send_message(f"`{time}` is not a valid time period. Make sure to use the formating in the input description and that your time period is smaller than 28d.", ephemeral=True)
             return
 
         await member.edit(timeout=nextcord.utils.utcnow()+timedelta(seconds=total_seconds))

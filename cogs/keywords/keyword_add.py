@@ -28,15 +28,11 @@ class keyword_add(commands.Cog):
     async def keyword_add(self,
                           interaction: Interaction,
                           *,
-                          keyword: str = SlashOption(description="Your new keyword", required=True)):
+                          keyword: str = SlashOption(description="Your new keyword", required=True, min_length=2, max_length=32)):
         if not checks(interaction):
             return
 
         print(f"{interaction.user}: /keyword add {keyword}")
-
-        if len(keyword) > 31 or len(keyword) < 2:
-            await interaction.response.send_message(f"Your keyword has to be shorter than 32 characters and longer than 1 character.", ephemeral=True)
-            return
 
         clean_keyword = str(keyword.lower().replace(" ", ""))
 

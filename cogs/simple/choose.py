@@ -25,16 +25,16 @@ class choose(commands.Cog):
     async def choose(self,
                      interaction: Interaction,
                      *,
-                     option1: str = SlashOption(description="First Option", required=True),
-                     option2: str = SlashOption(description="Second Option", required=True),
-                     option3: str = SlashOption(description="Third Option", required=False),
-                     option4: str = SlashOption(description="Fourth Option", required=False),
-                     option5: str = SlashOption(description="Fifth Option", required=False),
-                     option6: str = SlashOption(description="Sixth Option", required=False),
-                     option7: str = SlashOption(description="Seventh Option", required=False),
-                     option8: str = SlashOption(description="Eigth Option", required=False),
-                     option9: str = SlashOption(description="Ninth Option", required=False),
-                     option10: str = SlashOption(description="Tenth Option", required=False)):
+                     option1: str = SlashOption(description="First Option", required=True, min_length=1, max_length=200),
+                     option2: str = SlashOption(description="Second Option", required=True, min_length=1, max_length=200),
+                     option3: str = SlashOption(description="Third Option", required=False, min_length=1, max_length=200),
+                     option4: str = SlashOption(description="Fourth Option", required=False, min_length=1, max_length=200),
+                     option5: str = SlashOption(description="Fifth Option", required=False, min_length=1, max_length=200),
+                     option6: str = SlashOption(description="Sixth Option", required=False, min_length=1, max_length=200),
+                     option7: str = SlashOption(description="Seventh Option", required=False, min_length=1, max_length=200),
+                     option8: str = SlashOption(description="Eigth Option", required=False, min_length=1, max_length=200),
+                     option9: str = SlashOption(description="Ninth Option", required=False, min_length=1, max_length=200),
+                     option10: str = SlashOption(description="Tenth Option", required=False, min_length=1, max_length=200)):
         if not checks(interaction):
             return
 
@@ -48,11 +48,8 @@ class choose(commands.Cog):
 
         while i < len(RawOptions):
             if RawOptions[i] != None:
-                if len(RawOptions[i]) > 200:
-                    await interaction.response.send_message("**ALL** of your individual options need to be smaller than 200 characters!", ephemeral=True)
-                    return
-
                 Options.append(RawOptions[i])
+            
             i += 1
 
         chosen_option_int = random.randint(0, len(Options)-1)

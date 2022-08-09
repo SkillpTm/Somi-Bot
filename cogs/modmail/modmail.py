@@ -22,7 +22,6 @@ class Question_Modmail(nextcord.ui.View):
     async def yes_modmail(self,
                           button: nextcord.ui.Button,
                           interaction: Interaction):
-        await interaction.user.send("Your modmail has been submitted!")
         self.value = True
         self.stop()
 
@@ -30,7 +29,6 @@ class Question_Modmail(nextcord.ui.View):
     async def no_modmail(self,
                          button: nextcord.ui.Button,
                          interaction: Interaction):
-        await interaction.user.send("Your modmail has **not** been submitted!")
         self.value = False
         self.stop()
 
@@ -44,49 +42,62 @@ class modmail(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self,
                          message):
-        if isinstance(message.channel, DMChannel):
-            if not message.author.bot:
-                if len(message.content) < 50:
-                    await message.channel.send("Your modmail must be longer than 50 characters!")
-                    return
+        if not isinstance(message.channel, DMChannel):
+            return
 
-                elif len(message.content) > 50:
+        if message.author.bot:
+            return
 
-                    view = Question_Modmail()
-                    await message.channel.send("Do you really want to submit this as a modmail?", view=view, delete_after=30)
-                    await view.wait()
+        if len(message.content) < 50:
+            await message.channel.send("Your modmail must be longer than 50 characters!")
+            return
 
-                    MOD_CHANNEL = self.client.get_channel(MOD_CHANNEL_ID)
+        view = Question_Modmail()
+        await message.channel.send("Do you really want to submit this as a modmail?", view=view, delete_after=30)
+        await view.wait()
 
-                    member_avatar_url = get_user_avatar(message.author)
+        if not view.value or view.value is None:
+            await message.channel.send("Your modmail has **not** been submitted!")
+            return
 
-                    embed = embed_builder(title = f"Modmail by {message.author}",
-                                          color = MOD_COLOR,
-                                          thumbnail = member_avatar_url,
+        print(f"{message.author}: modmail()\n{message.content}")
 
-                                          field_one_name = "ID:",
-                                          field_one_value = message.author.id,
-                                          field_one_inline = True,
+        MOD_CHANNEL = self.client.get_channel(MOD_CHANNEL_ID)
+        user_thread = None
 
-                                          field_two_name = "Member:",
-                                          field_two_value = f"{message.author.mention}",
-                                          field_two_inline = True)
+        for thread in MOD_CHANNEL.guild.threads:
+            if f"{message.author.name}{message.author.discriminator}" in f"{thread.name}":
+                user_thread = thread
 
-                    checks_max_word_length(message, embed, source = "modmail")
+        print(user_thread)
 
-                    if view.value is None:
-                        await message.channel.send("Your modmail has **not** been submitted!")
-                        return
+        if user_thread == None:
+            user_thread = await MOD_CHANNEL.create_thread(name = f"Modmail ({message.author})", message = None, auto_archive_duration = 4320, type = nextcord.ChannelType.public_thread) #4320 is 3 days in minutes
+            for member in MOD_CHANNEL.members:
+                if not member.bot:
+                    await user_thread.add_user(member)
 
-                    elif view.value:
-                        print(f"{message.author}: modmail()\n{message.content}")
+        member_avatar_url = get_user_avatar(message.author)
 
-                        await embed_attachments(MOD_CHANNEL, message, embed)
+        embed = embed_builder(title = f"Modmail by {message.author}",
+                              color = MOD_COLOR,
+                              thumbnail = member_avatar_url,
 
-                        uses_update("command_uses", "modmail")
-                        return
-                    elif not view.value:
-                        return
+                              field_one_name = "ID:",
+                              field_one_value = message.author.id,
+                              field_one_inline = True,
+
+                              field_two_name = "Member:",
+                              field_two_value = f"{message.author.mention}",
+                              field_two_inline = True)
+
+        checks_max_word_length(message, embed, source = "modmail")
+
+        await embed_attachments(user_thread, message, embed)
+
+        await message.channel.send("Your modmail has been submitted!")
+
+        uses_update("command_uses", "modmail")
 
 def setup(client):
     client.add_cog(modmail(client))

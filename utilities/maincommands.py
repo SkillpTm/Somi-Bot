@@ -10,7 +10,7 @@ client = commands.Bot(intents=intents)
 
 ###self#imports###############################################################################
 
-from utilities.variables import SERVER_ID, MOD_CATEGORY
+from utilities.variables import SERVER_ID, MOD_CATEGORY_ID
 
 
 
@@ -55,7 +55,10 @@ def checks(interaction):
 
 
 def checks_forbidden_channels(channel):
-    return not channel.category.id == MOD_CATEGORY
+    try:
+        return not channel.category.id == MOD_CATEGORY_ID
+    except:
+        return True
 
 
 

@@ -71,7 +71,7 @@ class on_message(commands.Cog):
             if len(message.content) < 990:
                 message_content = message.content
             else:
-                message_content = f"{message.content[:990]}..."
+                message_content = f"{message.content[:972]}..."
 
             embed = embed_builder(description = f"{correct_channel.mention} - [Link]({link})",
                                   color = nextcord.Color.from_rgb(255, 166, 252),

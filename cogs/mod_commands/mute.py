@@ -50,10 +50,7 @@ class mute(commands.Cog):
 
         await member.edit(timeout=nextcord.utils.utcnow()+timedelta(seconds=total_seconds))
 
-        if reason != None:
-            await interaction.response.send_message(f"{member.mention} has been muted because: {reason}", ephemeral=True)
-        else:
-            await interaction.response.send_message(f"{member.mention} has been muted", ephemeral=True)
+        await interaction.response.send_message(f"Succesfully muted {member.mention}.", ephemeral=True)
 
         member_avatar_url = get_user_avatar(interaction.user)
 

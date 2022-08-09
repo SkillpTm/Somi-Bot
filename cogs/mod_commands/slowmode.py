@@ -47,11 +47,11 @@ class slowmode(commands.Cog):
         member_avatar_url = get_user_avatar(interaction.user)
 
         if not delay == 0:
+            await interaction.response.send_message(f"Activated slowmode in {channel.mention} with a delay of `{delay} seconds`.", ephemeral=True)
             field_value = f"{interaction.user.mention} activated slowmode in {channel.mention} with a delay of `{delay} seconds`"
-            await interaction.response.send_message(f"Activated slowmode with a delay of `{delay} seconds` in {channel.mention}", ephemeral=True)
         else:
-            field_value = f"{interaction.user.mention} deactivated slowmode in {channel.mention}"
             await interaction.response.send_message(f"Deactivated slowmode in {channel.mention}", ephemeral=True)
+            field_value = f"{interaction.user.mention} deactivated slowmode in {channel.mention}"
 
         embed = embed_builder(color = Color.orange(),
                               author = "Mod Activity",

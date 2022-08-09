@@ -28,6 +28,7 @@ class kick(commands.Cog):
                    interaction: Interaction,
                    *,
                    member: nextcord.Member = SlashOption(description="Member to be kicked", required=True),
+                   delete_messages_days: int = SlashOption(description="the amount of days someone's messages will get deleted for (nothing=1 day)", required=False, min_value=0, max_value=7),
                    reason: str = SlashOption(description="Reason for the kick", required=False, min_length=2, max_length=1000)):
         if not checks(interaction):
             return
@@ -44,12 +45,12 @@ class kick(commands.Cog):
         else:
             await member.send(f"You have been __**kicked**__ from `{member.guild.name}`\nThere was no provided reason.\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
 
+        if delete_messages_days == None:
+            delete_messages_days = 1
+
         await member.kick(reason=reason)
 
-        if reason != None:
-            await interaction.response.send_message(f"Succesfully kicked {member.mention} because: `{reason}`.", ephemeral=True)
-        else:
-            await interaction.response.send_message(f"Succesfully kicked {member.mention}.", ephemeral=True)
+        await interaction.response.send_message(f"Succesfully kicked {member.mention}.", ephemeral=True)
 
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
         member_avatar_url = get_user_avatar(interaction.user)
@@ -59,7 +60,7 @@ class kick(commands.Cog):
                               author_icon = member_avatar_url,
 
                               field_one_name = "/kick:",
-                              field_one_value = f"{interaction.user.mention} kicked: {member.mention}",
+                              field_one_value = f"{interaction.user.mention} kicked: {member.mention} and deleted their messages for: `{delete_messages_days} day(s)`",
                               field_one_inline = False,
 
                               field_two_name = "Reason:",

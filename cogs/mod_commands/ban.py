@@ -28,6 +28,7 @@ class ban(commands.Cog):
                   interaction: Interaction,
                   *,
                   member: nextcord.Member = SlashOption(description="member to be banned", required=True),
+                  delete_messages_days: int = SlashOption(description="the amount of days someone's messages will get deleted for (nothing=1 day)", required=False, min_value=0, max_value=7),
                   reason: str = SlashOption(description="reason for the ban", required=False, min_length=2, max_length=1000)):
         if not checks(interaction):
             return
@@ -46,12 +47,12 @@ class ban(commands.Cog):
         else:
             await member.send(f"You have been __**banned**__ from `{member.guild.name}`\nThere was no provided reason.\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
 
-        await member.ban(reason=reason)
+        if delete_messages_days == None:
+            delete_messages_days = 1
 
-        if reason != None:
-            await interaction.response.send_message(f"Succesfully banned <@{member.id}> because: `{reason}`", ephemeral=True)
-        else:
-            await interaction.response.send_message(f"Succesfully banned <@{member.id}>", ephemeral=True)
+        await interaction.guild.ban(user = member, reason = reason, delete_message_days = delete_messages_days)
+
+        await interaction.response.send_message(f"Succesfully banned <@{member.id}>", ephemeral=True)
 
         member_avatar_url = get_user_avatar(interaction.user)
 
@@ -60,7 +61,7 @@ class ban(commands.Cog):
                               author_icon = member_avatar_url,
 
                               field_one_name = "/ban:",
-                              field_one_value = f"{interaction.user.mention} banned: {member.mention}",
+                              field_one_value = f"{interaction.user.mention} banned: {member.mention} and deleted their messages for: `{delete_messages_days} day(s)`",
                               field_one_inline = False,
 
                               field_two_name = "Reason:",
@@ -82,7 +83,7 @@ class ban(commands.Cog):
     async def unban(self,
                     interaction: Interaction,
                     *,
-                    member_id: int = SlashOption(description="user ID of user to be unbanned", required=True, min_value=1, max_value=None)):
+                    member_id: str = SlashOption(description="user ID of user to be unbanned", required=True, min_length=18, max_length=19)):
         if not checks(interaction):
             return
 

@@ -125,31 +125,31 @@ ROLELIST = {
 
 
 
-import nextcord
+from nextcord import SelectOption
 
 HELP_OPTIONS = [
-    nextcord.SelectOption(label="about", description = "/about"),
-    nextcord.SelectOption(label="avatar", description = "/avatar"),
-    nextcord.SelectOption(label="bam", description = "/bam"),
-    nextcord.SelectOption(label="bugs", description = "/bugs"),
-    nextcord.SelectOption(label="choose", description = "/choose"),
-    nextcord.SelectOption(label="coinflip", description = "/coinflip"),
-    nextcord.SelectOption(label="commandlist", description = "/commandlist | /cl"),
-    nextcord.SelectOption(label="custom", description = "/custom list"),
-    nextcord.SelectOption(label="customcommand", description = "/ccustomcommand | /cc"),
-    nextcord.SelectOption(label="emoji", description = "/emoji"),
-    nextcord.SelectOption(label="help", description = "/help"),
-    nextcord.SelectOption(label="keyword", description = "/keyword add | /keyword delete | /keyword list"),
-    nextcord.SelectOption(label="kst", description = "/kst"),
-    nextcord.SelectOption(label="levelroles", description = "/levelroles"),
-    nextcord.SelectOption(label="lyrics", description = "/lyrics"),
-    nextcord.SelectOption(label="ping", description = "/ping"),
-    nextcord.SelectOption(label="reminder", description = "/reminder add | /reminder delete | /reminder list"),
-    nextcord.SelectOption(label="serverinfo", description = "/serverinfo | /si"),
-    nextcord.SelectOption(label="spotify", description = "/spotify | /sf"),
-    nextcord.SelectOption(label="somi", description = "/somi"),
-    nextcord.SelectOption(label="suggestions", description = "/suggestions"),
-    nextcord.SelectOption(label="userinfo", description = "/userinfo | /ui")
+    SelectOption(label="about", description = "/about"),
+    SelectOption(label="avatar", description = "/avatar"),
+    SelectOption(label="bam", description = "/bam"),
+    SelectOption(label="bugs", description = "/bugs"),
+    SelectOption(label="choose", description = "/choose"),
+    SelectOption(label="coinflip", description = "/coinflip"),
+    SelectOption(label="commandlist", description = "/commandlist | /cl"),
+    SelectOption(label="custom", description = "/custom list"),
+    SelectOption(label="customcommand", description = "/ccustomcommand | /cc"),
+    SelectOption(label="emoji", description = "/emoji"),
+    SelectOption(label="help", description = "/help"),
+    SelectOption(label="keyword", description = "/keyword add | /keyword delete | /keyword list"),
+    SelectOption(label="kst", description = "/kst"),
+    SelectOption(label="levelroles", description = "/levelroles"),
+    SelectOption(label="lyrics", description = "/lyrics"),
+    SelectOption(label="ping", description = "/ping"),
+    SelectOption(label="reminder", description = "/reminder add | /reminder delete | /reminder list"),
+    SelectOption(label="serverinfo", description = "/serverinfo | /si"),
+    SelectOption(label="spotify", description = "/spotify | /sf"),
+    SelectOption(label="somi", description = "/somi"),
+    SelectOption(label="suggestions", description = "/suggestions"),
+    SelectOption(label="userinfo", description = "/userinfo | /ui")
 ]
 
 

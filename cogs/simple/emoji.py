@@ -31,19 +31,24 @@ class emoji(commands.Cog):
 
         print(f"{interaction.user}: /emoji {emoji}")
 
-        head, sep, emoji_id = emoji[3:-1].partition(":")
-        emoji_url = "https://cdn.discordapp.com/emojis/None"
-
-        if emoji.startswith("<a:"):
-            emoji_url = f"https://cdn.discordapp.com/emojis/{emoji_id}.gif"
-        elif emoji.startswith("<:"):
-            emoji_url = f"https://cdn.discordapp.com/emojis/{emoji_id}.webp"
-
-        if not requests.get(emoji_url).status_code == 200:
+        if not emoji.startswith("<") and not emoji.endswith(">"):
             await interaction.response.send_message("Please select an emoji.", ephemeral=True)
             return
 
-        await interaction.response.send_message(emoji_url)
+        if emoji.startswith("<a:"):
+            emoji_name, sep, emoji_id = emoji[3:-1].partition(":")
+            emote_animated = True
+        else:
+            emoji_name, sep, emoji_id = emoji[2:-1].partition(":")
+            emote_animated = False
+
+        partial_emoji_object = nextcord.PartialEmoji(name = emoji_name, id = emoji_id, animated = emote_animated)
+
+        if not requests.get(partial_emoji_object.url).status_code == 200:
+            await interaction.response.send_message("Please select an emoji.", ephemeral=True)
+            return
+
+        await interaction.response.send_message(partial_emoji_object.url)
 
         uses_update("command_uses", "emoji")
 

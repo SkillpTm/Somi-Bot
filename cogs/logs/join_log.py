@@ -34,7 +34,7 @@ class join_log(commands.Cog):
         WELCOME_CHANNEL = self.client.get_channel(WELCOME_CHANNEL_ID)
 
         await member.add_roles(DEFAULT_ROLE)
-        await WELCOME_CHANNEL.send(f"Hey {member.mention}, welcome to Jeon Somi! What you waiting for - start chatting. \n{WELCOME_GIF}")
+        await WELCOME_CHANNEL.send(f"Hey {member.mention}, welcome to Jeon Somi! What you waiting for - start chatting.\n{WELCOME_GIF}")
 
     ###join#log###########################################################
 

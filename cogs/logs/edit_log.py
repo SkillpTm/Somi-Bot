@@ -28,7 +28,7 @@ class edit_log(commands.Cog):
                               message_after):
         if not checks(interaction = message_before):
             return
-        if not checks_forbidden_channels(interaction = message_before):
+        if not checks_forbidden_channels(message_before.channel):
             return
 
         if message_before.content == message_after.content:

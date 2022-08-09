@@ -2,7 +2,7 @@
 
 import lyricsgenius
 import nextcord
-from nextcord import Embed, Interaction, SlashOption, Spotify
+from nextcord import Interaction, SlashOption, Spotify
 from nextcord.ext import commands
 import os
 import string

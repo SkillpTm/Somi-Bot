@@ -11,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
 from utilities.partial_commands import get_user_avatar, is_member_skillp, is_member_themself, embed_builder
-from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, SKILLP_ID, SOMICORD_INVITE
+from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, SKILLP_ID
 
 
 
@@ -22,7 +22,7 @@ class kick(commands.Cog):
 
     ###kick###########################################################
         
-    @nextcord.slash_command(name="kick", description="kicks a member")
+    @nextcord.slash_command(name="kick", description="[MOD] kicks a member")
     @application_checks.has_any_role(MODERATOR_ID)
     async def kick(self,
                    interaction: Interaction,
@@ -38,8 +38,6 @@ class kick(commands.Cog):
             return
         if await is_member_themself(interaction, member, source = "kick"):
             return
-
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
         
         if reason != None:
             await member.send(f"You have been __**kicked**__ from `{member.guild.name}`\nFor the reason:\n`{reason}`\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
@@ -49,10 +47,11 @@ class kick(commands.Cog):
         await member.kick(reason=reason)
 
         if reason != None:
-            await interaction.response.send_message(f"Succesfully kicked {member.mention} because: `{reason}`", ephemeral=True)
+            await interaction.response.send_message(f"Succesfully kicked {member.mention} because: `{reason}`.", ephemeral=True)
         else:
-            await interaction.response.send_message(f"Succesfully kicked {member.mention}", ephemeral=True)
+            await interaction.response.send_message(f"Succesfully kicked {member.mention}.", ephemeral=True)
 
+        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
         member_avatar_url = get_user_avatar(interaction.user)
 
         embed = embed_builder(color = Color.orange(),
@@ -73,7 +72,7 @@ class kick(commands.Cog):
 
     @kick.error
     async def kick_error(self, interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 def setup(client):
     client.add_cog(kick(client))

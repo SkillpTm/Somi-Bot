@@ -22,7 +22,7 @@ class modcommandlist(commands.Cog):
 
     ###modcommandlist###########################################################
 
-    @nextcord.slash_command(name = "modcommandlist", description = "A list of all mod commands")
+    @nextcord.slash_command(name = "modcommandlist", description = "[MOD] a list of all mod commands")
     @application_checks.has_any_role(MODERATOR_ID)
     async def modcommandlist(self,
                              interaction: Interaction):
@@ -44,11 +44,11 @@ class modcommandlist(commands.Cog):
 
     @modcommandlist.error
     async def modcommandlist_error(self, interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
     ###modcommandlist#alias###########################################################
 
-    @nextcord.slash_command(name = "mcl", description = "A list of all mod commands (alias of /modcommandlist)")
+    @nextcord.slash_command(name = "mcl", description = "[MOD] a list of all mod commands (alias of /modcommandlist)")
     @application_checks.has_any_role(MODERATOR_ID)
     async def mcl(self,
                   interaction: Interaction):
@@ -70,7 +70,7 @@ class modcommandlist(commands.Cog):
 
     @mcl.error
     async def mcl_error(self, interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 def setup(client):
     client.add_cog(modcommandlist(client))

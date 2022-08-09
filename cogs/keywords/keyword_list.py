@@ -25,7 +25,7 @@ class keyword_list(commands.Cog):
 
     ###keyword#list###########################################################
 
-    @keyword.subcommand(name = "list", description = "A list of all your keywords")
+    @keyword.subcommand(name = "list", description = "a list of all your keywords")
     async def keyword_list(self,
                            interaction: Interaction):
         if not checks(interaction):

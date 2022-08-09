@@ -22,12 +22,12 @@ class vcaccess(commands.Cog):
 
     ###vcaccess###########################################################
 
-    @nextcord.slash_command(name="vcaccess", description="Grants/takes away a user's access to the voice channels (ignoring level roles)")
+    @nextcord.slash_command(name="vcaccess", description="[MOD] grants/takes away a user's access to the voice channels (ignoring level roles)")
     @application_checks.has_any_role(MODERATOR_ID)
     async def vcaccess(self,
                   interaction: Interaction,
                   *,
-                  member: nextcord.Member = SlashOption(description="Member to be granted access/take access away", required=True)):
+                  member: nextcord.Member = SlashOption(description="member to be granted access/take access away", required=True)):
         if not checks(interaction):
             return
 
@@ -72,7 +72,7 @@ class vcaccess(commands.Cog):
 
     @vcaccess.error
     async def error(interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 
 def setup(client):

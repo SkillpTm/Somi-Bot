@@ -14,19 +14,19 @@ from utilities.variables import SERVER_ID, MOD_CHANNELS
 
 
 
-@client.slash_command(name='keyword', description='Gives notifications for selected keywords')
+@client.slash_command(name='keyword', description='gives notifications for selected keywords')
 async def keyword(interaction: Interaction):
     pass
 
 
 
-@client.slash_command(name='reminder', description='Add a reminder to be reminded about something')
+@client.slash_command(name='reminder', description='add a reminder to be reminded about something')
 async def reminder(interaction: Interaction):
     pass
 
 
 
-@client.slash_command(name='custom', description='Make a custom command')
+@client.slash_command(name='custom', description='make a custom command')
 async def custom(interaction: Interaction):
     pass
 
@@ -54,8 +54,8 @@ def checks(interaction):
 
 
 
-def checks_forbidden_channels(interaction):
-    return not interaction.channel.id in MOD_CHANNELS.values()
+def checks_forbidden_channels(channel):
+    return not channel.id in MOD_CHANNELS.values()
 
 
 

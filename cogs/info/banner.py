@@ -26,7 +26,7 @@ class banner(commands.Cog):
     async def banner(self,
                      interaction: Interaction,
                      *,
-                     member: nextcord.Member = SlashOption(description="The user you want the banner from (nothing=yourself)", required=False)):
+                     member: nextcord.Member = SlashOption(description="the user you want the banner from (nothing=yourself)", required=False)):
         if not checks(interaction):
             return
 
@@ -39,11 +39,11 @@ class banner(commands.Cog):
         name = get_nick_else_name(member)
 
         try:
-            if user.banner.url is None:
-                await interaction.response.send_message(f"The user `{name}` doesn't have a banner", ephemeral=True)
+            if user.banner.url == None:
+                await interaction.response.send_message(f"The user `{name}` doesn't have a banner.", ephemeral=True)
                 return
         except:
-            await interaction.response.send_message(f"The user `{name}` doesn't have a banner", ephemeral=True)
+            await interaction.response.send_message(f"The user `{name}` doesn't have a banner.", ephemeral=True)
             return
 
         embed = embed_builder(title = f"Banner of: `{name}`",

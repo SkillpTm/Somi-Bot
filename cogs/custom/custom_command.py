@@ -25,7 +25,7 @@ class custom_command(commands.Cog):
 
     ###customcommand###########################################################
 
-    @nextcord.slash_command(name='customcommand', description="Post a custom command")
+    @nextcord.slash_command(name='customcommand', description="post a custom command")
     async def customcommand(self,
                             interaction: Interaction,
                             *,
@@ -40,7 +40,7 @@ class custom_command(commands.Cog):
         commandtext = command_custom(interaction.guild.id, clean_commandname)
 
         if commandtext == "":
-            await interaction.response.send_message(f"There is no custom command with the name `{clean_commandname}`", ephemeral=True)
+            await interaction.response.send_message(f"There is no custom command with the name `{clean_commandname}`.", ephemeral=True)
             return
 
         await interaction.response.send_message(commandtext)
@@ -50,7 +50,7 @@ class custom_command(commands.Cog):
 
     ###customcommand#alias###########################################################
 
-    @nextcord.slash_command(name='cc', description="Post a custom command (alias of /customcommand)")
+    @nextcord.slash_command(name='cc', description="post a custom command (alias of /customcommand)")
     async def cc(self,
                  interaction: Interaction,
                  *,
@@ -65,7 +65,7 @@ class custom_command(commands.Cog):
         commandtext = command_custom(interaction.guild.id, clean_commandname)
 
         if commandtext == "":
-            await interaction.response.send_message(f"There is no custom command with the name `{clean_commandname}`", ephemeral=True)
+            await interaction.response.send_message(f"There is no custom command with the name `{clean_commandname}`.", ephemeral=True)
             return
 
         await interaction.response.send_message(commandtext)

@@ -32,8 +32,8 @@ class reminder_add(commands.Cog):
     async def reminder_add(self,
                            interaction: Interaction,
                            *,
-                           time: str = SlashOption(description="The time to be reminded in (input: xd and/or xh and/or xm and/or xs) Example: 5d7h28s)", required=True, min_length=2, max_length=16),
-                           reminder: str = SlashOption(description="What you want to be reminded about.", required=True, min_length=1, max_length=4096)):
+                           time: str = SlashOption(description="the time to be reminded in (input: xd and/or xh and/or xm and/or xs) Example: 5d7h28s)", required=True, min_length=2, max_length=16),
+                           reminder: str = SlashOption(description="what you want to be reminded about.", required=True, min_length=1, max_length=4096)):
         if not checks(interaction):
             return
 

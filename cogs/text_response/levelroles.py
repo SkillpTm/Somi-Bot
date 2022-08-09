@@ -22,7 +22,7 @@ class levelroles(commands.Cog):
 
     ###levelroles###########################################################
 
-    @nextcord.slash_command(name = "levelroles", description = "A list and explanation of level roles")
+    @nextcord.slash_command(name = "levelroles", description = "a list and explanation of level roles")
     async def modcommandlist(self,
                              interaction: Interaction):
         if not checks(interaction):

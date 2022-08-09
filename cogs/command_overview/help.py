@@ -14,7 +14,7 @@ from utilities.variables import HELP_OPTIONS, HELP_OUTPUT, BOT_COLOR
 from utilities.partial_commands import embed_builder
 
 class HelpDropdownView(nextcord.ui.View):
-    @nextcord.ui.select(placeholder = "Select a command", min_values=1, max_values=1, options = HELP_OPTIONS)
+    @nextcord.ui.select(placeholder = "select a command", min_values=1, max_values=1, options = HELP_OPTIONS)
 
     async def callback(self,
                        select,
@@ -47,7 +47,7 @@ class help(commands.Cog):
 
     ###help###########################################################
 
-    @nextcord.slash_command(name='help', description='Explanations for all command')
+    @nextcord.slash_command(name='help', description='explanations for all command')
     async def help(self,
                    interaction: Interaction):
         if not checks(interaction):

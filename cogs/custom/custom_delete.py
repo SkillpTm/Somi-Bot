@@ -25,7 +25,7 @@ class custom_delete(commands.Cog):
 
     ###custom#delete###########################################################
 
-    @custom.subcommand(name = "delete", description = "delete a custom command")
+    @custom.subcommand(name = "delete", description = "[MOD] delete a custom command")
     @application_checks.has_any_role(MODERATOR_ID)
     async def custom_delete(self,
                             interaction: Interaction,
@@ -41,10 +41,10 @@ class custom_delete(commands.Cog):
         deleted, commandtext= delete_custom_command(interaction.guild.id, clean_commandname)
 
         if not deleted:
-            await interaction.response.send_message(f"There is no custom command with the name `{clean_commandname}`", ephemeral=True)
+            await interaction.response.send_message(f"There is no custom command with the name `{clean_commandname}`.", ephemeral=True)
             return
 
-        await interaction.response.send_message(f"The custom command `{clean_commandname}` has been removed", ephemeral=True)
+        await interaction.response.send_message(f"The custom command `{clean_commandname}` has been removed.", ephemeral=True)
 
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
         member_avatar_url = get_user_avatar(interaction.user)
@@ -54,11 +54,11 @@ class custom_delete(commands.Cog):
                               author_icon = member_avatar_url,
 
                               field_one_name = "/custom delete:",
-                              field_one_value = f"{interaction.user.mention} deleted: `{clean_commandname}` from the custom commands",
+                              field_one_value = f"{interaction.user.mention} deleted: `{clean_commandname}` from the custom commands.",
                               field_one_inline = False,
                               
                               field_two_name = "Command text:",
-                              field_two_value = commandtext,
+                              field_two_value = f"`{commandtext}`",
                               field_two_inline = False)
 
         await AUDIT_LOG.send(embed=embed)
@@ -69,7 +69,7 @@ class custom_delete(commands.Cog):
 
     @custom_delete.error
     async def ban_error(self, interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 def setup(client):
     client.add_cog(custom_delete(client))

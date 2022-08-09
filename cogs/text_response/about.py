@@ -23,7 +23,7 @@ class about(commands.Cog):
 
     ###about###########################################################
 
-    @nextcord.slash_command(name = "about", description = "Tells you about Somi bot")
+    @nextcord.slash_command(name = "about", description = "tells you about Somi bot")
     async def about(self,
                     interaction: Interaction):
         if not checks(interaction):

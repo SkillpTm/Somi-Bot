@@ -26,7 +26,7 @@ class avatar(commands.Cog):
     async def avatar(self,
                      interaction: Interaction,
                      *,
-                     member: nextcord.Member = SlashOption(description="The user you want the avatar from (nothing=yourself)", required=False)):
+                     member: nextcord.Member = SlashOption(description="the user you want the avatar from (nothing=yourself)", required=False)):
         if not checks(interaction):
             return
 

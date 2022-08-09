@@ -22,12 +22,12 @@ class purge(commands.Cog):
 
     ###purge###########################################################
 
-    @nextcord.slash_command(name="purge", description="clears the entered amount of messages")
+    @nextcord.slash_command(name="purge", description="[MOD] clears the entered amount of messages in a channel")
     @application_checks.has_any_role(MODERATOR_ID)
     async def purge(self,
                     interaction: Interaction,
                     *,
-                    amount: int = SlashOption(description="Amount of messages to be purged", required=True, min_value=1, max_value=1000)):
+                    amount: int = SlashOption(description="amount of messages to be purged", required=True, min_value=1, max_value=1000)):
         if not checks(interaction):
             return
 
@@ -61,7 +61,7 @@ class purge(commands.Cog):
 
     @purge.error
     async def purge_error(self, interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 def setup(client):
     client.add_cog(purge(client))

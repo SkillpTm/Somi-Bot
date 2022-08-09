@@ -25,7 +25,7 @@ class custom_list(commands.Cog):
 
     ###custom#list###########################################################
 
-    @custom.subcommand(name = "list", description = "A list of all custom commands")
+    @custom.subcommand(name = "list", description = "a list of all custom commands on this server")
     async def custom_list(self,
                           interaction: Interaction):
         if not checks(interaction):

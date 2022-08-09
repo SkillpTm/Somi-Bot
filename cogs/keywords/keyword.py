@@ -30,7 +30,7 @@ class keyword(commands.Cog):
         if not checks(interaction):
             return
 
-        if not checks_forbidden_channels(interaction):
+        if not checks_forbidden_channels(interaction.channel):
             return
 
         all_users_keywords = get_keywords(interaction.author.id)
@@ -62,7 +62,7 @@ class keyword(commands.Cog):
 
                     if multiple_keywords:
                         keywords_info = f"Your keywords: `{output_keywords}` have been mentioned in {interaction.channel.mention} by {interaction.author.mention}:"
-                    elif not multiple_keywords:
+                    else:
                         keywords_info = f"Your keyword: `{output_keywords}` has been mentioned in {interaction.channel.mention} by {interaction.author.mention}:"
 
                     embed = embed_builder(title = f"Keyword Notification: `{output_keywords}`",

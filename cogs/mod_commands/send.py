@@ -22,13 +22,13 @@ class send(commands.Cog):
 
     ###send###########################################################
 
-    @nextcord.slash_command(name="send", description="sends a message in a channel")
+    @nextcord.slash_command(name="send", description="[MOD] sends a message in a channel")
     @application_checks.has_any_role(MODERATOR_ID)
     async def send(self,
                    interaction: Interaction,
                    *,
-                   message: str = SlashOption(description="The message to be send by the bot", required=True, min_length=1, max_length=1000),
-                   channel: nextcord.abc.GuildChannel = SlashOption(channel_types=[ChannelType.text, ChannelType.public_thread], description="Channel in which the message will be send", required=False)):
+                   message: str = SlashOption(description="the message to be send by the bot", required=True, min_length=1, max_length=1000),
+                   channel: nextcord.abc.GuildChannel = SlashOption(channel_types=[ChannelType.text, ChannelType.public_thread], description="channel in which the message will be send", required=False)):
         if not checks(interaction):
             return
 
@@ -59,17 +59,17 @@ class send(commands.Cog):
 
     @send.error
     async def send_error(self, interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
     ###edit###########################################################
 
-    @nextcord.slash_command(name="edit", description="edits a bot message in a channel")
+    @nextcord.slash_command(name="edit", description="[MOD] edits a bot message in a channel")
     @application_checks.has_any_role(MODERATOR_ID)
     async def edit(self,
                    interaction: Interaction,
                    *,
                    message_id: int = SlashOption(description="ID of the message to be edited", required=True, min_value=1, max_value=None),
-                   message: str = SlashOption(description="The new message to be edited by the bot", required=True, min_length=1, max_length=1000)):
+                   message: str = SlashOption(description="the new message to be edited by the bot", required=True, min_length=1, max_length=1000)):
         if not checks(interaction):
             return
 
@@ -114,7 +114,7 @@ class send(commands.Cog):
 
     @edit.error
     async def edit_error(self, interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 def setup(client):
     client.add_cog(send(client))

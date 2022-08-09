@@ -109,6 +109,7 @@ MOD_COMMANDS = """
 /restart
 /send
 /shutdown
+/slowmode
 /unban
 /unmute
 /vcaccess"""

@@ -25,7 +25,7 @@ class userinfo(commands.Cog):
     async def userinfo(self,
                        interaction: Interaction,
                        *,
-                       member: nextcord.Member = SlashOption(description="The user you want the information about (nothing=yourself)", required=False)):
+                       member: nextcord.Member = SlashOption(description="the user you want the information about (nothing=yourself)", required=False)):
         if not checks(interaction):
             return
 
@@ -46,7 +46,7 @@ class userinfo(commands.Cog):
     async def ui(self,
                  interaction: Interaction,
                  *,
-                 member: nextcord.Member = SlashOption(description="The user you want the information about (nothing=yourself)", required=False)):
+                 member: nextcord.Member = SlashOption(description="the user you want the information about (nothing=yourself)", required=False)):
         if not checks(interaction):
             return
 

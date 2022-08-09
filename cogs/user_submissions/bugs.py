@@ -55,7 +55,7 @@ class bugs(commands.Cog):
 
     ###bugs###########################################################
 
-    @nextcord.slash_command(name = "bugs", description = "Report a bug")
+    @nextcord.slash_command(name = "bugs", description = "report a bug")
     async def bugs(self,
                    interaction: Interaction):
         if not checks(interaction):

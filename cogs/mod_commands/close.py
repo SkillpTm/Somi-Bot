@@ -22,7 +22,7 @@ class close(commands.Cog):
 
     ###close###########################################################
 
-    @nextcord.slash_command(name="close", description="Takes regular users the sending message permission away.")
+    @nextcord.slash_command(name="close", description="[MOD] takes all regular users the sending message permission away")
     @application_checks.has_any_role(MODERATOR_ID)
     async def close(self,
                     interaction: Interaction):
@@ -47,7 +47,7 @@ class close(commands.Cog):
                               author_icon = member_avatar_url,
 
                               field_one_name = "/close:",
-                              field_one_value = f"{interaction.user.mention} closed the server",
+                              field_one_value = f"{interaction.user.mention} closed the server!",
                               field_one_inline = True)
 
         await AUDIT_LOG.send(embed=embed, content = f"<@&{MODERATOR_ID}>")
@@ -56,11 +56,11 @@ class close(commands.Cog):
 
     @close.error
     async def close_error(self, interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
     ###open###########################################################
 
-    @nextcord.slash_command(name="open", description="Gives regular users the sending message permission.")
+    @nextcord.slash_command(name="open", description="[MOD] gives all regular users the sending message permission back")
     @application_checks.has_any_role(MODERATOR_ID)
     async def open(self,
                    interaction: Interaction):
@@ -85,7 +85,7 @@ class close(commands.Cog):
                               author_icon = member_avatar_url,
 
                               field_one_name = "/open:",
-                              field_one_value = f"{interaction.user.mention} re-opened the server",
+                              field_one_value = f"{interaction.user.mention} re-opened the server!",
                               field_one_inline = True)
 
         await AUDIT_LOG.send(embed=embed)
@@ -94,7 +94,7 @@ class close(commands.Cog):
 
     @open.error
     async def open_error(self, interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 def setup(client):
     client.add_cog(close(client))

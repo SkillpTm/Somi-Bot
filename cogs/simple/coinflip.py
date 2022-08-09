@@ -23,7 +23,7 @@ class coinflip(commands.Cog):
 
     ###coinflip###########################################################
     
-    @nextcord.slash_command(name = "coinflip", description = "Does a coinflip")
+    @nextcord.slash_command(name = "coinflip", description = "does a coinflip")
     async def coinflip(self,
                        interaction: Interaction):
         if not checks(interaction):

@@ -25,7 +25,7 @@ class reminder_list(commands.Cog):
 
     ###reminder#list###########################################################
 
-    @reminder.subcommand(name = "list", description = "A list of all your reminders")
+    @reminder.subcommand(name = "list", description = "a list of all your reminders")
     async def reminder_list(self,
                             interaction: Interaction):
         if not checks(interaction):

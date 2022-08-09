@@ -67,7 +67,7 @@ async def on_close():
 
 ###restart###############################################################################
 
-@client.slash_command(name="restart", description="restarts the entire bot")
+@client.slash_command(name="restart", description="[MOD] restarts the entire bot")
 @application_checks.has_any_role(MODERATOR_ID)
 async def restart(interaction: Interaction):
     if not checks(interaction):
@@ -85,7 +85,7 @@ async def restart(interaction: Interaction):
                           author_icon = member_avatar_url,
 
                           field_one_name = "/restart:",
-                          field_one_value = f"{interaction.user.mention} restarted the bot",
+                          field_one_value = f"{interaction.user.mention} restarted the bot!",
                           field_one_inline = True)
 
     await AUDIT_LOG.send(embed=embed)
@@ -96,11 +96,11 @@ async def restart(interaction: Interaction):
 
 @restart.error
 async def restart_error(interaction: Interaction, error):
-    await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+    await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 ###reload###############################################################################
     
-@client.slash_command(name="reload", description="reload the entire bot")
+@client.slash_command(name="reload", description="[MOD] reload the entire bot")
 @application_checks.has_any_role(MODERATOR_ID)
 async def reload(interaction: Interaction):
     if not checks(interaction):
@@ -114,7 +114,7 @@ async def reload(interaction: Interaction):
                 if extension.endswith(".py"):
                     client.reload_extension(f'cogs.{folder}.{extension[:-3]}')
                 
-    await interaction.response.send_message("The bot has been reloaded", ephemeral=True)
+    await interaction.response.send_message("The bot has been reloaded.", ephemeral=True)
 
     AUDIT_LOG = client.get_channel(AUDIT_LOG_ID)
     member_avatar_url = get_user_avatar(interaction.user)
@@ -124,7 +124,7 @@ async def reload(interaction: Interaction):
                           author_icon = member_avatar_url,
 
                           field_one_name = "/reload:",
-                          field_one_value = f"{interaction.user.mention} reloaded the bot",
+                          field_one_value = f"{interaction.user.mention} reloaded the bot!",
                           field_one_inline = True)
     
     await AUDIT_LOG.send(embed=embed)
@@ -133,7 +133,7 @@ async def reload(interaction: Interaction):
 
 @reload.error
 async def error(interaction: Interaction, error):
-    await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+    await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 
 

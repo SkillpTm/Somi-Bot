@@ -22,13 +22,13 @@ class ban(commands.Cog):
 
     ###ban###########################################################
         
-    @nextcord.slash_command(name="ban", description="bans a member")
+    @nextcord.slash_command(name="ban", description="[MOD] bans a member")
     @application_checks.has_any_role(MODERATOR_ID)
     async def ban(self,
                   interaction: Interaction,
                   *,
-                  member: nextcord.Member = SlashOption(description="Member to be banned", required=True),
-                  reason: str = SlashOption(description="Reason for the ban", required=False, min_length=2, max_length=1000)):
+                  member: nextcord.Member = SlashOption(description="member to be banned", required=True),
+                  reason: str = SlashOption(description="reason for the ban", required=False, min_length=2, max_length=1000)):
         if not checks(interaction):
             return
 
@@ -73,16 +73,16 @@ class ban(commands.Cog):
 
     @ban.error
     async def ban_error(self, interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
     ###unban###########################################################
 
-    @nextcord.slash_command(name="unban", description="unbans a user")
+    @nextcord.slash_command(name="unban", description="[MOD] unbans a user")
     @application_checks.has_any_role(MODERATOR_ID)
     async def unban(self,
                     interaction: Interaction,
                     *,
-                    member_id: int = SlashOption(description="User ID of user to be unbanned", required=True, min_value=1, max_value=None)):
+                    member_id: int = SlashOption(description="user ID of user to be unbanned", required=True, min_value=1, max_value=None)):
         if not checks(interaction):
             return
 
@@ -91,16 +91,16 @@ class ban(commands.Cog):
         try:
             user = await self.client.fetch_user(member_id)
         except:
-            await interaction.response.send_message(f"`{member_id}` isn't a valid discord user id", ephemeral=True)
+            await interaction.response.send_message(f"`{member_id}` isn't a valid discord user id.", ephemeral=True)
             return
 
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
 
         try:
             await interaction.guild.unban(user)
-            await interaction.response.send_message(f"{user.mention} has been unbanned", ephemeral=True)
+            await interaction.response.send_message(f"{user.mention} has been unbanned!", ephemeral=True)
         except:
-            await interaction.response.send_message(f"{user.mention} wasn't banned", ephemeral=True)
+            await interaction.response.send_message(f"{user.mention} wasn't banned.", ephemeral=True)
             return
 
         member_avatar_url = get_user_avatar(interaction.user)
@@ -119,7 +119,7 @@ class ban(commands.Cog):
 
     @unban.error
     async def unban_error(self, interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 def setup(client):
     client.add_cog(ban(client))

@@ -55,7 +55,7 @@ class suggestions(commands.Cog):
 
     ###suggestions###########################################################
 
-    @nextcord.slash_command(name = "suggestions", description = "Make a private suggestion")
+    @nextcord.slash_command(name = "suggestions", description = "make a suggestion")
     async def suggestions(self,
                           interaction: Interaction):
         if not checks(interaction):

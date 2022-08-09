@@ -23,14 +23,14 @@ class mute(commands.Cog):
 
     ###mute###########################################################
 
-    @nextcord.slash_command(name="mute", description="mutes a user")
+    @nextcord.slash_command(name="mute", description="[MOD] mutes a user")
     @application_checks.has_any_role(MODERATOR_ID)
     async def mute(self,
                    interaction: Interaction,
                    *,
-                   member: nextcord.Member = SlashOption(description="The member to be muted", required=True),
-                   time: str = SlashOption(description="The time to mute the member for (input: xd and/or xh and/or xm and/or xs) Example: 5d7h28s)", required=True, min_length=2, max_length=16),
-                   reason: str = SlashOption(description="Reason for the mute", required=False, min_length=2, max_length=1000)):
+                   member: nextcord.Member = SlashOption(description="the member to be muted", required=True),
+                   time: str = SlashOption(description="the time to mute the member for (input: xd and/or xh and/or xm and/or xs) example: 5d7h28s)", required=True, min_length=2, max_length=16),
+                   reason: str = SlashOption(description="reason for the mute", required=False, min_length=2, max_length=1000)):
         if not checks(interaction):
             return
 
@@ -71,20 +71,20 @@ class mute(commands.Cog):
 
         await AUDIT_LOG.send(embed=embed)
 
-        uses_update("mod_command_uses", "mute")
+        uses_update("mod_command_uses", "[MOD] mute")
 
     @mute.error
     async def mute_error(self, interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
     ###unmute###########################################################
 
-    @nextcord.slash_command(name="unmute", description="unmutes a user")
+    @nextcord.slash_command(name="unmute", description="[MOD] unmutes a user")
     @application_checks.has_any_role(MODERATOR_ID)
     async def unmute(self,
                      interaction: Interaction,
                      *,
-                     member: nextcord.Member = SlashOption(description="Member to be unmuted", required=True)):
+                     member: nextcord.Member = SlashOption(description="member to be unmuted", required=True)):
         if not checks(interaction):
             return
 
@@ -115,7 +115,7 @@ class mute(commands.Cog):
 
     @unmute.error
     async def unmute_error(self, interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 def setup(client):
     client.add_cog(mute(client))

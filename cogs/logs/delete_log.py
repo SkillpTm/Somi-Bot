@@ -27,7 +27,7 @@ class delete_log(commands.Cog):
                                 message):
         if not checks(message):
             return
-        if not checks_forbidden_channels(message):
+        if not checks_forbidden_channels(message.channel):
             return
 
         print(f"{message.author}: delete_log()\n{message.content}")

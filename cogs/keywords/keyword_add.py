@@ -28,7 +28,7 @@ class keyword_add(commands.Cog):
     async def keyword_add(self,
                           interaction: Interaction,
                           *,
-                          keyword: str = SlashOption(description="Your new keyword", required=True, min_length=2, max_length=32)):
+                          keyword: str = SlashOption(description="your new keyword", required=True, min_length=2, max_length=32)):
         if not checks(interaction):
             return
 

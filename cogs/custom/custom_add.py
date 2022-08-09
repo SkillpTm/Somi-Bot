@@ -25,13 +25,13 @@ class custom_add(commands.Cog):
 
     ###custom#add###########################################################
 
-    @custom.subcommand(name = "add", description = "add a custom command")
+    @custom.subcommand(name = "add", description = "[MOD] add a custom command")
     @application_checks.has_any_role(MODERATOR_ID)
     async def custom_add(self,
                          interaction: Interaction,
                          *,
                          commandname: str = SlashOption(description="new custom command name", required=True, min_length=2, max_length=32),
-                         commandtext: str = SlashOption(description="The content of the new custom command", required=True, min_length=2, max_length=1000)):
+                         commandtext: str = SlashOption(description="the content of the new custom command", required=True, min_length=2, max_length=1000)):
         if not checks(interaction):
             return
 
@@ -55,11 +55,11 @@ class custom_add(commands.Cog):
                               author_icon = member_avatar_url,
 
                               field_one_name = "/custom add:",
-                              field_one_value = f"{interaction.user.mention} added: `{clean_commandname}` as a custom command",
+                              field_one_value = f"{interaction.user.mention} added: `{clean_commandname}` as a custom command.",
                               field_one_inline = False,
 
                               field_two_name = "Command text:",
-                              field_two_value = commandtext,
+                              field_two_value = f"`{commandtext}`",
                               field_two_inline = False)
 
         await AUDIT_LOG.send(embed=embed)
@@ -70,7 +70,7 @@ class custom_add(commands.Cog):
 
     @custom_add.error
     async def ban_error(self, interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 def setup(client):
     client.add_cog(custom_add(client))

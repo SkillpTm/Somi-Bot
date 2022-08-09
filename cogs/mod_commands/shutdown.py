@@ -45,7 +45,7 @@ class shutdown(commands.Cog):
 
     ###shutdown###########################################################
 
-    @nextcord.slash_command(name = "shutdown", description = "Shuts the bot down")
+    @nextcord.slash_command(name = "shutdown", description = "[MOD] shuts the bot down")
     @application_checks.has_any_role(MODERATOR_ID)
     async def shutdown(self,
                        interaction: Interaction):
@@ -83,7 +83,7 @@ class shutdown(commands.Cog):
 
     @shutdown.error
     async def shutdown_error(self, interaction: Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command", ephemeral=True)
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 def setup(client):
     client.add_cog(shutdown(client))

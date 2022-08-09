@@ -21,20 +21,20 @@ class choose(commands.Cog):
 
     ###choose###########################################################
     
-    @nextcord.slash_command(name = "choose", description = "Let the bot choose one of the options for you!")
+    @nextcord.slash_command(name = "choose", description = "let the bot choose one of the options for you!")
     async def choose(self,
                      interaction: Interaction,
                      *,
-                     option1: str = SlashOption(description="First Option", required=True, min_length=1, max_length=200),
-                     option2: str = SlashOption(description="Second Option", required=True, min_length=1, max_length=200),
-                     option3: str = SlashOption(description="Third Option", required=False, min_length=1, max_length=200),
-                     option4: str = SlashOption(description="Fourth Option", required=False, min_length=1, max_length=200),
-                     option5: str = SlashOption(description="Fifth Option", required=False, min_length=1, max_length=200),
-                     option6: str = SlashOption(description="Sixth Option", required=False, min_length=1, max_length=200),
-                     option7: str = SlashOption(description="Seventh Option", required=False, min_length=1, max_length=200),
-                     option8: str = SlashOption(description="Eigth Option", required=False, min_length=1, max_length=200),
-                     option9: str = SlashOption(description="Ninth Option", required=False, min_length=1, max_length=200),
-                     option10: str = SlashOption(description="Tenth Option", required=False, min_length=1, max_length=200)):
+                     option1: str = SlashOption(description="first Option", required=True, min_length=1, max_length=200),
+                     option2: str = SlashOption(description="second Option", required=True, min_length=1, max_length=200),
+                     option3: str = SlashOption(description="third Option", required=False, min_length=1, max_length=200),
+                     option4: str = SlashOption(description="fourth Option", required=False, min_length=1, max_length=200),
+                     option5: str = SlashOption(description="fifth Option", required=False, min_length=1, max_length=200),
+                     option6: str = SlashOption(description="sixth Option", required=False, min_length=1, max_length=200),
+                     option7: str = SlashOption(description="seventh Option", required=False, min_length=1, max_length=200),
+                     option8: str = SlashOption(description="eigth Option", required=False, min_length=1, max_length=200),
+                     option9: str = SlashOption(description="ninth Option", required=False, min_length=1, max_length=200),
+                     option10: str = SlashOption(description="tenth Option", required=False, min_length=1, max_length=200)):
         if not checks(interaction):
             return
 

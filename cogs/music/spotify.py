@@ -37,11 +37,11 @@ class spotify(commands.Cog):
 
     ###spotify###########################################################
 
-    @nextcord.slash_command(name='spotify', description='Tells you what someone is listening to on Spotify')
+    @nextcord.slash_command(name='spotify', description='tells you what someone is listening to on Spotify')
     async def spotify(self,
                       interaction: Interaction,
                       *,
-                      member: nextcord.Member = SlashOption(description="The user listening to Spotify", required=False)):
+                      member: nextcord.Member = SlashOption(description="the user listening to Spotify", required=False)):
         if not checks(interaction):
             return
 
@@ -85,11 +85,11 @@ class spotify(commands.Cog):
 
     ###spotify#alias###########################################################
 
-    @nextcord.slash_command(name='sf', description='Tells you what someone is listening to on Spotify')
+    @nextcord.slash_command(name='sf', description='tells you what someone is listening to on Spotify')
     async def sf(self,
                  interaction: Interaction,
                  *,
-                 member: nextcord.Member = SlashOption(description="The user listening to Spotify (alias of /spotify)", required=False)):
+                 member: nextcord.Member = SlashOption(description="the user listening to Spotify (alias of /spotify)", required=False)):
         if not checks(interaction):
             return
 

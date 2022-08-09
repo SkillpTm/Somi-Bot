@@ -22,7 +22,7 @@ class commandlist(commands.Cog):
 
     ###commandlist###########################################################
 
-    @nextcord.slash_command(name = "commandlist", description = "A list of all main commands")
+    @nextcord.slash_command(name = "commandlist", description = "a list of all main commands")
     async def commandlist(self,
                          interaction: Interaction):
         if not checks(interaction):
@@ -38,7 +38,7 @@ class commandlist(commands.Cog):
                               field_one_inline = True,
 
                               field_two_name = "Help:",
-                              field_two_value = "Explanations for singular commands can be found by typing `/help`",
+                              field_two_value = "Explanations for singular commands can be found by typing `/help`!",
                               field_two_inline = False)
         
         await interaction.send(embed=embed, ephemeral=True)
@@ -47,7 +47,7 @@ class commandlist(commands.Cog):
 
     ###commandlist#alias###########################################################
 
-    @nextcord.slash_command(name = "cl", description = "A list of all main commands (alias of /commandlist)")
+    @nextcord.slash_command(name = "cl", description = "a list of all main commands (alias of /commandlist)")
     async def cl(self,
                  interaction: Interaction):
         if not checks(interaction):
@@ -63,7 +63,7 @@ class commandlist(commands.Cog):
                               field_one_inline = True,
 
                               field_two_name = "Help:",
-                              field_two_value = "Explanations for singular commands can be found by typing `/help`",
+                              field_two_value = "Explanations for singular commands can be found by typing `/help`!",
                               field_two_inline = False)
         
         await interaction.send(embed=embed, ephemeral=True)

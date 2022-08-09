@@ -48,7 +48,7 @@ class keyword_delete(commands.Cog):
     async def keyword_delete(self,
                              interaction: Interaction,
                              *,
-                             keyword: str = SlashOption(description="They keyword to be deleted or 'ALL'", required=True, min_length=2, max_length=32)):
+                             keyword: str = SlashOption(description="the keyword to be deleted or 'ALL'", required=True, min_length=2, max_length=32)):
         if not checks(interaction):
             return
 

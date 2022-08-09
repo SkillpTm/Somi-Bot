@@ -57,34 +57,38 @@ class on_message(commands.Cog):
 
     ###auto#link#embed###########################################################
 
-        if f"https://discord.com/channels/{interaction.guild.id}" in str(interaction.content):
+        if not f"https://discord.com/channels/{interaction.guild.id}" in str(interaction.content):
+            return
 
-            print(f"{interaction.author}: Link_Embed()")
+        head, link1, link2 = interaction.content.partition("https://discord.com/channels/")
+        link3 = link1 + link2
+        link, body, tail = link3.partition(" ")
+        message ,correct_channel = await message_object_generation(link, self.client)
 
-            head, link1, link2 = interaction.content.partition("https://discord.com/channels/")
-            link3 = link1 + link2
-            link, body, tail = link3.partition(" ")
-            message ,correct_channel = await message_object_generation(link, self.client)
+        if message.content == "" and len(message.attachments) == 0:
+            return
 
-            member_avatar_url = get_user_avatar(message.author)
+        print(f"{interaction.author}: Link_Embed()")
 
-            if len(message.content) < 990:
-                message_content = message.content
-            else:
-                message_content = f"{message.content[:972]}..."
+        member_avatar_url = get_user_avatar(message.author)
 
-            embed = embed_builder(description = f"{correct_channel.mention} - [Link]({link})",
-                                  color = nextcord.Color.from_rgb(255, 166, 252),
-                                  author = "Message Embed",
-                                  author_icon = member_avatar_url,
+        if len(message.content) < 990:
+            message_content = message.content
+        else:
+            message_content = f"{message.content[:972]}..."
 
-                                  field_one_name = f"{message.author.name} said:",
-                                  field_one_value = message_content,
-                                  field_one_inline = False)
+        embed = embed_builder(description = f"{correct_channel.mention} - [Link]({link})",
+                              color = nextcord.Color.from_rgb(255, 166, 252),
+                              author = "Message Embed",
+                              author_icon = member_avatar_url,
 
-            await embed_attachments(interaction.channel, message, embed, link_embed = True)
+                              field_one_name = f"{message.author.name} said:",
+                              field_one_value = message_content,
+                              field_one_inline = False)
 
-            uses_update("log_activations", "auto embed")
+        await embed_attachments(interaction.channel, message, embed, link_embed = True)
+
+        uses_update("log_activations", "auto embed")
 
 def setup(client):
     client.add_cog(on_message(client))

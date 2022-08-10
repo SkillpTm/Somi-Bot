@@ -3,7 +3,6 @@
 import nextcord
 from nextcord import Interaction
 from nextcord.ext import commands
-from pytz import timezone
 
 client = commands.Bot(intents=nextcord.Intents.all())
 
@@ -18,7 +17,9 @@ from utilities.partial_commands import get_kst_time_stamp
 class kst(commands.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client = client#
+
+    ###kst###########################################################
 
     @nextcord.slash_command(name = "kst", description = "shows the current time in KST")
     async def kst(self,

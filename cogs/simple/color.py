@@ -13,7 +13,6 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import get_kst_time_stamp
 
 
 

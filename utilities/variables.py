@@ -70,13 +70,14 @@ COMMAND_LIST = """
 /about
 /avatar
 /bam
-/bugs
 /choose
 /coinflip
+/color
 /commandlist (alias: /cl)
 /custom list
 /customcommand (alias: /cc)
 /emoji
+/feedback
 /help
 /keyword add
 /keyword delete
@@ -91,7 +92,6 @@ COMMAND_LIST = """
 /serverinfo (alias: /si)
 /spotify (alias: /sf)
 /somi
-/suggestions
 /userinfo (alias: ui)"""
 
 MOD_COMMANDS = """
@@ -131,13 +131,14 @@ HELP_OPTIONS = [
     SelectOption(label="about", description = "/about"),
     SelectOption(label="avatar", description = "/avatar"),
     SelectOption(label="bam", description = "/bam"),
-    SelectOption(label="bugs", description = "/bugs"),
     SelectOption(label="choose", description = "/choose"),
     SelectOption(label="coinflip", description = "/coinflip"),
+    SelectOption(label="color", description = "/color"),
     SelectOption(label="commandlist", description = "/commandlist | /cl"),
     SelectOption(label="custom", description = "/custom list"),
     SelectOption(label="customcommand", description = "/ccustomcommand | /cc"),
     SelectOption(label="emoji", description = "/emoji"),
+    SelectOption(label="feedback", description = "/feedback"),
     SelectOption(label="help", description = "/help"),
     SelectOption(label="keyword", description = "/keyword add | /keyword delete | /keyword list"),
     SelectOption(label="kst", description = "/kst"),
@@ -148,7 +149,6 @@ HELP_OPTIONS = [
     SelectOption(label="serverinfo", description = "/serverinfo | /si"),
     SelectOption(label="spotify", description = "/spotify | /sf"),
     SelectOption(label="somi", description = "/somi"),
-    SelectOption(label="suggestions", description = "/suggestions"),
     SelectOption(label="userinfo", description = "/userinfo | /ui")
 ]
 
@@ -164,14 +164,14 @@ HELP_OUTPUT = {
     "bam": ["/bam (no parameters)\nExample: `/bam`",
            f"This command will not actually ban a user. It will just send a mock ban message.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "bugs": ["/bugs (no parameters)\nExample: `/bugs`",
-            f"This command is meant to report bugs/typos/other issues you have encountered while using the bot. Be aware that, if you use this command your bug report, together with your ID and name will be stored in a database. You can add that you want to be informed, as soon as the problem has been fixed.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
-
     "choose": ["/choose 2-10 Options\nExample: `/choose brown blond black`",
               f"This command randomly chooses between all provided options. You can submit up to 10 options and have to give at least 2 options.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
     "coinflip": ["/coinflip (no parameters)\nExample: `/coinflip`",
                 f"This command gives out either heads or tails.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
+
+    "color": ["/color [hexcode]\nExample: `/color ffa6fc`",
+             f"This command outputs the color coresponding to your hexcode.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
     "commandlist": ["/commandlist (no parameters) or /cl (no parameters)\nExample: `/commandlist` or `/cl`",
                    f"This command outputs a list with all regular commands.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
@@ -184,6 +184,9 @@ HELP_OUTPUT = {
 
     "emoji": [f"/emoji [emoji] \nExample: `/emoji `{REACTION_EMOTE}",
              f"This command posts an emoji in its original size.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
+
+    "feedback": ["/feedback\nExample: `/feedback`",
+                f"This command is meant to report bugs/typos/other issues you have encountered while using the bot and any suggestions you have to improve the bot.\nIf you continue to require further help please message <@{SKILLP_ID}>"],      
 
     "help": ["/help (no parameters)\nExample: `/help`",
             f"This command gives you an explanation for what a certain command does.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
@@ -214,9 +217,6 @@ HELP_OUTPUT = {
 
     "somi": ["/somi (no parameters)\nExample: `/somi`",
             f"This command will tell you the truth and the truth only.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
-
-    "suggestions": ["/suggestions (no parameters)\nExample: `/suggestions`",
-                   f"This command is meant to give suggestions for the bot. Be aware that, if you use this command your suggestion, together with your ID and name will be stored in a database. You can add that you want to be informed, about what is going to happen regarding your suggestion.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
     "userinfo": [f"/userinfo optional[@username] or /ui optional[@username]\nExample: `/userinfo `<@{SKILLP_ID}> or `/ui `<@{SKILLP_ID}>",
                  f"This command will post the user information of the selected user/you.\nIf you continue to require further help please message <@{SKILLP_ID}>"]

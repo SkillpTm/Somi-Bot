@@ -13,7 +13,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import embed_builder
+from utilities.partial_commands import get_kst_time_stamp
 
 
 
@@ -48,19 +48,15 @@ class color(commands.Cog):
                 await interaction.response.send_message("Please input a valid hex value for a color.", ephemeral=True)
                 return
 
-        color_image = Image.new('RGB', (400, 400), hex_rgb)
+        color_image = Image.new('RGB', (300, 300), hex_rgb)
 
         color_image.save(f"./storage/temp/{hexcode}.png")
 
-        embed = embed_builder(title = f"Color: {hexcode}",
-                              color = int(f"0x{hexcode}"),
-                              image = f"./storage/temp/{hexcode}.png")
+        await interaction.response.send_message(file = nextcord.File(f"./storage/temp/{hexcode}.png", f"{hexcode}.png"))
 
-        await interaction.response.send_message(embed=embed)
+        os.remove(f"./storage/temp/{hexcode}.png")
 
-        os.remove("demofile.txt")
-
-        uses_update(f"./storage/temp/{hexcode}.png")
+        uses_update("command_uses", "color")
 
 def setup(client):
     client.add_cog(color(client))

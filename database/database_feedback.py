@@ -1,7 +1,7 @@
 import sqlite3
 import os
 
-###bugs###########################################################
+###feedback###########################################################
 
 def submit_feedback(server_id, user_id, user_name, submission_time, feedback):
     database_path = os.path.join(os.path.dirname(__file__), '../storage/db/feedback.db')

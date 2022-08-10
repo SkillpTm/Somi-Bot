@@ -5,6 +5,7 @@ import nextcord
 from nextcord import Interaction
 from nextcord.ext import application_checks, commands
 import os
+import sys
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -53,7 +54,7 @@ async def on_close():
     print(f"Logging {client.user} out")
 
     AUDIT_LOG = client.get_channel(AUDIT_LOG_ID)
-    member_avatar_url = get_user_avatar(client)
+    member_avatar_url = get_user_avatar(client.user)
 
     embed = embed_builder(color = MOD_COLOR,
                           author = "Bot Activity",

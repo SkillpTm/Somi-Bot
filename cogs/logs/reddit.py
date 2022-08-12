@@ -19,7 +19,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_reddit import get_history_ids, add_new_id_to_database
 from database.database_command_uses import uses_update
 from utilities.partial_commands import embed_builder
-from utilities.variables import REDDIT_ID, REDDIT_FEED_ID, SUBREDDIT_ICON, REDDIT_COLOR, CLOCK_ICON, REDDIT_ICON
+from utilities.variables import REDDIT_ID, REDDIT_FEED_ID, SUBREDDIT_ICON, REDDIT_COLOR, REDDIT_ICON
 
 
 
@@ -54,10 +54,8 @@ async def reddit_loop(client):
             embed = embed_builder(description = f"[New Post in **r/{subreddit.display_name}**](https://www.reddit.com{submission.permalink})",
                                   color = REDDIT_COLOR,
                                   thumbnail = thumbnail_url,
-                                  author = "Subreddit Update",
-                                  author_icon = REDDIT_ICON,
                                   footer = post_time.strftime(format),
-                                  footer_icon = CLOCK_ICON)
+                                  footer_icon = REDDIT_ICON)
 
             clean_flair = re.sub(":.*?:", "", str(submission.link_flair_text))
             

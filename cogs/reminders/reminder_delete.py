@@ -48,7 +48,7 @@ class reminder_delete(commands.Cog):
     async def reminder_delete(self,
                               interaction: Interaction,
                               *,
-                              reminder_id: int = SlashOption(description="the ID of the remidner to be deleted or 'ALL' (to find your reminder ID use '/reminder list'", required=True, min_value=1000000000, max_value=9999999999)):
+                              reminder_id: str = SlashOption(description="the ID of the remidner to be deleted or 'ALL' (to find your reminder ID use '/reminder list'", required=True, min_length=1, max_length=10)):
         if not checks(interaction):
             return
 
@@ -57,7 +57,11 @@ class reminder_delete(commands.Cog):
         if reminder_id == "ALL":
             delete_id = reminder_id
         else:
-            delete_id = int(reminder_id)
+            try:
+                delete_id = int(reminder_id)
+            except:
+                await interaction.response.send_message(f"`{reminder_id}` isn't a valid reminder_id.", ephemeral=True)
+                return
 
         deleted , deleted_all = delete_reminder(interaction.user.id, delete_id)
 
@@ -91,7 +95,7 @@ class reminder_delete(commands.Cog):
 
 
         if not deleted:
-            await interaction.response.send_message(f"You don't have a reminder with the ID `{reminder_id[:4000]}`.", ephemeral=True)
+            await interaction.response.send_message(f"You don't have a reminder with the ID `{reminder_id}`.", ephemeral=True)
             return
 
         await interaction.response.send_message(f"Your reminder with the ID `{reminder_id}` has been deleted.", ephemeral=True)

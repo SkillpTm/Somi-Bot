@@ -45,6 +45,10 @@ class reminder_add(commands.Cog):
             await interaction.response.send_message(f"`{time}` is not a valid time period. Make sure to use the formating in the input description.", ephemeral=True)
             return
 
+        if total_seconds > 315576000: #10y in seconds
+            await interaction.response.send_message(f"`{time}` is too long for a reminder. Reminders have to be under 10 years long.", ephemeral=True)
+            return
+
         reminder_time = int(unix_time.time()) + int(total_seconds)
         delete_id = ""
         counter = 0

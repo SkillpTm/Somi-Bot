@@ -57,7 +57,7 @@ SOMI_F = "<:SomiF:829933531147796510>"
 HEADS = "<:heads:998363203992031252>"
 TAILS = "<:tails:998363225924046949>"
 
-CURRENT_VERSION = "1.2"
+CURRENT_VERSION = "2.0"
 SERVER_ID = 769668499605159998
 SOMICORD_INVITE = "https://discord.gg/Frd7WYg"
 
@@ -176,11 +176,12 @@ HELP_OUTPUT = {
     "commandlist": ["/commandlist (no parameters) or /cl (no parameters)\nExample: `/commandlist` or `/cl`",
                    f"This command outputs a list with all regular commands.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
+    "custom": ["/custom list (no parameters)\nExample: `/custom list`",
+              f"This command will give you a list for all custom command names (You can use these names with `/customcommand`).\nIf you continue to require further help please message <@{SKILLP_ID}>"],
+
     "customcommand": ["/customcommand [custom name] or /cc [custom name]\nExample: `/customcommand somi` or `/cc somi`",
                      f"All custom commands have been created by the moderators and can only be added/removed by a moderator. If you input a custom command name the bot will respond with its output text.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "custom": ["/custom list (no parameters)\nExample: `/custom list`",
-              f"This command will give you a list for all custom command names (You can use these names with `/customcommand`.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
     "emoji": [f"/emoji [emoji] \nExample: `/emoji `{REACTION_EMOTE}",
              f"This command posts an emoji in its original size.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
@@ -192,15 +193,15 @@ HELP_OUTPUT = {
             f"This command gives you an explanation for what a certain command does.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
     "keyword": ["/keyword add [keyword] or delete [keyword] // [ALL] or list\nExample: `/keyword add somi` or `/keyword delete somi` or `/keyword list`",
-               f"This command lets you add or delete a keyword to your keyword list, which you can open as well. If you set a keyword the bot will send you a direct message when someone else mentions this keyword.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
+               f"This command lets you add/delete a keyword to/from your keyword list, which you can open as well. If you set a keyword the bot will send you a direct message when someone else mentions this keyword.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
     "kst": ["/kst (no parameters)\nExample: `/kst`",
            f"This command tells you the current time in KST (Korean Standard Time).\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
     "levelroles": ["/levelroles (no parameters)\nExample: `/levelroles`",
-                  f"This command will explain the level system of this server to you. It also includes a list of all roles with levels.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
+                  f"This command will explain the level system of this server to you. It also includes a list of all roles with their levels.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "lyrics": ["/lyrics (no parameters) // [Artist] AND [Song]\nExample: `/lyrics Jeon Somi XOXO`",
+    "lyrics": ["/lyrics (no parameters) // optional[Artist] AND optional[Song]\nExample: `/lyrics Jeon Somi XOXO`",
                   f"This command posts the lyrics of the song you are listening to (only if your Spotify is connect to your Discord and you are online) or shows you the lyrics for the specified song.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
     "ping": ["/ping (no parameters)\nExample: `/ping`",

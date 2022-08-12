@@ -27,7 +27,7 @@ class slowmode(commands.Cog):
     async def slowmode(self,
                        interaction: Interaction,
                        *,
-                       delay: int = SlashOption(description="how long it takes until a user can send a message again in seconds. (To end slowmode input '0')", required=True, min_value = 0, max_value = 300),
+                       delay: int = SlashOption(description="how long it takes until a user can send a message again in seconds. (To end slowmode input '0')", required=True, min_value = 0, max_value = 3600),
                        channel: nextcord.abc.GuildChannel = SlashOption(channel_types=[ChannelType.text, ChannelType.public_thread], description="the channel to activate slowmode in", required=False)):
         if not checks(interaction):
             return

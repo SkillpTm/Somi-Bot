@@ -55,7 +55,7 @@ class choose(commands.Cog):
         chosen_option_int = random.randint(0, len(Options)-1)
         chosen_option = Options[chosen_option_int]
 
-        await interaction.response.send_message(f"I have chosen `Option {chosen_option_int+1}`:\n{chosen_option}")
+        await interaction.response.send_message(f"I have chosen __Option {chosen_option_int+1}__:\n`{chosen_option}`")
 
         uses_update("command_uses", "choose")
 

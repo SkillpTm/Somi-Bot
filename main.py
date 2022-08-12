@@ -5,7 +5,6 @@ import nextcord
 from nextcord import Interaction
 from nextcord.ext import application_checks, commands
 import os
-import sys
 from dotenv import load_dotenv
 
 load_dotenv()

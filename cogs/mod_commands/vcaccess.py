@@ -11,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
 from utilities.partial_commands import get_user_avatar, embed_builder
-from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, LEVELROLES, MOD_COLOR
+from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR
 
 
 
@@ -33,29 +33,26 @@ class vcaccess(commands.Cog):
 
         print(f"{interaction.user}: /vcaccess {member}")
 
-        for role_id in LEVELROLES:
-            role = interaction.guild.get_role(int(role_id))
-            if role in member.roles:
-                await interaction.response.send_message(f"{member} already has access to the voice channels!", ephemeral=True)
-                return
-
         for channel in interaction.guild.voice_channels:
+            print(channel.permissions_for(member).value)
             if not channel.permissions_for(member).value == 418863451712: #418863451712 = if the user already has those permissions on that channel
                 await channel.set_permissions(member, connect = True, speak = True, stream = True, use_voice_activation = True)
                 permissions_added = True
+                response = f"{member.mention} now has access to all voice channels!"
+
             else:
                 await channel.set_permissions(member, connect = False, speak = False, stream = False, use_voice_activation = False)
                 permissions_added = False
+                response = f"{member.mention} now lost access to all voice channels"
 
-        await interaction.response.send_message(f"{member} now has access to all voice channels!", ephemeral=True)
-
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
+        await interaction.response.send_message(response, ephemeral=True)
 
         if permissions_added:
-            action_text = f"{interaction.user.mention} gave {member.mention} access to all voice channels"
+            action_text = f"{interaction.user.mention} gave {member.mention} access to all voice channels."
         else:
-            action_text = f"{interaction.user.mention} took access from all voice channels of {member.mention} away"
+            action_text = f"{interaction.user.mention} took access from all voice channels of {member.mention} away."
 
+        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
         member_avatar_url = get_user_avatar(interaction.user)
 
         embed = embed_builder(color = MOD_COLOR,
@@ -71,7 +68,7 @@ class vcaccess(commands.Cog):
         uses_update("mod_command_uses", "vcaccess")
 
     @vcaccess.error
-    async def error(interaction: Interaction, error):
+    async def error(self, interaction: Interaction, error):
         await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 

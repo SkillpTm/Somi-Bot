@@ -95,7 +95,7 @@ class external_logs(commands.Cog):
 
         embed = embed_builder(color = Color.red(),
                               author = "Mod Activity",
-                              author_url = member_avatar_url,
+                              author_icon = member_avatar_url,
 
                               field_one_name = "External purge:",
                               field_one_value = f"{entry.user.mention} purged: `{len(messages)} message(s)` in {entry.target.mention}without using {self.client.user.mention}",
@@ -129,7 +129,7 @@ class external_logs(commands.Cog):
 
         embed = embed_builder(color = Color.red(),
                               author = "Mod Activity",
-                              author_url = member_avatar_url,
+                              author_icon = member_avatar_url,
 
                               field_one_name = "External kick:",
                               field_one_value = f"{entry.user.mention} kicked: {entry.target.mention} without using {self.client.user.mention}",

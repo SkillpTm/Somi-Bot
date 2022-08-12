@@ -69,8 +69,6 @@ class modmail(commands.Cog):
             if f"{message.author.name}{message.author.discriminator}" in f"{thread.name}":
                 user_thread = thread
 
-        print(user_thread)
-
         if user_thread == None:
             user_thread = await MOD_CHANNEL.create_thread(name = f"Modmail ({message.author})", message = None, auto_archive_duration = 4320, type = nextcord.ChannelType.public_thread) #4320 is 3 days in minutes
             for member in MOD_CHANNEL.members:

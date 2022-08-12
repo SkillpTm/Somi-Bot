@@ -29,7 +29,7 @@ class lyrics(commands.Cog):
     ###lyrics###########################################################
 
     @nextcord.slash_command(name='lyrics', description='Posts the lyircs to the song you are playing')
-    async def spotify(self,
+    async def lyrics(self,
                       interaction: Interaction,
                       *,
                       artist: str = SlashOption(description="The artist you want a song to see the lyrics of", required=False, min_length=1, max_length=100),

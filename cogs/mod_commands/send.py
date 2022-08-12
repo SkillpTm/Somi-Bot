@@ -68,7 +68,7 @@ class send(commands.Cog):
     async def edit(self,
                    interaction: Interaction,
                    *,
-                   message_id: int = SlashOption(description="ID of the message to be edited", required=True, min_value=1, max_value=None),
+                   message_id: str = SlashOption(description="ID of the message to be edited", required=True, min_length=18, max_length=19),
                    message: str = SlashOption(description="the new message to be edited by the bot", required=True, min_length=1, max_length=1000)):
         if not checks(interaction):
             return
@@ -78,7 +78,7 @@ class send(commands.Cog):
         for channel in self.client.get_all_channels():
             msg = ""
             try:
-                msg = await channel.fetch_message(message_id)
+                msg = await channel.fetch_message(int(message_id))
                 correct_channel = channel
                 break
             except:
@@ -101,7 +101,7 @@ class send(commands.Cog):
                               field_one_value = msg.content,
                               field_one_inline = False,
                               
-                              field_two_name = "Before:",
+                              field_two_name = "After:",
                               field_two_value = message,
                               field_two_inline = False)
 

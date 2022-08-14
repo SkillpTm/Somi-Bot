@@ -49,7 +49,7 @@ class lyrics(commands.Cog):
             await interaction.response.send_message("Please select a valid artist **and** a valid song or play a song on Spotify!", ephemeral=True)
             return
         
-        access_token = os.environ['GENIUS_ACCESS_TOKEN']
+        access_token = os.environ["GENIUS_ACCESS_TOKEN"]
         genius = lyricsgenius.Genius(access_token)
 
         genius_song = genius.search_song(title=song, artist=artist)

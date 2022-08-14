@@ -24,10 +24,10 @@ from utilities.variables import REDDIT_ID, REDDIT_FEED_ID, SUBREDDIT_ICON, REDDI
 
 
 async def reddit_loop(client):
-    reddit = asyncpraw.Reddit(client_id=os.getenv('REDDIT_ID'),
-                              client_secret=os.getenv('REDDIT_SECRET'),
+    reddit = asyncpraw.Reddit(client_id=os.getenv("REDDIT_ID"),
+                              client_secret=os.getenv("REDDIT_SECRET"),
                               username="SomiBot",
-                              password=os.getenv('REDDIT_PASSWORD'),
+                              password=os.getenv("REDDIT_PASSWORD"),
                               user_agent="testscript by u/SkillpTm")
 
     subreddit = await reddit.subreddit("somi", fetch=True)
@@ -103,10 +103,10 @@ class reddit(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        await asyncio.sleep(30)
         try:
             await reddit_loop(self.client)
         except:
+            await asyncio.sleep(30)
             self.client.reload_extension("cogs.logs.reddit")
 
 def setup(client):

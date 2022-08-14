@@ -137,4 +137,4 @@ async def error(interaction: Interaction, error):
 
 
 
-client.run(os.getenv('DISCORD_TOKEN'))
+client.run(os.getenv("DISCORD_TOKEN"))

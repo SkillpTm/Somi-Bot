@@ -48,6 +48,7 @@ WELCOME_GIF = "https://gfycat.com/partialoblongfreshwatereel"
 
 CLOCK_ICON = "https://i.imgur.com/nqDFTTP.png"
 GENIUS_ICON = "https://i.imgur.com/XF1cOBN.png"
+OPENWEATHERMAP_ICON = "https://i.imgur.com/drJnhNn.png"
 REDDIT_ICON = "https://i.imgur.com/yXrvhM9.png"
 SPOTIFY_ICON = "https://i.imgur.com/YKtWQK4.png"
 
@@ -92,7 +93,8 @@ COMMAND_LIST = """
 /serverinfo (alias: /si)
 /spotify (alias: /sf)
 /somi
-/userinfo (alias: ui)"""
+/userinfo (alias: ui)
+/weather"""
 
 MOD_COMMANDS = """
 /ban
@@ -149,7 +151,8 @@ HELP_OPTIONS = [
     SelectOption(label="serverinfo", description = "/serverinfo | /si"),
     SelectOption(label="spotify", description = "/spotify | /sf"),
     SelectOption(label="somi", description = "/somi"),
-    SelectOption(label="userinfo", description = "/userinfo | /ui")
+    SelectOption(label="userinfo", description = "/userinfo | /ui"),
+    SelectOption(label="weather", description = "/weather")
 ]
 
 
@@ -220,5 +223,9 @@ HELP_OUTPUT = {
             f"This command will tell you the truth and the truth only.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
     "userinfo": [f"/userinfo optional[@username] or /ui optional[@username]\nExample: `/userinfo `<@{SKILLP_ID}> or `/ui `<@{SKILLP_ID}>",
-                 f"This command will post the user information of the selected user/you.\nIf you continue to require further help please message <@{SKILLP_ID}>"]
+                 f"This command will post the user information of the selected user/you.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
+
+    "weather": [f"/weather [location]\nExample: `/weather Seoul`",
+                 f"This command will post the current weather data for the given location.\nIf you continue to require further help please message <@{SKILLP_ID}>"]
+
 }

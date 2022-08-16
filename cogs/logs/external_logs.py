@@ -3,6 +3,7 @@
 import nextcord
 from nextcord import Color
 from nextcord.ext import commands
+import os
 
 client = commands.Bot(intents=nextcord.Intents.all())
 
@@ -98,7 +99,7 @@ class external_logs(commands.Cog):
                               author_icon = member_avatar_url,
 
                               field_one_name = "External purge:",
-                              field_one_value = f"{entry.user.mention} purged: `{len(messages)} message(s)` in {entry.target.mention}without using {self.client.user.mention}",
+                              field_one_value = f"{entry.user.mention} purged: `{len(messages)} message(s)` in {entry.target.mention} without using {self.client.user.mention}",
                               field_one_inline = False,
 
                               field_two_name = "Note:",
@@ -106,7 +107,9 @@ class external_logs(commands.Cog):
                               field_two_inline = False)
 
         await AUDIT_LOG.send(embed=embed)
-        await AUDIT_LOG.send(file=nextcord.File("./storage/bulk_messages.csv"))
+        await AUDIT_LOG.send(file=nextcord.File("./storage/temp/bulk_messages.csv"))
+
+        os.remove("./storage/temp/bulk_messages.csv")
 
     ###on#member#kick###########################################################
 

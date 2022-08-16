@@ -338,13 +338,13 @@ def make_bulk_messages_csv(messages):
     messages.reverse()
     format = "%Y/%m/%d %H:%M:%S"
 
-    with open('./storage/bulk_messages.csv', 'w') as file:
+    with open('./storage/temp/bulk_messages.csv', 'w') as file:
         write = csv.writer(file)
 
         write.writerow(["Author ID", "Author Name", "Send at", "Content"])
 
     for i in range(len(messages)):
-        with open('./storage/bulk_messages.csv', 'a') as file:
+        with open('./storage/temp/bulk_messages.csv', 'a') as file:
             write = csv.writer(file)
             message_send_time = messages[i].created_at.strftime(format)
     

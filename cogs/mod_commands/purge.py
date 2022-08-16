@@ -3,6 +3,7 @@
 import nextcord
 from nextcord import Color, Interaction, SlashOption
 from nextcord.ext import application_checks, commands
+import os
 
 client = commands.Bot(intents=nextcord.Intents.all())
 
@@ -55,7 +56,9 @@ class purge(commands.Cog):
                               field_two_inline = False)
 
         await AUDIT_LOG.send(embed=embed)
-        await AUDIT_LOG.send(file=nextcord.File("./storage/bulk_messages.csv"))
+        await AUDIT_LOG.send(file=nextcord.File("./storage/temp/bulk_messages.csv"))
+
+        os.remove("./storage/temp/bulk_messages.csv")
 
         uses_update("mod_command_uses", "purge")
 

@@ -33,7 +33,7 @@ class weather(commands.Cog):
     async def weather(self,
                       interaction: Interaction,
                       *,
-                      location: str = SlashOption(description="The artist you want a song to see the lyrics of", required=True, min_length=1, max_length=30)):
+                      location: str = SlashOption(description="the location you want to know thw weather of", required=True, min_length=1, max_length=30)):
         if not checks(interaction):
             return
 
@@ -44,13 +44,13 @@ class weather(commands.Cog):
 
         API_KEY = os.getenv("WEATHER_API_KEY")
 
-        request_url_old = f"http://api.openweathermap.org/data/2.5/weather?appid={API_KEY}&q={location}&units=metric"
+        request_url = f"http://api.openweathermap.org/data/2.5/weather?appid={API_KEY}&q={location}&units=metric"
 
-        if not requests.get(request_url_old).status_code == 200:
+        if not requests.get(request_url).status_code == 200:
             await interaction.response.send_message("Your selected location couldn't be found.", ephemeral=True)
             return
 
-        weather_data = requests.get(request_url_old).json()
+        weather_data = requests.get(request_url).json()
 
         descirption = weather_data["weather"][0]["description"]
         humidity = weather_data["main"]["humidity"]
@@ -69,11 +69,8 @@ class weather(commands.Cog):
         country = pycountry.countries.get(alpha_2=country_code)
 
         format = "%Y/%m/%d %H:%M:%S"
-        print(location_time_utc, timezone_difference)
-        unformated_time = datetime.datetime.fromtimestamp(location_time_utc + timezone_difference - 7200)
-        print(unformated_time)
+        unformated_time = datetime.datetime.fromtimestamp(location_time_utc + timezone_difference - 7200) #For some reason all times are 2h off, this fixes it
         local_date_and_time = unformated_time.strftime(format)
-        print(local_date_and_time)
         local_date_and_time = local_date_and_time.split(" ")
 
         output = f"""

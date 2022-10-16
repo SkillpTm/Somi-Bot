@@ -354,44 +354,44 @@ def make_bulk_messages_csv(messages):
 
 from nextcord import Embed
 
-def embed_builder(title = Embed.Empty,
-                  title_url = Embed.Empty,
-                  description = Embed.Empty,
-                  color = Embed.Empty,
-                  thumbnail = Embed.Empty,
-                  image = Embed.Empty,
-                  author = Embed.Empty,
-                  author_url = Embed.Empty,
-                  author_icon = Embed.Empty,
-                  footer = Embed.Empty,
-                  footer_icon = Embed.Empty,
+def embed_builder(title = None,
+                  title_url = None,
+                  description = None,
+                  color = None,
+                  thumbnail = None,
+                  image = None,
+                  author = None,
+                  author_url = None,
+                  author_icon = None,
+                  footer = None,
+                  footer_icon = None,
 
-                  field_one_name = Embed.Empty,
-                  field_one_value = Embed.Empty,
+                  field_one_name = None,
+                  field_one_value = None,
                   field_one_inline = False,
                                     
-                  field_two_name = Embed.Empty,
-                  field_two_value = Embed.Empty,
+                  field_two_name = None,
+                  field_two_value = None,
                   field_two_inline = False,
                                     
-                  field_three_name = Embed.Empty,
-                  field_three_value = Embed.Empty,
+                  field_three_name = None,
+                  field_three_value = None,
                   field_three_inline = False,
                                     
-                  field_four_name = Embed.Empty,
-                  field_four_value = Embed.Empty,
+                  field_four_name = None,
+                  field_four_value = None,
                   field_four_inline = False,
                                     
-                  field_five_name = Embed.Empty,
-                  field_five_value = Embed.Empty,
+                  field_five_name = None,
+                  field_five_value = None,
                   field_five_inline = False,
                                     
-                  field_six_name = Embed.Empty,
-                  field_six_value = Embed.Empty,
+                  field_six_name = None,
+                  field_six_value = None,
                   field_six_inline = False,
 
-                  field_seven_name = Embed.Empty,
-                  field_seven_value = Embed.Empty,
+                  field_seven_name = None,
+                  field_seven_value = None,
                   field_seven_inline = False):
     embed = Embed(title = title,
                   url = title_url,
@@ -402,10 +402,10 @@ def embed_builder(title = Embed.Empty,
 
     embed.set_image(url = image)
 
-    if author != Embed.Empty:
+    if author != None:
         embed.set_author(name = author, url = author_url, icon_url = author_icon)
 
-    if footer == Embed.Empty:
+    if footer == None:
         format = "%Y/%m/%d %H:%M:%S %Z"
         now_utc = timedate.now(timezone('UTC'))
         now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
@@ -423,8 +423,8 @@ def embed_builder(title = Embed.Empty,
               [field_seven_name, field_seven_value, field_seven_inline]]
 
     for i in range(len(fields)):
-        if not "" == fields[i][0] and not None == fields[i][0] and not Embed.Empty == fields[i][0]:
-            if not "" == fields[i][1] and not None == fields[i][1] and not Embed.Empty == fields[i][1]:
+        if not "" == fields[i][0] and not None == fields[i][0]:
+            if not "" == fields[i][1] and not None == fields[i][1]:
                 embed.add_field(name = f"{fields[i][0]}"[:49], value = f"{fields[i][1]}"[:975], inline = fields[i][2])
 
     return embed

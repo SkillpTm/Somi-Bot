@@ -9,8 +9,9 @@ client = commands.Bot(intents=nextcord.Intents.all())
 ###self#imports###############################################################################
 
 from database.database_command_uses import uses_update
-from database.database_keywords import delete_keyword, delete_all_user_keywords
+from database.database_keywords import delete_keyword, delete_all_user_keywords, list_keyword
 from utilities.maincommands import checks
+from utilities.partial_commands import string_search_to_list
 
 
 
@@ -97,6 +98,16 @@ class keyword_delete(commands.Cog):
         await interaction.response.send_message(f"`{clean_keyword}` has been removed from your keyword list.", ephemeral=True)
 
         uses_update("command_uses", "keyword_delete")
+
+    @keyword_delete.on_autocomplete("keyword")
+    async def autocomplete_keyword_delete(self,
+                                          interaction: Interaction,
+                                          keyword: str):
+        amount, keywords_list = list_keyword(interaction.user.id)
+
+        autocomplete_list = string_search_to_list(keyword, keywords_list)
+
+        await interaction.response.send_autocomplete(autocomplete_list)
 
 def setup(client):
     client.add_cog(keyword_delete(client))

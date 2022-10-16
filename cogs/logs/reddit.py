@@ -94,6 +94,16 @@ async def reddit_loop(client):
             add_new_id_to_database(submission.id)
 
 
+
+async def infinite_reddit_loop(self):
+    try:
+        await reddit_loop(self.client)
+    except:
+        await asyncio.sleep(60)
+        await infinite_reddit_loop(self)
+
+
+
 class reddit(commands.Cog):
 
     def __init__(self, client):
@@ -103,11 +113,7 @@ class reddit(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        try:
-            await reddit_loop(self.client)
-        except:
-            await asyncio.sleep(30)
-            self.client.reload_extension("cogs.logs.reddit")
+        await infinite_reddit_loop(self)
 
 def setup(client):
     client.add_cog(reddit(client))

@@ -428,3 +428,15 @@ def embed_builder(title = Embed.Empty,
                 embed.add_field(name = f"{fields[i][0]}"[:49], value = f"{fields[i][1]}"[:975], inline = fields[i][2])
 
     return embed
+
+def string_search_to_list(string, list):
+    if string == "":
+        string_list = [str(list_object) for list_object in list]
+        return string_list
+
+    get_near_objects = [str(list_object) for list_object in list if str(list_object).lower().startswith(string.lower())]
+
+    if get_near_objects == []:
+        get_near_objects = [str(list_object) for list_object in list if string.lower() in str(list_object).lower()]
+
+    return get_near_objects

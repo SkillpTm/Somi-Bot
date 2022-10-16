@@ -11,7 +11,7 @@ spotipy (Spotify API wrapper): https://spotipy.readthedocs.io/en/master/
 
 Packages:
 
-asynico: https://docs.python.org/3/library/asyncio.html
+asyncio: https://docs.python.org/3/library/asyncio.html
 datetime: https://docs.python.org/3/library/datetime.html
 csv: https://docs.python.org/3/library/csv.html
 dotenv: https://saurabh-kumar.com/python-dotenv/

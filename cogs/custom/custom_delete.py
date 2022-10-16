@@ -9,10 +9,10 @@ client = commands.Bot(intents=nextcord.Intents.all())
 ###self#imports###############################################################################
 
 from database.database_command_uses import uses_update
-from database.database_custom import delete_custom_command
+from database.database_custom import list_custom, delete_custom_command
 from utilities.maincommands import checks
 from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR
-from utilities.partial_commands import get_user_avatar, restart_bot, make_input_command_clean, embed_builder
+from utilities.partial_commands import get_user_avatar, restart_bot, make_input_command_clean, embed_builder, string_search_to_list
 
 
 
@@ -70,6 +70,16 @@ class custom_delete(commands.Cog):
     @custom_delete.error
     async def ban_error(self, interaction: Interaction, error):
         await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+
+    @custom_delete.on_autocomplete("commandname")
+    async def autocomplete_commandname(self,
+                                       interaction: Interaction,
+                                       commandname: str):
+        amount, all_commandnames = list_custom(interaction.guild.id)
+
+        autocomplete_list = string_search_to_list(commandname, all_commandnames)
+
+        await interaction.response.send_autocomplete(autocomplete_list)
 
 def setup(client):
     client.add_cog(custom_delete(client))

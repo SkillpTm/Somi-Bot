@@ -9,8 +9,9 @@ client = commands.Bot(intents=nextcord.Intents.all())
 ###self#imports###############################################################################
 
 from database.database_command_uses import uses_update
-from database.database_reminders import delete_reminder, delete_all_user_reminders
+from database.database_reminders import delete_reminder, delete_all_user_reminders, list_reminder
 from utilities.maincommands import checks
+from utilities.partial_commands import string_search_to_list
 
 
 
@@ -101,6 +102,16 @@ class reminder_delete(commands.Cog):
         await interaction.response.send_message(f"Your reminder with the ID `{reminder_id}` has been deleted.", ephemeral=True)
 
         uses_update("command_uses", "reminder delete")
+
+    @reminder_delete.on_autocomplete("reminder_id")
+    async def autocomplete_reminder_delete(self,
+                                       interaction: Interaction,
+                                       reminder_id: str):
+        amount, reminder_times, bot_reply_links, delete_ids, clean_reminders = list_reminder(interaction.user.id)
+
+        autocomplete_list = string_search_to_list(reminder_id, delete_ids)
+
+        await interaction.response.send_autocomplete(autocomplete_list)
 
 def setup(client):
     client.add_cog(reminder_delete(client))

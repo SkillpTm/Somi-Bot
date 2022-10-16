@@ -9,9 +9,9 @@ client = commands.Bot(intents=nextcord.Intents.all())
 ###self#imports###############################################################################
 
 from database.database_command_uses import uses_update
-from database.database_custom import command_custom, get_description_custom_command_names
+from database.database_custom import list_custom, command_custom, get_description_custom_command_names
 from utilities.maincommands import checks
-from utilities.partial_commands import make_input_command_clean
+from utilities.partial_commands import make_input_command_clean, string_search_to_list
 from utilities.variables import SERVER_ID
 
 
@@ -48,6 +48,16 @@ class custom_command(commands.Cog):
         uses_update("command_uses", "customcommand")
         uses_update("custom_command_uses", f"{clean_commandname}")
 
+    @customcommand.on_autocomplete("commandname")
+    async def autocomplete_commandname(self,
+                                       interaction: Interaction,
+                                       commandname: str):
+        amount, all_commandnames = list_custom(interaction.guild.id)
+
+        autocomplete_list = string_search_to_list(commandname, all_commandnames)
+
+        await interaction.response.send_autocomplete(autocomplete_list)
+
     ###customcommand#alias###########################################################
 
     @nextcord.slash_command(name='cc', description="post a custom command (alias of /customcommand)")
@@ -72,6 +82,16 @@ class custom_command(commands.Cog):
 
         uses_update("command_uses", "cc")
         uses_update("custom_command_uses", f"{clean_commandname}")
+
+    @cc.on_autocomplete("commandname")
+    async def autocomplete_commandname(self,
+                                       interaction: Interaction,
+                                       commandname: str):
+        amount, all_commandnames = list_custom(interaction.guild.id)
+
+        autocomplete_list = string_search_to_list(commandname, all_commandnames)
+
+        await interaction.response.send_autocomplete(autocomplete_list)
 
 def setup(client):
     client.add_cog(custom_command(client))

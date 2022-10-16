@@ -46,25 +46,6 @@ async def on_ready():
     
     client.add_view(roles())
 
-###on#close###############################################################################
-
-@client.event
-async def on_close():
-    print(f"Logging {client.user} out")
-
-    AUDIT_LOG = client.get_channel(AUDIT_LOG_ID)
-    member_avatar_url = get_user_avatar(client.user)
-
-    embed = embed_builder(color = MOD_COLOR,
-                          author = "Bot Activity",
-                          author_icon = member_avatar_url,
-
-                          field_one_name = "Shutdown",
-                          field_one_value = "The bot is shutting down!",
-                          field_one_inline = True)
-
-    await AUDIT_LOG.send(content = f"<@{SKILLP_ID}>",embed=embed)
-
 ###restart###############################################################################
 
 @client.slash_command(name="restart", description="[MOD] restarts the entire bot")

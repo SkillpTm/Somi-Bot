@@ -39,7 +39,7 @@ class custom_add(commands.Cog):
 
         clean_commandname = make_input_command_clean(commandname)
 
-        added = create_custom_command(interaction.guild.id, clean_commandname, commandtext)
+        added = create_custom_command(interaction.guild.id, clean_commandname, commandtext.replace("'", "‘"))
 
         if not added:
             await interaction.response.send_message(f"A custom command with the name `{clean_commandname}` already exists. Please select a different name.", ephemeral=True)

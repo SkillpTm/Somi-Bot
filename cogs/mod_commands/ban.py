@@ -10,7 +10,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import get_user_avatar, is_member_skillp, is_member_themself, embed_builder
+from utilities.partial_commands import get_user_avatar, is_member_skillp, is_member_themself, embed_builder, string_search_to_list
 from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, SKILLP_ID
 
 
@@ -121,6 +121,20 @@ class ban(commands.Cog):
     @unban.error
     async def unban_error(self, interaction: Interaction, error):
         await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+
+    @unban.on_autocomplete("member_id")
+    async def autocomplete_unban(self,
+                                 interaction: Interaction,
+                                 member_id: str):
+        bans = await interaction.guild.bans(limit=1000).flatten()
+        bans_ids = []
+
+        for ban in bans:
+            bans_ids.append(ban.user.id)
+
+        autocomplete_list = string_search_to_list(member_id, bans_ids)
+
+        await interaction.response.send_autocomplete(autocomplete_list)
 
 def setup(client):
     client.add_cog(ban(client))

@@ -109,6 +109,7 @@ MOD_COMMANDS = """
 /purge
 /reload
 /restart
+/rules
 /send
 /shutdown
 /slowmode
@@ -228,4 +229,20 @@ HELP_OUTPUT = {
     "weather": [f"/weather [location]\nExample: `/weather Seoul`",
                  f"This command will post the current weather data for the given location.\nIf you continue to require further help please message <@{SKILLP_ID}>"]
 
+}
+
+
+
+RULES = {
+    "1 NSFW Content": ["No NSFW content is allowed, the only exception of this rule includes sensitive news articles, which have to be marked as a spoiler.", "You spoiler with ||spoiler||."],
+    "2 Doxxing": ["Doxxing of users and/or idols is strongly prohibited.", ""],
+    "3 Cursing": ["Cursing is allowed, as long, as it is not excessive or is degrading in any way to a specific group of people.", "Excessive is not defined and will be decided case-by-case."],
+    "4 Language": ["Use primarily English, if you're asked by a moderator to switch languages, you'll __have__ to switch.", ""],
+    "5 Discrimination": ["Racism, discrimination, sexism, ableism, homophobia and any other form of bigotry and prejudice is not allowed.", ""],
+    "6 Channel Use": ["Use channels in their intended way, bots can be used in #general, if fitting to the conversation.", ""],
+    "7 Unboxing Spoiler Tags": ["Showing off your unboxed kpop content is allowed, as long you spoiler tag the pictures regarding it.", ""],
+    "8 Spam": ["Don't excessively use caps, tHiS wAy Of WrItInG, spam emotes, spam pics, spam gifs or spam in general.", ""],
+    "9 Negativity": ["Don't bash or talk bad, about any group or artist in general.", "Negativity never made anyone happy, so stay nice."],
+    "10 Selfpromotion": ["Self-promotion is prohibited, fanarts are still allowed.", ""],
+    "11 Relationships": ["Don't call idols your girlfriend/boyfriend or anything similar. Don't talk about dating them or what you want them to do to you, etc.", ""]
 }

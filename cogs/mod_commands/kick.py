@@ -61,6 +61,7 @@ class kick(commands.Cog):
         embed = embed_builder(color = Color.orange(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "/kick:",
                               field_one_value = f"{interaction.user.mention} kicked: {member.mention} and deleted their messages for: `{delete_messages_days} day(s)`",

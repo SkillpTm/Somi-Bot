@@ -53,6 +53,7 @@ class custom_list(commands.Cog):
         embed = embed_builder(color = BOT_COLOR,
                               author = f"Custom command list for {interaction.guild}",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "Custom commands:",
                               field_one_value = output[:1000],

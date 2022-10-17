@@ -57,7 +57,8 @@ class reminder_list(commands.Cog):
         embed = embed_builder(description = output[:4096],
                               color = BOT_COLOR,
                               author = f"Reminder List for {interaction.user}",
-                              author_icon = member_avatar_url)
+                              author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER")
 
         await interaction.response.send_message(embed=embed)
 

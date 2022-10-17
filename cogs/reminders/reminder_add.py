@@ -62,6 +62,7 @@ class reminder_add(commands.Cog):
                               color = BOT_COLOR,
                               author = f"Reminder Set for {interaction.user}",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "Time:",
                               field_one_value = f"<t:{reminder_time}:F>",

@@ -25,6 +25,7 @@ class HelpDropdownView(nextcord.ui.View):
 
         embed = embed_builder(title = f"Help for /{selection}",
                               color = BOT_COLOR,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "Syntax:",
                               field_one_value = HELP_OUTPUT[selection][0],

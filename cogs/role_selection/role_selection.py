@@ -79,6 +79,7 @@ class roles(nextcord.ui.View):
         embed = embed_builder(color = BOT_COLOR,
                               author = f"Rolelist for {interaction.user}",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "Roles:",
                               field_one_value = output[:1000],

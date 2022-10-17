@@ -53,6 +53,7 @@ class keyword_list(commands.Cog):
         embed = embed_builder(color = BOT_COLOR,
                               author = f"Keyword List for: `{name}`",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "Keywords:",
                               field_one_value = output[:1000],

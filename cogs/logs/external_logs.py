@@ -36,6 +36,7 @@ class external_logs(commands.Cog):
         embed = embed_builder(color = Color.red(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "External ban:",
                               field_one_value = f"{entry.user.mention} banned: {entry.target.mention} without using {self.client.user.mention}",
@@ -68,6 +69,7 @@ class external_logs(commands.Cog):
         embed = embed_builder(color = Color.red(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "External unban:",
                               field_one_value = f"{entry.user.mention} unbanned: {entry.target.mention} without using {self.client.user.mention}",
@@ -97,6 +99,7 @@ class external_logs(commands.Cog):
         embed = embed_builder(color = Color.red(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "External purge:",
                               field_one_value = f"{entry.user.mention} purged: `{len(messages)} message(s)` in {entry.target.mention} without using {self.client.user.mention}",
@@ -133,6 +136,7 @@ class external_logs(commands.Cog):
         embed = embed_builder(color = Color.red(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "External kick:",
                               field_one_value = f"{entry.user.mention} kicked: {entry.target.mention} without using {self.client.user.mention}",

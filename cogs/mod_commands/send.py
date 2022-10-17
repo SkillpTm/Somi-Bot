@@ -48,6 +48,7 @@ class send(commands.Cog):
             	              color = MOD_COLOR,
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "Message:",
                               field_one_value = message,
@@ -96,6 +97,7 @@ class send(commands.Cog):
             	              color = MOD_COLOR,
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "Before:",
                               field_one_value = msg.content,

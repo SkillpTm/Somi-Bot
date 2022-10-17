@@ -87,6 +87,7 @@ def get_userinfo_embed(member):
     embed = embed_builder(title = f"User Information: `{name}`",
                           color = member.color,
                           thumbnail = member_avatar_url,
+                          footer = "DEFAULT_KST_FOOTER",
 
                           field_one_name = "ID",
                           field_one_value = member.id,
@@ -133,6 +134,7 @@ async def get_serverinfo_embed(client, interaction):
     embed = embed_builder(title = f"Server Information: `{interaction.guild.name}`",
                           color = BOT_COLOR,
                           thumbnail = server_icon_url,
+                          footer = "DEFAULT_KST_FOOTER",
 
                           field_one_name = "ID:",
                           field_one_value = interaction.guild.id,
@@ -405,7 +407,7 @@ def embed_builder(title = None,
     if author != None:
         embed.set_author(name = author, url = author_url, icon_url = author_icon)
 
-    if footer == None:
+    if footer == "DEFAULT_KST_FOOTER":
         format = "%Y/%m/%d %H:%M:%S %Z"
         now_utc = timedate.now(timezone('UTC'))
         now_korea = now_utc.astimezone(timezone('Asia/Seoul'))

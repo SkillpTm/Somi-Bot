@@ -37,7 +37,8 @@ async def reminder_send(client):
                 embed = embed_builder(title = "Reminder Notification",
                                       title_url = bot_reply_link,
                                       description = clean_reminder,
-                                      color = BOT_COLOR)
+                                      color = BOT_COLOR,
+                                      footer = "DEFAULT_KST_FOOTER")
 
                 message_object ,correct_channel = await message_object_generation(bot_reply_link, client)
 

@@ -80,6 +80,7 @@ class modmail(commands.Cog):
         embed = embed_builder(title = f"Modmail by {message.author}",
                               color = MOD_COLOR,
                               thumbnail = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "ID:",
                               field_one_value = message.author.id,

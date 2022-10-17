@@ -33,6 +33,7 @@ class modcommandlist(commands.Cog):
 
         embed = embed_builder(title = "A list of all mod commands",
                               color = BOT_COLOR,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "Commands:",
                               field_one_value = MOD_COMMANDS,
@@ -59,6 +60,7 @@ class modcommandlist(commands.Cog):
 
         embed = embed_builder(title = "A list of all mod commands",
                               color = BOT_COLOR,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "Commands:",
                               field_one_value = MOD_COMMANDS,

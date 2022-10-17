@@ -45,6 +45,7 @@ class edit_log(commands.Cog):
                                   color = Color.yellow(),
                                   author = "Message Edited",
                                   author_icon = member_avatar_url,
+                                  footer = "DEFAULT_KST_FOOTER",
 
                                   field_one_name = "Before:",
                                   field_one_value = message_before.content[:1000],
@@ -62,12 +63,14 @@ class edit_log(commands.Cog):
             embed_before = embed_builder(description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
                                          color = Color.yellow(),
                                          author = "Message Edited: Before",
-                                         author_icon = member_avatar_url)
+                                         author_icon = member_avatar_url,
+                                         footer = "DEFAULT_KST_FOOTER")
 
             embed_after = embed_builder(description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
                                         color = Color.yellow(),
                                         author = "Message Edited: After",
-                                        author_icon = member_avatar_url)
+                                        author_icon = member_avatar_url,
+                                        footer = "DEFAULT_KST_FOOTER")
 
             checks_max_word_length(message_before, embed_before, source = "edit_log before")
             checks_max_word_length(message_after, embed_after, source = "edit_log after")

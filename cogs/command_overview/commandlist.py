@@ -32,6 +32,7 @@ class commandlist(commands.Cog):
 
         embed = embed_builder(title = "A list of all main commands",
                               color = BOT_COLOR,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "Commands:",
                               field_one_value = COMMAND_LIST,
@@ -57,6 +58,7 @@ class commandlist(commands.Cog):
 
         embed = embed_builder(title = "A list of all main commands",
                               color = BOT_COLOR,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "Commands:",
                               field_one_value = COMMAND_LIST,

@@ -71,7 +71,8 @@ class spotify(commands.Cog):
                                       color = activity.color,
                                       thumbnail = cover_url,
                                       author = f"{name} is listening to:",
-                                      author_icon = SPOTIFY_ICON)
+                                      author_icon = SPOTIFY_ICON,
+                                      footer = "DEFAULT_KST_FOOTER")
 
                 await interaction.send(embed=embed)
 
@@ -119,7 +120,8 @@ class spotify(commands.Cog):
                                       color = activity.color,
                                       thumbnail = cover_url,
                                       author = f"{name} is listening to:",
-                                      author_icon = SPOTIFY_ICON)
+                                      author_icon = SPOTIFY_ICON,
+                                      footer = "DEFAULT_KST_FOOTER")
 
                 await interaction.send(embed=embed)
 

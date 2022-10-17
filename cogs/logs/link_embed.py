@@ -81,6 +81,7 @@ class on_message(commands.Cog):
                               color = nextcord.Color.from_rgb(255, 166, 252),
                               author = "Message Embed",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = f"{message.author.name} said:",
                               field_one_value = message_content,

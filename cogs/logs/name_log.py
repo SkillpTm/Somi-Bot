@@ -50,6 +50,7 @@ class name_log(commands.Cog):
         embed = embed_builder(title = f"{before} Changed Their {event}",
                               color = Color.yellow(),
                               thumbnail = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = f"{event} before:",
                               field_one_value = correct_before,

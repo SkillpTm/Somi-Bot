@@ -39,6 +39,7 @@ class about(commands.Cog):
                               color = BOT_COLOR,
                               author = f"{self.client.user}",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "Created by:",
                               field_one_value = f"<@{SKILLP_ID}>",
@@ -57,7 +58,7 @@ class about(commands.Cog):
                               field_four_inline = False,
                                                 
                               field_five_name = "Issues:",
-                              field_five_value = "You can report bugs with /bugs and make suggestions with /suggestions!",
+                              field_five_value = "You can report bugs and make suggestions by using /feedback!",
                               field_five_inline = False,)
         
         await interaction.response.send_message(embed=embed, ephemeral=True)

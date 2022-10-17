@@ -49,7 +49,8 @@ class banner(commands.Cog):
         embed = embed_builder(title = f"Banner of: `{name}`",
                               title_url = user.banner.url,
                               color = BOT_COLOR,
-                              image = user.banner.url)
+                              image = user.banner.url,
+                              footer = "DEFAULT_KST_FOOTER")
         
         await interaction.send(embed=embed)
 

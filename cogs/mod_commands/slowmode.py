@@ -56,6 +56,7 @@ class slowmode(commands.Cog):
         embed = embed_builder(color = Color.orange(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "/slowmode:",
                               field_one_value = field_value,

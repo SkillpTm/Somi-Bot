@@ -42,7 +42,8 @@ class avatar(commands.Cog):
         embed = embed_builder(title = f"Avatar of: `{name}`",
                               title_url = member_avatar_url,
                               color = BOT_COLOR,
-                              image = member_avatar_url)
+                              image = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER")
 
         await interaction.send(embed=embed)
 

@@ -52,6 +52,7 @@ class custom_delete(commands.Cog):
         embed = embed_builder(color = MOD_COLOR,
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "/custom delete:",
                               field_one_value = f"{interaction.user.mention} deleted: `{clean_commandname}` from the custom commands.",

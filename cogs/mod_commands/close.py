@@ -45,6 +45,7 @@ class close(commands.Cog):
         embed = embed_builder(color = Color.dark_red(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "/close:",
                               field_one_value = f"{interaction.user.mention} closed the server!",
@@ -83,6 +84,7 @@ class close(commands.Cog):
         embed = embed_builder(color = Color.dark_red(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "/open:",
                               field_one_value = f"{interaction.user.mention} re-opened the server!",

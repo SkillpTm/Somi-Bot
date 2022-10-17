@@ -62,6 +62,7 @@ class ban(commands.Cog):
         embed = embed_builder(color = Color.red(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "/ban:",
                               field_one_value = f"{interaction.user.mention} banned: {member.mention} and deleted their messages for: `{delete_messages_days} day(s)`",
@@ -112,6 +113,7 @@ class ban(commands.Cog):
         embed = embed_builder(color = Color.green(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "/unban:",
                               field_one_value = f"{interaction.user.mention} unbanned: {user.mention}",

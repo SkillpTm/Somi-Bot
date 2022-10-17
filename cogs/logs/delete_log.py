@@ -38,7 +38,8 @@ class delete_log(commands.Cog):
         embed = embed_builder(description = f"{message.author.mention} deleted a message in: {message.channel.mention}",
                               color = Color.red(),
                               author = "Message Deleted",
-                              author_icon = member_avatar_url)
+                              author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER")
 
         checks_max_word_length(message, embed, source = "delete_log")
 

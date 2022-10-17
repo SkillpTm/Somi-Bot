@@ -46,6 +46,7 @@ class purge(commands.Cog):
         embed = embed_builder(color = Color.yellow(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "/purge:",
                               field_one_value = f"{interaction.user.mention} purged: `{amount} message(s)` in {interaction.channel.mention}",

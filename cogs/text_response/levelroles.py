@@ -32,6 +32,7 @@ class levelroles(commands.Cog):
 
         embed = embed_builder(title = "Level Roles",
                               color = BOT_COLOR,
+                              footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "What are level roles?",
                               field_one_value = "If you send a message you receive a few xp points. These xp points will eventually make you level up and at certain levels you get level roles. You can see your level by using `_level`",

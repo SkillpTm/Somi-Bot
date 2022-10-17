@@ -10,8 +10,8 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.partial_commands import get_user_avatar, embed_builder
-from utilities.variables import MODERATOR_ID, BOT_COLOR, RULES
+from utilities.partial_commands import embed_builder
+from utilities.variables import MODERATOR_ID, RULES
 
 
 
@@ -43,9 +43,9 @@ class rules(commands.Cog):
 
         uses_update("mod_command_uses", "rules")
 
-    # @rules.error
-    # async def purge_error(self, interaction: Interaction, error):
-    #     await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+    @rules.error
+    async def purge_error(self, interaction: Interaction, error):
+        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 def setup(client):
     client.add_cog(rules(client))

@@ -431,6 +431,8 @@ def embed_builder(title = None,
 
     return embed
 
+    
+
 def string_search_to_list(string, list):
     if string == "":
         string_list = [str(list_object) for list_object in list]

@@ -9,7 +9,7 @@ def get_history_ids():
 
     c = conn.cursor()
 
-    c.execute(f"SELECT id FROM somi ORDER BY id DESC LIMIT 101")
+    c.execute(f"SELECT id FROM somi ORDER BY id DESC LIMIT 201")
     tuple_history_ids = c.fetchall()
     history_ids = []
 

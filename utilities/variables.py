@@ -36,6 +36,7 @@ from nextcord import Color
 
 BOT_COLOR = 0xffa6fc
 GENIUS_COLOR = 0xf6f069
+LASTFM_COLOR = 0xd0232b
 MOD_COLOR = Color.blue()
 REDDIT_COLOR = 0xfe4600
 
@@ -48,6 +49,7 @@ WELCOME_GIF = "https://gfycat.com/partialoblongfreshwatereel"
 
 CLOCK_ICON = "https://i.imgur.com/nqDFTTP.png"
 GENIUS_ICON = "https://i.imgur.com/XF1cOBN.png"
+LASTFM_ICON = "https://i.imgur.com/a8QaskN.png"
 OPENWEATHERMAP_ICON = "https://i.imgur.com/drJnhNn.png"
 REDDIT_ICON = "https://i.imgur.com/yXrvhM9.png"
 SPOTIFY_ICON = "https://i.imgur.com/YKtWQK4.png"

@@ -32,6 +32,12 @@ async def custom(interaction: Interaction):
 
 
 
+@client.slash_command(name='lf', description='a LastFm releasted command')
+async def lastfm(interaction: Interaction):
+    pass
+
+
+
 ###checks################################################################################
 
 def checks(interaction):

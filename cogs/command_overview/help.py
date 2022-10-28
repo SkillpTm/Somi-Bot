@@ -14,6 +14,9 @@ from utilities.variables import HELP_OPTIONS, HELP_OUTPUT, BOT_COLOR
 from utilities.partial_commands import embed_builder
 
 class HelpDropdownView(nextcord.ui.View):
+    def __init__(self):
+        super().__init__(timeout = 300)
+    
     @nextcord.ui.select(placeholder = "select a command", min_values=1, max_values=1, options = HELP_OPTIONS)
 
     async def callback(self,
@@ -39,6 +42,11 @@ class HelpDropdownView(nextcord.ui.View):
 
         uses_update("help_selections", f"{selection}")
 
+    async def on_timeout(self):
+        for child in self.children:
+            child.disabled = True
+        await message.edit(view=self)
+
 
 
 class help(commands.Cog):
@@ -57,7 +65,8 @@ class help(commands.Cog):
         print(f"{interaction.user}: /help")
 
         HelpDropView = HelpDropdownView()
-        await interaction.response.send_message("What command do you need help with?", view=HelpDropView, ephemeral=True)
+        global message
+        message = await interaction.response.send_message("What command do you need help with?", view=HelpDropView, ephemeral=True)
 
         uses_update("command_uses", "help")
 

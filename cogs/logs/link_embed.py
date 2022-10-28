@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Embed, Interaction
+from nextcord import Interaction
 from nextcord.ext import commands
 
 client = commands.Bot(intents=nextcord.Intents.all())

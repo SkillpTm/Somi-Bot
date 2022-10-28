@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Color, Interaction, SlashOption
+from nextcord import Interaction, SlashOption
 from nextcord.ext import commands
 import requests
 

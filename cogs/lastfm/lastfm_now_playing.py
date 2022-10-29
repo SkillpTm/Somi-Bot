@@ -65,13 +65,13 @@ class LastFmNp(commands.Cog):
 
             try:
                 timestamp = f"<t:{track['date']['uts']}:R>"
-                output += f"[{track['name']}]({track['url']}) on [{track['album']['#text']}](https://www.last.fm/music/{artist_name_for_url}/{album_name_for_url}/)\nby [{track['artist']['#text']}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}"
+                output += f"**[{track['name']}]({track['url']})** on [{track['album']['#text']}](https://www.last.fm/music/{artist_name_for_url}/{album_name_for_url}/)\nby [{track['artist']['#text']}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}"
                 if cover_image == "":
                     cover_image = track['image'][3]['#text']
 
             except:
                 i -= 1
-                output += f"`Now Playing:`\n[{track['name']}]({track['url']}) on [{track['album']['#text']}](https://www.last.fm/music/{artist_name_for_url}/{album_name_for_url}/)\nby [{track['artist']['#text']}](https://www.last.fm/music/{artist_name_for_url}/)\n\n`Previous:\n`"
+                output += f"`Now Playing:`\n**[{track['name']}]({track['url']})** on [{track['album']['#text']}](https://www.last.fm/music/{artist_name_for_url}/{album_name_for_url}/)\nby [{track['artist']['#text']}](https://www.last.fm/music/{artist_name_for_url}/)\n\n`Previous:\n`"
                 cover_image = track['image'][3]['#text']
 
         embed = embed_builder(description = output,

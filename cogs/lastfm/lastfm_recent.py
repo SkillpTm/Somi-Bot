@@ -93,13 +93,13 @@ async def lastfm_recent(interaction, member, page_number, first_message_sent):
 
         try:
             timestamp = f"<t:{track['date']['uts']}:R>"
-            output += f"{i + (page_number - 1) * 10}. [{track['name']}]({track['url']}) by [{track['artist']['#text']}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}\n"
+            output += f"{i + (page_number - 1) * 10}. **[{track['name']}]({track['url']})** by [{track['artist']['#text']}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}\n"
 
         except:
             i -= 1
             if page_number == 1:
                 timestamp = "*now playing*"
-                output += f"{i + (page_number - 1) * 10}. [{track['name']}]({track['url']}) by [{track['artist']['#text']}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}\n"
+                output += f"{i + (page_number - 1) * 10}. **[{track['name']}]({track['url']})** by [{track['artist']['#text']}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}\n"
 
     embed = embed_builder(description = output,
                           color = LASTFM_COLOR,

@@ -255,7 +255,7 @@ HELP_OUTPUT = {
     "weather": [f"/weather [location] | Example: `/weather [Seoul]`",
                 f"This command will post the current weather data for the given location.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "wolfram": [f"/wolfram [queue] | Example: `/wolfram [25C in F]`",
+    "wolfram": [f"/wolfram [query] | Example: `/wolfram [25C in F]`",
                 f"This command will request a **simple** answer to your queue from [WolframAlpha](https://www.wolframalpha.com/). If an answer could be found, the bot will post it.\nIf you continue to require further help please message <@{SKILLP_ID}>"]
 
 }

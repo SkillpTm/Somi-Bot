@@ -26,17 +26,17 @@ class LastFmTopTracksButtons(nextcord.ui.View):
         super().__init__(timeout = 60)
 
     @nextcord.ui.button(label = "start", style=nextcord.ButtonStyle.green)
-    async def lf_top_track_start(self,
-                              button: nextcord.ui.Button,
-                              interaction: Interaction):
+    async def lf_top_tracks_start(self,
+                                  button: nextcord.ui.Button,
+                                  interaction: Interaction):
         self.page = 1
         self.value = True
         self.stop()
 
     @nextcord.ui.button(label = "<<", style=nextcord.ButtonStyle.green)
-    async def lf_top_track_left(self,
-                             button: nextcord.ui.Button,
-                             interaction: Interaction):
+    async def lf_top_tracks_left(self,
+                                 button: nextcord.ui.Button,
+                                 interaction: Interaction):
         self.page -= 1
         if self.page == 0:
             self.page = 1
@@ -44,9 +44,9 @@ class LastFmTopTracksButtons(nextcord.ui.View):
         self.stop()
 
     @nextcord.ui.button(label = ">>", style=nextcord.ButtonStyle.red)
-    async def lf_top_track_right(self,
-                              button: nextcord.ui.Button,
-                              interaction: Interaction):
+    async def lf_top_tracks_right(self,
+                                  button: nextcord.ui.Button,
+                                  interaction: Interaction):
         self.page += 1
         if self.page > self.last_page:
             self.page = self.last_page
@@ -54,9 +54,9 @@ class LastFmTopTracksButtons(nextcord.ui.View):
         self.stop()
 
     @nextcord.ui.button(label = "end", style=nextcord.ButtonStyle.red)
-    async def lf_top_track_end(self,
-                            button: nextcord.ui.Button,
-                            interaction: Interaction):
+    async def lf_top_tracks_end(self,
+                                button: nextcord.ui.Button,
+                                interaction: Interaction):
         self.page = self.last_page
         self.value = True
         self.stop()
@@ -111,7 +111,7 @@ async def lastfm_top_tracks(interaction, member, timeframe, page_number, first_m
     await view.wait()
 
     if view.value == None:
-        uses_update("command_uses", "lf toptrack")
+        uses_update("command_uses", "lf toptracks")
         return
 
     await lastfm_top_tracks(interaction, member, timeframe, page_number = view.page, first_message_sent = message)
@@ -125,14 +125,14 @@ class LastFmTopTracks(commands.Cog):
 
     from utilities.maincommands import lastfm
 
-    ###lf#top#track###########################################################
+    ###lf#top#tracks###########################################################
 
     @lastfm.subcommand(name = "toptracks", description = "shows your top tracks on LastFm")
     async def top_tracks(self,
-                     interaction: Interaction,
-                     *,
-                     member: nextcord.Member = SlashOption(description="the user you want the top tracks of", required=False),
-                     timeframe: str = SlashOption(description="the timeframe you want the top tracks for", required=False, choices = {"Past Week": "7day", "Past Month": "1month", "Past Quarter": "3month", "Past Half a Year": "6month", "Past Year": "12month", "All Time": "overall"})):
+                         interaction: Interaction,
+                         *,
+                         member: nextcord.Member = SlashOption(description="the user you want the top tracks of", required=False),
+                         timeframe: str = SlashOption(description="the timeframe you want the top tracks for", required=False, choices = {"Past Week": "7day", "Past Month": "1month", "Past Quarter": "3month", "Past Half a Year": "6month", "Past Year": "12month", "All Time": "overall"})):
         if not checks(interaction):
             return
 
@@ -140,9 +140,9 @@ class LastFmTopTracks(commands.Cog):
             member = interaction.guild.get_member(interaction.user.id)
 
         if timeframe == None:
-            timeframe == "overall"
+            timeframe = "overall"
 
-        print(f"{interaction.user}: /lf toptrack {member} {timeframe}")
+        print(f"{interaction.user}: /lf toptracks {member} {timeframe}")
 
         await lastfm_top_tracks(interaction, member, timeframe, page_number = 1, first_message_sent = False)
 

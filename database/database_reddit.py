@@ -1,7 +1,7 @@
 import sqlite3
 import os
 
-###keyword#add###########################################################
+###get#relevant#history#ids###########################################################
 
 def get_history_ids():
     database_path = os.path.join(os.path.dirname(__file__), '../storage/db/subreddit_history.db')
@@ -20,7 +20,7 @@ def get_history_ids():
 
     return history_ids
 
-
+###add#post#id#to#db###########################################################
 
 def add_new_id_to_database(new_id):
     database_path = os.path.join(os.path.dirname(__file__), '../storage/db/subreddit_history.db')

@@ -89,7 +89,7 @@ async def lastfm_top_albums(interaction, member, timeframe, page_number, first_m
     for album in top_albums_user_data["topalbums"]["album"]:
         output += f"{album['@attr']['rank']}. **[{album['name']}]({album['url']})** by [{album['artist']['name']}]({album['artist']['url']}) - *({album['playcount']} plays)*\n"
 
-    authot_text_dict = {"7day": "of the past week:", "1month": "of the past month:", "3month": "of the past quarter:", "6month": "of the past half a year:", "12month": "of the past year", "overall": "of all time"}
+    authot_text_dict = {"7day": "of the past week:", "1month": "of the past month:", "3month": "of the past quarter:", "6month": "of the past half a year:", "12month": "of the past year:", "overall": "of all time:"}
     author_text = f"{name} top albums {authot_text_dict[timeframe]}"
 
     embed = embed_builder(description = output,

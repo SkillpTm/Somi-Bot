@@ -52,6 +52,9 @@ class spotify(commands.Cog):
 
         print(f"{interaction.user}: /spotify {member}")
 
+        token = spotifyOAuth.get_cached_token()
+        spotifyObject = spotipy.Spotify(auth=token['access_token'])
+
         for activity in member.activities:
             if isinstance(activity, Spotify):
                 track_spotipy = spotifyObject.track(f"spotify:track:{activity.track_id}")
@@ -100,6 +103,9 @@ class spotify(commands.Cog):
         name = get_nick_else_name(member)
 
         print(f"{interaction.user}: /sf {member}")
+
+        token = spotifyOAuth.get_cached_token()
+        spotifyObject = spotipy.Spotify(auth=token['access_token'])
 
         for activity in member.activities:
             if isinstance(activity, Spotify):

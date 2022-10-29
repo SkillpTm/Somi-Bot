@@ -89,7 +89,7 @@ def get_userinfo_embed(member):
                           thumbnail = member_avatar_url,
                           footer = "DEFAULT_KST_FOOTER",
 
-                          field_one_name = "ID",
+                          field_one_name = "ID:",
                           field_one_value = member.id,
                           field_one_inline = False,
                                             
@@ -97,11 +97,11 @@ def get_userinfo_embed(member):
                           field_two_value = member,
                           field_two_inline = True,
                                             
-                          field_three_name = "Top role",
+                          field_three_name = "Top role:",
                           field_three_value = member.top_role.mention,
                           field_three_inline = True,
                                             
-                          field_four_name = "Status",
+                          field_four_name = "Status:",
                           field_four_value = member.status,
                           field_four_inline = True,
                                             
@@ -113,7 +113,7 @@ def get_userinfo_embed(member):
                           field_six_value = join_time,
                           field_six_inline = True,
 
-                          field_seven_name = "Boosted",
+                          field_seven_name = "Boosted:",
                           field_seven_value = bool(member.premium_since),
                           field_seven_inline = True)
     

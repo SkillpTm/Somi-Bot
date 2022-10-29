@@ -1,7 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Color, Interaction, SlashOption
+from nextcord import Interaction, SlashOption
 from nextcord.ext import commands
 import requests
 
@@ -13,8 +13,6 @@ from cogs._global_data.global_data import network
 from database.database_command_uses import uses_update
 from database.database_lastfm import lastfm_get_user_from_db, lastfm_set_user
 from utilities.maincommands import checks
-from utilities.variables import LASTFM_ICON, LASTFM_COLOR
-from utilities.partial_commands import get_nick_else_name, embed_builder
 
 
 

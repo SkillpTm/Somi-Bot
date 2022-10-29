@@ -148,6 +148,7 @@ HELP_OPTIONS = [
     SelectOption(label="help", description = "/help"),
     SelectOption(label="keyword", description = "/keyword add | /keyword delete | /keyword list"),
     SelectOption(label="kst", description = "/kst"),
+    SelectOption(label="lastfm", description = "/lf (re)set | /lf profile | /lf np | /lf recent | /lf topartists | /lf topalbums | /lf toptracks"),
     SelectOption(label="levelroles", description = "/levelroles"),
     SelectOption(label="lyrics", description = "/lyrics"),
     SelectOption(label="ping", description = "/ping"),
@@ -156,81 +157,106 @@ HELP_OPTIONS = [
     SelectOption(label="spotify", description = "/spotify | /sf"),
     SelectOption(label="somi", description = "/somi"),
     SelectOption(label="userinfo", description = "/userinfo | /ui"),
-    SelectOption(label="weather", description = "/weather")
+    SelectOption(label="weather", description = "/weather"),
+    SelectOption(label="wolfram", description = "/wolfram")
 ]
 
 
 
 HELP_OUTPUT = {
-    "about": ["/about (no parameters)\nExample: `/about`",
+    "about": ["/about (no parameters) | Example: `/about`",
              f"This command will tell you everything you need to know about the current state of Somi#6418.\nIf you continue to require help please message <@{SKILLP_ID}>"],
 
-    "avatar": [f"/avatar optional[@username]\nExample: `/avatar `<@{SKILLP_ID}>",
+    "avatar": [f"/avatar optional[@username] | Example: `/avatar `[<@{SKILLP_ID}>]",
                f"This command will post the avatar of the selected user/you.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "bam": ["/bam (no parameters)\nExample: `/bam`",
+    "bam": ["/bam (no parameters) | Example: `/bam`",
            f"This command will not actually ban a user. It will just send a mock ban message.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "choose": ["/choose 2-10 Options\nExample: `/choose brown blond black`",
+    "choose": ["/choose 2-10 Options | Example: `/choose [brown] [blond] [black]`",
               f"This command randomly chooses between all provided options. You can submit up to 10 options and have to give at least 2 options.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "coinflip": ["/coinflip (no parameters)\nExample: `/coinflip`",
+    "coinflip": ["/coinflip (no parameters) | Example: `/coinflip`",
                 f"This command gives out either heads or tails.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "color": ["/color [hexcode]\nExample: `/color ffa6fc`",
+    "color": ["/color [hexcode] | Example: `/color [ffa6fc]`",
              f"This command outputs the color coresponding to your hexcode.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "commandlist": ["/commandlist (no parameters) or /cl (no parameters)\nExample: `/commandlist` or `/cl`",
+    "commandlist": ["""/commandlist (no parameters) | Example: `/commandlist`
+    /cl (no parameters) | Example: `/cl`""",
                    f"This command outputs a list with all regular commands.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "custom": ["/custom list (no parameters)\nExample: `/custom list`",
+    "custom": ["/custom list (no parameters) | Example: `/custom list`",
               f"This command will give you a list for all custom command names (You can use these names with `/customcommand`).\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "customcommand": ["/customcommand [custom name] or /cc [custom name]\nExample: `/customcommand somi` or `/cc somi`",
+    "customcommand": ["""/customcommand [custom name] | Example: `/customcommand [somi]`
+    /cc [custom name] | Example: `/cc [somi]`""",
                      f"All custom commands have been created by the moderators and can only be added/removed by a moderator. If you input a custom command name the bot will respond with its output text.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
+    "emoji": [f"/emoji [emoji] | Example: `/emoji `[{REACTION_EMOTE}]",
+              f"This command posts an emoji in its original size.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "emoji": [f"/emoji [emoji] \nExample: `/emoji `{REACTION_EMOTE}",
-             f"This command posts an emoji in its original size.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
-
-    "feedback": ["/feedback\nExample: `/feedback`",
+    "feedback": ["/feedback (no parameters) | Example: `/feedback`",
                 f"This command is meant to report bugs/typos/other issues you have encountered while using the bot and any suggestions you have to improve the bot.\nIf you continue to require further help please message <@{SKILLP_ID}>"],      
 
-    "help": ["/help (no parameters)\nExample: `/help`",
+    "help": ["/help (no parameters) | Example: `/help`",
             f"This command gives you an explanation for what a certain command does.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "keyword": ["/keyword add [keyword] or delete [keyword] // [ALL] or list\nExample: `/keyword add somi` or `/keyword delete somi` or `/keyword list`",
+    "keyword": ["""/keyword add [keyword] | Example: `/keyword add [somi]`
+    /keyword delete [keyword] // [ALL] | Example: `/keyword delete [somi]`
+    /keyword list (no parameters) | Example: `/keyword list`""",
                f"This command lets you add/delete a keyword to/from your keyword list, which you can open as well. If you set a keyword the bot will send you a direct message when someone else mentions this keyword.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "kst": ["/kst (no parameters)\nExample: `/kst`",
+    "kst": ["/kst (no parameters) | Example: `/kst`",
            f"This command tells you the current time in KST (Korean Standard Time).\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "levelroles": ["/levelroles (no parameters)\nExample: `/levelroles`",
+    "levelroles": ["/levelroles (no parameters) | Example: `/levelroles`",
                   f"This command will explain the level system of this server to you. It also includes a list of all roles with their levels.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "lyrics": ["/lyrics (no parameters) // optional[Artist] AND optional[Song]\nExample: `/lyrics Jeon Somi XOXO`",
-                  f"This command posts the lyrics of the song you are listening to (only if your Spotify is connect to your Discord and you are online) or shows you the lyrics for the specified song.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
+    "lastfm": [f"""/lf set [LastFm name] | Example: `/lf set SkillpTm`
+    /lf reset (no parameters) | Example: `/lf reset`
+    /lf profile optional[@username] | Example: `/lf profile `<@{SKILLP_ID}>
+    /lf np optional[@username] | Example: `/lf np`
+    /lf recent optional[@username] | Example: `/lf recent `<@{SKILLP_ID}>
+    /lf topartists optional[@username] | Example: `/lf topartists`
+    /lf topalbums optional[@username] | Example: `/lf topalbums `<@{SKILLP_ID}>
+    /lf toptracks optional[@username] | Example: `/lf toptracks`""",
+              f"""[LastFm](https://www.last.fm/) is a service to track your listening behaviour on various music streaming platforms.
+              First you connect your Discord and LastFm account (for this bot) with `/lf set [LastFm name]` and then you can use all other commands to display your music listening behavior.
+              All names should be self explanatory (np means 'now playing')
+              If you continue to require further help please message <@{SKILLP_ID}>"""],
 
-    "ping": ["/ping (no parameters)\nExample: `/ping`",
+    "lyrics": ["/lyrics optional[Artist] **AND** optional[Song] | Example: `/lyrics [Jeon Somi] [XOXO]`",
+              f"This command posts the lyrics of the song you are listening to (only if your Spotify is connect to your Discord and you are online) or shows you the lyrics for the specified song.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
+
+    "ping": ["/ping (no parameters) | Example: `/ping`",
             f"This command shows you the bot's current ping.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "reminder": ["/reminder add [time] [reminder] or delete [reminder_id] // [ALL] or list\nExample: `/reminder add 5d20h I AM SOMI marathon` or `/remidner delete 0123456789` or `/reminder list`",
+    "reminder": ["""/reminder add [time] [reminder] | Example: `/reminder add [5d20h] [I AM SOMI marathon]`
+    /reminder delete [reminder_id] // [ALL] | Example: `/remidner delete [0123456789]`
+    /reminder list (no parameters) | Example `/reminder list`""",
                 f"This command lets you add or delete a reminder to/from your reminder list, which you can open as well. If you set a reminder the bot will send you a direct message when your defined point of time has happened.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "serverinfo": ["/serverinfo (no parameters) or /si (no parameters)\nExample: `/serverinfo` or `/si`",
+    "serverinfo": ["""/serverinfo (no parameters) | Example: `/serverinfo`
+    /si (no parameters) | Example: `/si`""",
                   f"This command gives you information about the server.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "spotify": [f"/spotify optional[@username] or /sf optional[@username]\nExample: `/spotify `<@{SKILLP_ID}> or `/sf `<@{SKILLP_ID}>",
+    "spotify": [f"""/spotify optional[@username] | Example: `/spotify`
+    /sf optional[@username] | Example: `/sf `[<@{SKILLP_ID}>]""",
                 f"This command tells you what someone is listening to, if their Spotify is connected to Discord and if they are online.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "somi": ["/somi (no parameters)\nExample: `/somi`",
+    "somi": ["/somi (no parameters) | Example: `/somi`",
             f"This command will tell you the truth and the truth only.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "userinfo": [f"/userinfo optional[@username] or /ui optional[@username]\nExample: `/userinfo `<@{SKILLP_ID}> or `/ui `<@{SKILLP_ID}>",
+    "userinfo": [f"""/userinfo optional[@username] | Example: `/userinfo `[<@{SKILLP_ID}>]
+    /ui optional[@username] | Example: `/ui`""",
                  f"This command will post the user information of the selected user/you.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
 
-    "weather": [f"/weather [location]\nExample: `/weather Seoul`",
-                 f"This command will post the current weather data for the given location.\nIf you continue to require further help please message <@{SKILLP_ID}>"]
+    "weather": [f"/weather [location] | Example: `/weather [Seoul]`",
+                f"This command will post the current weather data for the given location.\nIf you continue to require further help please message <@{SKILLP_ID}>"],
+
+    "wolfram": [f"/wolfram [queue] | Example: `/wolfram [25C in F]`",
+                f"This command will request a **simple** answer to your queue from [WolframAlpha](https://www.wolframalpha.com/). If an answer could be found, the bot will post it.\nIf you continue to require further help please message <@{SKILLP_ID}>"]
 
 }
 

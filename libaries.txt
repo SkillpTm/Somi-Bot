@@ -5,6 +5,8 @@ Wrappers:
 asyncpraw (Reddit API wrapper): https://asyncpraw.readthedocs.io/en/stable/
 lyricsgenius (Genius API wrapper): https://lyricsgenius.readthedocs.io/en/stable/
 nextcord (Discord API wrapper): https://docs.nextcord.dev/en/stable/
+pylast (LastFm API wrapper): https://pypi.org/project/pylast/
+wolframalpha (Wolfram API wrapper): https://wolframalpha.readthedocs.io/en/latest/
 spotipy (Spotify API wrapper): https://spotipy.readthedocs.io/en/master/
 
 
@@ -17,10 +19,10 @@ csv: https://docs.python.org/3/library/csv.html
 dotenv: https://saurabh-kumar.com/python-dotenv/
 humanfriendly: https://humanfriendly.readthedocs.io/en/latest/
 logging: https://docs.python.org/3/library/logging.html#module-logging
-pytz: https://pythonhosted.org/pytz/
 os: https://docs.python.org/3/library/os.html
 pil: https://pillow.readthedocs.io/en/stable/
 pycountry : https://pycountry-convert.readthedocs.io/en/latest/
+pytz: https://pythonhosted.org/pytz/
 random: https://docs.python.org/3/library/random.html
 re: https://docs.python.org/3/library/re.html
 requests: https://requests.readthedocs.io/en/latest/

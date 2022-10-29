@@ -88,6 +88,14 @@ COMMAND_LIST = """
 /keyword list
 /kst
 /levelroles
+/lf np
+/lf profile
+/lf recent
+/lf reset
+/lf set
+/lf topalbums
+/lf topartists
+/lf toptracks
 /lyrics
 /ping
 /reminder add

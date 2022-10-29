@@ -11,7 +11,7 @@ client = commands.Bot(intents=nextcord.Intents.all())
 
 from cogs._global_data.global_data import network
 from database.database_command_uses import uses_update
-from database.database_lastfm import lastfm_get_user_from_db, lastfm_set_user
+from database.database_lastfm import lastfm_get_user_from_db, lastfm_set_user, lastfm_reset_user
 from utilities.maincommands import checks
 
 
@@ -23,7 +23,7 @@ class LastFmSet(commands.Cog):
 
     from utilities.maincommands import lastfm
 
-    ###lf#recent###########################################################
+    ###lf#set###########################################################
 
     @lastfm.subcommand(name = "set", description = "set your LastFm account")
     async def set(self,
@@ -52,9 +52,31 @@ class LastFmSet(commands.Cog):
 
         lastfm_set_user(interaction.user.id, lastfm_username)
 
-        await interaction.response.send_message(f"You were succesfully setup as the LastFm user `{lastfm_username}`", ephemeral=True)
+        await interaction.response.send_message(f"You were succesfully connected with the LastFm user `{lastfm_username}`", ephemeral=True)
 
         uses_update("command_uses", "lf set")
+
+    ###lf#reset###########################################################
+
+    @lastfm.subcommand(name = "reset", description = "reset your LastFm-Discord account connection")
+    async def reset(self,
+                    interaction: Interaction):
+        if not checks(interaction):
+            return
+
+        print(f"{interaction.user}: /lf reset")
+
+        lastfm_username = lastfm_get_user_from_db(interaction.user.id)
+
+        if not lastfm_username:
+            await interaction.response.send_message(f"You don't have a LastFm account connected to your discord account.", ephemeral=True)
+            return
+
+        lastfm_reset_user(interaction.user.id)
+
+        await interaction.response.send_message(f"You succesfully reset your LastFm-Discord account connection.", ephemeral=True)
+
+        uses_update("command_uses", "lf reset")
 
 
 

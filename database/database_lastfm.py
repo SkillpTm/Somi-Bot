@@ -36,3 +36,17 @@ def lastfm_set_user(user_id, lastfm_username):
     conn.commit()
 
     conn.close()
+
+###lastfm#reset###########################################################
+
+def lastfm_reset_user(user_id):
+    database_path = os.path.join(os.path.dirname(__file__), '../storage/db/lastfm.db')
+    conn = sqlite3.connect(database_path)
+
+    c = conn.cursor()
+
+    c.execute(f"DELETE FROM lastfmUsers WHERE discord_user_id = '{str(user_id)}'")
+
+    conn.commit()
+
+    conn.close()

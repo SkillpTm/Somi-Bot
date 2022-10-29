@@ -69,7 +69,7 @@ class LastFmRecentButtons(nextcord.ui.View):
 
 
 async def lastfm_recent(interaction, member, page_number, first_message_sent):
-    lastfm_username = lastfm_get_user_from_db(interaction.user.id)
+    lastfm_username = lastfm_get_user_from_db(member.id)
 
     if not lastfm_username:
         await interaction.response.send_message(f"{member.mention} has not setup their LastFm account.", ephemeral=True)
@@ -93,13 +93,13 @@ async def lastfm_recent(interaction, member, page_number, first_message_sent):
 
         try:
             timestamp = f"<t:{track['date']['uts']}:R>"
-            output += f"{i + (page_number - 1) * 10}. [{track['name']}](https://www.last.fm/music/{artist_name_for_url}/) by [{track['artist']['#text']}]({track['url']}) - {timestamp}\n"
+            output += f"{i + (page_number - 1) * 10}. [{track['name']}]({track['url']}) by [{track['artist']['#text']}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}\n"
 
-        except Exception as e:
+        except:
             i -= 1
             if page_number == 1:
                 timestamp = "*now playing*"
-                output += f"{i + (page_number - 1) * 10}. [{track['name']}](https://www.last.fm/music/{artist_name_for_url}/) by [{track['artist']['#text']}]({track['url']}) - {timestamp}\n"
+                output += f"{i + (page_number - 1) * 10}. [{track['name']}]({track['url']}) by [{track['artist']['#text']}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}\n"
 
     embed = embed_builder(description = output,
                           color = LASTFM_COLOR,
@@ -144,10 +144,10 @@ class LastFmRecent(commands.Cog):
         if not checks(interaction):
             return
 
-        print(f"{interaction.user}: /lf recent")
-
         if member == None:
             member = interaction.guild.get_member(interaction.user.id)
+
+        print(f"{interaction.user}: /lf recent {member}")
 
         await lastfm_recent(interaction, member, page_number = 1, first_message_sent = False)
 

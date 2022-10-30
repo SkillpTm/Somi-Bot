@@ -69,7 +69,7 @@ class mute(commands.Cog):
 
         await AUDIT_LOG.send(embed=embed)
 
-        uses_update("mod_command_uses", "[MOD] mute")
+        uses_update("mod_command_uses", "mute")
 
     @mute.error
     async def mute_error(self, interaction: Interaction, error):

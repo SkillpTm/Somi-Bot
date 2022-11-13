@@ -2,10 +2,9 @@
 
 import asyncio
 import nextcord
-from nextcord.ext import commands
-import time as unix_time
+import time
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -21,47 +20,54 @@ from utilities.variables import BOT_COLOR
 async def reminder_send(client):
     reminders = get_reminder_times()
 
-    if not reminders == []:
-        current_unix_time = int(unix_time.time())
-        for reminder in reminders:
-            time = reminder[1]
-            if time <= current_unix_time:
-                user_id = reminder[0]
-                noti_user = await client.fetch_user(user_id)
-                delete_id = reminder[2]
+    if reminders == []:
+        return
 
-                bot_reply_link, clean_reminder = get_reminder_contents(user_id, delete_id)
+    current_unix_time = int(time.time())
+    for reminder in reminders:
+        reminder_time = reminder[1]
 
-                print(f"reminder() {noti_user}\n{clean_reminder}")
+        if not reminder_time <= current_unix_time:
+            continue
 
-                embed = embed_builder(title = "Reminder Notification",
-                                      title_url = bot_reply_link,
-                                      description = clean_reminder,
-                                      color = BOT_COLOR,
-                                      footer = "DEFAULT_KST_FOOTER")
+        user_id = reminder[0]
+        noti_user = await client.fetch_user(user_id)
+        delete_id = reminder[2]
 
-                message_object ,correct_channel = await message_object_generation(bot_reply_link, client)
+        bot_reply_link, clean_reminder = get_reminder_contents(user_id, delete_id)
 
-                await embed_attachments(noti_user, message_object, embed)
+        print(f"reminder() {noti_user}\n{clean_reminder}")
 
-                delete_reminder(user_id, delete_id)
+        embed = embed_builder(title = "Reminder Notification",
+                              title_url = bot_reply_link,
+                              description = clean_reminder,
+                              color = BOT_COLOR,
+                              footer = "DEFAULT_KST_FOOTER")
 
-                uses_update("command_uses", "reminder send")
+        message_object = await message_object_generation(bot_reply_link, client)
+
+        await embed_attachments(noti_user, message_object, embed)
+
+        delete_reminder(user_id, delete_id)
+
+        uses_update("command_uses", "reminder send")
 
 
 
-class reminder(commands.Cog):
+class ReminderSend(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
 
     ###reminder#on#ready###########################################################
 
-    @commands.Cog.listener()
+    @nextcord.ext.commands.Cog.listener()
     async def on_ready(self):
         while True:
             await reminder_send(self.client)
             await asyncio.sleep(2)
 
+
+
 def setup(client):
-    client.add_cog(reminder(client))
+    client.add_cog(ReminderSend(client))

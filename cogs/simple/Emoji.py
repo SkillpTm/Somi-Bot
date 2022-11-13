@@ -1,11 +1,9 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction, SlashOption
-from nextcord.ext import commands
 import requests
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -14,7 +12,7 @@ from utilities.maincommands import checks
 
 
 
-class emoji(commands.Cog):
+class Emoji(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -23,10 +21,10 @@ class emoji(commands.Cog):
 
     @nextcord.slash_command(name="emoji", description="make an emoji larger")
     async def emoji(self,
-                    interaction: Interaction,
+                    interaction: nextcord.Interaction,
                     *,
-                    emoji: str = SlashOption(description="your emoji", required=True, min_length=1, max_length=100)):
-        if not checks(interaction):
+                    emoji: str = nextcord.SlashOption(description="your emoji", required=True, min_length=1, max_length=100)):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /emoji {emoji}")
@@ -52,5 +50,7 @@ class emoji(commands.Cog):
 
         uses_update("command_uses", "emoji")
 
+
+
 def setup(client):
-    client.add_cog(emoji(client))
+    client.add_cog(Emoji(client))

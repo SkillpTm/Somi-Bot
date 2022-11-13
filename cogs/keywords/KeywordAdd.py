@@ -1,11 +1,9 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction, SlashOption
-from nextcord.ext import commands
 import re
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -15,7 +13,7 @@ from utilities.maincommands import checks
 
 
 
-class keyword_add(commands.Cog):
+class KeywordAdd(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -26,10 +24,10 @@ class keyword_add(commands.Cog):
     
     @keyword.subcommand(name = "add", description = "add a keyword to your keyword list")
     async def keyword_add(self,
-                          interaction: Interaction,
+                          interaction: nextcord.Interaction,
                           *,
-                          keyword: str = SlashOption(description="your new keyword", required=True, min_length=2, max_length=32)):
-        if not checks(interaction):
+                          keyword: str = nextcord.SlashOption(description="your new keyword", required=True, min_length=2, max_length=32)):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /keyword add {keyword}")
@@ -52,5 +50,7 @@ class keyword_add(commands.Cog):
 
         uses_update("command_uses", "keyword add")
 
+
+
 def setup(client):
-    client.add_cog(keyword_add(client))
+    client.add_cog(KeywordAdd(client))

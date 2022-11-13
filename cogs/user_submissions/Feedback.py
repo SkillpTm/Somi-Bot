@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -29,26 +27,19 @@ class FeedbackModal(nextcord.ui.Modal):
 
         self.add_item(self.feedback)
 
-    async def callback(self, interaction: Interaction):
+    async def callback(self,
+                       interaction: nextcord.Interaction):
         kst_timestamp = get_kst_time_stamp(source = "/feedback")
 
         print(f"{interaction.user}: /feedback submission:\n{self.feedback.value}")
 
-        server_id = interaction.guild.id
-        user_id = interaction.user.id
-        user_name = str(interaction.user)
-        submission_time = kst_timestamp
-        feedback = self.feedback.value
-
-        submit_feedback(server_id, user_id, user_name.replace("'", "‘"), submission_time, feedback.replace("'", "‘"))
+        submit_feedback(interaction.guild.id, interaction.user.id, str(interaction.user).replace("'", "‘"), kst_timestamp, self.feedback.value.replace("'", "‘"))
 
         await interaction.response.send_message("Your feedback has been submitted!", ephemeral=True)
 
         uses_update("command_uses", "feedback")
 
-        return
-
-class feedback(commands.Cog):
+class Feedback(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -57,14 +48,16 @@ class feedback(commands.Cog):
 
     @nextcord.slash_command(name = "feedback", description = "give feedback to the bot, with a suggestion or submit a bug-report")
     async def feedback(self,
-                   interaction: Interaction):
-        if not checks(interaction):
+                       interaction: nextcord.Interaction):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /feedback")
 
-        FeedbackModalVariable = FeedbackModal()
-        await interaction.response.send_modal(modal=FeedbackModalVariable)
+        feedback_modal = FeedbackModal()
+        await interaction.response.send_modal(modal=feedback_modal)
+
+
 
 def setup(client):
-    client.add_cog(feedback(client))
+    client.add_cog(Feedback(client))

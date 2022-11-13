@@ -1,46 +1,44 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.variables import REACTION_EMOTE, SOMIONLY_EMOTE, SOMI_F_EMOTE, SOMI_BEST_GRILL_EMOTE
+from utilities.variables import REACTION_EMOTE, SOMIONLY_EMOTE, SOMI_F_EMOTE, SOMI_BEST_GRILL_EMOTE, BOT_COLOR
 from utilities.partial_commands import get_user_avatar, embed_attachments, message_object_generation, embed_builder
 
 
 
-class on_message(commands.Cog):
+class LinkEmbed(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
 
-    @commands.Cog.listener()
+    @nextcord.ext.commands.Cog.listener()
     async def on_message(self,
-                         interaction: Interaction):
-        if not checks(interaction):
+                         message: nextcord.Message):
+        if not checks(message.guild, message.author):
             return
 
     ###reaction#on#ping###########################################################
 
-        if self.client.user.mentioned_in(interaction):
-            await interaction.add_reaction(REACTION_EMOTE)
+        if self.client.user.mentioned_in(message):
+            await message.add_reaction(REACTION_EMOTE)
 
-            print(f"{interaction.author}: Reacted() @ping")
+            print(f"{message.author}: Reacted() @ping")
 
             uses_update("log_activations", "reacted @ping")
 
     ###reaction#on#somionly###########################################################
 
-        if "somionly" in str(interaction.content.lower()):
-            await interaction.add_reaction(SOMIONLY_EMOTE)
+        if "somionly" in str(message.content.lower()):
+            await message.add_reaction(SOMIONLY_EMOTE)
 
-            print(f"{interaction.author}: Reacted() @SOMIONLY")
+            print(f"{message.author}: Reacted() @SOMIONLY")
 
             uses_update("log_activations", "reacted somionly")
 
@@ -48,36 +46,36 @@ class on_message(commands.Cog):
 
         f_words = [" f ", SOMI_F_EMOTE.lower()]
 
-        if any(i in f" {interaction.content.lower()} " for i in f_words):
-            await interaction.add_reaction(SOMI_F_EMOTE)
+        if any(i in f" {message.content.lower()} " for i in f_words):
+            await message.add_reaction(SOMI_F_EMOTE)
 
-            print(f"{interaction.author}: Reacted() @SomiF")
+            print(f"{message.author}: Reacted() @SomiF")
 
             uses_update("log_activations", "reacted SomiF")
 
     ###reaction#on#SomiBestGrill###########################################################
 
-        if "<:somibestgrill:924281555772403722>" in str(interaction.content.lower()):
-            await interaction.add_reaction(SOMI_BEST_GRILL_EMOTE)
+        if "<:somibestgrill:924281555772403722>" in str(message.content.lower()):
+            await message.add_reaction(SOMI_BEST_GRILL_EMOTE)
 
-            print(f"{interaction.author}: Reacted() @SomiBestGrill")
+            print(f"{message.author}: Reacted() @SomiBestGrill")
 
             uses_update("log_activations", "reacted SomiBestGrill")
 
     ###auto#link#embed###########################################################
 
-        if not f"https://discord.com/channels/{interaction.guild.id}" in str(interaction.content):
+        if not f"https://discord.com/channels/{message.guild.id}" in str(message.content):
             return
 
-        head, link1, link2 = interaction.content.partition("https://discord.com/channels/")
+        head, link1, link2 = message.content.partition("https://discord.com/channels/")
         link3 = link1 + link2
         link, body, tail = link3.partition(" ")
-        message ,correct_channel = await message_object_generation(link, self.client)
+        message = await message_object_generation(link, self.client)
 
         if message.content == "" and len(message.attachments) == 0:
             return
 
-        print(f"{interaction.author}: Link_Embed()")
+        print(f"{message.author}: Link_Embed()")
 
         member_avatar_url = get_user_avatar(message.author)
 
@@ -86,8 +84,8 @@ class on_message(commands.Cog):
         else:
             message_content = f"{message.content[:972]}..."
 
-        embed = embed_builder(description = f"{correct_channel.mention} - [Link]({link})",
-                              color = nextcord.Color.from_rgb(255, 166, 252),
+        embed = embed_builder(description = f"{message.channel.mention} - [Link]({link})",
+                              color = BOT_COLOR,
                               author = "Message Embed",
                               author_icon = member_avatar_url,
                               footer = "DEFAULT_KST_FOOTER",
@@ -96,9 +94,11 @@ class on_message(commands.Cog):
                               field_one_value = message_content,
                               field_one_inline = False)
 
-        await embed_attachments(interaction.channel, message, embed, link_embed = True)
+        await embed_attachments(message.channel, message, embed, limit = 1)
 
         uses_update("log_activations", "auto embed")
 
+
+
 def setup(client):
-    client.add_cog(on_message(client))
+    client.add_cog(LinkEmbed(client))

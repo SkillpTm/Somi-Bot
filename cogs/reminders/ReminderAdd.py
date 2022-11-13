@@ -1,13 +1,11 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction, SlashOption
-from nextcord.ext import commands
 import random
 import string
 import time as unix_time
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -19,7 +17,7 @@ from utilities.variables import BOT_COLOR
 
 
 
-class reminder_add(commands.Cog):
+class ReminderAdd(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -30,11 +28,11 @@ class reminder_add(commands.Cog):
     
     @reminder.subcommand(name = "add", description = "add a reminder to your reminder list")
     async def reminder_add(self,
-                           interaction: Interaction,
+                           interaction: nextcord.Interaction,
                            *,
-                           time: str = SlashOption(description="the time to be reminded in (input: xd and/or xh and/or xm and/or xs) Example: 5d7h28s)", required=True, min_length=2, max_length=16),
-                           reminder: str = SlashOption(description="what you want to be reminded about.", required=True, min_length=1, max_length=4096)):
-        if not checks(interaction):
+                           time: str = nextcord.SlashOption(description="the time to be reminded in (input: xy | xw |xd | xh | xm | xs) Example: 5d7h28s)", required=True, min_length=2, max_length=30),
+                           reminder: str = nextcord.SlashOption(description="what you want to be reminded about.", required=True, min_length=1, max_length=4096)):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /reminder add {time}\n{reminder}")
@@ -70,14 +68,13 @@ class reminder_add(commands.Cog):
 
         await interaction.response.send_message(embed=embed)
 
-        channel_id = self.client.get_channel(interaction.channel.id)
-        bot_reply = (await channel_id.history(limit=1).flatten())[0]
+        bot_reply = await interaction.original_message()
 
-        bot_reply_link = f"https://discord.com/channels/{bot_reply.guild.id}/{bot_reply.channel.id}/{bot_reply.id}"
-
-        create_reminder(interaction.user.id, reminder_time, bot_reply_link, delete_id, reminder.replace("'", "‘"))
+        create_reminder(interaction.user.id, reminder_time, bot_reply.jump_url, delete_id, reminder.replace("'", "‘"))
 
         uses_update("command_uses", "reminder add")
 
+
+
 def setup(client):
-    client.add_cog(reminder_add(client))
+    client.add_cog(ReminderAdd(client))

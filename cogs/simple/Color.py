@@ -1,13 +1,10 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction, SlashOption
-from nextcord.ext import commands
-from PIL import Image
-from PIL import ImageColor
 import os
+import PIL
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -16,7 +13,7 @@ from utilities.maincommands import checks
 
 
 
-class color(commands.Cog):
+class Color(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -25,10 +22,10 @@ class color(commands.Cog):
 
     @nextcord.slash_command(name = "color", description = "shows you what a color looks like")
     async def color(self,
-                    interaction: Interaction,
+                    interaction: nextcord.Interaction,
                     *,
-                    hexcode: str = SlashOption(description="input a color hexcode here (either with or without the #)", required=True, min_length=6, max_length=7)):
-        if not checks(interaction):
+                    hexcode: str = nextcord.SlashOption(description="input a color hexcode here", required=True, min_length=6, max_length=7)):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /color {hexcode}")
@@ -37,17 +34,17 @@ class color(commands.Cog):
             hexcode = f"#{hexcode}"
 
         try:
-            hex_rgb = ImageColor.getcolor(hexcode, "RGB")
+            hex_rgb = PIL.ImageColor.getcolor(hexcode, "RGB")
         except:
             await interaction.response.send_message("Please input a valid hex value for a color.", ephemeral=True)
             return
 
-        for i in range(len(hex_rgb)):
-            if hex_rgb[i] < 0 or hex_rgb[i] > 256:
+        for value in hex_rgb:
+            if value < 0 or value > 256:
                 await interaction.response.send_message("Please input a valid hex value for a color.", ephemeral=True)
                 return
 
-        color_image = Image.new('RGB', (300, 300), hex_rgb)
+        color_image = PIL.Image.new('RGB', (300, 300), hex_rgb)
 
         color_image.save(f"./storage/temp/{hexcode}.png")
 
@@ -57,5 +54,7 @@ class color(commands.Cog):
 
         uses_update("command_uses", "color")
 
+
+
 def setup(client):
-    client.add_cog(color(client))
+    client.add_cog(Color(client))

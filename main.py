@@ -1,23 +1,22 @@
 ###package#import###############################################################################
 
+import dotenv
 import logging
 import nextcord
-from nextcord import Interaction
-from nextcord.ext import application_checks, commands
+from nextcord.ext import commands, application_checks
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
+dotenv.load_dotenv()
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
-from cogs.role_selection.role_selection import roles
+from cogs.role_selection.RoleSelection import Roles
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR, SKILLP_ID
+from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR
 from utilities.partial_commands import get_user_avatar, restart_bot, embed_builder
 
 ###cog#import###############################################################################
@@ -44,14 +43,14 @@ async def on_ready():
     
     await client.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.listening, name='XOXO - The First Album'))
     
-    client.add_view(roles())
+    client.add_view(Roles())
 
 ###restart###############################################################################
 
 @client.slash_command(name="restart", description="[MOD] restarts the entire bot")
-@application_checks.has_any_role(MODERATOR_ID)
-async def restart(interaction: Interaction):
-    if not checks(interaction):
+@nextcord.ext.application_checks.has_any_role(MODERATOR_ID)
+async def restart(interaction: nextcord.Interaction):
+    if not checks(interaction.guild, interaction.user):
         return
 
     print(f"{interaction.user}: /restart")
@@ -76,15 +75,15 @@ async def restart(interaction: Interaction):
     restart_bot()
 
 @restart.error
-async def restart_error(interaction: Interaction, error):
+async def restart_error(interaction: nextcord.Interaction, error):
     await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 ###reload###############################################################################
     
 @client.slash_command(name="reload", description="[MOD] reload the entire bot")
-@application_checks.has_any_role(MODERATOR_ID)
-async def reload(interaction: Interaction):
-    if not checks(interaction):
+@nextcord.ext.application_checks.has_any_role(MODERATOR_ID)
+async def reload(interaction: nextcord.Interaction):
+    if not checks(interaction.guild, interaction.user):
         return
 
     print(f"{interaction.user}: /reload")
@@ -94,6 +93,8 @@ async def reload(interaction: Interaction):
             for extension in os.listdir(f"./cogs/{folder}/"):
                 if extension.endswith(".py"):
                     client.reload_extension(f'cogs.{folder}.{extension[:-3]}')
+
+    await client.sync_all_application_commands()
                 
     await interaction.response.send_message("The bot has been reloaded.", ephemeral=True)
 
@@ -113,7 +114,7 @@ async def reload(interaction: Interaction):
     uses_update("mod_command_uses", "reload")
 
 @reload.error
-async def error(interaction: Interaction, error):
+async def error(interaction: nextcord.Interaction, error):
     await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
 

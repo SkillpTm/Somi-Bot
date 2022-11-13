@@ -1,43 +1,48 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction
-from nextcord.ext import commands
-from time import time
+import time
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
-from cogs._global_data.global_data import start_time
+from cogs._global_data.GlobalData import start_time
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
 
 
 
-class ping(commands.Cog):
+class Ping(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
 
     ###ping###########################################################
 
-    @nextcord.slash_command(name = "ping", description = "shows the bot's ping")
+    @nextcord.slash_command(name = "ping", description = "shows the bot's ping to discord")
     async def ping(self,
-                   interaction: Interaction):
-        start = time()
-        if not checks(interaction):
+                   interaction: nextcord.Interaction):
+        start = time.time()
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /ping")
 
-        message = await interaction.response.send_message(f"ping = `{self.client.latency * 1000:,.0f}ms`\nuptime = <t:{start_time}:R>\nVisible Users: `{len(self.client.users)}`")
+        await interaction.response.send_message(f"""ping = `{self.client.latency * 1000:,.0f}ms`
+        uptime = <t:{start_time}:R>
+        Visible Users: `{len(self.client.users)}`""")
 
-        end = time()
+        end = time.time()
         
-        await message.edit(f"DWSP latency (ping) = `{self.client.latency * 1000:,.0f}ms`\nResponse time: `{(end-start) * 1000 :,.0f}ms`\nUptime = <t:{start_time}:R>\nVisible Users: `{len(self.client.users)}`")
+        await interaction.edit_original_message(f"""DWSP latency (ping) = `{self.client.latency * 1000:,.0f}ms`
+        Response time: `{(end-start) * 1000 :,.0f}ms`
+        Uptime = <t:{start_time}:R>
+        Visible Users: `{len(self.client.users)}`""")
 
         uses_update("command_uses", "ping")
 
+
+
 def setup(client):
-    client.add_cog(ping(client))
+    client.add_cog(Ping(client))

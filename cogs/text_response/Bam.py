@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -14,7 +12,7 @@ from utilities.variables import BAN_HAMMER_GIF
 
 
 
-class bam(commands.Cog):
+class Bam(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -23,8 +21,8 @@ class bam(commands.Cog):
 
     @nextcord.slash_command(name = "bam", description = "bams a user")
     async def bam(self,
-                  interaction: Interaction):
-        if not checks(interaction):
+                  interaction: nextcord.Interaction):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /bam")
@@ -33,5 +31,7 @@ class bam(commands.Cog):
 
         uses_update("command_uses", "bam")
 
+
+
 def setup(client):
-    client.add_cog(bam(client))
+    client.add_cog(Bam(client))

@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction, SlashOption
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -15,19 +13,19 @@ from utilities.variables import BOT_COLOR
 
 
 
-class banner(commands.Cog):
+class Banner(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
 
     ###banner###########################################################
 
-    @nextcord.slash_command(name="banner", description = "posts someone's banner")
+    @nextcord.slash_command(name = "banner", description = "posts someone's banner")
     async def banner(self,
-                     interaction: Interaction,
+                     interaction: nextcord.Interaction,
                      *,
-                     member: nextcord.Member = SlashOption(description="the user you want the banner from (nothing=yourself)", required=False)):
-        if not checks(interaction):
+                     member: nextcord.Member = nextcord.SlashOption(description="the user you want the banner from", required=False)):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /banner {member}")
@@ -52,9 +50,11 @@ class banner(commands.Cog):
                               image = user.banner.url,
                               footer = "DEFAULT_KST_FOOTER")
         
-        await interaction.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
         uses_update("command_uses", "banner")
 
+
+
 def setup(client):
-    client.add_cog(banner(client))
+    client.add_cog(Banner(client))

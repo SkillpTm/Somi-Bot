@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -16,7 +14,7 @@ from utilities.variables import BOT_COLOR
 
 
 
-class reminder_list(commands.Cog):
+class ReminderList(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -27,15 +25,15 @@ class reminder_list(commands.Cog):
 
     @reminder.subcommand(name = "list", description = "a list of all your reminders")
     async def reminder_list(self,
-                            interaction: Interaction):
-        if not checks(interaction):
+                            interaction: nextcord.Interaction):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /reminder list")
 
-        amount, reminder_times, bot_reply_links, delete_ids, clean_reminders = list_reminder(interaction.user.id)
+        reminder_times, bot_reply_links, delete_ids, clean_reminders = list_reminder(interaction.user.id)
 
-        if amount == 0:
+        if len(clean_reminders) == 0:
             await interaction.response.send_message("You don't have any reminders.", ephemeral=True)
 
             uses_update("command_uses", "reminder list")
@@ -45,7 +43,8 @@ class reminder_list(commands.Cog):
         output = ""
         i = 0
 
-        while i < amount and i < 25: #Field limit = 25
+        #TODO add pages to this
+        while i < len(clean_reminders):
             if len(clean_reminders[i]) > 30:
                 output += f"<t:{reminder_times[i]}:F> // ID: {delete_ids[i]} - [Link]({bot_reply_links[i]})\nReminder: `{clean_reminders[i][:30]}...`\n\n"
             else:
@@ -64,5 +63,7 @@ class reminder_list(commands.Cog):
 
         uses_update("command_uses", "reminder list")
 
+
+
 def setup(client):
-    client.add_cog(reminder_list(client))
+    client.add_cog(ReminderList(client))

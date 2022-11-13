@@ -1,17 +1,15 @@
 ###package#import###############################################################################
 
 import datetime
+import dotenv
 import nextcord
-from nextcord import Interaction, SlashOption
-from nextcord.ext import commands
 import os
 import pycountry
 import requests
-from dotenv import load_dotenv
 
-load_dotenv()
+dotenv.load_dotenv()
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -22,7 +20,7 @@ from utilities.variables import BOT_COLOR, OPENWEATHERMAP_ICON
 
 
 
-class weather(commands.Cog):
+class Weather(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -31,10 +29,10 @@ class weather(commands.Cog):
 
     @nextcord.slash_command(name = "weather", description = "find out what the weather is in any place")
     async def weather(self,
-                      interaction: Interaction,
+                      interaction: nextcord.Interaction,
                       *,
-                      location: str = SlashOption(description="the location you want to know thw weather of", required=True, min_length=1, max_length=30)):
-        if not checks(interaction):
+                      location: str = nextcord.SlashOption(description="the location you want to know the weather of", required=True, min_length=1, max_length=30)): #TODO store the locations and then use them for autocomplete
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /weather {location}")
@@ -44,13 +42,13 @@ class weather(commands.Cog):
 
         API_KEY = os.getenv("WEATHER_API_KEY")
 
-        request_url = f"http://api.openweathermap.org/data/2.5/weather?appid={API_KEY}&q={location}&units=metric"
+        request_url = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={API_KEY}&q={location}&units=metric")
 
-        if not requests.get(request_url).status_code == 200:
+        if not request_url.status_code == 200:
             await interaction.response.send_message("Your selected location couldn't be found.", ephemeral=True)
             return
 
-        weather_data = requests.get(request_url).json()
+        weather_data = request_url.json()
 
         descirption = weather_data["weather"][0]["description"]
         humidity = weather_data["main"]["humidity"]
@@ -68,9 +66,8 @@ class weather(commands.Cog):
 
         country = pycountry.countries.get(alpha_2=country_code)
 
-        format = "%Y/%m/%d %H:%M:%S"
-        unformated_time = datetime.datetime.fromtimestamp(location_time_utc + timezone_difference - 7200) #For some reason all times are 2h off, this fixes it
-        local_date_and_time = unformated_time.strftime(format)
+        unformated_time = datetime.datetime.fromtimestamp(location_time_utc + timezone_difference - 3600) #For some reason all times are 2h off, this fixes it
+        local_date_and_time = unformated_time.strftime("%Y/%m/%d %H:%M:%S")
         local_date_and_time = local_date_and_time.split(" ")
 
         output = f"""
@@ -93,5 +90,7 @@ class weather(commands.Cog):
 
         uses_update("command_uses", "weather")
 
+
+
 def setup(client):
-    client.add_cog(weather(client))
+    client.add_cog(Weather(client))

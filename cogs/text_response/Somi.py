@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -14,7 +12,7 @@ from utilities.variables import SOMI_BEST_GRILL_IMAGE
 
 
 
-class somi(commands.Cog):
+class Somi(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -23,8 +21,8 @@ class somi(commands.Cog):
 
     @nextcord.slash_command(name = "somi", description = "speaks facts")
     async def somi(self,
-                   interaction: Interaction):
-        if not checks(interaction):
+                   interaction: nextcord.Interaction):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /somi")
@@ -33,5 +31,7 @@ class somi(commands.Cog):
 
         uses_update("command_uses", "somi")
 
+
+
 def setup(client):
-    client.add_cog(somi(client))
+    client.add_cog(Somi(client))

@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -16,7 +14,7 @@ from utilities.variables import BOT_COLOR
 
 
 
-class keyword_list(commands.Cog):
+class KeywordList(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -27,22 +25,22 @@ class keyword_list(commands.Cog):
 
     @keyword.subcommand(name = "list", description = "a list of all your keywords")
     async def keyword_list(self,
-                           interaction: Interaction):
-        if not checks(interaction):
+                           interaction: nextcord.Interaction):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /keyword list")
 
-        amount, keywords_list = list_keyword(interaction.user.id)
+        keywords_list = list_keyword(interaction.user.id)
 
-        if amount == 0:
+        if len(keywords_list) == 0:
             await interaction.response.send_message("You don't have any keywords.", ephemeral=True)
             return
 
         output = ""
         i = 0
 
-        while i < amount:
+        while i < len(keywords_list):
             output += f"{i + 1}. `{keywords_list[i]}`\n"
             i += 1
 
@@ -63,5 +61,7 @@ class keyword_list(commands.Cog):
 
         uses_update("command_uses", "keyowrd list")
 
+
+
 def setup(client):
-    client.add_cog(keyword_list(client))
+    client.add_cog(KeywordList(client))

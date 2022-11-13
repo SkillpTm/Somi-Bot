@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -14,17 +12,17 @@ from utilities.partial_commands import get_kst_time_stamp
 
 
 
-class kst(commands.Cog):
+class KST(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
-        self.client = client#
+        self.client = client
 
     ###kst###########################################################
 
     @nextcord.slash_command(name = "kst", description = "shows the current time in KST")
     async def kst(self,
-                  interaction: Interaction):
-        if not checks(interaction):
+                  interaction: nextcord.Interaction):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /kst")
@@ -35,5 +33,7 @@ class kst(commands.Cog):
 
         uses_update("command_uses", "kst")
 
+
+
 def setup(client):
-    client.add_cog(kst(client))
+    client.add_cog(KST(client))

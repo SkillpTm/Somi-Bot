@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction, SlashOption
-from nextcord.ext import application_checks, commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -16,7 +14,7 @@ from utilities.partial_commands import get_user_avatar, restart_bot, make_input_
 
 
 
-class custom_delete(commands.Cog):
+class CustomDelete(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -26,21 +24,21 @@ class custom_delete(commands.Cog):
     ###custom#delete###########################################################
 
     @custom.subcommand(name = "delete", description = "[MOD] delete a custom command")
-    @application_checks.has_any_role(MODERATOR_ID)
+    @nextcord.ext.application_checks.has_permissions(manage_guild=True)
     async def custom_delete(self,
-                            interaction: Interaction,
+                            interaction: nextcord.Interaction,
                             *,
-                            commandname: str = SlashOption(description="custom command to be deleted", required=True, min_length=2, max_length=32)):
-        if not checks(interaction):
+                            commandname: str = nextcord.SlashOption(description="custom command to be deleted", required=True, min_length=2, max_length=32)):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /custom delete {commandname}")
 
         clean_commandname = make_input_command_clean(commandname)
 
-        deleted, commandtext= delete_custom_command(interaction.guild.id, clean_commandname)
+        commandtext = delete_custom_command(interaction.guild.id, clean_commandname)
 
-        if not deleted:
+        if commandtext == "":
             await interaction.response.send_message(f"There is no custom command with the name `{clean_commandname}`.", ephemeral=True)
             return
 
@@ -69,18 +67,20 @@ class custom_delete(commands.Cog):
         restart_bot()
 
     @custom_delete.error
-    async def ban_error(self, interaction: Interaction, error):
+    async def ban_error(self, interaction: nextcord.Interaction, error):
         await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
     @custom_delete.on_autocomplete("commandname")
     async def autocomplete_commandname(self,
-                                       interaction: Interaction,
+                                       interaction: nextcord.Interaction,
                                        commandname: str):
-        amount, all_commandnames = list_custom(interaction.guild.id)
+        all_commandnames = list_custom(interaction.guild.id)
 
         autocomplete_list = string_search_to_list(commandname, all_commandnames)
 
         await interaction.response.send_autocomplete(autocomplete_list)
 
+
+
 def setup(client):
-    client.add_cog(custom_delete(client))
+    client.add_cog(CustomDelete(client))

@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -15,7 +13,7 @@ from utilities.variables import XOXO_ID, DUMB_DUMB_ID, WHAT_YOU_WAITING_FOR_ID, 
 
 
 
-class levelroles(commands.Cog):
+class LevelRolesInfo(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -24,8 +22,8 @@ class levelroles(commands.Cog):
 
     @nextcord.slash_command(name = "levelroles", description = "a list and explanation of level roles")
     async def modcommandlist(self,
-                             interaction: Interaction):
-        if not checks(interaction):
+                             interaction: nextcord.Interaction):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /leveroles")
@@ -39,16 +37,22 @@ class levelroles(commands.Cog):
                               field_one_inline = False,
 
                               field_two_name = "Role list:",
-                              field_two_value = f"Level 40-∞: <@&{XOXO_ID}>\nLevel 30-39: <@&{DUMB_DUMB_ID}>\nLevel 20-29: <@&{WHAT_YOU_WAITING_FOR_ID}>\nLevel 10-19: <@&{BIRTHDAY_ID}>\nLevel 3-9: <@&{OUTTA_MY_HEAD_ID}>",
+                              field_two_value = f"""Level 40-∞: <@&{XOXO_ID}>
+                              Level 30-39: <@&{DUMB_DUMB_ID}>
+                              Level 20-29: <@&{WHAT_YOU_WAITING_FOR_ID}>
+                              Level 10-19: <@&{BIRTHDAY_ID}>
+                              Level 3-9: <@&{OUTTA_MY_HEAD_ID}>""",
                               field_two_inline = False,
                               
                               field_three_name = "Perks:",
                               field_three_value = f"These level roles only give you a different color and put you higher on the member's list. The only exception is: From your first level role on (<@&{OUTTA_MY_HEAD_ID}>) you will be allowed to send pictures/video, upload files and your links will have embeds.",
                               field_three_inline = False)
 
-        await interaction.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
         uses_update("command_uses", "levelroles")
 
+
+
 def setup(client):
-    client.add_cog(levelroles(client))
+    client.add_cog(LevelRolesInfo(client))

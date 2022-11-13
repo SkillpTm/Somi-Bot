@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -16,7 +14,7 @@ from utilities.variables import BOT_COLOR
 
 
 
-class custom_list(commands.Cog):
+class CustomList(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -27,15 +25,15 @@ class custom_list(commands.Cog):
 
     @custom.subcommand(name = "list", description = "a list of all custom commands on this server")
     async def custom_list(self,
-                          interaction: Interaction):
-        if not checks(interaction):
+                          interaction: nextcord.Interaction):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /custom list")
 
-        amount, all_commandnames = list_custom(interaction.guild.id)
+        all_commandnames = list_custom(interaction.guild.id)
 
-        if amount == 0:
+        if len(all_commandnames) == 0:
             await interaction.response.send_message("There are no custom commands on this server.", ephemeral=True)
 
             uses_update("command_uses", "custom list")
@@ -44,11 +42,9 @@ class custom_list(commands.Cog):
 
         member_avatar_url = get_user_avatar(interaction.user)
         output = ""
-        i = 0
 
-        while i < amount:
-            output += f"/cc `{all_commandnames[i]}`\n"
-            i += 1
+        for commandname in all_commandnames:
+            output += f"/cc `{commandname}`\n"
 
         embed = embed_builder(color = BOT_COLOR,
                               author = f"Custom command list for {interaction.guild}",
@@ -63,5 +59,7 @@ class custom_list(commands.Cog):
 
         uses_update("command_uses", "custom list")
 
+
+
 def setup(client):
-    client.add_cog(custom_list(client))
+    client.add_cog(CustomList(client))

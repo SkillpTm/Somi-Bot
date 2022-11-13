@@ -1,16 +1,13 @@
 ###package#import###############################################################################
 
+import dotenv
 import lyricsgenius
 import nextcord
-from nextcord import Interaction, SlashOption, Spotify
-from nextcord.ext import commands
 import os
-import string
-from dotenv import load_dotenv
 
-load_dotenv()
+dotenv.load_dotenv()
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -21,7 +18,7 @@ from utilities.variables import GENIUS_COLOR, GENIUS_ICON
 
 
 
-class lyrics(commands.Cog):
+class Lyrics(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -30,34 +27,35 @@ class lyrics(commands.Cog):
 
     @nextcord.slash_command(name='lyrics', description='Posts the lyircs to the song you are playing')
     async def lyrics(self,
-                      interaction: Interaction,
+                      interaction: nextcord.Interaction,
                       *,
-                      artist: str = SlashOption(description="The artist you want a song to see the lyrics of", required=False, min_length=1, max_length=100),
-                      song: str = SlashOption(description="The song of that artist you want the lyrics of", required=False, min_length=1, max_length=100)):
-        if not checks(interaction):
+                      artist: str = nextcord.SlashOption(description="the artist you want a song to see the lyrics of", required=False, min_length=1, max_length=100),
+                      song: str = nextcord.SlashOption(description="the song of that artist you want the lyrics of", required=False, min_length=1, max_length=100)):
+        if not checks(interaction.guild, interaction.user):
+            return
+
+        if artist == None or song == None:
+            await interaction.response.send_message("Please select a valid artist **and** a valid song or play a song on Spotify!", ephemeral=True)
             return
 
         if artist == None and song == None:
             member = interaction.guild.get_member(interaction.user.id)
 
             for activity in member.activities:
-                if isinstance(activity, Spotify):
-                    artist = str(activity.artist)
-                    song = str(activity.title)
-
-        if artist == None or song == None:
-            await interaction.response.send_message("Please select a valid artist **and** a valid song or play a song on Spotify!", ephemeral=True)
-            return
+                if not isinstance(activity, nextcord.Spotify):
+                    continue
+                
+                artist = str(activity.artist)
+                song = str(activity.title)
         
-        access_token = os.environ["GENIUS_ACCESS_TOKEN"]
-        genius = lyricsgenius.Genius(access_token)
+        genius = lyricsgenius.Genius(os.environ["GENIUS_ACCESS_TOKEN"])
 
         genius_song = genius.search_song(title=song, artist=artist)
 
         try:
             genius_song_lyrics = genius_song.lyrics[:-5] #Get rid of an error in the wrapper
             
-            if genius_song_lyrics[len(genius_song_lyrics)-1] in str(string.digits):
+            if genius_song_lyrics[len(genius_song_lyrics)-1].isdigit:
                 genius_song_lyrics = genius_song_lyrics[:-1] #Get rid of another error in the wrapper
 
             genius_song_url = genius_song.url
@@ -78,5 +76,7 @@ class lyrics(commands.Cog):
 
         uses_update("command_uses", "lyrics")
 
+
+
 def setup(client):
-    client.add_cog(lyrics(client))
+    client.add_cog(Lyrics(client))

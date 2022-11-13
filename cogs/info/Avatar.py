@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction, SlashOption
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -15,19 +13,19 @@ from utilities.variables import BOT_COLOR
 
 
 
-class avatar(commands.Cog):
+class Avatar(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
 
     ###avatar###########################################################
 
-    @nextcord.slash_command(name="avatar", description = "posts someone's avatar")
+    @nextcord.slash_command(name = "avatar", description = "posts someone's avatar")
     async def avatar(self,
-                     interaction: Interaction,
+                     interaction: nextcord.Interaction,
                      *,
-                     member: nextcord.Member = SlashOption(description="the user you want the avatar from (nothing=yourself)", required=False)):
-        if not checks(interaction):
+                     member: nextcord.Member = nextcord.SlashOption(description="the user you want the avatar from", required=False)):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /avatar {member}")
@@ -45,9 +43,11 @@ class avatar(commands.Cog):
                               image = member_avatar_url,
                               footer = "DEFAULT_KST_FOOTER")
 
-        await interaction.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
         uses_update("command_uses", "avatar")
 
+
+
 def setup(client):
-    client.add_cog(avatar(client))
+    client.add_cog(Avatar(client))

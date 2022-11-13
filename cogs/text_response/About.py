@@ -1,14 +1,12 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
-from cogs._global_data.global_data import start_time
+from cogs._global_data.GlobalData import start_time
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
 from utilities.partial_commands import get_user_avatar, embed_builder
@@ -16,7 +14,7 @@ from utilities.variables import SKILLP_ID, SOMICORD_INVITE, CURRENT_VERSION, BOT
 
 
 
-class about(commands.Cog):
+class About(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -25,8 +23,8 @@ class about(commands.Cog):
 
     @nextcord.slash_command(name = "about", description = "tells you about Somi bot")
     async def about(self,
-                    interaction: Interaction):
-        if not checks(interaction):
+                    interaction: nextcord.Interaction):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /about")
@@ -54,7 +52,7 @@ class about(commands.Cog):
                               field_three_inline = True,
                                                 
                               field_four_name = "Invite:",
-                              field_four_value = f"This bot was created with a singular server in mind, meaning it isn't made to work in different servers at the same time. There are currently no plans to change this. For more information please message <@{SKILLP_ID}>.",
+                              field_four_value = "Currently there is no way to invite this bot.",
                               field_four_inline = False,
                                                 
                               field_five_name = "Issues:",
@@ -65,5 +63,7 @@ class about(commands.Cog):
 
         uses_update("command_uses", "about")
 
+
+
 def setup(client):
-    client.add_cog(about(client))
+    client.add_cog(About(client))

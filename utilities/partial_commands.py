@@ -1,15 +1,15 @@
 ###package#import###############################################################################
 
-from datetime import datetime as timedate
 import datetime
 import humanfriendly
-from pytz import timezone
+import nextcord
+import pytz
 import os
 import sys
 
 ###self#imports###############################################################################
 
-from utilities.variables import BOT_COLOR, CLOCK_ICON, SKILLP_ID, DEFAULT_PFP, SKILLP_JOINED_UNIX_TIME
+from utilities.variables import CLOCK_ICON, SKILLP_ID
 
 
 
@@ -21,33 +21,14 @@ def get_kst_time_stamp(source):
     else:
         format = "%Y/%m/%d %H:%M:%S %Z"
 
-    now_utc = timedate.now(timezone('UTC'))
-    now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
+    now_utc = datetime.datetime.now(pytz.timezone('UTC'))
+    now_korea = now_utc.astimezone(pytz.timezone('Asia/Seoul'))
     kst_timestamp = now_korea.strftime(format)
 
     return kst_timestamp
 
 
 
-def get_user_create_and_join_time(member):
-    time1 = datetime.datetime.strptime(str(member.created_at.strftime("%m/%d/%Y %H:%M:%S")), "%m/%d/%Y %H:%M:%S")
-    created_time = datetime.datetime.timestamp(time1)
-    
-    time2 = datetime.datetime.strptime(str(member.joined_at.strftime("%m/%d/%Y %H:%M:%S")), "%m/%d/%Y %H:%M:%S")
-    joined_time = datetime.datetime.timestamp(time2)
-    
-    return int(created_time), int(joined_time)
-
-
-
-def embed_get_server_create_time(interaction):
-    time = datetime.datetime.strptime(str(interaction.guild.created_at.strftime("%m/%d/%Y %H:%M:%S")), "%m/%d/%Y %H:%M:%S")
-    created_time = datetime.datetime.timestamp(time)
-    
-    return int(created_time)
-
-
-    
 ###user#attribute#getter###############################################################################
 
 def get_nick_else_name(member):
@@ -61,7 +42,7 @@ def get_nick_else_name(member):
 
 
 def get_user_avatar(member):
-    if member.avatar is not None:
+    if member.avatar != None:
         member_avatar_url = member.avatar
     else:
         member_avatar_url = member.default_avatar
@@ -69,124 +50,30 @@ def get_user_avatar(member):
     return member_avatar_url
 
 
-        
-###info#related###############################################################################
-
-from utilities.variables import SERVER_ID
-
-def get_userinfo_embed(member):
-    created_time, joined_time = get_user_create_and_join_time(member)
-    name = get_nick_else_name(member)
-    member_avatar_url = get_user_avatar(member)
-
-    if member.id == SKILLP_ID and member.guild.id == SERVER_ID:
-        join_time = f"<t:{SKILLP_JOINED_UNIX_TIME}>"
-    else:
-        join_time = f"<t:{joined_time}>"
-
-    embed = embed_builder(title = f"User Information: `{name}`",
-                          color = member.color,
-                          thumbnail = member_avatar_url,
-                          footer = "DEFAULT_KST_FOOTER",
-
-                          field_one_name = "ID:",
-                          field_one_value = member.id,
-                          field_one_inline = False,
-                                            
-                          field_two_name = "Name:",
-                          field_two_value = member,
-                          field_two_inline = True,
-                                            
-                          field_three_name = "Top role:",
-                          field_three_value = member.top_role.mention,
-                          field_three_inline = True,
-                                            
-                          field_four_name = "Status:",
-                          field_four_value = member.status,
-                          field_four_inline = True,
-                                            
-                          field_five_name = "Created at:",
-                          field_five_value = f"<t:{created_time}>",
-                          field_five_inline = True,
-                                            
-                          field_six_name = "Joined at:",
-                          field_six_value = join_time,
-                          field_six_inline = True,
-
-                          field_seven_name = "Boosted:",
-                          field_seven_value = bool(member.premium_since),
-                          field_seven_inline = True)
-    
-    return embed
-
-
-
-async def get_serverinfo_embed(client, interaction):
-    created_time = embed_get_server_create_time(interaction)
-
-    guild_with_counts = await client.fetch_guild(interaction.guild.id, with_counts=True)
-
-    if interaction.guild.icon is not None:
-        server_icon_url = interaction.guild.icon
-    else:
-        server_icon_url = DEFAULT_PFP
-
-    embed = embed_builder(title = f"Server Information: `{interaction.guild.name}`",
-                          color = BOT_COLOR,
-                          thumbnail = server_icon_url,
-                          footer = "DEFAULT_KST_FOOTER",
-
-                          field_one_name = "ID:",
-                          field_one_value = interaction.guild.id,
-                          field_one_inline = False,
-                                            
-                          field_two_name = "Owner:",
-                          field_two_value = interaction.guild.owner.mention,
-                          field_two_inline = True,
-                                            
-                          field_three_name = "Members:",
-                          field_three_value = f"Total: {interaction.guild.member_count}\nOnline: {guild_with_counts.approximate_presence_count}",
-                          field_three_inline = True,
-                                            
-                          field_four_name = "Channels:",
-                          field_four_value = f"Text: {len(interaction.guild.text_channels)}\nVoice: {len(interaction.guild.voice_channels)}",
-                          field_four_inline = True,
-                                            
-                          field_five_name = "Created at:",
-                          field_five_value = f"<t:{created_time}>",
-                          field_five_inline = True)
-
-    return embed
-
-
 
 ###attachment#related###############################################################################
 
-async def embed_attachments(target_channel, message, embed, link_embed = None):
-    if link_embed == None:
-        link_embed = False
-        
-        
+async def embed_attachments(target_channel, message, embed, limit = None):
     if len(message.attachments) == 0:
         await target_channel.send(embed=embed)
 
-    elif len(message.attachments) == 1 or link_embed:
+    elif len(message.attachments) == 1 or limit == 1:
         if "image" in message.attachments[0].content_type:
             embed.set_image(url=message.attachments[0].url)
-            
+
         await target_channel.send(embed=embed)
 
-        if "image" not in message.attachments[0].content_type and not link_embed:
-            file = ""
-            file += message.attachments[0].url
-            await target_channel.send(content=file)
+        if "image" not in message.attachments[0].content_type and limit == None:
+            await target_channel.send(content = message.attachments[0].url)
 
-    elif len(message.attachments) > 1 and not link_embed:
-        files = ""
-        for attachment in range(len(message.attachments)):
-            files += f"{message.attachments[attachment].url}\n"
+    elif len(message.attachments) > 1:
+        file_urls = ""
+
+        for attachment in message.attachments:
+            file_urls += f"{attachment.url}\n"
+
         await target_channel.send(embed=embed)
-        await target_channel.send(content=files)
+        await target_channel.send(content=file_urls)
 
 
 
@@ -214,66 +101,25 @@ async def is_member_themself(interaction, member, source):
 
 def time_to_seconds(time):
     total_seconds = 0
-    try:
-        days = "0d"
-        hours = "0h"
-        minutes = "0m"
-        seconds = "0s"
 
-        clean_time = time.replace(" ", "").lower()
+    clean_time = time.replace(" ", "").lower()
+    parse_data = ["s", "m", "h", "d", "w", "y"]
+    position_in_string = [clean_time.find("s"), clean_time.find("m"), clean_time.find("h"), clean_time.find("d"), clean_time.find("w"), clean_time.find("y")]
 
-        d_position = clean_time.find("d")
-        if d_position > 0:
-            days_int = ""
-            for i in range(len(clean_time[:d_position])):
-                try:
-                    int(clean_time[d_position -1 -i])
-                    days_int += clean_time[d_position -1 -i]
-                except:
+    for index, position in enumerate(position_in_string):
+        if position > 0:
+            for i in range(len(clean_time[:position])):
+                if not clean_time[position -i -1].isdigit():
                     break
-            days = f"{days_int[::-1]}{clean_time[d_position]}"
+                parse_data[index] = "".join((clean_time[position -i -1], parse_data[index]))
 
-        h_position = clean_time.find("h")
-        if h_position > 0:
-            hours_int = ""
-            for i in range(len(clean_time[:h_position])):
-                try:
-                    int(clean_time[h_position -1 -i])
-                    hours_int += clean_time[h_position -1 -i]
-                except:
-                    break
-            hours = f"{hours_int[::-1]}{clean_time[h_position]}"
+    for data in parse_data:
+        if len(data) > 1:
+            total_seconds += int(humanfriendly.parse_timespan(data))
 
-        m_position = clean_time.find("m")
-        if m_position > 0:
-            minutes_int = ""
-            for i in range(len(clean_time[:m_position])):
-                try:
-                    int(clean_time[m_position -1 -i])
-                    minutes_int += clean_time[m_position -1 -i]
-                except:
-                    break
-            minutes = f"{minutes_int[::-1]}{clean_time[m_position]}"
+            if data.endswith("y"): #in Humanfriendly a year is only 364 days
+                total_seconds += int(humanfriendly.parse_timespan(f"{data[:-1]}d"))
 
-        s_position = clean_time.find("s")
-        if s_position > 0:
-            seconds_int = ""
-            for i in range(len(clean_time[:s_position])):
-                try:
-                    int(clean_time[s_position -1 -i])
-                    seconds_int += clean_time[s_position -1 -i]
-                except:
-                    break
-            seconds = f"{seconds_int[::-1]}{clean_time[s_position]}"
-
-        days_as_seconds = humanfriendly.parse_timespan(days)
-        hours_as_seconds = humanfriendly.parse_timespan(hours)
-        minutes_as_seconds = humanfriendly.parse_timespan(minutes)
-        seconds_as_seconds = humanfriendly.parse_timespan(seconds)
-
-        total_seconds = int(days_as_seconds + hours_as_seconds + minutes_as_seconds + seconds_as_seconds)
-    except:
-        pass
     return total_seconds
 
 
@@ -281,15 +127,12 @@ def time_to_seconds(time):
 ###message#object#related###############################################################################
 
 async def message_object_generation(link, client):
-    head, sep, tail = link.partition("https://discord.com/channels/")
-    ids_in_link, sep2, tail2 = tail.partition(" ")
-    link = sep + ids_in_link
-    id_list = ids_in_link.split("/")
+    ids_list = link.split("/")
 
-    channel = await client.fetch_channel(id_list[1])
-    message = await channel.fetch_message(id_list[2])
+    channel = await client.fetch_channel(ids_list[5])
+    message = await channel.fetch_message(ids_list[6])
 
-    return message, channel
+    return message
 
 
 
@@ -297,6 +140,7 @@ async def message_object_generation(link, client):
 
 def restart_bot():
     os.execv(sys.executable, ['python'] + sys.argv)
+
 
 
 ###clean#input#commandname###############################################################################
@@ -310,27 +154,7 @@ def make_input_command_clean(commandname):
     clean_input = str(commandname.lower())
     return clean_input
 
-###spotify###############################################################################
 
-def get_spotify_track_data(track_spotipy):
-    artists_list = []
-    artist_urls = []
-    i = 0
-
-    while i < len(track_spotipy['artists']):
-        artist_urls.append(track_spotipy['artists'][i]['external_urls']['spotify'])
-        artists_list.append(track_spotipy['artists'][i]['name'])
-        i+=1
-
-    album_url = track_spotipy['album']['external_urls']['spotify']
-    album_name = track_spotipy['album']['name']
-
-    track_url = track_spotipy['external_urls']['spotify']
-    track_name = track_spotipy['name']
-
-    cover_url = track_spotipy['album']['images'][0]['url']
-
-    return track_url, track_name, album_url, album_name, artist_urls, artists_list, cover_url
 
 ###bulk#csv###############################################################################
 
@@ -338,23 +162,20 @@ import csv
 
 def make_bulk_messages_csv(messages):
     messages.reverse()
-    format = "%Y/%m/%d %H:%M:%S"
+    write = csv.writer(file)
 
     with open('./storage/temp/bulk_messages.csv', 'w') as file:
-        write = csv.writer(file)
-
         write.writerow(["Author ID", "Author Name", "Send at", "Content"])
 
-    for i in range(len(messages)):
+    for message in messages:
         with open('./storage/temp/bulk_messages.csv', 'a') as file:
-            write = csv.writer(file)
-            message_send_time = messages[i].created_at.strftime(format)
+            message_send_time = message.created_at.strftime("%Y/%m/%d %H:%M:%S")
     
-            write.writerow([f"{messages[i].author.id}", f"{messages[i].author.name}", f"{message_send_time}", f"{messages[i].content}"])
+            write.writerow([f"{message.author.id}", f"{message.author.name}", f"{message_send_time}", f"{message.content}"])
+
+
 
 ###embed#builder###############################################################################
-
-from nextcord import Embed
 
 def embed_builder(title = None,
                   title_url = None,
@@ -395,10 +216,10 @@ def embed_builder(title = None,
                   field_seven_name = None,
                   field_seven_value = None,
                   field_seven_inline = False):
-    embed = Embed(title = title,
-                  url = title_url,
-                  description = description,
-                  color = color)
+    embed = nextcord.Embed(title = title,
+                           url = title_url,
+                           description = description,
+                           color = color)
 
     embed.set_thumbnail(url = thumbnail)
 
@@ -408,12 +229,11 @@ def embed_builder(title = None,
         embed.set_author(name = author, url = author_url, icon_url = author_icon)
 
     if footer == "DEFAULT_KST_FOOTER":
-        format = "%Y/%m/%d %H:%M:%S %Z"
-        now_utc = timedate.now(timezone('UTC'))
-        now_korea = now_utc.astimezone(timezone('Asia/Seoul'))
+        now_utc = datetime.datetime.now(pytz.timezone('UTC'))
+        now_korea = now_utc.astimezone(pytz.timezone('Asia/Seoul'))
 
-        embed.set_footer(text = now_korea.strftime(format), icon_url = CLOCK_ICON)
-    else:
+        embed.set_footer(text = now_korea.strftime("%Y/%m/%d %H:%M:%S %Z"), icon_url = CLOCK_ICON)
+    elif footer != None:
         embed.set_footer(text = footer, icon_url = footer_icon)
 
     fields = [[field_one_name, field_one_value, field_one_inline],
@@ -424,14 +244,20 @@ def embed_builder(title = None,
               [field_six_name, field_six_value, field_six_inline],
               [field_seven_name, field_seven_value, field_seven_inline]]
 
-    for i in range(len(fields)):
-        if not "" == fields[i][0] and not None == fields[i][0]:
-            if not "" == fields[i][1] and not None == fields[i][1]:
-                embed.add_field(name = f"{fields[i][0]}"[:49], value = f"{fields[i][1]}"[:975], inline = fields[i][2])
+    for field in fields:
+        if field[0] == "" or field[0] == None:
+            break
+
+        if field[1] == "" or field[1] == None:
+            break
+        
+        embed.add_field(name = f"{field[0]}"[:49], value = f"{field[1]}"[:975], inline = field[2])
 
     return embed
 
-    
+
+
+###autocomplete#releated###############################################################################
 
 def string_search_to_list(string, list):
     if string == "":
@@ -444,3 +270,15 @@ def string_search_to_list(string, list):
         get_near_objects = [str(list_object) for list_object in list if string.lower() in str(list_object).lower()]
 
     return get_near_objects
+
+
+
+###view#releated###############################################################################
+
+async def deactivate_view_children(self):
+    for child in self.children:
+        child.disabled = True
+    if hasattr(self, "response"):
+        await self.response.edit(view=self)
+    elif hasattr(self, "interaction"):
+        await self.interaction.edit_original_message(view=self)

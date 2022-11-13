@@ -2,11 +2,9 @@
 
 import asyncio
 import nextcord
-from nextcord import Interaction
-from nextcord.ext import commands
 import random
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -16,7 +14,7 @@ from utilities.variables import HEADS, TAILS
 
 
 
-class coinflip(commands.Cog):
+class Coinflip(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -25,45 +23,37 @@ class coinflip(commands.Cog):
     
     @nextcord.slash_command(name = "coinflip", description = "does a coinflip")
     async def coinflip(self,
-                       interaction: Interaction):
-        if not checks(interaction):
+                       interaction: nextcord.Interaction):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /coinflip")
 
-        flip = random.randint(0, 1)
         random_start = random.randint(0, 1)
         if random_start == 0:
-            value1= HEADS
-            value2= TAILS
+            value1 = HEADS
+            value2 = TAILS
         else:
-            value1= TAILS
-            value2= HEADS
+            value1 = TAILS
+            value2 = HEADS
+
+        flip = random.randint(0, 1)
+        if flip == 0:
+            result = f"Result:\n{HEADS}"
+        else:
+            result = f"Result:\n{TAILS}"
 
         await interaction.response.send_message(value1)
 
-        channel_id = self.client.get_channel(interaction.channel.id)
-        bot_reply = (await channel_id.history(limit=1).flatten())[0]
+        coin_animation = [[0.2, value2], [0.2, value1], [0.2, value2], [0.4, value1], [0.8, value2], [1, result]]
 
-        await asyncio.sleep(0.2)
-        await bot_reply.edit(value2)
-        await asyncio.sleep(0.2)
-        await bot_reply.edit(value1)
-        await asyncio.sleep(0.2)
-        await bot_reply.edit(value2)
-        await asyncio.sleep(0.4)
-        await bot_reply.edit(value1)
-        await asyncio.sleep(0.8)
-        await bot_reply.edit(value2)
-        await asyncio.sleep(1)
-
-        if flip == 0:
-            await bot_reply.edit(f"Result:\n{HEADS}")
-
-        if flip == 1:
-            await bot_reply.edit(f"Result:\n{TAILS}")
+        for step in coin_animation:
+            await asyncio.sleep(step[0])
+            await interaction.edit_original_message(content = step[1])
 
         uses_update("command_uses", "coinflip")
 
+
+
 def setup(client):
-    client.add_cog(coinflip(client))
+    client.add_cog(Coinflip(client))

@@ -44,7 +44,7 @@ def checks(guild, user):
 def checks_forbidden_channels(channel):
     if not hasattr(channel, "category"):
         return True
-    return not channel.category.id == MOD_CATEGORY_ID
+    return not channel.category_id == MOD_CATEGORY_ID
 
 
 

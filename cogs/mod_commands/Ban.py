@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Color, Interaction, SlashOption
-from nextcord.ext import application_checks, commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -15,7 +13,7 @@ from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, SKILLP_ID
 
 
 
-class ban(commands.Cog):
+class Ban(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -23,14 +21,14 @@ class ban(commands.Cog):
     ###ban###########################################################
         
     @nextcord.slash_command(name="ban", description="[MOD] bans a member")
-    @application_checks.has_any_role(MODERATOR_ID)
+    @nextcord.ext.application_checks.has_permissions(ban_members=True)
     async def ban(self,
-                  interaction: Interaction,
+                  interaction: nextcord.Interaction,
                   *,
-                  member: nextcord.Member = SlashOption(description="member to be banned", required=True),
-                  delete_messages_days: int = SlashOption(description="the amount of days someone's messages will get deleted for (nothing=1 day)", required=False, min_value=0, max_value=7),
-                  reason: str = SlashOption(description="reason for the ban", required=False, min_length=2, max_length=1000)):
-        if not checks(interaction):
+                  member: nextcord.Member = nextcord.SlashOption(description="member to be banned", required=True),
+                  delete_messages_hours: int = nextcord.SlashOption(description="the amount of days someone's messages will get deleted for (default=1)", required=False, min_value=0, max_value=168),
+                  reason: str = nextcord.SlashOption(description="reason for the ban", required=False, min_length=2, max_length=1000)):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /ban {member}\nReason: {reason}")
@@ -50,22 +48,24 @@ class ban(commands.Cog):
         except:
             pass
 
-        if delete_messages_days == None:
-            delete_messages_days = 1
+        if delete_messages_hours == None:
+            delete_messages_hours = 1
 
-        await interaction.guild.ban(user = member, reason = reason, delete_message_days = delete_messages_days)
+        delete_messages_hours_in_seconds = delete_messages_hours * 60 * 60
+
+        await interaction.guild.ban(user = member, reason = reason, delete_message_seconds = delete_messages_hours_in_seconds)
 
         await interaction.response.send_message(f"Succesfully banned <@{member.id}>", ephemeral=True)
 
         member_avatar_url = get_user_avatar(interaction.user)
 
-        embed = embed_builder(color = Color.red(),
+        embed = embed_builder(color = nextcord.Color.red(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
                               footer = "DEFAULT_KST_FOOTER",
 
                               field_one_name = "/ban:",
-                              field_one_value = f"{interaction.user.mention} banned: {member.mention} and deleted their messages for: `{delete_messages_days} day(s)`",
+                              field_one_value = f"{interaction.user.mention} banned: {member.mention} and deleted their messages for: `{delete_messages_hours} day(s)`",
                               field_one_inline = False,
 
                               field_two_name = "Reason:",
@@ -77,18 +77,18 @@ class ban(commands.Cog):
         uses_update("mod_command_uses", "ban")
 
     @ban.error
-    async def ban_error(self, interaction: Interaction, error):
+    async def ban_error(self, interaction: nextcord.Interaction, error):
         await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
     ###unban###########################################################
 
     @nextcord.slash_command(name="unban", description="[MOD] unbans a user")
-    @application_checks.has_any_role(MODERATOR_ID)
+    @nextcord.ext.application_checks.has_permissions(ban_members=True)
     async def unban(self,
-                    interaction: Interaction,
+                    interaction: nextcord.Interaction,
                     *,
-                    member_id: str = SlashOption(description="user ID of user to be unbanned", required=True, min_length=18, max_length=19)):
-        if not checks(interaction):
+                    member_id: str = nextcord.SlashOption(description="user ID of the user to be unbanned", required=True, min_length=18, max_length=19)):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /unban {member_id}")
@@ -110,7 +110,7 @@ class ban(commands.Cog):
 
         member_avatar_url = get_user_avatar(interaction.user)
 
-        embed = embed_builder(color = Color.green(),
+        embed = embed_builder(color = nextcord.Color.green(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
                               footer = "DEFAULT_KST_FOOTER",
@@ -124,14 +124,14 @@ class ban(commands.Cog):
         uses_update("mod_command_uses", "unban")
 
     @unban.error
-    async def unban_error(self, interaction: Interaction, error):
+    async def unban_error(self, interaction: nextcord.Interaction, error):
         await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
     @unban.on_autocomplete("member_id")
     async def autocomplete_unban(self,
-                                 interaction: Interaction,
+                                 interaction: nextcord.Interaction,
                                  member_id: str):
-        bans = await interaction.guild.bans(limit=1000).flatten()
+        bans = await interaction.guild.bans(limit=25).flatten() #Discord max is 25
         bans_ids = []
 
         for ban in bans:
@@ -141,5 +141,7 @@ class ban(commands.Cog):
 
         await interaction.response.send_autocomplete(autocomplete_list)
 
+
+
 def setup(client):
-    client.add_cog(ban(client))
+    client.add_cog(Ban(client))

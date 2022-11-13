@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Color, Interaction, SlashOption
-from nextcord.ext import application_checks, commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -15,7 +13,7 @@ from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, SKILLP_ID
 
 
 
-class kick(commands.Cog):
+class Kick(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -23,14 +21,14 @@ class kick(commands.Cog):
     ###kick###########################################################
         
     @nextcord.slash_command(name="kick", description="[MOD] kicks a member")
-    @application_checks.has_any_role(MODERATOR_ID)
+    @nextcord.ext.application_checks.has_permissions(kick_members=True)
     async def kick(self,
-                   interaction: Interaction,
+                   interaction: nextcord.Interaction,
                    *,
-                   member: nextcord.Member = SlashOption(description="Member to be kicked", required=True),
-                   delete_messages_days: int = SlashOption(description="the amount of days someone's messages will get deleted for (nothing=1 day)", required=False, min_value=0, max_value=7),
-                   reason: str = SlashOption(description="Reason for the kick", required=False, min_length=2, max_length=1000)):
-        if not checks(interaction):
+                   member: nextcord.Member = nextcord.SlashOption(description="Member to be kicked", required=True),
+                   delete_messages_days: int = nextcord.SlashOption(description="the amount of days someone's messages will get deleted for (nothing=1 day)", required=False, min_value=0, max_value=7),
+                   reason: str = nextcord.SlashOption(description="Reason for the kick", required=False, min_length=2, max_length=1000)):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /kick {member} {reason}")
@@ -58,7 +56,7 @@ class kick(commands.Cog):
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
         member_avatar_url = get_user_avatar(interaction.user)
 
-        embed = embed_builder(color = Color.orange(),
+        embed = embed_builder(color = nextcord.Color.orange(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
                               footer = "DEFAULT_KST_FOOTER",
@@ -76,8 +74,10 @@ class kick(commands.Cog):
         uses_update("mod_command_uses", "kick")
 
     @kick.error
-    async def kick_error(self, interaction: Interaction, error):
+    async def kick_error(self, interaction: nextcord.Interaction, error):
         await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
+
+
 def setup(client):
-    client.add_cog(kick(client))
+    client.add_cog(Kick(client))

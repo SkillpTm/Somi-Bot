@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Color, Interaction
-from nextcord.ext import application_checks, commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -15,7 +13,7 @@ from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, SOMMUNGCHI_ID
 
 
 
-class close(commands.Cog):
+class Close(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -23,10 +21,10 @@ class close(commands.Cog):
     ###close###########################################################
 
     @nextcord.slash_command(name="close", description="[MOD] takes all regular users the sending message permission away")
-    @application_checks.has_any_role(MODERATOR_ID)
+    @nextcord.ext.application_checks.has_permissions(manage_roles=True)
     async def close(self,
-                    interaction: Interaction):
-        if not checks(interaction):
+                    interaction: nextcord.Interaction):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /close")
@@ -42,7 +40,7 @@ class close(commands.Cog):
 
         member_avatar_url = get_user_avatar(interaction.user)
 
-        embed = embed_builder(color = Color.dark_red(),
+        embed = embed_builder(color = nextcord.Color.dark_red(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
                               footer = "DEFAULT_KST_FOOTER",
@@ -56,16 +54,16 @@ class close(commands.Cog):
         uses_update("mod_command_uses", "close")
 
     @close.error
-    async def close_error(self, interaction: Interaction, error):
+    async def close_error(self, interaction: nextcord.Interaction, error):
         await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
     ###open###########################################################
 
     @nextcord.slash_command(name="open", description="[MOD] gives all regular users the sending message permission back")
-    @application_checks.has_any_role(MODERATOR_ID)
+    @nextcord.ext.application_checks.has_permissions(manage_roles=True)
     async def open(self,
-                   interaction: Interaction):
-        if not checks(interaction):
+                   interaction: nextcord.Interaction):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /open")
@@ -81,7 +79,7 @@ class close(commands.Cog):
 
         member_avatar_url = get_user_avatar(interaction.user)
 
-        embed = embed_builder(color = Color.dark_red(),
+        embed = embed_builder(color = nextcord.Color.dark_red(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
                               footer = "DEFAULT_KST_FOOTER",
@@ -95,8 +93,10 @@ class close(commands.Cog):
         uses_update("mod_command_uses", "open")
 
     @open.error
-    async def open_error(self, interaction: Interaction, error):
+    async def open_error(self, interaction: nextcord.Interaction, error):
         await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
+
+
 def setup(client):
-    client.add_cog(close(client))
+    client.add_cog(Close(client))

@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import ChannelType, Color, Interaction, SlashOption
-from nextcord.ext import application_checks, commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -15,7 +13,7 @@ from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID
 
 
 
-class slowmode(commands.Cog):
+class Slowmode(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -23,13 +21,18 @@ class slowmode(commands.Cog):
     ###slowmode###########################################################
         
     @nextcord.slash_command(name="slowmode", description="[MOD] activates slowmode in a channel")
-    @application_checks.has_any_role(MODERATOR_ID)
+    @nextcord.ext.application_checks.has_permissions(manage_channels=True)
     async def slowmode(self,
-                       interaction: Interaction,
+                       interaction: nextcord.Interaction,
                        *,
-                       delay: int = SlashOption(description="how long it takes until a user can send a message again in seconds. (To end slowmode input '0')", required=True, min_value = 0, max_value = 3600),
-                       channel: nextcord.abc.GuildChannel = SlashOption(channel_types=[ChannelType.text, ChannelType.public_thread], description="the channel to activate slowmode in", required=False)):
-        if not checks(interaction):
+                       delay: int = nextcord.SlashOption(description="how long it takes until a user can send a message again in seconds. (To end slowmode input '0')", required=True, min_value = 0, max_value = 3600),
+                       channel: nextcord.abc.GuildChannel = nextcord.SlashOption(channel_types=[nextcord.ChannelType.text,
+                                                                                                nextcord.ChannelType.news,
+                                                                                                nextcord.ChannelType.forum,
+                                                                                                nextcord.ChannelType.public_thread,
+                                                                                                nextcord.ChannelType.news_thread,
+                                                                                                nextcord.ChannelType.private_thread], description="the channel to activate slowmode in", required=False)):
+        if not checks(interaction.guild, interaction.user):
             return
 
         if channel == None:
@@ -53,7 +56,7 @@ class slowmode(commands.Cog):
             await interaction.response.send_message(f"Deactivated slowmode in {channel.mention}", ephemeral=True)
             field_value = f"{interaction.user.mention} deactivated slowmode in {channel.mention}"
 
-        embed = embed_builder(color = Color.orange(),
+        embed = embed_builder(color = nextcord.Color.orange(),
                               author = "Mod Activity",
                               author_icon = member_avatar_url,
                               footer = "DEFAULT_KST_FOOTER",
@@ -67,8 +70,10 @@ class slowmode(commands.Cog):
         uses_update("mod_command_uses", "slowmode")
 
     @slowmode.error
-    async def slowmode_error(self, interaction: Interaction, error):
+    async def slowmode_error(self, interaction: nextcord.Interaction, error):
         await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
 
+
+
 def setup(client):
-    client.add_cog(slowmode(client))
+    client.add_cog(Slowmode(client))

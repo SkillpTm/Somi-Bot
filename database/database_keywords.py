@@ -46,13 +46,13 @@ def delete_keyword(user_id, clean_keyword):
 
     if clean_keyword == "ALL":
         conn.close()
-        return True, "ALL"
+        return "ALL"
 
     c.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='user{user_id}'")
 
     if c.fetchone() == None :
         conn.close()
-        return False, ""
+        return False
 
     c.execute(f"SELECT keywords FROM user{user_id}")
     tuple_all_keywords = c.fetchall()
@@ -63,14 +63,14 @@ def delete_keyword(user_id, clean_keyword):
 
     if not clean_keyword in all_keywords:
         conn.close()
-        return False, ""
+        return False
 
     c.execute(f"DELETE from user{user_id} WHERE keywords = '{clean_keyword}'")
 
     conn.commit()
 
     conn.close()
-    return True, ""
+    return True
 
 ###keyword#delete#ALL###########################################################
 
@@ -113,19 +113,18 @@ def list_keyword(user_id):
 
     if c.fetchone() == None :
         conn.close()
-        return 0, []
+        return []
 
     c.execute(f"SELECT keywords FROM user{user_id} ORDER BY keywords ASC")
     all_keywords = c.fetchall()
 
-    amount = len(all_keywords)
     keywords_list = []
 
     for keyword in all_keywords:
         keywords_list.append(keyword[0])
 
     conn.close()
-    return amount, keywords_list
+    return keywords_list
 
 ###keyword############################################################
 

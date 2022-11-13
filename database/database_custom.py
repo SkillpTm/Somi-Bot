@@ -48,7 +48,7 @@ def delete_custom_command(server_id, clean_commandname):
 
     if c.fetchone() == None:
         conn.close()
-        return False, ""
+        return ""
 
     c.execute(f"SELECT clean_commandname FROM server{server_id}")
     tuple_all_commandnames = c.fetchall()
@@ -59,7 +59,7 @@ def delete_custom_command(server_id, clean_commandname):
 
     if not clean_commandname in all_commandnames:
         conn.close()
-        return False, ""
+        return ""
 
     c.execute(f"SELECT commandtext FROM server{server_id} WHERE clean_commandname = '{clean_commandname}'")
     tuple_commandtext = c.fetchall()
@@ -73,7 +73,7 @@ def delete_custom_command(server_id, clean_commandname):
     conn.commit()
 
     conn.close()
-    return True, commandtext
+    return commandtext
 
 ###custom#list###########################################################
 
@@ -87,7 +87,7 @@ def list_custom(server_id):
 
     if c.fetchone() == None :
         conn.close()
-        return 0, []
+        return []
 
     c.execute(f"SELECT clean_commandname FROM server{server_id} ORDER BY clean_commandname ASC")
     tuple_all_commandnames = c.fetchall()
@@ -96,10 +96,8 @@ def list_custom(server_id):
     for commandname in tuple_all_commandnames:
         all_commandnames.append(commandname[0])
 
-    amount = len(all_commandnames)
-
     conn.close()
-    return amount, all_commandnames
+    return all_commandnames
 
 ###custom#command###########################################################
 
@@ -124,15 +122,3 @@ def command_custom(server_id, clean_commandname):
 
     conn.close()
     return commandtext
-
-###custom#command###########################################################
-
-def get_description_custom_command_names(SERVER_ID):
-    amount, all_commandnames = list_custom(SERVER_ID)
-
-    if amount == 0:
-        return "There are no custom commands"
-
-    output = ", ".join(map(str,all_commandnames))
-    
-    return output[:99]

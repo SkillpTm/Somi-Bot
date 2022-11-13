@@ -11,9 +11,7 @@ def create_reminder(user_id, reminder_time, bot_reply_link, delete_id, clean_rem
 
     c.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='user{user_id}'")
 
-    if c.fetchone() != None :
-        pass
-    else:
+    if c.fetchone() == None :
         c.execute(f"""CREATE TABLE user{user_id} (
                       reminder_time integer,
                       bot_reply_link text,
@@ -38,7 +36,7 @@ def delete_reminder(user_id, delete_id):
 
     if delete_id == "ALL":
         conn.close()
-        return True, "ALL"
+        return "ALL"
 
     c = conn.cursor()
 
@@ -46,7 +44,7 @@ def delete_reminder(user_id, delete_id):
 
     if c.fetchone() == None :
         conn.close()
-        return False, ""
+        return False
 
     c.execute(f"SELECT delete_id FROM user{user_id}")
     delete_ids = c.fetchall()
@@ -57,14 +55,14 @@ def delete_reminder(user_id, delete_id):
 
     if not delete_id in all_ids_list:
         conn.close()
-        return False, ""
+        return False
 
     c.execute(f"DELETE from user{user_id} WHERE delete_id = '{delete_id}'")
 
     conn.commit()
 
     conn.close()
-    return True, ""
+    return True
 
 ###reminder#delete#ALL###########################################################
 
@@ -108,12 +106,11 @@ def list_reminder(user_id):
 
     if c.fetchone() == None :
         conn.close()
-        return 0, [], [], []
+        return [], [], [], []
 
     c.execute(f"SELECT * FROM user{user_id} ORDER BY reminder_time ASC")
     all_reminders = c.fetchall()
 
-    amount = len(all_reminders)
     reminder_times = []
     bot_reply_links = []
     delete_ids = []
@@ -132,7 +129,7 @@ def list_reminder(user_id):
         clean_reminders.append(reminder[3])
 
     conn.close()
-    return amount, reminder_times, bot_reply_links, delete_ids, clean_reminders
+    return reminder_times, bot_reply_links, delete_ids, clean_reminders
 
 ###reminder###########################################################
 

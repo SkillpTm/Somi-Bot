@@ -1,23 +1,22 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
 from utilities.variables import HELP_OPTIONS, HELP_OUTPUT, BOT_COLOR
-from utilities.partial_commands import embed_builder
+from utilities.partial_commands import embed_builder, deactivate_view_children
 
 class HelpDropdownView(nextcord.ui.View):
-    def __init__(self):
+    def __init__(self, response):
+        self.response: nextcord.Message = response
         super().__init__(timeout = 300)
     
-    @nextcord.ui.select(placeholder = "select a command", min_values=1, max_values=1, options = HELP_OPTIONS)
+    @nextcord.ui.string_select(placeholder = "select a command", min_values=1, max_values=1, options = HELP_OPTIONS)
 
     async def callback(self,
                        select,
@@ -43,13 +42,11 @@ class HelpDropdownView(nextcord.ui.View):
         uses_update("help_selections", f"{selection}")
 
     async def on_timeout(self):
-        for child in self.children:
-            child.disabled = True
-        await message.edit(view=self)
+        await deactivate_view_children(self)
 
 
 
-class help(commands.Cog):
+class Help(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -58,17 +55,19 @@ class help(commands.Cog):
 
     @nextcord.slash_command(name='help', description='explanations for all command')
     async def help(self,
-                   interaction: Interaction):
-        if not checks(interaction):
+                   interaction: nextcord.Interaction):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: /help")
 
-        HelpDropView = HelpDropdownView()
-        global message
-        message = await interaction.response.send_message("What command do you need help with?", view=HelpDropView, ephemeral=True)
+        response = await interaction.response.send_message("What command do you need help with?", ephemeral=True)
+        HelpDropView = HelpDropdownView(response)
+        await response.edit("What command do you need help with?", view=HelpDropView)
 
         uses_update("command_uses", "help")
 
+
+
 def setup(client):
-    client.add_cog(help(client))
+    client.add_cog(Help(client))

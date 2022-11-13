@@ -1,18 +1,17 @@
 ###package#import###############################################################################
 
+import dotenv
 import asyncio
+import asyncpraw
 import datetime
 import nextcord
-from nextcord.ext import commands
-import asyncpraw
-from pytz import timezone
-import re
 import os
-from dotenv import load_dotenv
+import pytz
+import re
 
-load_dotenv()
+dotenv.load_dotenv()
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -36,15 +35,14 @@ async def reddit_loop(client):
 
     print("reddit_feed() online")
 
-    async for submission in subreddit.stream.submissions():
+    async for submission in subreddit.stream.submissions(): # skip_existing=True could be used here, but using a db allows the posting of Posts that were posted while the bot was down
         if not submission.id in history_ids:
             print(f"reddit_feed() {submission.title}\n{submission.permalink}")
 
             REDDIT_FEED = client.get_channel(REDDIT_FEED_ID)
 
-            format = "%Y/%m/%d %H:%M:%S %Z"
             post_utc = datetime.datetime.fromtimestamp(submission.created_utc)
-            post_time = post_utc.astimezone(timezone('Asia/Seoul'))
+            post_time = post_utc.astimezone(pytz.timezone('Asia/Seoul'))
 
             if not subreddit.icon_img == "":
                 thumbnail_url = subreddit.icon_img
@@ -54,7 +52,7 @@ async def reddit_loop(client):
             embed = embed_builder(description = f"[New Post in **r/{subreddit.display_name}**](https://www.reddit.com{submission.permalink})",
                                   color = REDDIT_COLOR,
                                   thumbnail = thumbnail_url,
-                                  footer = post_time.strftime(format),
+                                  footer = post_time.strftime("%Y/%m/%d %H:%M:%S %Z"),
                                   footer_icon = REDDIT_ICON)
 
             clean_flair = re.sub(":.*?:", "", str(submission.link_flair_text))
@@ -74,13 +72,7 @@ async def reddit_loop(client):
                         embed.set_image(url=submission.url)
 
                 if submission.url.startswith("https://www.reddit.com/gallery/"):
-                    all_images = []
-                    image_dict = submission.media_metadata
-
-                    for image_item in image_dict.values():
-                        largest_image = image_item['s']
-                        image_url = largest_image['u']
-                        all_images.append(image_url)
+                    all_images = [image_url['s']['u'] for image_url in submission.media_metadata.values()]
 
                     embed.set_image(url=all_images[0])
 
@@ -104,16 +96,18 @@ async def infinite_reddit_loop(self):
 
 
 
-class reddit(commands.Cog):
+class Reddit(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
 
     ###reddit###########################################################
 
-    @commands.Cog.listener()
+    @nextcord.ext.commands.Cog.listener()
     async def on_ready(self):
         await infinite_reddit_loop(self)
 
+
+
 def setup(client):
-    client.add_cog(reddit(client))
+    client.add_cog(Reddit(client))

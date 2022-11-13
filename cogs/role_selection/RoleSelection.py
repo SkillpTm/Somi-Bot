@@ -1,10 +1,8 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
@@ -15,15 +13,15 @@ from utilities.variables import UPDATES_ID, LIVE_ID, SNS_ID, REDDIT_ID, ROLES_ID
 
 
 
-class roles(nextcord.ui.View):
+class Roles(nextcord.ui.View):
     
     def __init__(self):
         super().__init__(timeout=None)
 
     async def handle_click(self,
-                           button: nextcord.ui.button,
-                           interaction: Interaction):
-        if not checks(interaction):
+                           button: nextcord.ui.Button,
+                           interaction: nextcord.Interaction):
+        if not checks(interaction.guild, interaction.user):
             return
 
         role_id, sep, role_name = button.custom_id.partition(".")
@@ -32,43 +30,43 @@ class roles(nextcord.ui.View):
         if role in interaction.user.roles:
             print(f"{interaction.user}: rolelist() remove {role}")
 
-            uses_update("role_selections", f"remove {role.name}")
-
             await interaction.user.remove_roles(role)
             await interaction.response.send_message(f"The role: {role.mention} has been removed form your role list", ephemeral=True)
+
+            uses_update("role_selections", f"remove {role.name}")
         else:
             print(f"{interaction.user}: rolelist() add {role.name}")
-
-            uses_update("role_selections", f"add {role}")
 
             await interaction.user.add_roles(role)
             await interaction.response.send_message(f"The role: {role.mention} has been added to your role list", ephemeral=True)
 
+            uses_update("role_selections", f"add {role.name}")
+
 
     @nextcord.ui.button(label = "UPDATES", style=nextcord.ButtonStyle.blurple, custom_id=f"{UPDATES_ID}.{ROLELIST[UPDATES_ID]}")
-    async def UPDATES(self, button: nextcord.ui.Button, interaction: Interaction):
+    async def UPDATES(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await self.handle_click(button, interaction)
 
     @nextcord.ui.button(label = "LIVE", style=nextcord.ButtonStyle.blurple, custom_id=f"{LIVE_ID}.{ROLELIST[LIVE_ID]}")
-    async def LIVE(self, button: nextcord.ui.Button, interaction: Interaction):
+    async def LIVE(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await self.handle_click(button, interaction)
 
     @nextcord.ui.button(label = "SNS", style=nextcord.ButtonStyle.blurple, custom_id=f"{SNS_ID}.{ROLELIST[SNS_ID]}")
-    async def SNS(self, button: nextcord.ui.Button, interaction: Interaction):
+    async def SNS(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await self.handle_click(button, interaction)
 
     @nextcord.ui.button(label = "REDDIT", style=nextcord.ButtonStyle.blurple, custom_id=f"{REDDIT_ID}.{ROLELIST[REDDIT_ID]}")
-    async def REDDIT(self, button: nextcord.ui.Button, interaction: Interaction):
+    async def REDDIT(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await self.handle_click(button, interaction)
 
     @nextcord.ui.button(label = "ROLES", style=nextcord.ButtonStyle.gray, custom_id="JeonSomi.ROLES")
-    async def ROLES(self, button: nextcord.ui.Button, interaction: Interaction):
-        if not checks(interaction):
+    async def ROLES(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        if not checks(interaction.guild, interaction.user):
             return
 
         print(f"{interaction.user}: rolelist() ROLES")
 
-        rolelist = [i.mention for i in interaction.user.roles if i != interaction.guild.default_role]
+        rolelist = [role.mention for role in interaction.user.roles if role != interaction.guild.default_role]
         output = ""
 
         for i in range(len(rolelist)):
@@ -85,28 +83,29 @@ class roles(nextcord.ui.View):
                               field_one_value = output[:1000],
                               field_one_inline = True)
 
-        await interaction.send(embed=embed, ephemeral=True)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
         uses_update("role_selections", "clicked ROLES")
 
 
-class role_selection(commands.Cog):
+
+class RoleSelection(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
 
     ###roleselection#generation###########################################################
 
-    @commands.Cog.listener()
+    @nextcord.ext.commands.Cog.listener()
     async def on_ready(self):
         ROLES_CHANNEL = self.client.get_channel(ROLES_ID)
 
-        messages = await ROLES_CHANNEL.history(limit=100).flatten()
+        messages = await ROLES_CHANNEL.history(limit=None).flatten()
 
         if not messages == []:
             return
 
-        print("roelist() generated")
+        print("roleist() generated")
 
         embed = embed_builder(title = "Role selection",
                               color = BOT_COLOR,
@@ -119,7 +118,9 @@ class role_selection(commands.Cog):
                               field_two_value = 'Click the button of the role you want down below. If you want to get rid of a role afterwards just click the button again. If you are unsure about your current roles press the button "ROLES".',
                               field_two_inline = False)
 
-        await ROLES_CHANNEL.send(embed=embed, view=roles())
+        await ROLES_CHANNEL.send(embed=embed, view=Roles())
+
+
 
 def setup(client):
-    client.add_cog(role_selection(client))
+    client.add_cog(RoleSelection(client))

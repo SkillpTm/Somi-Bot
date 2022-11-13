@@ -77,9 +77,9 @@ COMMAND_LIST = """
 /choose
 /coinflip
 /color
-/commandlist (alias: /cl)
+/commandlist
 /custom list
-/customcommand (alias: /cc)
+/customcommand
 /emoji
 /feedback
 /help
@@ -88,6 +88,7 @@ COMMAND_LIST = """
 /keyword list
 /kst
 /levelroles
+/lf artist
 /lf np
 /lf profile
 /lf recent
@@ -101,10 +102,10 @@ COMMAND_LIST = """
 /reminder add
 /reminder delete
 /reminder list
-/serverinfo (alias: /si)
-/spotify (alias: /sf)
+/serverinfo
+/spotify
 /somi
-/userinfo (alias: ui)
+/userinfo
 /weather"""
 
 MOD_COMMANDS = """
@@ -114,7 +115,7 @@ MOD_COMMANDS = """
 /custom delete
 /edit
 /kick
-/modcommandlist (alias: /mcl)
+/modcommandlist
 /mute
 /open
 /purge
@@ -156,7 +157,7 @@ HELP_OPTIONS = [
     SelectOption(label="help", description = "/help"),
     SelectOption(label="keyword", description = "/keyword add | /keyword delete | /keyword list"),
     SelectOption(label="kst", description = "/kst"),
-    SelectOption(label="lastfm", description = "/lf (re)set | /lf profile | /lf np | /lf recent | /lf topartists | /lf topalbums | /lf toptracks"),
+    SelectOption(label="lastfm", description = "/lf (re)set | /lf profile | /lf np | /lf recent | /lf top-(artists) / (albums) / (tracks) | /lf artist"),
     SelectOption(label="levelroles", description = "/levelroles"),
     SelectOption(label="lyrics", description = "/lyrics"),
     SelectOption(label="ping", description = "/ping"),
@@ -226,9 +227,10 @@ HELP_OUTPUT = {
     /lf profile optional[@username] | Example: `/lf profile `<@{SKILLP_ID}>
     /lf np optional[@username] | Example: `/lf np`
     /lf recent optional[@username] | Example: `/lf recent `<@{SKILLP_ID}>
-    /lf topartists optional[@username] | Example: `/lf topartists`
-    /lf topalbums optional[@username] | Example: `/lf topalbums `<@{SKILLP_ID}>
-    /lf toptracks optional[@username] | Example: `/lf toptracks`""",
+    /lf artist optional[@username] optional[artist] | Example: `/lf artist JEON SOMI`
+    /lf topartists optional[@username] | Example: `/lf topartists `<@{SKILLP_ID}>
+    /lf topalbums optional[@username] | Example: `/lf topalbums`
+    /lf toptracks optional[@username] | Example: `/lf toptracks `<@{SKILLP_ID}>""",
               f"""[LastFm](https://www.last.fm/) is a service to track your listening behaviour on various music streaming platforms.
               First you connect your Discord and LastFm account (for this bot) with `/lf set [LastFm name]` and then you can use all other commands to display your music listening behavior.
               All names should be self explanatory (np means 'now playing')

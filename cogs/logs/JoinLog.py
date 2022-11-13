@@ -1,31 +1,32 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Color
-from nextcord.ext import commands
+import time
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.variables import AUDIT_LOG_ID, SOMMUNGCHI_ID, WELCOME_CHANNEL_ID, WELCOME_GIF
-from utilities.partial_commands import get_user_avatar, get_user_create_and_join_time, embed_builder
+from utilities.variables import AUDIT_LOG_ID, SOMMUNGCHI_ID, WELCOME_CHANNEL_ID, WELCOME_GIF, SERVER_ID
+from utilities.partial_commands import get_user_avatar, embed_builder
 
 
 
-class join_log(commands.Cog):
+class JoinLog(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
 
     ###welcome#message###########################################################
     
-    @commands.Cog.listener()
+    @nextcord.ext.commands.Cog.listener()
     async def on_member_join(self,
                              member):
-        if not checks(member):
+        if not checks(member.guild, member.user):
+            return
+        if member.guild.id != SERVER_ID:
             return
 
         print(f"join_log() {member}")
@@ -38,12 +39,12 @@ class join_log(commands.Cog):
 
     ###join#log###########################################################
 
+        created_time = int(time.mktime(member.created_at.timetuple()))
         AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
         member_avatar_url = get_user_avatar(member)
-        created_time, joined_time = get_user_create_and_join_time(member)
 
         embed = embed_builder(title = f"New Member Joined: `{member}`",
-                              color = Color.green(),
+                              color = nextcord.Color.green(),
                               thumbnail = member_avatar_url,
                               footer = "DEFAULT_KST_FOOTER",
 
@@ -63,5 +64,7 @@ class join_log(commands.Cog):
 
         uses_update("log_activations", "join log")
 
+
+
 def setup(client):
-    client.add_cog(join_log(client))
+    client.add_cog(JoinLog(client))

@@ -1,32 +1,33 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Color, Embed
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.variables import AUDIT_LOG_ID
+from utilities.variables import AUDIT_LOG_ID, SERVER_ID
 from utilities.partial_commands import get_user_avatar, embed_builder
 
 
 
-class name_log(commands.Cog):
+class NameLog(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
 
     ###name#log###########################################################
 
-    @commands.Cog.listener()
+    @nextcord.ext.commands.Cog.listener()
     async def on_member_update(self,
                                before,
                                after):
-        if not checks(before):
+        if not checks(before.guild, before.user):
+            return
+
+        if before.guild.id != SERVER_ID:
             return
 
         if before == after and before.nick == after.nick:
@@ -48,7 +49,7 @@ class name_log(commands.Cog):
         member_avatar_url = get_user_avatar(before)
 
         embed = embed_builder(title = f"{before} Changed Their {event}",
-                              color = Color.yellow(),
+                              color = nextcord.Color.yellow(),
                               thumbnail = member_avatar_url,
                               footer = "DEFAULT_KST_FOOTER",
 
@@ -64,5 +65,7 @@ class name_log(commands.Cog):
 
         uses_update("log_activations", "name log")
 
+
+
 def setup(client):
-    client.add_cog(name_log(client))
+    client.add_cog(NameLog(client))

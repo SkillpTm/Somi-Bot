@@ -1,33 +1,31 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Color
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks, checks_forbidden_channels, checks_max_word_length
-from utilities.variables import AUDIT_LOG_ID
+from utilities.variables import AUDIT_LOG_ID,SERVER_ID
 from utilities.partial_commands import get_user_avatar, embed_attachments, embed_builder
 
 
 
-class delete_log(commands.Cog):
+class DeleteLog(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
 
     ###delete#log###########################################################
 
-    @commands.Cog.listener()
+    @nextcord.ext.commands.Cog.listener()
     async def on_message_delete(self,
                                 message):
-        if not checks(message):
+        if not checks(message.guild, message.author):
             return
-        if not checks_forbidden_channels(message.channel):
+        if message.guild.id != SERVER_ID or not checks_forbidden_channels(message.channel):
             return
 
         print(f"{message.author}: delete_log()\n{message.content}")
@@ -36,7 +34,7 @@ class delete_log(commands.Cog):
         member_avatar_url = get_user_avatar(message.author)
 
         embed = embed_builder(description = f"{message.author.mention} deleted a message in: {message.channel.mention}",
-                              color = Color.red(),
+                              color = nextcord.Color.red(),
                               author = "Message Deleted",
                               author_icon = member_avatar_url,
                               footer = "DEFAULT_KST_FOOTER")
@@ -47,5 +45,7 @@ class delete_log(commands.Cog):
 
         uses_update("log_activations", "delete log")
 
+
+
 def setup(client):
-    client.add_cog(delete_log(client))
+    client.add_cog(DeleteLog(client))

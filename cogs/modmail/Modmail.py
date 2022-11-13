@@ -1,48 +1,51 @@
 ###package#import###############################################################################
 
 import nextcord
-from nextcord import Interaction, DMChannel
-from nextcord.ext import commands
 
-client = commands.Bot(intents=nextcord.Intents.all())
+client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
 from database.database_command_uses import uses_update
-from utilities.maincommands import checks_max_word_length
-from utilities.partial_commands import get_user_avatar, embed_attachments, embed_builder
+from utilities.partial_commands import get_user_avatar, embed_attachments, embed_builder, deactivate_view_children
 from utilities.variables import MOD_CHANNEL_ID, MOD_COLOR
 
-class Question_Modmail(nextcord.ui.View):
-    def __init__(self):
+class QuestionModmail(nextcord.ui.View):
+    def __init__(self, response):
+        self.response: nextcord.Message = response
         super().__init__(timeout = 30)
         self.value = None
 
     @nextcord.ui.button(label = "Yes", style=nextcord.ButtonStyle.green)
     async def yes_modmail(self,
                           button: nextcord.ui.Button,
-                          interaction: Interaction):
+                          interaction: nextcord.Interaction):
         self.value = True
+        await deactivate_view_children(self)
         self.stop()
 
     @nextcord.ui.button(label = "No", style=nextcord.ButtonStyle.red)
     async def no_modmail(self,
                          button: nextcord.ui.Button,
-                         interaction: Interaction):
+                         interaction: nextcord.Interaction):
         self.value = False
+        await deactivate_view_children(self)
         self.stop()
 
-class modmail(commands.Cog):
+    async def on_timeout(self):
+        await deactivate_view_children(self)
+
+class Modmail(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
 
     ###modmail###########################################################
 
-    @commands.Cog.listener()
+    @nextcord.ext.commands.Cog.listener()
     async def on_message(self,
                          message):
-        if not isinstance(message.channel, DMChannel):
+        if not isinstance(message.channel, nextcord.DMChannel):
             return
 
         if message.author.bot:
@@ -52,12 +55,14 @@ class modmail(commands.Cog):
             await message.channel.send("Your modmail must be longer than 50 characters!")
             return
 
-        view = Question_Modmail()
-        await message.channel.send("Do you really want to submit this as a modmail?", view=view, delete_after=30)
+        
+        response = await message.reply("Do you really want to submit this as a modmail?")
+        view = QuestionModmail(response)
+        await response.edit("Do you really want to submit this as a modmail?", view=view)
         await view.wait()
 
-        if not view.value or view.value is None:
-            await message.channel.send("Your modmail has **not** been submitted!")
+        if not view.value or view.value == None:
+            await response.reply("Your modmail has **not** been submitted!")
             return
 
         print(f"{message.author}: modmail()\n{message.content}")
@@ -66,7 +71,7 @@ class modmail(commands.Cog):
         user_thread = None
 
         for thread in MOD_CHANNEL.guild.threads:
-            if f"{message.author.name}{message.author.discriminator}" in f"{thread.name}":
+            if f"{message.author}" in f"{thread.name}":
                 user_thread = thread
 
         if user_thread == None:
@@ -78,6 +83,7 @@ class modmail(commands.Cog):
         member_avatar_url = get_user_avatar(message.author)
 
         embed = embed_builder(title = f"Modmail by {message.author}",
+                              description = f"__**Message:**__\n{message.content}"[:4096],
                               color = MOD_COLOR,
                               thumbnail = member_avatar_url,
                               footer = "DEFAULT_KST_FOOTER",
@@ -90,13 +96,13 @@ class modmail(commands.Cog):
                               field_two_value = f"{message.author.mention}",
                               field_two_inline = True)
 
-        checks_max_word_length(message, embed, source = "modmail")
-
         await embed_attachments(user_thread, message, embed)
 
-        await message.channel.send("Your modmail has been submitted!")
+        await response.reply("Your modmail has been submitted!")
 
         uses_update("command_uses", "modmail")
 
+
+
 def setup(client):
-    client.add_cog(modmail(client))
+    client.add_cog(Modmail(client))

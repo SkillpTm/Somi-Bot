@@ -1,6 +1,7 @@
 ###package#import###############################################################################
 
 import nextcord
+import pytz
 
 client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
@@ -8,7 +9,7 @@ client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
-from utilities.variables import REACTION_EMOTE, SOMIONLY_EMOTE, SOMI_F_EMOTE, SOMI_BEST_GRILL_EMOTE, BOT_COLOR
+from utilities.variables import REACTION_EMOTE, SOMIONLY_EMOTE, SOMI_F_EMOTE, SOMI_BEST_GRILL_EMOTE, BOT_COLOR, LINK_EMBED_ICON
 from utilities.partial_commands import get_user_avatar, embed_attachments, message_object_generation, embed_builder
 
 
@@ -70,27 +71,31 @@ class LinkEmbed(nextcord.ext.commands.Cog):
         head, link1, link2 = message.content.partition("https://discord.com/channels/")
         link3 = link1 + link2
         link, body, tail = link3.partition(" ")
-        message = await message_object_generation(link, self.client)
+        original_message = await message_object_generation(link, self.client)
 
-        if message.content == "" and len(message.attachments) == 0:
+        if original_message.content == "" and len(original_message.attachments) == 0:
             return
 
         print(f"{message.author}: Link_Embed()")
 
-        member_avatar_url = get_user_avatar(message.author)
+        member_avatar_url = get_user_avatar(original_message.author)
 
-        if len(message.content) < 990:
-            message_content = message.content
+        if len(original_message.content) < 990:
+            message_content = original_message.content
         else:
-            message_content = f"{message.content[:972]}..."
+            message_content = f"{original_message.content[:972]}..."
 
-        embed = embed_builder(description = f"{message.channel.mention} - [Link]({link})",
+        now_korea = original_message.created_at.astimezone(pytz.timezone('Asia/Seoul'))
+        now_korea.strftime("%Y/%m/%d %H:%M:%S %Z")
+
+        embed = embed_builder(description = f"{original_message.channel.mention} - [Link]({link})",
                               color = BOT_COLOR,
                               author = "Message Embed",
                               author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
+                              footer = now_korea.strftime("%Y/%m/%d %H:%M:%S %Z"),
+                              footer_icon = LINK_EMBED_ICON,
 
-                              field_one_name = f"{message.author.name} said:",
+                              field_one_name = f"{original_message.author.name} said:",
                               field_one_value = message_content,
                               field_one_inline = False)
 

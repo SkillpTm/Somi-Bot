@@ -3,7 +3,8 @@
 import dotenv
 import logging
 import nextcord
-from nextcord.ext import commands, application_checks
+import nextcord.ext.commands
+import nextcord.ext.application_checks
 import os
 
 dotenv.load_dotenv()

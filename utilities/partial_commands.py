@@ -32,10 +32,17 @@ def get_kst_time_stamp(source):
 ###user#attribute#getter###############################################################################
 
 def get_nick_else_name(member):
-    if member.nick != None:
-        name = member.nick
-    else:
+    name = None
+    
+    if hasattr(member, "name"):
         name = member.name
+
+    if hasattr(member, "nick"):
+        if member.nick != None:
+            name = member.nick
+
+    if name == None:
+        name = "Deleted User"
 
     return name
 
@@ -282,3 +289,53 @@ async def deactivate_view_children(self):
         await self.response.edit(view=self)
     elif hasattr(self, "interaction"):
         await self.interaction.edit_original_message(view=self)
+
+
+
+###level#roles###############################################################################
+
+from database.database_levelroles import get_server_level_roles
+from database.database_levels import get_all_user_levels
+
+async def level_roles_apply(server: nextcord.guild, input_users: list[list[tuple[int, int]]] = [[0, 0]]) -> None:
+    levelroles = get_server_level_roles(server.id)
+    if input_users == [[0, 0]]:
+        input_users = get_all_user_levels(server.id)
+
+    if levelroles == []:
+        return
+
+    server_level_roles = []
+    users_and_level_roles = {}
+
+    for levelrole in levelroles:
+        server_level_roles.append(server.get_role(int(levelrole[0])))
+
+    for levelrole in levelroles:
+        for user in input_users:
+            if user[1] >= levelrole[1]:
+                users_and_level_roles.update({user[0]: int(levelrole[0])})
+
+    for user_id, levelrole_id in users_and_level_roles.items():
+        member = server.get_member(user_id)
+        role = server.get_role(levelrole_id)
+
+        if not role in member.roles:
+            for server_level_role in server_level_roles:
+                if server_level_role in member.roles:
+                    await member.remove_roles(server_level_role)
+
+            await member.add_roles(role)
+
+
+
+async def remove_level_roles_from_members(server: nextcord.guild, role: nextcord.Role) -> None:
+    all_users = get_all_user_levels(server.id)
+
+    for user in all_users:
+        member = server.get_member(user[0])
+
+        if role in member.roles:
+            await member.remove_roles(role)
+
+    await level_roles_apply(server)

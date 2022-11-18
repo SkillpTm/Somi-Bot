@@ -1,43 +1,56 @@
 ###package#import###############################################################################
 
 import nextcord
+import nextcord.ext.commands
 
 client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
-from utilities.variables import SERVER_ID, MOD_CATEGORY_ID
+from utilities.variables import MOD_CATEGORY_ID
 
 
 
-@client.slash_command(name='keyword', description='gives notifications for selected keywords')
+@client.slash_command(name='keyword')
 async def keyword(self, interaction: nextcord.Interaction):
     pass
 
 
 
-@client.slash_command(name='reminder', description='add a reminder to be reminded about something')
+@client.slash_command(name='reminder')
 async def reminder(self, interaction: nextcord.Interaction):
     pass
 
 
 
-@client.slash_command(name='custom', description='make a custom command')
+@client.slash_command(name='custom')
 async def custom(self, interaction: nextcord.Interaction):
     pass
 
 
 
-@client.slash_command(name='lf', description='a LastFm releated command')
+@client.slash_command(name='lf')
 async def lastfm(self, interaction: nextcord.Interaction):
+    pass
+
+
+
+@client.slash_command(name='levels')
+async def levels(self, interaction: nextcord.Interaction):
+    pass
+
+
+
+@client.slash_command(name='level-roles')
+async def level_roles(self, interaction: nextcord.Interaction):
     pass
 
 
 
 ###checks################################################################################
 
-def checks(guild, user):
-    return guild.id == SERVER_ID and user.bot == False
+def checks(client: nextcord.ext.commands.bot, guild: nextcord.Guild, user: nextcord.User) -> bool:
+    return guild in client.guilds and user.bot == False
 
 
 

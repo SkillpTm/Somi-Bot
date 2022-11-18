@@ -6,27 +6,46 @@ client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
+from database.database_levels_ignore import ignore_channels_list
+from database.database_levelroles import get_server_level_roles
 from database.database_command_uses import uses_update
 from utilities.maincommands import checks
 from utilities.partial_commands import embed_builder
-from utilities.variables import XOXO_ID, DUMB_DUMB_ID, WHAT_YOU_WAITING_FOR_ID, BIRTHDAY_ID, OUTTA_MY_HEAD_ID, BOT_COLOR
+from utilities.variables import BOT_COLOR
 
 
 
-class LevelRolesInfo(nextcord.ext.commands.Cog):
+class LevelsInfo(nextcord.ext.commands.Cog):
 
     def __init__(self, client):
         self.client = client
 
-    ###levelroles###########################################################
+    from utilities.maincommands import levels
 
-    @nextcord.slash_command(name = "levelroles", description = "a list and explanation of level roles")
-    async def modcommandlist(self,
-                             interaction: nextcord.Interaction):
-        if not checks(interaction.guild, interaction.user):
+    ###level#roles#info###########################################################
+
+    @levels.subcommand(name = "info", description = "a list and explanation for levelroles")
+    async def levels_info(self,
+                          interaction: nextcord.Interaction):
+        if not checks(self.client, interaction.guild, interaction.user):
             return
 
-        print(f"{interaction.user}: /leveroles")
+        print(f"{interaction.user}: /levels info")
+
+        levelroles = get_server_level_roles(interaction.guild.id)
+        output_role_list = ""
+        output_ignore_channels = ""
+
+        for levelrole in levelroles:
+            output_role_list += f"Level >{levelrole[1]-1}: <@&{levelrole[0]}>\n"
+
+        if output_role_list == "":
+            output_role_list = "This server has no levelroles!"
+
+        ignore_channel_ids = ignore_channels_list(interaction.guild.id)
+
+        for channel_id in ignore_channel_ids:
+            output_ignore_channels += f"<#{channel_id}>\n"
 
         embed = embed_builder(title = "Level Roles",
                               color = BOT_COLOR,
@@ -37,22 +56,18 @@ class LevelRolesInfo(nextcord.ext.commands.Cog):
                               field_one_inline = False,
 
                               field_two_name = "Role list:",
-                              field_two_value = f"""Level 40-∞: <@&{XOXO_ID}>
-                              Level 30-39: <@&{DUMB_DUMB_ID}>
-                              Level 20-29: <@&{WHAT_YOU_WAITING_FOR_ID}>
-                              Level 10-19: <@&{BIRTHDAY_ID}>
-                              Level 3-9: <@&{OUTTA_MY_HEAD_ID}>""",
+                              field_two_value = output_role_list,
                               field_two_inline = False,
                               
-                              field_three_name = "Perks:",
-                              field_three_value = f"These level roles only give you a different color and put you higher on the member's list. The only exception is: From your first level role on (<@&{OUTTA_MY_HEAD_ID}>) you will be allowed to send pictures/video, upload files and your links will have embeds.",
+                              field_three_name = "No XP Channels:",
+                              field_three_value = output_ignore_channels,
                               field_three_inline = False)
 
         await interaction.response.send_message(embed=embed)
 
-        uses_update("command_uses", "levelroles")
+        uses_update("command_uses", "levels info")
 
 
 
 def setup(client):
-    client.add_cog(LevelRolesInfo(client))
+    client.add_cog(LevelsInfo(client))

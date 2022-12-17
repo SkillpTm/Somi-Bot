@@ -13,9 +13,12 @@ spotipy (Spotify API wrapper): https://spotipy.readthedocs.io/en/master/
 
 Packages:
 
+aiohttp: https://docs.aiohttp.org/en/stable/
 asyncio: https://docs.python.org/3/library/asyncio.html
-datetime: https://docs.python.org/3/library/datetime.html
+bs4: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 csv: https://docs.python.org/3/library/csv.html
+dataclasses: https://docs.python.org/3/library/dataclasses.html
+datetime: https://docs.python.org/3/library/datetime.html
 dotenv: https://saurabh-kumar.com/python-dotenv/
 humanfriendly: https://humanfriendly.readthedocs.io/en/latest/
 logging: https://docs.python.org/3/library/logging.html#module-logging
@@ -27,8 +30,8 @@ random: https://docs.python.org/3/library/random.html
 re: https://docs.python.org/3/library/re.html
 requests: https://requests.readthedocs.io/en/latest/
 sqlite3: https://docs.python.org/3/library/sqlite3.html
-string: https://docs.python.org/3/library/string.html
 sys: https://docs.python.org/3/library/sys.html
 time: https://docs.python.org/3/library/time.html
+urllib: https://docs.python.org/3/library/urllib.html
 
 # pip freeze > requirements.txt

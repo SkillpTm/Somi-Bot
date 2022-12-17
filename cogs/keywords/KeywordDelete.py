@@ -1,117 +1,93 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from database.database_keywords import delete_keyword, delete_all_user_keywords, list_keyword
-from utilities.maincommands import checks
-from utilities.partial_commands import string_search_to_list, deactivate_view_children
-
-
-
-class QuestionDeleteAllKeywords(nextcord.ui.View):
-    def __init__(self, interaction):
-        self.interaction: nextcord.Interaction = interaction
-        super().__init__(timeout = 30)
-        self.value = None
-
-    @nextcord.ui.button(label = "Yes", style=nextcord.ButtonStyle.green)
-    async def yes_modmail(self,
-                          button: nextcord.ui.Button,
-                          interaction: nextcord.Interaction):
-        self.value = True
-        await deactivate_view_children(self)
-        self.stop()
-
-    @nextcord.ui.button(label = "No", style=nextcord.ButtonStyle.red)
-    async def no_modmail(self,
-                         button: nextcord.ui.Button,
-                         interaction: nextcord.Interaction):
-        self.value = False
-        await deactivate_view_children(self)
-        self.stop()
-
-    async def on_timeout(self):
-        await deactivate_view_children(self)
+from lib.db_modules import KeywordDB
+from lib.modules import Checks, EmbedFunctions, Get
+from lib.utilities import SomiBot, YesNoButtons
 
 
 
-class KeywordDelete(nextcord.ext.commands.Cog):
+class KeywordDelete(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    from utilities.maincommands import keyword
+    from lib.utilities.main_commands import keyword
 
-    ###keyword#delete###########################################################
+    ####################################################################################################
 
     @keyword.subcommand(name = "delete", description = "delete a keyword from your keyword list")
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def keyword_delete(self,
                              interaction: nextcord.Interaction,
                              *,
-                             keyword: str = nextcord.SlashOption(description="the keyword to be deleted or 'ALL'", required=True, min_length=2, max_length=32)):
-        if not checks(interaction.guild, interaction.user):
+                             keyword: str = nextcord.SlashOption(description="the keyword to be deleted or 'ALL'", required=True, min_length=2, max_length=50)):
+        """This command let's you delete a keyword by it's name or all keywords with 'ALL'"""
+
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /keyword delete {keyword}")
+
+        await interaction.response.defer(ephemeral=True, with_message=True)
+
+        user_keywords = KeywordDB().user_list(interaction.guild.id, interaction.user.id)
+
+        if user_keywords == []:
+            await interaction.followup.send(embed=EmbedFunctions().error("You don't have any keywords to be deleted!"), ephemeral=True)
             return
 
-        print(f"{interaction.user}: /keyword delete {keyword}")
-
         if not keyword == "ALL":
-            clean_keyword = str(keyword.lower().replace(" ", ""))
+            clean_keyword = keyword.lower().replace(" ", "")
         else:
-            clean_keyword = str(keyword)
+            clean_keyword = keyword
 
-        deleted_status = delete_keyword(interaction.user.id, clean_keyword)
+        deleted = KeywordDB().delete(interaction.guild.id, interaction.user.id, clean_keyword)
 
 
 
-        if deleted_status == "ALL":
-            view = QuestionDeleteAllKeywords(interaction)
-            await interaction.response.send_message("Do you really want to delete **ALL** your __keywords__ (they can't be recovered)?", view=view, ephemeral=True)
+        if deleted == "ALL":
+            view = YesNoButtons(interaction=interaction)
+            await interaction.followup.send(embed=EmbedFunctions().info_message("Do you really want to delete **ALL** your keywords __**(they can't be recovered)**__?", self.client), view=view, ephemeral=True)
             await view.wait()
 
-            if view.value == None or view.value == False:
-                await interaction.followup.send("Your __keywords__ have **not** been deleted!", ephemeral=True)
+            if not view.value:
+                await interaction.followup.send(embed=EmbedFunctions().error("Your keywords have **not** been deleted!"), ephemeral=True)
                 return
 
             elif view.value:
-                deleted_all = delete_all_user_keywords(interaction.user.id)
+                KeywordDB().delete_all(interaction.user.id)
 
-                if not deleted_all:
-                    await interaction.followup.send("You don't have any keywords.", ephemeral=True)
-                    return
+                self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /reminder delete {keyword} went through")
 
-                print(f"{interaction.user}: /reminder delete {keyword} went through")
-
-                await interaction.followup.send("**ALL** your __keywords__ have been deleted!", ephemeral=True)
-
-                uses_update("command_uses", "keyword delete")
+                await interaction.followup.send(embed=EmbedFunctions().success("**ALL** your keywords have been deleted!"), ephemeral=True)
                 return
 
 
 
-        if not deleted_status:
-            await interaction.response.send_message(f"You don't have a keyword called `{clean_keyword}`.", ephemeral=True)
+        if not deleted:
+            await interaction.followup.send(embed=EmbedFunctions().error(f"You don't have a keyword called `{clean_keyword}`.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)
             return
 
-        await interaction.response.send_message(f"`{clean_keyword}` has been removed from your keyword list.", ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().success(f"`{clean_keyword}` has been deleted from your keywords."), ephemeral=True)
 
-        uses_update("command_uses", "keyword_delete")
+    ####################################################################################################
 
     @keyword_delete.on_autocomplete("keyword")
     async def autocomplete_keyword_delete(self,
                                           interaction: nextcord.Interaction,
                                           keyword: str):
-        keywords_list = list_keyword(interaction.user.id)
+        all_user_keywords = KeywordDB().user_list(interaction.guild.id, interaction.user.id)
 
-        autocomplete_list = string_search_to_list(keyword, keywords_list)
+        all_user_keywords_dict = {user_keyword: user_keyword for user_keyword in all_user_keywords}
 
-        await interaction.response.send_autocomplete(autocomplete_list)
+        autocomplete_dict = Get().autocomplete_dict_from_search_string(keyword, all_user_keywords_dict)
+
+        await interaction.response.send_autocomplete(autocomplete_dict)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(KeywordDelete(client))

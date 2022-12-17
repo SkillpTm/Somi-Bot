@@ -1,56 +1,54 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 import re
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from database.database_keywords import create_keyword
-from utilities.maincommands import checks
+from lib.db_modules import KeywordDB
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class KeywordAdd(nextcord.ext.commands.Cog):
+class KeywordAdd(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    from utilities.maincommands import keyword
+    from lib.utilities.main_commands import keyword
 
-    ###keyword#add###########################################################
+    ####################################################################################################
     
     @keyword.subcommand(name = "add", description = "add a keyword to your keyword list")
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def keyword_add(self,
                           interaction: nextcord.Interaction,
                           *,
-                          keyword: str = nextcord.SlashOption(description="your new keyword", required=True, min_length=2, max_length=32)):
-        if not checks(interaction.guild, interaction.user):
-            return
+                          keyword: str = nextcord.SlashOption(description="your new keyword", required=True, min_length=2, max_length=50)):
+        """This command adds a global keyword to the bot for a user"""
 
-        print(f"{interaction.user}: /keyword add {keyword}")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /keyword add {keyword}")
+
+        await interaction.response.defer(ephemeral=True, with_message=True)
 
         clean_keyword = str(keyword.lower().replace(" ", ""))
 
-        is_lower_and_number = re.match("^[\da-z]+$", clean_keyword)
-
-        if not is_lower_and_number:
-            await interaction.response.send_message(f"You can only have letters and numbers in your keywords!", ephemeral=True)
+        if not re.match("^[\da-z]+$", clean_keyword):
+            await interaction.followup.send(embed=EmbedFunctions().error(f"You can only have letters and numbers in your keywords!"), ephemeral=True)
             return
 
-        added = create_keyword(interaction.user.id, clean_keyword)
+        added = KeywordDB().add(interaction.guild.id, interaction.user.id, clean_keyword)
 
         if not added:
-            await interaction.response.send_message(f"You already have `{clean_keyword}` as a keyword.", ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().error(f"You already have `{clean_keyword}` as a keyword.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)
             return
 
-        await interaction.response.send_message(f"Your new keyword `{clean_keyword}` has been added to your keyword list.", ephemeral=True)
-
-        uses_update("command_uses", "keyword add")
+        await interaction.followup.send(embed=EmbedFunctions().success(f"`{clean_keyword}` has been added to your keywords."), ephemeral=True)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(KeywordAdd(client))

@@ -1,49 +1,46 @@
-###package#import###############################################################################
+####################################################################################################
 
 import asyncio
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 import random
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.variables import HEADS, TAILS
+from lib.modules import Checks
+from lib.utilities import SomiBot
 
 
 
-class Coinflip(nextcord.ext.commands.Cog):
+class Coinflip(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###coinflip###########################################################
+    ####################################################################################################
     
     @nextcord.slash_command(name = "coinflip", description = "does a coinflip")
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def coinflip(self,
                        interaction: nextcord.Interaction):
-        if not checks(interaction.guild, interaction.user):
-            return
+        """This command does a coinflip with a small animation"""
 
-        print(f"{interaction.user}: /coinflip")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /coinflip")
+
+        await interaction.response.defer(with_message=True)
 
         random_start = random.randint(0, 1)
         if random_start == 0:
-            value1 = HEADS
-            value2 = TAILS
+            value1 = self.client.HEADS
+            value2 = self.client.TAILS
         else:
-            value1 = TAILS
-            value2 = HEADS
+            value1 = self.client.TAILS
+            value2 = self.client.HEADS
 
-        flip = random.randint(0, 1)
-        if flip == 0:
-            result = f"Result:\n{HEADS}"
-        else:
-            result = f"Result:\n{TAILS}"
+        result = f"Result:\n{random.choice([self.client.HEADS, self.client.TAILS])}"
 
-        await interaction.response.send_message(value1)
+        await interaction.followup.send(value1)
 
         coin_animation = [[0.2, value2], [0.2, value1], [0.2, value2], [0.4, value1], [0.8, value2], [1, result]]
 
@@ -51,9 +48,7 @@ class Coinflip(nextcord.ext.commands.Cog):
             await asyncio.sleep(step[0])
             await interaction.edit_original_message(content = step[1])
 
-        uses_update("command_uses", "coinflip")
 
 
-
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(Coinflip(client))

@@ -7,10 +7,10 @@ __Created by:__
 Skillp#0309
 
 __Current version:__
-2.1
+3.0
 
 __Invite:__
-This bot was created with a singular server in mind, meaning it isn't made to work in different servers at the same time. There are currently no plans to change this. For more information please message Skillp#0309.
+There are currently no plans to have public invites. You might get an invite by asking Skillp#0309.
 
 __Issues:__
 You can report bugs and make suggestions with /feedback

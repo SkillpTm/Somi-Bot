@@ -1,65 +1,67 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from database.database_custom import list_custom
-from utilities.maincommands import checks
-from utilities.partial_commands import get_user_avatar, embed_builder
-from utilities.variables import BOT_COLOR
+from lib.db_modules import CustomDB
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class CustomList(nextcord.ext.commands.Cog):
+class CustomList(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    from utilities.maincommands import custom
+    ####################################################################################################
 
-    ###custom#list###########################################################
-
-    @custom.subcommand(name = "list", description = "a list of all custom commands on this server")
+    @nextcord.slash_command(name = "cl", description = "a list of all custom-commands on this server", name_localizations = {country_tag:"custom-list" for country_tag in nextcord.Locale})
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def custom_list(self,
                           interaction: nextcord.Interaction):
-        if not checks(interaction.guild, interaction.user):
+        """This command provides a list of all custom-commands of a guild"""
+
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /custom list")
+
+        await interaction.response.defer(ephemeral=True, with_message=True)
+
+        all_commandnames = CustomDB().list(interaction.guild.id)
+
+        if all_commandnames == []:
+            await interaction.followup.send(embed=EmbedFunctions().error("There are no custom-commands on this server.\nTo add a custom-command use `/custom add`."), ephemeral=True)
             return
 
-        print(f"{interaction.user}: /custom list")
-
-        all_commandnames = list_custom(interaction.guild.id)
-
-        if len(all_commandnames) == 0:
-            await interaction.response.send_message("There are no custom commands on this server.", ephemeral=True)
-
-            uses_update("command_uses", "custom list")
-
-            return
-
-        member_avatar_url = get_user_avatar(interaction.user)
         output = ""
 
         for commandname in all_commandnames:
             output += f"/cc `{commandname}`\n"
 
-        embed = embed_builder(color = BOT_COLOR,
-                              author = f"Custom command list for {interaction.guild}",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
+        if interaction.guild.icon != None:
+            server_icon_url = interaction.guild.icon
+        else:
+            server_icon_url = self.client.DEFAULT_PFP
 
-                              field_one_name = "Custom commands:",
-                              field_one_value = output[:1000],
-                              field_one_inline = True)
+        embed = EmbedFunctions().builder(
+            color = self.client.BOT_COLOR,
+            author = f"custom-command list for {interaction.guild.name}",
+            author_icon = server_icon_url,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "custom-commands:",
+                    output[:1000],
+                    False
+                ]
+            ]
+        )
 
-        await interaction.response.send_message(embed=embed, ephemeral=True)
-
-        uses_update("command_uses", "custom list")
+        await interaction.followup.send(embed=embed, ephemeral=True)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(CustomList(client))

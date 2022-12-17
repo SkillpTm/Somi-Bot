@@ -1,82 +1,105 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks, checks_forbidden_channels, checks_max_word_length
-from utilities.variables import AUDIT_LOG_ID, SERVER_ID
-from utilities.partial_commands import embed_attachments, get_user_avatar, embed_builder
+from lib.db_modules import AuditLogChannelDB, HiddenChannelsDB, CommandUsesDB
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class EditLog(nextcord.ext.commands.Cog):
+class EditLog(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###edit#log###########################################################
+    ####################################################################################################
 
-    @nextcord.ext.commands.Cog.listener()
+    @nextcord_C.Cog.listener()
     async def on_message_edit(self,
-                              message_before,
-                              message_after):
-        if not checks(message_before.guild, message_before.author):
+                              message_before: nextcord.Message,
+                              message_after: nextcord.Message):
+        """This function will create an edit-log message, if a guild has an audit-log-channel and if the message wasn't in a hidden-channel."""
+
+        if not Checks.message_in_guild(self.client, message_before):
             return
-        if message_before.guild.id != SERVER_ID or not checks_forbidden_channels(message_before.channel):
+
+        audit_log_id = AuditLogChannelDB().get(message_before.guild)
+
+        if not audit_log_id:
+            return
+
+        if HiddenChannelsDB().check_channel_inserted(message_before.guild.id, message_before.channel.id):
             return
 
         if message_before.content == message_after.content:
             return
 
-        print(f"{message_before.author}: edit_log()\nbefore: {message_before.content}\n\nafter: {message_after.content}")
-
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
-        member_avatar_url = get_user_avatar(message_before.author)
-
-        if len(message_before.content) < 1000 and len(message_after.content) < 1000:
-            embed = embed_builder(description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
-                                  color = nextcord.Color.yellow(),
-                                  author = "Message Edited",
-                                  author_icon = member_avatar_url,
-                                  footer = "DEFAULT_KST_FOOTER",
-
-                                  field_one_name = "Before:",
-                                  field_one_value = message_before.content[:1000],
-                                  field_one_inline = False,
-
-                                  field_two_name = "After:",
-                                  field_two_value = message_after.content[:1000],
-                                  field_two_inline = False)
-
-            await embed_attachments(target_channel = AUDIT_LOG, message = message_before, embed = embed)
-
-        else:
-            embed_before = embed_builder(description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
-                                         color = nextcord.Color.yellow(),
-                                         author = "Message Edited: Before",
-                                         author_icon = member_avatar_url,
-                                         footer = "DEFAULT_KST_FOOTER")
-
-            embed_after = embed_builder(description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
-                                        color = nextcord.Color.yellow(),
-                                        author = "Message Edited: After",
-                                        author_icon = member_avatar_url,
-                                        footer = "DEFAULT_KST_FOOTER")
-
-            checks_max_word_length(message_before, embed_before, source = "edit_log before")
-            checks_max_word_length(message_after, embed_after, source = "edit_log after")
-
-            await AUDIT_LOG.send(embed=embed_before)
-            await embed_attachments(target_channel = AUDIT_LOG, message = message_after, embed = embed_after)
+        self.client.Loggers.action_log(f"Guild: {message_before.guild.id} ~ Channel: {message_before.channel.id} ~ User: {message_before.author.id} ~ edit_log()\nMessage before: {message_before.content}\nMessage after: {message_after.content}")
 
 
-        uses_update("log_activations", "edit log")
+        if len(message_before.content) < 1024 and len(message_after.content) < 1024:
+            embed = EmbedFunctions().builder(
+                color = nextcord.Color.yellow(),
+                author = "Message Edited",
+                author_icon = message_before.author.display_avatar,
+                description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
+                footer = "DEFAULT_KST_FOOTER",
+                fields = [
+                    [
+                        "Before:",
+                        message_before.content[:1023],
+                        False
+                    ],
+
+                    [
+                        "After:",
+                        message_after.content[:1023],
+                        False
+                    ]
+                ]
+            )
+
+            embed, file_urls = EmbedFunctions().get_attachments(message_before.attachments, embed)
+            audit_log_channel = message_before.guild.get_channel(audit_log_id)
+
+            sent_message = await audit_log_channel.send(embed=embed)
+
+            if file_urls != "":
+                await sent_message.reply(content=file_urls, mention_author=False)
+
+            CommandUsesDB().uses_update("log_activations", "edit log")
+            return
+
+
+        embed_before = EmbedFunctions().builder(
+            color = nextcord.Color.yellow(),
+            author = "Message Edited",
+            author_icon = message_before.author.display_avatar,
+            description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})\n**Before:**\n{message_before.content}"[:4095]
+        )
+
+        embed_after = EmbedFunctions().builder(
+            color = nextcord.Color.yellow(),
+            description = f"**After:**\n{message_after.content}"[:4095],
+            footer = "DEFAULT_KST_FOOTER"
+        )
+
+        embed_after, file_urls = EmbedFunctions().get_attachments(message_before.attachments, embed_after)
+        audit_log_channel = message_before.guild.get_channel(audit_log_id)
+
+        await audit_log_channel.send(embed=embed_before)
+        sent_message = await audit_log_channel.send(embed=embed_after)
+
+        if file_urls != "":
+            await sent_message.reply(content=file_urls, mention_author=False)
+
+        CommandUsesDB().uses_update("log_activations", "edit log")
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(EditLog(client))

@@ -1,25 +1,26 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 import random
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
+from lib.modules import Checks
+from lib.utilities import SomiBot
 
 
 
-class Choose(nextcord.ext.commands.Cog):
+class Choose(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###choose###########################################################
+    ####################################################################################################
     
-    @nextcord.slash_command(name = "choose", description = "let the bot choose one of the options for you!")
+    @nextcord.slash_command(name = "select", description = "let the bot choose one of the options for you!", name_localizations = {country_tag:"choose" for country_tag in nextcord.Locale})
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def choose(self,
                      interaction: nextcord.Interaction,
                      *,
@@ -33,24 +34,19 @@ class Choose(nextcord.ext.commands.Cog):
                      option8: str = nextcord.SlashOption(description="eigth option", required=False, min_length=1, max_length=200),
                      option9: str = nextcord.SlashOption(description="ninth option", required=False, min_length=1, max_length=200),
                      option10: str = nextcord.SlashOption(description="tenth option", required=False, min_length=1, max_length=200)):
-        if not checks(interaction.guild, interaction.user):
-            return
+        """This command randomly chooses between one of the select 2-10 options"""
 
-        RawOptions = []
-        RawOptions.extend(value for name, value in locals().items() if name.startswith('option'))
+        Options = [[value, name] for name, value in locals().items() if name.startswith('option') and value != None]
 
-        print(f"{interaction.user}: /choose {RawOptions}")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /choose {Options}")
 
-        Options = [option for option in RawOptions if option != None]
+        await interaction.response.defer(with_message=True)
 
-        chosen_option_int = random.randint(0, len(Options)-1)
-        chosen_option = Options[chosen_option_int]
+        chosen_option = random.choice(Options)
 
-        await interaction.response.send_message(f"I have chosen __Option {chosen_option_int+1}__:\n`{chosen_option}`")
-
-        uses_update("command_uses", "choose")
+        await interaction.followup.send(f"I have chosen __Option {chosen_option[1][int(len(chosen_option[1])-1)]}__:\n`{chosen_option[0]}`")
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(Choose(client))

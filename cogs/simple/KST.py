@@ -1,39 +1,34 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.partial_commands import get_kst_time_stamp
-
+from lib.modules import Checks, Get
+from lib.utilities import SomiBot
 
 
-class KST(nextcord.ext.commands.Cog):
+
+class KST(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###kst###########################################################
+    ####################################################################################################
 
     @nextcord.slash_command(name = "kst", description = "shows the current time in KST")
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def kst(self,
                   interaction: nextcord.Interaction):
-        if not checks(interaction.guild, interaction.user):
-            return
+        """This command will display the current date and time in KST"""
 
-        print(f"{interaction.user}: /kst")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /kst")
 
-        kst_timestamp = get_kst_time_stamp(source = "/kst")
-
-        await interaction.response.send_message(kst_timestamp)
-
-        uses_update("command_uses", "kst")
+        await interaction.response.send_message(Get().kst_timestamp(source = "/kst"))
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(KST(client))

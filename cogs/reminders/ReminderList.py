@@ -1,69 +1,62 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from database.database_reminders import list_reminder
-from utilities.maincommands import checks
-from utilities.partial_commands import get_user_avatar, embed_builder
-from utilities.variables import BOT_COLOR
+from lib.db_modules import ReminderDB
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class ReminderList(nextcord.ext.commands.Cog):
+class ReminderList(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    from utilities.maincommands import reminder
+    from lib.utilities.main_commands import reminder
 
-    ###reminder#list###########################################################
+    ####################################################################################################
 
     @reminder.subcommand(name = "list", description = "a list of all your reminders")
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def reminder_list(self,
                             interaction: nextcord.Interaction):
-        if not checks(interaction.guild, interaction.user):
+        """This command will list all reminders of a user"""
+
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /reminder list")
+
+        user_reminders = ReminderDB().user_list(interaction.user.id)
+
+        if user_reminders == []:
+            await interaction.response.send_message(embed=EmbedFunctions().error("You don't have any reminders.\nTo add a reminder use `/reminder add`."), ephemeral=True)
             return
 
-        print(f"{interaction.user}: /reminder list")
-
-        reminder_times, bot_reply_links, delete_ids, clean_reminders = list_reminder(interaction.user.id)
-
-        if len(clean_reminders) == 0:
-            await interaction.response.send_message("You don't have any reminders.", ephemeral=True)
-
-            uses_update("command_uses", "reminder list")
-
-            return
+        await interaction.response.defer(with_message=True)
 
         output = ""
-        i = 0
 
         #TODO add pages to this
-        while i < len(clean_reminders):
-            if len(clean_reminders[i]) > 30:
-                output += f"<t:{reminder_times[i]}:F> // ID: {delete_ids[i]} - [Link]({bot_reply_links[i]})\nReminder: `{clean_reminders[i][:30]}...`\n\n"
+        for reminder in user_reminders:
+            if len(reminder[3]) > 30:
+                output += f"<t:{reminder[0]}:F> // ID: {reminder[2]} - [Link]({reminder[1]})\nReminder: `{reminder[3][:30]}...`\n\n"
             else:
-                output += f"<t:{reminder_times[i]}:F> // ID: {delete_ids[i]} - [Link]({bot_reply_links[i]})\nReminder: `{clean_reminders[i][:30]}`\n\n"
-            i += 1
+                output += f"<t:{reminder[0]}:F> // ID: {reminder[2]} - [Link]({reminder[1]})\nReminder: `{reminder[3][:30]}`\n\n"
 
-        member_avatar_url = get_user_avatar(interaction.user)
+        embed = EmbedFunctions().builder(
+            color = self.client.BOT_COLOR,
+            author = f"Reminder List for {interaction.user}",
+            author_icon = interaction.user.display_avatar,
+            description = output[:4096],
+            footer = "DEFAULT_KST_FOOTER"
+        )
 
-        embed = embed_builder(description = output[:4096],
-                              color = BOT_COLOR,
-                              author = f"Reminder List for {interaction.user}",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER")
-
-        await interaction.response.send_message(embed=embed)
-
-        uses_update("command_uses", "reminder list")
+        await interaction.followup.send(embed=embed)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(ReminderList(client))

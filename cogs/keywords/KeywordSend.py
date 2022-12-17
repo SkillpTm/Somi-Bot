@@ -1,84 +1,91 @@
 ###package#import###############################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
 import re
-
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
-from database.database_command_uses import uses_update
-from database.database_keywords import get_keywords
-from utilities.maincommands import checks, checks_forbidden_channels
-from utilities.partial_commands import embed_attachments, embed_builder
-from utilities.variables import BOT_COLOR
+from lib.db_modules import CommandUsesDB, HiddenChannelsDB, KeywordDB
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
-
-class KeywordSend(nextcord.ext.commands.Cog):
+class KeywordSend(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
     ###keyword#noti###########################################################
 
     @nextcord.ext.commands.Cog.listener()
     async def on_message(self,
-                         message):
-        if not checks(message.guild, message.author):
+                         message: nextcord.Message):
+        """
+        This function sends keyword notis to users:
+        1. in the same guild as the message
+        2. with the keyword in their list
+        3. if the message wasn't in a forbidden channel
+        """
+
+        if not Checks().message_in_guild(self.client, message):
             return
 
-        if not checks_forbidden_channels(message.channel):
+        if HiddenChannelsDB().check_channel_inserted(message.guild.id, message.channel.id):
             return
 
-        all_users_keywords = get_keywords(message.author.id)
+        all_users_keywords: dict = KeywordDB().get_all(message.guild.id, message.author.id)
 
-        #TODO only add keywords of users in this server
-        for user_id in all_users_keywords.keys():
-            #check if user is in server
-            if message.guild.get_member(user_id) != None:
-                #check if user has keywords
-                if not all_users_keywords[user_id] == []:
-                    all_user_keywords = all_users_keywords[user_id]
-                    all_user_keywords_in_content = []
+        for user_id, user_keywords in all_users_keywords.items():
+            
+            if not message.guild.get_member(user_id):
+                continue
 
-                    for keyword in all_user_keywords:
-                        if keyword in re.sub(":.*?:", "", str(message.content.lower())): # regex -> message without emotes
-                            all_user_keywords_in_content.append(keyword)
+            if user_keywords == []:
+                continue
 
-                    if all_user_keywords_in_content != []:
-                        output_keywords = ""
-                        last_keyword = all_user_keywords_in_content.pop()
+            user_keywords_in_content = []
 
-                        #check if it's only 1 keyword
-                        if not all_user_keywords_in_content == []:
-                            nearly_all_keywords_list = ", ".join(map(str,all_user_keywords_in_content))
-                            output_keywords = f"{nearly_all_keywords_list} and {last_keyword}"
-                            multiple_keywords = True
-                        else:
-                            output_keywords = last_keyword
-                            multiple_keywords = False
+            for keyword in user_keywords:
+                if keyword in re.sub('<[^ ]+?>', "", message.content.lower()): # regex -> message without emotes
+                    user_keywords_in_content.append(keyword)
 
-                        noti_user = await self.client.fetch_user(user_id)
+            if user_keywords_in_content == []:
+                continue
 
-                        print(f"{message.author}: keyword() {noti_user}\n{output_keywords}")
+            output_keywords = ""
+            last_keyword = user_keywords_in_content.pop()
 
-                        if multiple_keywords:
-                            keywords_info = f"Your keywords: `{output_keywords}` have been mentioned in {message.channel.mention} by {message.author.mention}:"
-                        else:
-                            keywords_info = f"Your keyword: `{output_keywords}` has been mentioned in {message.channel.mention} by {message.author.mention}:"
+            if not user_keywords_in_content == []:
+                nearly_all_keywords_list = ", ".join(map(str, user_keywords_in_content))
+                output_keywords = f"{nearly_all_keywords_list} and {last_keyword}"
+                keywords_info = f"Your keywords: `{output_keywords}` have been mentioned in {message.channel.mention} by {message.author.mention}:"
 
-                        embed = embed_builder(title = f"Keyword Notification: `{output_keywords}`",
-                                              title_url = message.jump_url,
-                                              description = f"{keywords_info}\n\n__**Message:**__\n{message.content}"[:4096],
-                                              color = BOT_COLOR,
-                                              footer = "DEFAULT_KST_FOOTER")
+            else:
+                output_keywords = last_keyword
+                keywords_info = f"Your keyword: `{output_keywords}` has been mentioned in {message.channel.mention} by {message.author.mention}:"
 
-                        await embed_attachments(noti_user, message, embed)
+            self.client.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel: {message.channel.id} ~ User: {message.author.id} ~ keyword() {user_id}\n{output_keywords}")
 
-                        uses_update("command_uses", "keyword send")
+            embed = EmbedFunctions().builder(
+                color = self.client.BOT_COLOR,
+                title = f"Keyword Notification: `{output_keywords}`",
+                title_url = message.jump_url,
+                description = f"{keywords_info}\n\n__**Message:**__\n{message.content}"[:4096],
+                footer = "DEFAULT_KST_FOOTER")
+
+            embed, file_urls = EmbedFunctions().get_attachments(message.attachments, embed, limit = 1)
+
+            noti_user = await self.client.fetch_user(user_id)
+
+            try:
+                await noti_user.send(embed=embed)
+            except:
+                self.client.Loggers.action_warning(f"keyword() {noti_user.id} couldn't be notified, because their pms aren't open to the client")
+
+            CommandUsesDB().uses_update("command_uses", "keyword send")
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(KeywordSend(client))

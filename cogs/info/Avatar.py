@@ -1,53 +1,49 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.partial_commands import get_nick_else_name, get_user_avatar, embed_builder
-from utilities.variables import BOT_COLOR
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class Avatar(nextcord.ext.commands.Cog):
+class Avatar(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###avatar###########################################################
+    ####################################################################################################
 
     @nextcord.slash_command(name = "avatar", description = "posts someone's avatar")
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def avatar(self,
                      interaction: nextcord.Interaction,
                      *,
                      member: nextcord.Member = nextcord.SlashOption(description="the user you want the avatar from", required=False)):
-        if not checks(interaction.guild, interaction.user):
-            return
-
-        print(f"{interaction.user}: /avatar {member}")
-
-        if member == None:
-            member = interaction.guild.get_member(interaction.user.id)
+        """This command reposts anyone's avatar in an embed"""
         
-        member_avatar_url = get_user_avatar(member)
+        if not member:
+            member = interaction.guild.get_member(interaction.user.id)
 
-        name = get_nick_else_name(member)
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /avatar {member.id}")
 
-        embed = embed_builder(title = f"Avatar of: `{name}`",
-                              title_url = member_avatar_url,
-                              color = BOT_COLOR,
-                              image = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER")
+        await interaction.response.defer(with_message=True)
 
-        await interaction.response.send_message(embed=embed)
+        embed = EmbedFunctions().builder(
+            color = self.client.BOT_COLOR,
+            image = member.display_avatar.url,
+            title = f"Avatar of: `{member.display_name}`",
+            title_url = member.display_avatar.url,
+            footer = "DEFAULT_KST_FOOTER"
+        )
 
-        uses_update("command_uses", "avatar")
+        await interaction.followup.send(embed=embed)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(Avatar(client))

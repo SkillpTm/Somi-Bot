@@ -1,103 +1,115 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 import requests
+import urllib.parse
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from cogs._global_data.GlobalData import network
-from database.database_command_uses import uses_update
-from database.database_lastfm import lastfm_get_user_from_db
-from utilities.maincommands import checks
-from utilities.variables import LASTFM_ICON, LASTFM_COLOR
-from utilities.partial_commands import get_nick_else_name, embed_builder
-from utilities.LastFmButtons import LastFmButtons
+from lib.db_modules import LastFmDB
+from lib.modules import Checks, EmbedFunctions, Get
+from lib.utilities import LASTFM_TIMEFRAMES, LASTFM_TIMEFRAMES_TEXT, PageButtons, SomiBot
 
 
 
-async def lastfm_top_tracks(interaction, member, lastfm_username, timeframe, page_number, first_message_sent):
-    request_url = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.gettoptracks&username={lastfm_username}&limit=10&page={page_number}&period={timeframe}&api_key={network.api_key}&format=json")
-
-    if not request_url.status_code == 200:
-        await interaction.followup.send("LastFm didn't respond correctly, try in a few minutes again!", ephemeral=True)
-        return
-
-    top_tracks_user_data = request_url.json()
-    last_page = int(top_tracks_user_data["toptracks"]["@attr"]["totalPages"])
-    name = get_nick_else_name(member)
-    output = ""
-
-    for track in top_tracks_user_data["toptracks"]["track"]:
-        output += f"{track['@attr']['rank']}. **[{track['name']}]({track['url']})** by [{track['artist']['name']}]({track['artist']['url']}) - *({track['playcount']} plays)*\n"
-
-    authot_text_dict = {"7day": "of the past week:", "1month": "of the past month:", "3month": "of the past quarter:", "6month": "of the past half a year:", "12month": "of the past year:", "overall": "of all time:"}
-    author_text = f"{name} top tracks {authot_text_dict[timeframe]}"
-
-    embed = embed_builder(description = output,
-                          color = LASTFM_COLOR,
-                          author = author_text,
-                          author_icon = LASTFM_ICON,
-                          footer = "DEFAULT_KST_FOOTER")
-
-    view = LastFmButtons(page = page_number, last_page = last_page, interaction = interaction)
-
-    if not first_message_sent:
-        first_message_sent = True
-        await interaction.followup.send(embed=embed, view=view)
-    else:
-        await interaction.edit_original_message(embed=embed, view=view)
-
-    await view.change_page_button()
-    await view.check_page_for_button_deactivation()
-    await view.wait()
-
-    if view.value == None:
-        uses_update("command_uses", "lf toptracks")
-        return
-
-    await lastfm_top_tracks(interaction, member, lastfm_username, timeframe, page_number = view.page, first_message_sent = first_message_sent)
-
-
-
-class LastFmTopTracks(nextcord.ext.commands.Cog):
+class LastFmTopTracks(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    from utilities.maincommands import lastfm
+    from lib.utilities.main_commands import lastfm
 
-    ###lf#top#tracks###########################################################
+    ####################################################################################################
 
-    @lastfm.subcommand(name = "toptracks", description = "shows your top tracks on LastFm")
-    async def top_tracks(self,
+    @lastfm.subcommand(name = "tt", description = "shows your top tracks on LastFm", name_localizations = {country_tag:"toptracks" for country_tag in nextcord.Locale})
+    @nextcord_AC.check(Checks().interaction_in_guild())
+    async def lastfm_top_tracks(self,
                          interaction: nextcord.Interaction,
                          *,
                          member: nextcord.Member = nextcord.SlashOption(description="the user you want the top tracks of", required=False),
-                         timeframe: str = nextcord.SlashOption(description="the timeframe you want the top tracks for", required=False, choices = {"Past Week": "7day", "Past Month": "1month", "Past Quarter": "3month", "Past Half a Year": "6month", "Past Year": "12month", "All Time": "overall"})):
-        if not checks(interaction.guild, interaction.user):
-            return
+                         timeframe: str = nextcord.SlashOption(description="the timeframe you want the top tracks for", required=False, choices=LASTFM_TIMEFRAMES)):
+        """This command shows someone's top tracks"""
 
-        if member == None:
+        if not member:
             member = interaction.guild.get_member(interaction.user.id)
 
-        if timeframe == None:
+        if not timeframe:
             timeframe = "overall"
 
-        print(f"{interaction.user}: /lf toptracks {member} {timeframe}")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /lf toptracks {member.id} {timeframe}")
 
-        lastfm_username = lastfm_get_user_from_db(member.id)
+        lastfm_username = LastFmDB().get_user(member.id)
 
         if not lastfm_username:
-            await interaction.response.send_message(f"{member.mention} has not setup their LastFm account.", ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().error(f"{member.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message = True)
 
-        await lastfm_top_tracks(interaction, member, lastfm_username, timeframe, page_number = 1, first_message_sent = False)
+        await self.lastfm_top_tracks_rec(interaction, member, lastfm_username, timeframe, page_number = 1, first_message_sent = False)
+
+    ####################################################################################################
+
+    async def lastfm_top_tracks_rec(self,
+                                    interaction: nextcord.Interaction,
+                                    member: nextcord.Member,
+                                    lastfm_username: str,
+                                    timeframe: str,
+                                    page_number: int,
+                                    first_message_sent: bool) -> None:
+        """This function recurses on button press and requests the data from the LastFm api to build the embed"""
+
+        request_url = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.gettoptracks&username={lastfm_username}&limit=10&page={page_number}&period={timeframe}&api_key={self.client.lf_network.api_key}&format=json")
+
+        if not request_url.status_code == 200:
+            embed = EmbedFunctions().error("LastFm didn't respond correctly, try in a few minutes again!")
+
+            if not first_message_sent:
+                await interaction.followup.send(embed=embed)
+            else:
+                await interaction.edit_original_message(embed=embed, view=None)
+                
+            return
+
+        top_tracks_user_data = request_url.json()
+        last_page = int(top_tracks_user_data["toptracks"]["@attr"]["totalPages"])
+        output = ""
+
+        for track in top_tracks_user_data["toptracks"]["track"]:
+            track_url = Get().markdown_safe(track['url'])
+            artist_url = Get().markdown_safe(track['artist']['url'])
+
+            track_name = Get().markdown_safe(track['name'])
+            artist_name = Get().markdown_safe(track['artist']['name'])
+            output += f"{track['@attr']['rank']}. **[{track_name}]({track_url})** by [{artist_name}]({artist_url}) - *({track['playcount']} plays)*\n"
+
+        embed = EmbedFunctions().builder(
+            color = self.client.LASTFM_COLOR,
+            author = f"{member.display_name} top tracks {LASTFM_TIMEFRAMES_TEXT[timeframe]}",
+            author_icon = self.client.LASTFM_ICON,
+            description = output,
+            footer = "DEFAULT_KST_FOOTER"
+        )
+
+        view = PageButtons(page = page_number, last_page = last_page, interaction = interaction)
+
+        if not first_message_sent:
+            first_message_sent = True
+            await interaction.followup.send(embed=embed, view=view)
+        else:
+            await interaction.edit_original_message(embed=embed, view=view)
+
+        await view.update_buttons()
+        await view.wait()
+
+        if not view.value:
+            return
+
+        await self.lastfm_top_tracks_rec(interaction, member, lastfm_username, timeframe, view.page, first_message_sent)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(LastFmTopTracks(client))

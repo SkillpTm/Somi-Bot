@@ -1,86 +1,97 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 import time
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.partial_commands import get_nick_else_name, get_user_avatar, embed_builder
-from utilities.variables import SKILLP_ID, SERVER_ID, SKILLP_JOINED_UNIX_TIME
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class Userinfo(nextcord.ext.commands.Cog):
+class Userinfo(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###userinfo###########################################################
+    ####################################################################################################
 
     @nextcord.slash_command(name = "ui", description = "gives information about a user", name_localizations = {country_tag:"userinfo" for country_tag in nextcord.Locale})
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def userinfo(self,
                        interaction: nextcord.Interaction,
                        *,
                        member: nextcord.Member = nextcord.SlashOption(description="the user you want information about", required=False)):
-        if not checks(interaction.guild, interaction.user):
-            return
+        """This command gives you infomration about a user"""
 
-        print(f"{interaction.user}: /userinfo {member}")
-
-        if member == None:
+        if not member:
             member = interaction.guild.get_member(interaction.user.id)
 
-        created_time = int(time.mktime(member.created_at.timetuple()))
-        name = get_nick_else_name(member)
-        member_avatar_url = get_user_avatar(member)
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /userinfo {member.id}")
 
-        if member.id == SKILLP_ID and member.guild.id == SERVER_ID:
-            joined_time = SKILLP_JOINED_UNIX_TIME
+        await interaction.response.defer(with_message=True)
+
+        if member.id == self.client.owner_id and member.guild.id == self.client.SOMICORD_ID:
+            joined_time = self.client.SKILLP_JOINED_SOMICORD_TIME
         else:
             joined_time = int(time.mktime(member.joined_at.timetuple()))
 
-        embed = embed_builder(title = f"User Information: `{name}`",
-                              color = member.color,
-                              thumbnail = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
+        embed = EmbedFunctions().builder(
+            color = member.color,
+            thumbnail = member.display_avatar.url,
+            title = f"User Information: `{member.display_name}`",
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "ID:",
+                    member.id,
+                    False
+                ],
 
-                              field_one_name = "ID:",
-                              field_one_value = member.id,
-                              field_one_inline = False,
-                                                
-                              field_two_name = "Name:",
-                              field_two_value = member,
-                              field_two_inline = True,
-                                                
-                              field_three_name = "Top role:",
-                              field_three_value = member.top_role.mention,
-                              field_three_inline = True,
-                                                
-                              field_four_name = "Status:",
-                              field_four_value = member.status,
-                              field_four_inline = True,
-                                                
-                              field_five_name = "Created at:",
-                              field_five_value = f"<t:{created_time}>",
-                              field_five_inline = True,
-                                                
-                              field_six_name = "Joined at:",
-                              field_six_value = f"<t:{joined_time}>",
-                              field_six_inline = True,
+                [
+                    "Name:",
+                    member.name,
+                    True
+                ],
 
-                              field_seven_name = "Boosted:",
-                              field_seven_value = bool(member.premium_since),
-                              field_seven_inline = True)
+                [
+                    "Top role:",
+                    member.top_role.mention,
+                    True
+                ],
 
-        await interaction.response.send_message(embed=embed)
+                [
+                    "Status:",
+                    member.status,
+                    True
+                ],
 
-        uses_update("command_uses", "userinfo")
+                [
+                    "Created at:",
+                    f"<t:{int(time.mktime(member.created_at.timetuple()))}>",
+                    True
+                ],
+
+                [
+                    "Joined at:",
+                    f"<t:{joined_time}>",
+                    True
+                ],
+
+                [
+                    "Boosted:",
+                    bool(member.premium_since),
+                    True
+                ]
+            ]
+        )
+
+        await interaction.followup.send(embed=embed)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(Userinfo(client))

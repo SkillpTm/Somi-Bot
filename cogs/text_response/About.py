@@ -1,69 +1,79 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from cogs._global_data.GlobalData import start_time
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.partial_commands import get_user_avatar, embed_builder
-from utilities.variables import SKILLP_ID, SOMICORD_INVITE, CURRENT_VERSION, BOT_COLOR
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class About(nextcord.ext.commands.Cog):
+class About(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###about###########################################################
+    ####################################################################################################
 
     @nextcord.slash_command(name = "about", description = "tells you about Somi bot")
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def about(self,
                     interaction: nextcord.Interaction):
-        if not checks(interaction.guild, interaction.user):
-            return
+        """This command outputs various information about the bot to the user"""
 
-        print(f"{interaction.user}: /about")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /about")
 
-        member_avatar_url = get_user_avatar(self.client.user)
+        await interaction.response.defer(ephemeral=True, with_message=True)
 
-        embed = embed_builder(title = "Information",
-                              description = f"""{self.client.user.mention} is a themed bot after the kpop soloist Jeon Somi written in Python using the [Nextcord API wrapper](https://docs.nextcord.dev/en/stable/).
-                                                Originally it was created to fullfil all needs of [Somicord]({SOMICORD_INVITE}).""",
-                              color = BOT_COLOR,
-                              author = f"{self.client.user}",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
+        embed = EmbedFunctions().builder(
+            color = self.client.BOT_COLOR,
+            author = f"{self.client.user}",
+            author_icon = self.client.user.display_avatar.url,
+            title = "Information",
+            description = f"""
+                          {self.client.user.mention} is a themed bot after the kpop soloist Jeon Somi written in Python using the [Nextcord API wrapper](https://docs.nextcord.dev/en/stable/).
+                          Originally it was created to fullfil all needs of [Somicord]({self.client.SOMICORD_INVITE}).
+                          """,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "Created by:",
+                    f"<@{self.client.owner_id}>",
+                    True
+                ],
 
-                              field_one_name = "Created by:",
-                              field_one_value = f"<@{SKILLP_ID}>",
-                              field_one_inline = True,
+                [
+                    "Current version:",
+                    f"{self.client.VERSION}",
+                    True
+                ],
 
-                              field_two_name = "Current version:",
-                              field_two_value = f"{CURRENT_VERSION}",
-                              field_two_inline = True,
-                              
-                              field_three_name = "Uptime:",
-                              field_three_value = f"<t:{start_time}:R>",
-                              field_three_inline = True,
-                                                
-                              field_four_name = "Invite:",
-                              field_four_value = "Currently there is no way to invite this bot.",
-                              field_four_inline = False,
-                                                
-                              field_five_name = "Issues:",
-                              field_five_value = "You can report bugs and make suggestions by using /feedback!",
-                              field_five_inline = False,)
+                [
+                    "Uptime:",
+                    f"<t:{self.client.start_time}:R>",
+                    True
+                ],
+
+                [
+                    "Invite:",
+                    "Currently there are no plans to have public invites. You might get an invite by asking Skillp#0309.",
+                    False
+                ],
+
+                [
+                    "Issues:",
+                    "You can report bugs and make suggestions by using /feedback!",
+                    False
+                ]
+            ]
+        )
         
-        await interaction.response.send_message(embed=embed, ephemeral=True)
-
-        uses_update("command_uses", "about")
+        await interaction.followup.send(embed=embed, ephemeral=True)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(About(client))

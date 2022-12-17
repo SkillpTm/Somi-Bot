@@ -1,75 +1,84 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
+import re
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from database.database_custom import create_custom_command
-from utilities.maincommands import checks
-from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR
-from utilities.partial_commands import get_user_avatar, make_input_command_clean, embed_builder
-
+from lib.db_modules import AuditLogChannelDB, CustomDB
+from lib.modules import Checks, EmbedFunctions, Get
+from lib.utilities import SomiBot
 
 
-class CustomAdd(nextcord.ext.commands.Cog):
+
+class CustomAdd(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    from utilities.maincommands import custom
+    from lib.utilities.main_commands import custom
 
-    ###custom#add###########################################################
+    ####################################################################################################
 
-    @custom.subcommand(name = "add", description = "[MOD] add a custom command")
-    @nextcord.ext.application_checks.has_permissions(manage_guild=True)
+    @custom.subcommand(name = "add", description = "add a custom-command to this server")
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def custom_add(self,
                          interaction: nextcord.Interaction,
                          *,
-                         commandname: str = nextcord.SlashOption(description="new custom command name", required=True, min_length=2, max_length=32),
-                         commandtext: str = nextcord.SlashOption(description="the content of the new custom command", required=True, min_length=2, max_length=1000)):
-        if not checks(interaction.guild, interaction.user):
+                         commandname: str = nextcord.SlashOption(description="new custom-command name", required=True, min_length=2, max_length=50),
+                         commandtext: str = nextcord.SlashOption(description="the content of the new custom-command", required=True, min_length=2, max_length=1000)):
+        """This command adds a custom-command to the server's custom-commands"""
+
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /custom add {commandname}:\n{commandtext}")
+
+        await interaction.response.defer(ephemeral=True, with_message=True)
+
+        clean_commandname = Get().clean_input_command(commandname)
+
+        if not re.match("^[\da-z]+$", clean_commandname):
+            await interaction.followup.send(embed=EmbedFunctions().error("You can only have letters and numbers in your custom-commandname!"), ephemeral=True)
             return
 
-        print(f"{interaction.user}: /custom add {commandname}\n{commandtext}")
-
-        clean_commandname = make_input_command_clean(commandname)
-
-        added = create_custom_command(interaction.guild.id, clean_commandname, commandtext.replace("'", "‘"))
+        added = CustomDB().create_command(interaction.guild.id, clean_commandname, commandtext.replace("'", "‘"))
 
         if not added:
-            await interaction.response.send_message(f"A custom command with the name `{clean_commandname}` already exists. Please select a different name.", ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().error(f"A custom-command with the name `{clean_commandname}` already exists.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
             return
 
-        await interaction.response.send_message(f"Your custom command with the name `{clean_commandname}` has been created.", ephemeral=True)
-
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
-        member_avatar_url = get_user_avatar(interaction.user)
-
-        embed = embed_builder(color = MOD_COLOR,
-                              author = "Mod Activity",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
-
-                              field_one_name = "/custom add:",
-                              field_one_value = f"{interaction.user.mention} added: `{clean_commandname}` as a custom command.",
-                              field_one_inline = False,
-
-                              field_two_name = "Command text:",
-                              field_two_value = f"`{commandtext}`",
-                              field_two_inline = False)
-
-        await AUDIT_LOG.send(embed=embed)
-
-        uses_update("mod_command_uses", "custom add")
-
-    @custom_add.error
-    async def ban_error(self, interaction: nextcord.Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().success(f"Your custom-command with the name `{clean_commandname}` has been created."), ephemeral=True)
 
 
+        audit_log_id = AuditLogChannelDB().get(interaction.guild)
 
-def setup(client):
+        if not audit_log_id:
+            return
+
+        embed = EmbedFunctions().builder(
+            color = self.client.MOD_COLOR,
+            author = "Mod Activity",
+            author_icon = interaction.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "/custom add:",
+                    f"{interaction.user.mention} added: `{clean_commandname}` as a custom-command.",
+                    False
+                ],
+
+                [
+                    "Command text:",
+                    f"`{commandtext}`",
+                    False
+                ]
+            ]
+        )
+
+        audit_log_channel = interaction.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
+
+
+
+def setup(client: SomiBot):
     client.add_cog(CustomAdd(client))

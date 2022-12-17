@@ -1,36 +1,36 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 import requests
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class Emoji(nextcord.ext.commands.Cog):
+class Emoji(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###emoji###########################################################
+    ####################################################################################################
 
     @nextcord.slash_command(name="emoji", description="make an emoji larger")
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def emoji(self,
                     interaction: nextcord.Interaction,
                     *,
-                    emoji: str = nextcord.SlashOption(description="your emoji", required=True, min_length=1, max_length=100)):
-        if not checks(interaction.guild, interaction.user):
-            return
+                    emoji: str = nextcord.SlashOption(description="your emoji", required=True, min_length=2, max_length=100)):
+        """This command reposts the original url of any custom emoji"""
 
-        print(f"{interaction.user}: /emoji {emoji}")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /emoji {emoji}")
 
         if not emoji.startswith("<") and not emoji.endswith(">"):
-            await interaction.response.send_message("Please select an emoji.", ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().error("Please select a custom emoji."), ephemeral=True)
             return
 
         if emoji.startswith("<a:"):
@@ -43,14 +43,12 @@ class Emoji(nextcord.ext.commands.Cog):
         partial_emoji_object = nextcord.PartialEmoji(name = emoji_name, id = emoji_id, animated = emote_animated)
 
         if not requests.get(partial_emoji_object.url).status_code == 200:
-            await interaction.response.send_message("Please select an emoji.", ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().error("Please select a custom emoji."), ephemeral=True)
             return
 
         await interaction.response.send_message(partial_emoji_object.url)
 
-        uses_update("command_uses", "emoji")
 
 
-
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(Emoji(client))

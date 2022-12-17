@@ -1,82 +1,78 @@
-###package#import###############################################################################
+####################################################################################################
 
-import dotenv
 import lyricsgenius
 import nextcord
-import os
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-dotenv.load_dotenv()
+####################################################################################################
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
-
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.partial_commands import embed_builder
-from utilities.variables import GENIUS_COLOR, GENIUS_ICON
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class Lyrics(nextcord.ext.commands.Cog):
+class Lyrics(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###lyrics###########################################################
+    ####################################################################################################
 
-    @nextcord.slash_command(name='lyrics', description='Posts the lyircs to the song you are playing')
+    @nextcord.slash_command(name='genius', description='Posts the lyircs to the song you are playing', name_localizations = {country_tag:"lyrics" for country_tag in nextcord.Locale})
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def lyrics(self,
                       interaction: nextcord.Interaction,
                       *,
-                      artist: str = nextcord.SlashOption(description="the artist you want a song to see the lyrics of", required=False, min_length=1, max_length=100),
-                      song: str = nextcord.SlashOption(description="the song of that artist you want the lyrics of", required=False, min_length=1, max_length=100)):
-        if not checks(interaction.guild, interaction.user):
-            return
+                      artist: str = nextcord.SlashOption(description="the artist you want a song to see the lyrics of", required=False, min_length=2, max_length=100),
+                      song: str = nextcord.SlashOption(description="the song of that artist you want the lyrics of", required=False, min_length=2, max_length=100)):
+        """This command will post the lyrics of a song in an embed, through the slashh options or by pulling it from their Spotify connection with Discord"""
 
-        if artist == None or song == None:
-            await interaction.response.send_message("Please select a valid artist **and** a valid song or play a song on Spotify!", ephemeral=True)
-            return
-
-        if artist == None and song == None:
-            member = interaction.guild.get_member(interaction.user.id)
+        if not artist and not song:
+            member: nextcord.Member = interaction.guild.get_member(interaction.user.id)
 
             for activity in member.activities:
                 if not isinstance(activity, nextcord.Spotify):
                     continue
                 
-                artist = str(activity.artist)
-                song = str(activity.title)
+                artist = activity.artist
+                song = activity.title
+
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /lyrics {artist} - {song}")
+
+        if not artist or not song:
+            await interaction.response.send_message(embed=EmbedFunctions().error("Please select a valid artist **and** a valid song or play a song on Spotify!"), ephemeral=True)
+            return
+
+        await interaction.response.defer(with_message=True)
         
-        genius = lyricsgenius.Genius(os.environ["GENIUS_ACCESS_TOKEN"])
+        genius = lyricsgenius.Genius(self.client.Keychain.GENIUS_ACCESS_TOKEN)
 
         genius_song = genius.search_song(title=song, artist=artist)
 
-        try:
-            genius_song_lyrics = genius_song.lyrics[:-5] #Get rid of an error in the wrapper
-            
-            if genius_song_lyrics[len(genius_song_lyrics)-1].isdigit:
-                genius_song_lyrics = genius_song_lyrics[:-1] #Get rid of another error in the wrapper
-
-            genius_song_url = genius_song.url
-        except:
-            await interaction.response.send_message("The Genius search failed, please search with different criteria again!", ephemeral=True)
+        if not hasattr(genius_song, "lyrics"):
+            await interaction.followup.send(embed=EmbedFunctions().error(f"Your search for:\nArtist: `{artist}`\nSong: `{song}`\n__failed__, please try again!"))
             return
 
-        embed = embed_builder(title = f"{genius_song.title}",
-                              title_url = genius_song_url,
-                              description = genius_song_lyrics[:4096],
-                              color = GENIUS_COLOR,
-                              thumbnail = genius_song.header_image_thumbnail_url,
-                              author = f"{genius_song.artist}",
-                              author_icon = GENIUS_ICON,
-                              footer = "Lyrics powered by Genius")
+        genius_song_lyrics = genius_song.lyrics[:-5] #Get rid of an error in the wrapper
+        
+        if genius_song_lyrics[len(genius_song_lyrics)-1].isdigit:
+            genius_song_lyrics = genius_song_lyrics[:-1] #Get rid of another error in the wrapper
 
-        await interaction.response.send_message(embed=embed)
+        embed = EmbedFunctions().builder(
+            color = self.client.GENIUS_COLOR,
+            thumbnail = genius_song.header_image_thumbnail_url,
+            author = f"{genius_song.artist}",
+            author_icon = self.client.GENIUS_ICON,
+            title = f"{genius_song.title}",
+            title_url = genius_song.url,
+            description = genius_song_lyrics[:4096],
+            footer = "Lyrics powered by Genius"
+        )
 
-        uses_update("command_uses", "lyrics")
+        await interaction.followup.send(embed=embed)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(Lyrics(client))

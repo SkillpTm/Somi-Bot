@@ -1,128 +1,134 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.partial_commands import get_user_avatar, embed_builder
-from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR
-
+from lib.db_modules import AuditLogChannelDB
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import TEXT_CHANNELS, SomiBot
 
 
-class Send(nextcord.ext.commands.Cog):
+
+class Send(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###send###########################################################
+    ####################################################################################################
 
-    @nextcord.slash_command(name="send", description="[MOD] sends a message in a channel")
-    @nextcord.ext.application_checks.has_permissions(manage_messages=True)
+    @nextcord.slash_command(name="say", description="sends a message in a channel", default_member_permissions = nextcord.Permissions(manage_messages=True), name_localizations = {country_tag:"send" for country_tag in nextcord.Locale})
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def send(self,
                    interaction: nextcord.Interaction,
                    *,
                    message: str = nextcord.SlashOption(description="the message to be send by the bot", required=True, min_length=1, max_length=1000),
-                   channel: nextcord.abc.GuildChannel = nextcord.SlashOption(channel_types=[nextcord.ChannelType.text,
-                                                                                            nextcord.ChannelType.news,
-                                                                                            nextcord.ChannelType.forum,
-                                                                                            nextcord.ChannelType.public_thread,
-                                                                                            nextcord.ChannelType.news_thread,
-                                                                                            nextcord.ChannelType.private_thread], description="channel in which the message will be send", required=False)):
-        if not checks(interaction.guild, interaction.user):
-            return
+                   channel: nextcord.abc.GuildChannel = nextcord.SlashOption(channel_types=TEXT_CHANNELS, description="channel in which the message will be send", required=False)):
+        """This command allows a user to send a message with the bot."""
 
-        if channel == None:
+        if not channel:
             channel = interaction.channel
 
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /send {message} {channel.id}")
 
-        print(f"{interaction.user}: /send {message} {channel}")
+        await interaction.response.defer(ephemeral=True, with_message=True)
 
-        message_object = await channel.send(message)
-        await interaction.response.send_message(f"Message sent in: {channel.mention} - [Link]({message_object.jump_url})", ephemeral=True)
+        message_object: nextcord.Message = await channel.send(message)
+        await interaction.followup.send(embed=EmbedFunctions().success(f"Message sent in: {channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
 
-        member_avatar_url = get_user_avatar(interaction.user)
 
-        embed = embed_builder(description = f"{interaction.user.mention} sent a bot message in: {channel.mention} - [Link]({message_object.jump_url})",
-            	              color = MOD_COLOR,
-                              author = "Mod Activity",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
+        audit_log_id = AuditLogChannelDB().get(interaction.guild)
 
-                              field_one_name = "Message:",
-                              field_one_value = message,
-                              field_one_inline = False)
+        if not audit_log_id:
+            return
 
-        await AUDIT_LOG.send(embed=embed)
+        embed = EmbedFunctions().builder(
+            color = self.client.MOD_COLOR,
+            author = "Mod Activity",
+            author_icon = interaction.user.display_avatar,
+            description = f"{interaction.user.mention} sent a bot message in: {channel.mention} - [Link]({message_object.jump_url})",
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "Message:",
+                    message,
+                    False
+                ]
+            ]
+        )
 
-        uses_update("mod_command_uses", "send")
+        audit_log_channel = interaction.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
 
-    @send.error
-    async def send_error(self, interaction: nextcord.Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+    ####################################################################################################
 
-    ###edit###########################################################
-
-    @nextcord.slash_command(name="edit", description="[MOD] edits a bot message in a channel")
-    @nextcord.ext.application_checks.has_permissions(manage_messages=True)
+    @nextcord.slash_command(name="edit", description="edits a bot message in a channel", default_member_permissions = nextcord.Permissions(manage_messages=True))
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def edit(self,
                    interaction: nextcord.Interaction,
                    *,
                    message_id: str = nextcord.SlashOption(description="ID of the message to be edited", required=True, min_length=18, max_length=19),
                    message: str = nextcord.SlashOption(description="the new message to be edited by the bot", required=True, min_length=1, max_length=1000)):
-        if not checks(interaction.guild, interaction.user):
-            return
+        """This command allows a user to edit a message of the bot."""
 
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
+        await interaction.response.defer(ephemeral=True, with_message=True)
+
+        message_object: nextcord.Message = None
 
         for channel in await interaction.guild.fetch_channels():
-            msg = ""
+            if not channel.type in TEXT_CHANNELS:
+                continue
+
             try:
-                msg = await channel.fetch_message(int(message_id))
+                message_object = await channel.fetch_message(int(message_id))
                 correct_channel = channel
                 break
-            except:
+            except nextcord.NotFound:
                 pass
 
-        if msg == "" or msg.author.id != self.client.user.id:
-            await interaction.response.send_message(f"`{message_id}` isn't an id of a message sent by the bot in this server!", ephemeral=True)
+        if not message_object or message_object.author.id != self.client.user.id:
+            await interaction.followup.send(embed=EmbedFunctions().error(f"`{message_id}` isn't an id of a message sent by the bot in this server."), ephemeral=True)
             return
 
-        print(f"{interaction.user}: /edit {message_id}\nBefore: {msg.content}\nAfter: {message}")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /edit {message_id}\nMessage before: {message_object.content}\nMessage after: {message}")
 
-        await msg.edit(content=message)
+        await message_object.edit(content=message)
         
-        await interaction.response.send_message(f"Message edited in: {correct_channel.mention} - [Link]({msg.jump_url})", ephemeral=True)
-
-        member_avatar_url = get_user_avatar(interaction.user)
-
-        embed = embed_builder(description = f"{interaction.user.mention} edited a bot message in: {correct_channel.mention} - [Link]({msg.jump_url})",
-            	              color = MOD_COLOR,
-                              author = "Mod Activity",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
-
-                              field_one_name = "Before:",
-                              field_one_value = msg.content,
-                              field_one_inline = False,
-                              
-                              field_two_name = "After:",
-                              field_two_value = message,
-                              field_two_inline = False)
-
-        await AUDIT_LOG.send(embed=embed)
-
-        uses_update("mod_command_uses", "edit")
-
-    @edit.error
-    async def edit_error(self, interaction: nextcord.Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().success(f"Message edited in: {correct_channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
 
 
+        audit_log_id = AuditLogChannelDB().get(interaction.guild)
 
-def setup(client):
+        if not audit_log_id:
+            return
+
+        embed = EmbedFunctions().builder(
+            color = self.client.MOD_COLOR,
+            author = "Mod Activity",
+            author_icon = interaction.user.display_avatar,
+            description = f"{interaction.user.mention} edited a bot message in: {correct_channel.mention} - [Link]({message_object.jump_url})",
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "Before:",
+                    message_object.content,
+                    False
+                ],
+
+                [
+                    "After:",
+                    message,
+                    False
+                ]
+            ]
+        )
+
+        audit_log_channel = interaction.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
+
+
+
+def setup(client: SomiBot):
     client.add_cog(Send(client))

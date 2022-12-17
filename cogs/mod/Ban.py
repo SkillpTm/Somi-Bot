@@ -1,147 +1,157 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.partial_commands import get_user_avatar, is_member_skillp, is_member_themself, embed_builder, string_search_to_list
-from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, SKILLP_ID
-
+from lib.db_modules import AuditLogChannelDB
+from lib.modules import Checks, EmbedFunctions, Get
+from lib.utilities import SomiBot
 
 
-class Ban(nextcord.ext.commands.Cog):
+
+class Ban(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###ban###########################################################
+    ####################################################################################################
         
-    @nextcord.slash_command(name="ban", description="[MOD] bans a member")
-    @nextcord.ext.application_checks.has_permissions(ban_members=True)
+    @nextcord.slash_command(name="ban", description="bans a member", default_member_permissions = nextcord.Permissions(ban_members=True))
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def ban(self,
                   interaction: nextcord.Interaction,
                   *,
                   member: nextcord.Member = nextcord.SlashOption(description="member to be banned", required=True),
-                  delete_messages_hours: int = nextcord.SlashOption(description="the amount of days someone's messages will get deleted for (default=1)", required=False, min_value=0, max_value=168),
+                  delete_messages_hours: int = nextcord.SlashOption(description="the amount of hours someone's messages will get deleted for (default=1)", required=False, min_value=0, max_value=168),
                   reason: str = nextcord.SlashOption(description="reason for the ban", required=False, min_length=2, max_length=1000)):
-        if not checks(interaction.guild, interaction.user):
+        """This command bans another user, while providing a delete message amount (in hours) and giving a reason. It also protects from self-bans."""
+
+        if not delete_messages_hours:
+            delete_messages_hours = 1
+
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /ban {member.id} {delete_messages_hours}h\n{reason}")
+
+        await interaction.response.defer(ephemeral=True, with_message=True)
+
+        if interaction.user.id == member.id:
+            await interaction.followup.send(embed=EmbedFunctions().error("You can't ban yourself!"), ephemeral=True)
             return
 
-        print(f"{interaction.user}: /ban {member}\nReason: {reason}")
-
-        if await is_member_skillp(interaction, member, source = "ban"):
+        if interaction.user.top_role.position < member.top_role.position and interaction.user != interaction.user.guild.owner:
+            await interaction.followup.send(embed=EmbedFunctions().error("You can only ban a member, if your current top-role is above their current top-role!"), ephemeral=True)
             return
-        if await is_member_themself(interaction, member, source = "ban"):
-            return
-
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
 
         try:
-            if reason != None:
-                await member.send(f"You have been __**banned**__ from `{member.guild.name}`\nFor the reason:\n`{reason}`\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
+            if reason:
+                await member.send(f"You have been __**banned**__ from `{interaction.guild.name}`\nFor the reason:\n`{reason}`")
             else:
-                await member.send(f"You have been __**banned**__ from `{member.guild.name}`\nThere was no provided reason.\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
+                await member.send(f"You have been __**banned**__ from `{interaction.guild.name}`\nThere was no provided reason.")
         except:
             pass
-
-        if delete_messages_hours == None:
-            delete_messages_hours = 1
 
         delete_messages_hours_in_seconds = delete_messages_hours * 60 * 60
 
         await interaction.guild.ban(user = member, reason = reason, delete_message_seconds = delete_messages_hours_in_seconds)
 
-        await interaction.response.send_message(f"Succesfully banned <@{member.id}>", ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().success(f"Succesfully banned {member.mention}."), ephemeral=True)
 
-        member_avatar_url = get_user_avatar(interaction.user)
 
-        embed = embed_builder(color = nextcord.Color.red(),
-                              author = "Mod Activity",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
+        audit_log_id = AuditLogChannelDB().get(interaction.guild)
 
-                              field_one_name = "/ban:",
-                              field_one_value = f"{interaction.user.mention} banned: {member.mention} and deleted their messages for: `{delete_messages_hours} day(s)`",
-                              field_one_inline = False,
+        if not audit_log_id:
+            return
 
-                              field_two_name = "Reason:",
-                              field_two_value = reason,
-                              field_two_inline = False)
+        embed = EmbedFunctions().builder(
+            color = nextcord.Color.red(),
+            author = "Mod Activity",
+            author_icon = interaction.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "/ban:",
+                    f"{interaction.user.mention} banned: {member.mention} and deleted their messages for: `{delete_messages_hours} hour(s)`",
+                    False
+                ],
 
-        await AUDIT_LOG.send(embed=embed)
+                [
+                    "Reason:",
+                    reason,
+                    False
+                ]
+            ]
+        )
 
-        uses_update("mod_command_uses", "ban")
+        audit_log_channel = interaction.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
 
-    @ban.error
-    async def ban_error(self, interaction: nextcord.Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+    ####################################################################################################
 
-    ###unban###########################################################
-
-    @nextcord.slash_command(name="unban", description="[MOD] unbans a user")
-    @nextcord.ext.application_checks.has_permissions(ban_members=True)
+    @nextcord.slash_command(name="unban", description="unbans a user", default_member_permissions = nextcord.Permissions(ban_members=True))
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def unban(self,
                     interaction: nextcord.Interaction,
                     *,
-                    member_id: str = nextcord.SlashOption(description="user ID of the user to be unbanned", required=True, min_length=18, max_length=19)):
-        if not checks(interaction.guild, interaction.user):
-            return
+                    user_id: str = nextcord.SlashOption(description="user ID of the user to be unbanned", required=True, min_length=18, max_length=19)):
+        """This command unbans a user, if that user exists and was banned."""
 
-        print(f"{interaction.user}: /unban {member_id}")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /unban {user_id}")
+
+        await interaction.response.defer(ephemeral=True, with_message=True)
 
         try:
-            user = await self.client.fetch_user(member_id)
-        except:
-            await interaction.response.send_message(f"`{member_id}` isn't a valid discord user id.", ephemeral=True)
+            user = await self.client.fetch_user(user_id)
+        except nextcord.NotFound:
+            await interaction.followup.send(embed=EmbedFunctions().error(f"`{user_id}` isn't a valid discord user id."), ephemeral=True)
             return
-
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
 
         try:
             await interaction.guild.unban(user)
-            await interaction.response.send_message(f"{user.mention} has been unbanned!", ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().success(f"{user.mention} has been unbanned."), ephemeral=True)
         except:
-            await interaction.response.send_message(f"{user.mention} wasn't banned.", ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().error(f"{user.mention} wasn't banned."), ephemeral=True)
             return
 
-        member_avatar_url = get_user_avatar(interaction.user)
 
-        embed = embed_builder(color = nextcord.Color.green(),
-                              author = "Mod Activity",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
+        audit_log_id = AuditLogChannelDB().get(interaction.guild)
 
-                              field_one_name = "/unban:",
-                              field_one_value = f"{interaction.user.mention} unbanned: {user.mention}",
-                              field_one_inline = True)
+        if not audit_log_id:
+            return
 
-        await AUDIT_LOG.send(embed=embed)
+        embed = EmbedFunctions().builder(
+            color = nextcord.Color.green(),
+            author = "Mod Activity",
+            author_icon = interaction.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "/unban:",
+                    f"{interaction.user.mention} unbanned: {user.mention}",+
+                    False
+                ]
+            ]
+        )
 
-        uses_update("mod_command_uses", "unban")
+        audit_log_channel = interaction.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
 
-    @unban.error
-    async def unban_error(self, interaction: nextcord.Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+    ####################################################################################################
 
-    @unban.on_autocomplete("member_id")
+    @unban.on_autocomplete("user_id")
     async def autocomplete_unban(self,
                                  interaction: nextcord.Interaction,
-                                 member_id: str):
-        bans = await interaction.guild.bans(limit=25).flatten() #Discord max is 25
-        bans_ids = []
+                                 user_id: str):
+        bans = await interaction.guild.bans(limit=None).flatten()
 
-        for ban in bans:
-            bans_ids.append(ban.user.id)
+        all_bans_dict = {ban.user.id: ban.user.id for ban in bans}
 
-        autocomplete_list = string_search_to_list(member_id, bans_ids)
+        autocomplete_dict = Get().autocomplete_dict_from_search_string(user_id, all_bans_dict)
 
-        await interaction.response.send_autocomplete(autocomplete_list)
+        await interaction.response.send_autocomplete(autocomplete_dict)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(Ban(client))

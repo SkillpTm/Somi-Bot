@@ -1,73 +1,83 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 import time
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
-###self#imports###############################################################################
+####################################################################################################
 
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.partial_commands import embed_builder
-from utilities.variables import DEFAULT_PFP, BOT_COLOR
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class Severinfo(nextcord.ext.commands.Cog):
+class Severinfo(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###serverinfo###########################################################
+    ####################################################################################################
         
     @nextcord.slash_command(name = "si", description = "gives information about this server", name_localizations = {country_tag:"serverinfo" for country_tag in nextcord.Locale})
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def serverinfo(self,
                          interaction: nextcord.Interaction):
-        if not checks(interaction.guild, interaction.user):
-            return
+        """This command gives you infomration about a server"""
 
-        print(f"{interaction.user}: /serverinfo")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /serverinfo")
 
-        created_time = int(time.mktime(interaction.guild.created_at.timetuple()))
+        await interaction.response.defer(with_message=True)
 
-        guild_with_counts = await client.fetch_guild(interaction.guild.id, with_counts=True)
+        guild_with_counts = await self.client.fetch_guild(interaction.guild.id, with_counts=True)
 
-        if interaction.guild.icon is not None:
+        if interaction.guild.icon != None:
             server_icon_url = interaction.guild.icon
         else:
-            server_icon_url = DEFAULT_PFP
+            server_icon_url = self.client.DEFAULT_PFP
 
-        embed = embed_builder(title = f"Server Information: `{interaction.guild.name}`",
-                            color = BOT_COLOR,
-                            thumbnail = server_icon_url,
-                            footer = "DEFAULT_KST_FOOTER",
+        embed = EmbedFunctions().builder(
+            color = self.client.BOT_COLOR,
+            thumbnail = server_icon_url,
+            title = f"Server Information: `{interaction.guild.name}`",
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "ID:",
+                    interaction.guild.id,
+                    False
+                ],
+                
+                [
+                    "Owner:",
+                    interaction.guild.owner.mention,
+                    True
+                ],
 
-                            field_one_name = "ID:",
-                            field_one_value = interaction.guild.id,
-                            field_one_inline = False,
-                                                
-                            field_two_name = "Owner:",
-                            field_two_value = interaction.guild.owner.mention,
-                            field_two_inline = True,
-                                                
-                            field_three_name = "Members:",
-                            field_three_value = f"Total: {interaction.guild.member_count}\nOnline: {guild_with_counts.approximate_presence_count}",
-                            field_three_inline = True,
-                                                
-                            field_four_name = "Channels:",
-                            field_four_value = f"Text: {len(interaction.guild.text_channels)}\nVoice: {len(interaction.guild.voice_channels)}",
-                            field_four_inline = True,
-                                                
-                            field_five_name = "Created at:",
-                            field_five_value = f"<t:{created_time}>",
-                            field_five_inline = True)
+                [
+                    "Members:",
+                    f"Total: {guild_with_counts.approximate_member_count}\nOnline: {guild_with_counts.approximate_presence_count}",
+                    True
+                ],
 
-        await interaction.response.send_message(embed=embed)
+                [
+                    "Channels:",
+                    f"Text: {len(interaction.guild.text_channels)}\nVoice: {len(interaction.guild.voice_channels)}",
+                    True
+                ],
 
-        uses_update("command_uses", "serverinfo")
+                [
+                    "Created at:",
+                    f"<t:{int(time.mktime(interaction.guild.created_at.timetuple()))}>",
+                    True
+                ]
+            ]
+        )
+
+        await interaction.followup.send(embed=embed)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(Severinfo(client))

@@ -1,163 +1,251 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
 import os
+import time
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from utilities.partial_commands import get_user_avatar, make_bulk_messages_csv, embed_builder
-from utilities.variables import AUDIT_LOG_ID, SERVER_ID
-
+from lib.db_modules import AuditLogChannelDB
+from lib.modules import Create, EmbedFunctions
+from lib.utilities import SomiBot
 
 
-class ExternalLogs(nextcord.ext.commands.Cog):
+
+class ExternalLogs(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###on#member#ban###########################################################
+    ####################################################################################################
 
-    @nextcord.ext.commands.Cog.listener()
+    @nextcord_C.Cog.listener()
     async def on_member_ban(self,
-                            guild,
-                            user):
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
+                            guild: nextcord.Guild,
+                            member: nextcord.Member):
+        """A log that activates, when someone gets banned without using the bot"""
 
-        if guild.id != SERVER_ID:
+        audit_log_id = AuditLogChannelDB().get(guild)
+
+        if not audit_log_id:
             return
 
-        async for entry in guild.audit_logs(limit=1):
-            if entry.user == self.client.user:
+        async for entry in guild.audit_logs(limit=1, action=nextcord.AuditLogAction.ban):
+            if entry.user.id == self.client.user.id:
                 return
 
-        if guild.id != SERVER_ID:
-            return
+            if entry.target.id != member.id:
+                return
 
-        member_avatar_url = get_user_avatar(entry.user)
+        self.client.Loggers.action_log(f"Guild: {guild.id} ~ User: {entry.user.id} ~ ban_log() {entry.target.id}\n{entry.reason}")
 
-        embed = embed_builder(color = nextcord.Color.red(),
-                              author = "Mod Activity",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
+        embed = EmbedFunctions().builder(
+            color = nextcord.Color.red(),
+            author = "Mod Activity",
+            author_icon = entry.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "Ban Log:",
+                    f"{entry.user.mention} banned: {entry.target.mention}",
+                    False
+                ],
 
-                              field_one_name = "External ban:",
-                              field_one_value = f"{entry.user.mention} banned: {entry.target.mention} without using {self.client.user.mention}",
-                              field_one_inline = False,
+                [
+                    "Reason:",
+                    entry.reason,
+                    False
+                ]
+            ]
+        )
 
-                              field_two_name = "Reason:",
-                              field_two_value = entry.reason,
-                              field_two_inline = False)
+        audit_log_channel = guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
 
-        print(f"{entry.user}: External ban {entry.target}\nReason: {entry.reason}")
+    ####################################################################################################
 
-        await AUDIT_LOG.send(embed=embed)
-
-    ###on#member#unban###########################################################
-
-    @nextcord.ext.commands.Cog.listener()
+    @nextcord_C.Cog.listener()
     async def on_member_unban(self,
-                              guild,
-                              user):
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
+                              guild: nextcord.Guild,
+                              member: nextcord.Member):
+        """A log that activates, when someone gets unbanned without using the bot"""
 
-        if guild.id != SERVER_ID:
+        audit_log_id = AuditLogChannelDB().get(guild)
+
+        if not audit_log_id:
             return
 
-        async for entry in guild.audit_logs(limit=1):
-            if entry.user == self.client.user:
+        async for entry in guild.audit_logs(limit=1, action=nextcord.AuditLogAction.unban):
+            if entry.user.id == self.client.user.id:
                 return
 
-        print(f"{entry.user}: External unban {entry.target}")
-
-        member_avatar_url = get_user_avatar(entry.user)
-
-        embed = embed_builder(color = nextcord.Color.red(),
-                              author = "Mod Activity",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
-
-                              field_one_name = "External unban:",
-                              field_one_value = f"{entry.user.mention} unbanned: {entry.target.mention} without using {self.client.user.mention}",
-                              field_one_inline = False)
-
-        await AUDIT_LOG.send(embed=embed)
-
-    ###on#bulk#message#delete###########################################################
-
-    @nextcord.ext.commands.Cog.listener()
-    async def on_bulk_message_delete(self,
-                                     messages):
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
-
-        guild = messages[0].author.guild
-
-        if guild.id != SERVER_ID:
-            return
-
-        async for entry in guild.audit_logs(limit=1):
-            if entry.user == self.client.user:
+            if entry.target.id != member.id:
                 return
 
-        print(f"{entry.user}: External purge {entry.target}")
+        self.client.Loggers.action_log(f"Guild: {guild.id} ~ User: {entry.user.id} ~ unban_log() {entry.target.id}")
 
-        make_bulk_messages_csv(messages)
+        embed = EmbedFunctions().builder(
+            color = nextcord.Color.red(),
+            author = "Mod Activity",
+            author_icon = entry.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "Unban Log:",
+                    f"{entry.user.mention} unbanned: {entry.target.mention}",
+                    False
+                ]
+            ]
+        )
 
-        member_avatar_url = get_user_avatar(entry.user)
+        audit_log_channel = guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
 
-        embed = embed_builder(color = nextcord.Color.red(),
-                              author = "Mod Activity",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
+    ####################################################################################################
 
-                              field_one_name = "External purge:",
-                              field_one_value = f"{entry.user.mention} purged: `{len(messages)} message(s)` in {entry.target.mention} without using {self.client.user.mention}",
-                              field_one_inline = False)
-
-        await AUDIT_LOG.send(embed=embed)
-        await AUDIT_LOG.send(file=nextcord.File("./storage/temp/bulk_messages.csv"))
-
-        os.remove("./storage/temp/bulk_messages.csv")
-
-    ###on#member#kick###########################################################
-
-    @nextcord.ext.commands.Cog.listener()
+    @nextcord_C.Cog.listener()
     async def on_member_remove(self,
-                               member):
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
+                               member: nextcord.Member):
+        """A log that activates, when someone gets kicked without using the bot"""
+        
+        audit_log_id = AuditLogChannelDB().get(member.guild)
 
-        guild = member.guild
-
-        if guild.id != SERVER_ID:
+        if not audit_log_id:
             return
 
-        async for entry in guild.audit_logs(limit=1):
-            if str(entry.action) != "AuditLogAction.kick":
+        async for entry in member.guild.audit_logs(limit=1):
+            if entry.action != nextcord.AuditLogAction.kick:
                 return
-            if entry.user == self.client.user:
+                
+            if entry.user.id == self.client.user.id:
                 return
 
-        print(f"{entry.user}: External kick {entry.target}")
+            if entry.target.id != member.id:
+                return
 
-        member_avatar_url = get_user_avatar(entry.user)
+        self.client.Loggers.action_log(f"Guild: {member.guild.id} ~ User: {entry.user.id} ~ kick_log() {entry.target.id}")
 
-        embed = embed_builder(color = nextcord.Color.red(),
-                              author = "Mod Activity",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
+        embed = EmbedFunctions().builder(
+            color = nextcord.Color.red(),
+            author = "Mod Activity",
+            author_icon = entry.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "Kick Log:",
+                    f"{entry.user.mention} kicked: {entry.target.mention}",
+                    False
+                ],
 
-                              field_one_name = "External kick:",
-                              field_one_value = f"{entry.user.mention} kicked: {entry.target.mention} without using {self.client.user.mention}",
-                              field_one_inline = False,
+                [
+                    "Reason:",
+                    entry.reason,
+                    False
+                ]
+            ]
+        )
 
-                              field_two_name = "External kick:",
-                              field_two_value = entry.reason,
-                              field_two_inline = False)
+        audit_log_channel = member.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
 
-        await AUDIT_LOG.send(embed=embed)
+    ####################################################################################################
+
+    @nextcord_C.Cog.listener()
+    async def on_member_update(self,
+                               member_before: nextcord.Member,
+                               member_after: nextcord.Member):
+        """A log that activates, when someone gets muted without using the bot"""
+
+        if member_before.communication_disabled_until == member_after.communication_disabled_until:
+            return
+        
+        audit_log_id = AuditLogChannelDB().get(member_before.guild)
+
+        if not audit_log_id:
+            return
+
+        async for entry in member_before.guild.audit_logs(limit=1, action=nextcord.AuditLogAction.member_update):
+            if entry.user.id == self.client.user.id:
+                return
+
+            if entry.target.id != member_before.id:
+                return
+
+            if entry.before.communication_disabled_until == entry.after.communication_disabled_until:
+                return
+
+        if member_after.communication_disabled_until:
+            color_mod_action = nextcord.Color.yellow()
+            title_mod_action = "Mute Log:"
+            mod_action = f"{entry.user.mention} muted: {member_before.mention} until: <t:{int(time.mktime(member_after.communication_disabled_until.timetuple()))}:F>"
+
+            self.client.Loggers.action_log(f"Guild: {member_before.guild.id} ~ User: {entry.user.id} ~ mute_log() {entry.target.id}")
+        else:
+            color_mod_action = nextcord.Color.green()
+            title_mod_action = "Unmute Log:"
+            mod_action = f"{entry.user.mention} unmuted: {member_before.mention}"
+
+            self.client.Loggers.action_log(f"Guild: {member_before.guild.id} ~ User: {entry.user.id} ~ unmute_log() {entry.target.id}")
+
+        embed = EmbedFunctions().builder(
+            color = color_mod_action,
+            author = "Mod Activity",
+            author_icon = entry.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    title_mod_action,
+                    mod_action,
+                    False
+                ]
+            ]
+        )
+
+        audit_log_channel = member_before.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
+
+    ####################################################################################################
+
+    @nextcord_C.Cog.listener()
+    async def on_bulk_message_delete(self,
+                                     messages: list[nextcord.Message]):
+        """A log that activates, when someone gets purged without using the bot"""
+
+        audit_log_id = AuditLogChannelDB().get(messages[0].guild)
+
+        if not audit_log_id:
+            return
+
+        async for entry in messages[0].guild.audit_logs(limit=1, action=nextcord.AuditLogAction.message_bulk_delete):
+            if entry.user.id == self.client.user.id:
+                return
+
+        self.client.Loggers.action_log(f"Guild: {messages[0].guild.id} ~ Channel: {messages[0].channel.id} ~ User: {entry.user.id} ~ purge_log() {len(messages)}")
+
+        Create().bulk_messages_csv(messages)
+
+        embed = EmbedFunctions().builder(
+            color = nextcord.Color.red(),
+            author = "Mod Activity",
+            author_icon = entry.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "Purge Log:",
+                    f"{entry.user.mention} purged: `{len(messages)} message(s)` in {entry.target.mention}",
+                    False
+                ]
+            ]
+        )
+
+        audit_log_channel = messages[0].guild.get_channel(audit_log_id)
+        sent_message = await audit_log_channel.send(embed=embed)
+        await sent_message.reply(file=nextcord.File(f"./storage/temp/bulk_messages_{messages[0].guild.id}_{messages[0].channel.id}_{len(messages)}.csv"), mention_author=False)
+
+        os.remove(f"./storage/temp/bulk_messages_{messages[0].guild.id}_{messages[0].channel.id}_{len(messages)}.csv")
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(ExternalLogs(client))

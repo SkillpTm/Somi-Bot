@@ -1,27 +1,25 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.partial_commands import embed_builder
-from utilities.variables import MODERATOR_ID, RULES
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class Rules(nextcord.ext.commands.Cog):
+class Rules(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###rules###########################################################
+    ####################################################################################################
 
-    @nextcord.slash_command(name = "rules", description = "[MOD] posts a rule for you")
-    @nextcord.ext.application_checks.has_permissions(manage_guild=True)
+    @nextcord.slash_command(name = "rules", description = "posts a rule for you", guild_ids = [SomiBot.SOMICORD_ID], default_member_permissions=nextcord.Permissions(manage_guild=True))
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def rules(self,
                     interaction: nextcord.Interaction,
                     *,
@@ -36,26 +34,23 @@ class Rules(nextcord.ext.commands.Cog):
                                                                                                                   "9 Negativity",
                                                                                                                   "10 Selfpromotion",
                                                                                                                   "11 Relationships"])):
-        if not checks(interaction.guild, interaction.user):
-            return
+        """This command let's you post an embed for the specified rule."""
 
-        print(f"{interaction.user}: /rules {rule}")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /rules {rule}")
 
-        embed = embed_builder(description = RULES[rule][0],
-                              color = nextcord.Color.red(),
-                              author = f"Rule {rule}",
-                              author_icon = interaction.guild.icon,                
-                              footer = RULES[rule][1])
+        await interaction.response.defer(with_message=True)
+
+        embed = EmbedFunctions().builder(
+            color = nextcord.Color.red(),
+            author = f"Rule {rule}",
+            author_icon = interaction.guild.icon, 
+            description = self.client.Lists.SOMICORD_RULES[rule][0],               
+            footer = self.client.Lists.SOMICORD_RULES[rule][1]
+        )
         
-        await interaction.response.send_message(embed=embed)
-
-        uses_update("mod_command_uses", "rules")
-
-    @rules.error
-    async def purge_error(self, interaction: nextcord.Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+        await interaction.followup.send(embed=embed)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(Rules(client))

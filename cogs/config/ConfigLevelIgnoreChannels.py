@@ -1,63 +1,90 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
-import nextcord.ext.commands
-import nextcord.ext.application_checks
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from database.database_levels_ignore import make_ignore_channel_table, ignore_channel
-from utilities.maincommands import checks
-from utilities.variables import MODERATOR_ID
+from lib.db_modules import AuditLogChannelDB, LevelIgnoreChannelsDB
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import TEXT_CHANNELS, SomiBot
 
 
 
-class LevelsIgnore(nextcord.ext.commands.Cog):
+class ConfigLevelIgnoreChannels(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client: nextcord.ext.commands.Bot = client
+        self.client: SomiBot = client
 
-    from utilities.maincommands import levels
+    from lib.utilities.main_commands import config
 
-    ###level#roles#add###########################################################
+    ####################################################################################################
 
-    @levels.subcommand(name = "ignore", description = "[MOD] deactivate/activate xp gain in a channel")
-    @nextcord.ext.application_checks.has_permissions(manage_channels=True)
-    async def levels_ignore(self,
-                            interaction: nextcord.Interaction,
-                            channel: nextcord.abc.GuildChannel = nextcord.SlashOption(channel_types=[nextcord.ChannelType.text,
-                                                                                                     nextcord.ChannelType.news,
-                                                                                                     nextcord.ChannelType.forum,
-                                                                                                     nextcord.ChannelType.public_thread,
-                                                                                                     nextcord.ChannelType.news_thread,
-                                                                                                     nextcord.ChannelType.private_thread], description="the channel to have (no) xp gain in", required=False)):
-        if not checks(self.client, interaction.guild, interaction.user):
-            return
+    @config.subcommand(name = "level-ignore-channels", description = "deactivate/activate xp gain in a channel")
+    @nextcord_AC.check(Checks().interaction_in_guild())
+    async def config_level_ignore_channels(self,
+                                           interaction: nextcord.Interaction,
+                                           action: str = nextcord.SlashOption(description="which action do you want to take", required=True, choices=["Add", "Remove"]),
+                                           channel: nextcord.abc.GuildChannel = nextcord.SlashOption(channel_types=TEXT_CHANNELS, description="the channel to have (no) xp gain in", required=False)):
+        """This command will deactivate/activate XP in the given channel."""
 
-        if channel == None:
+        if not channel:
             channel = interaction.channel
 
-        print(f"{interaction.user}: /levels ignore {channel.name}")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /config level-ignore-channel {action}: {channel.id}")
 
-        make_ignore_channel_table(interaction.guild.id)
+        await interaction.response.defer(ephemeral=True, with_message=True)
 
-        added = ignore_channel(interaction.guild.id, channel.id)
+        already_inserted = LevelIgnoreChannelsDB().check_channel_inserted(interaction.guild.id, channel.id)
 
-        if added:
-            await interaction.response.send_message(f"There will be no XP gain in {channel.mention} anymore!", ephemeral=True)
-        else:
-            await interaction.response.send_message(f"You can now again earn XP in {channel.mention}!", ephemeral=True)
+        if action == "Add":
+            if already_inserted:
+                await interaction.followup.send(embed=EmbedFunctions().error(f"{channel.mention} is already a level-ignore-channel.\nTo get a list of the level-ignore-channels use `/config info`."), ephemeral=True)
+                return
 
-        uses_update("mod_command_uses", "levels ignore")
+            LevelIgnoreChannelsDB().insert_channel(interaction.guild.id, channel.id)
 
-    @levels_ignore.error
-    async def ban_error(self, interaction: nextcord.Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().success(f"{channel.mention} has been added to the level-ignore-channels.\nThere is won't be any XP gain in there anymore."), ephemeral=True)
+        
+        elif action == "Remove":
+            if not already_inserted:
+                await interaction.followup.send(embed=EmbedFunctions().error(f"{channel.mention} isn't a level-ignore-channel.\nTo get a list of the level-ignore-channels use `/config info`."), ephemeral=True)
+                return
+
+            LevelIgnoreChannelsDB().delete_channel(interaction.guild.id, channel.id)
+
+            await interaction.followup.send(embed=EmbedFunctions().success(f"{channel.mention} has been removed from the level-ignore-channels.\n You can now earn XP there again."), ephemeral=True)
+
+
+        audit_log_id = AuditLogChannelDB().get(interaction.guild)
+
+        if not audit_log_id:
+            return
+
+        if action == "Add":
+            mod_action = f"{interaction.user.mention} added: {channel.mention} as a level-ignore-channel."   
+        elif action == "Remove":
+            mod_action = f"{interaction.user.mention} removed: {channel.mention} from the level-ignore-channels."  
+
+        embed = EmbedFunctions().builder(
+            color = self.client.MOD_COLOR,
+            author = "Mod Activity",
+            author_icon = interaction.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "/config level-ignore-channels:",
+                    mod_action,
+                    False
+                ]
+            ]
+        )
+
+        audit_log_channel = interaction.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
 
 
 
-def setup(client):
-    client.add_cog(LevelsIgnore(client))
+def setup(client: SomiBot):
+    client.add_cog(ConfigLevelIgnoreChannels(client))

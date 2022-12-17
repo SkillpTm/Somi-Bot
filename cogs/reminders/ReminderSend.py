@@ -1,73 +1,68 @@
-###package#import###############################################################################
+####################################################################################################
 
 import asyncio
-import nextcord
-import time
+import nextcord.ext.commands as nextcord_C
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from database.database_reminders import delete_reminder, get_reminder_times, get_reminder_contents
-from utilities.partial_commands import embed_attachments, message_object_generation, embed_builder
-from utilities.variables import BOT_COLOR
+from lib.db_modules import CommandUsesDB, ReminderDB
+from lib.modules import EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-###reminder###########################################################
-
-async def reminder_send(client):
-    reminders = get_reminder_times()
-
-    if reminders == []:
-        return
-
-    current_unix_time = int(time.time())
-    for reminder in reminders:
-        reminder_time = reminder[1]
-
-        if not reminder_time <= current_unix_time:
-            continue
-
-        user_id = reminder[0]
-        noti_user = await client.fetch_user(user_id)
-        delete_id = reminder[2]
-
-        bot_reply_link, clean_reminder = get_reminder_contents(user_id, delete_id)
-
-        print(f"reminder() {noti_user}\n{clean_reminder}")
-
-        embed = embed_builder(title = "Reminder Notification",
-                              title_url = bot_reply_link,
-                              description = clean_reminder,
-                              color = BOT_COLOR,
-                              footer = "DEFAULT_KST_FOOTER")
-
-        message_object = await message_object_generation(bot_reply_link, client)
-
-        await embed_attachments(noti_user, message_object, embed)
-
-        delete_reminder(user_id, delete_id)
-
-        uses_update("command_uses", "reminder send")
-
-
-
-class ReminderSend(nextcord.ext.commands.Cog):
+class ReminderSend(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###reminder#on#ready###########################################################
+    ####################################################################################################
 
-    @nextcord.ext.commands.Cog.listener()
-    async def on_ready(self):
+    async def infinite_reminder_loop(self):
         while True:
-            await reminder_send(self.client)
+            await ReminderSend(self.client).reminder_send()
             await asyncio.sleep(2)
 
+    ####################################################################################################
+
+    async def reminder_send(self) -> None:
+        """
+        This function pulls all reminder times from all users and compares them against the current time.
+        If the current time is larger or egal to the reminder time, then the reminder gets send to the user and delete from the db.
+        """  
+
+        reminders = ReminderDB().get_times()
+
+        if reminders == []:
+            return
+
+        for reminder in reminders:
+            user_id = reminder[0]
+            noti_user = await self.client.fetch_user(user_id)
+            delete_id = reminder[2]
+
+            bot_reply_link, reminder_text = ReminderDB().get_contents(user_id, delete_id)
+
+            self.client.Loggers.action_log(f"User: {user_id} ~ reminder()\n{reminder_text}")
+
+            embed = EmbedFunctions().builder(
+                color = self.client.BOT_COLOR,
+                title = "Reminder Notification",
+                title_url = bot_reply_link,
+                description = reminder_text,
+                footer = "DEFAULT_KST_FOOTER"
+            )
+
+            try:
+                await noti_user.send(embed=embed)
+            except:
+                self.client.Loggers.action_warning(f"reminder() {noti_user.id} couldn't be reminded, because their pms aren't open to the client")
+
+            ReminderDB().delete(user_id, delete_id)
+
+            CommandUsesDB().uses_update("command_uses", "reminder send")
 
 
-def setup(client):
+
+def setup(client: SomiBot):
     client.add_cog(ReminderSend(client))

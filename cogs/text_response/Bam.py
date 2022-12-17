@@ -1,37 +1,34 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.variables import BAN_HAMMER_GIF
-
+from lib.modules import Checks
+from lib.utilities import SomiBot
 
 
-class Bam(nextcord.ext.commands.Cog):
+
+class Bam(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###bam###########################################################
+    ####################################################################################################
 
-    @nextcord.slash_command(name = "bam", description = "bams a user")
+    @nextcord.slash_command(name = "bam", description = "bams a member")
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def bam(self,
                   interaction: nextcord.Interaction):
-        if not checks(interaction.guild, interaction.user):
-            return
+        """This command fake bans someone"""
 
-        print(f"{interaction.user}: /bam")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /bam")
 
-        await interaction.response.send_message(f"User has been bammed!\n{BAN_HAMMER_GIF}")
-
-        uses_update("command_uses", "bam")
+        await interaction.response.send_message(f"User has been bammed!\n{self.client.BAN_HAMMER_GIF}")
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(Bam(client))

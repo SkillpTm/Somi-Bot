@@ -1,67 +1,64 @@
 ###package#import###############################################################################
 
 import nextcord
-
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
 ###self#imports###############################################################################
 
-from database.database_command_uses import uses_update
-from database.database_keywords import list_keyword
-from utilities.maincommands import checks
-from utilities.partial_commands import get_nick_else_name, get_user_avatar, embed_builder
-from utilities.variables import BOT_COLOR
+from lib.db_modules import KeywordDB
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class KeywordList(nextcord.ext.commands.Cog):
+class KeywordList(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    from utilities.maincommands import keyword
+    from lib.utilities.main_commands import keyword
 
     ###keyword#list###########################################################
 
     @keyword.subcommand(name = "list", description = "a list of all your keywords")
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def keyword_list(self,
                            interaction: nextcord.Interaction):
-        if not checks(interaction.guild, interaction.user):
-            return
+        """This command outputs a list of all keywords a user has"""
 
-        print(f"{interaction.user}: /keyword list")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /keyword list")
 
-        keywords_list = list_keyword(interaction.user.id)
+        await interaction.response.defer(ephemeral=True, with_message=True)
 
-        if len(keywords_list) == 0:
-            await interaction.response.send_message("You don't have any keywords.", ephemeral=True)
+        user_keywords = KeywordDB().user_list(interaction.guild.id, interaction.user.id)
+
+        if user_keywords == []:
+            await interaction.followup.send(embed=EmbedFunctions().error("You don't have any keywords.\nTo add a keyword use `/keyword add`."), ephemeral=True)
             return
 
         output = ""
-        i = 0
 
-        while i < len(keywords_list):
-            output += f"{i + 1}. `{keywords_list[i]}`\n"
-            i += 1
+        for index, keyword in enumerate(user_keywords):
+            output += f"{index + 1}. `{keyword}`\n"
 
-        member = interaction.guild.get_member(interaction.user.id)
-        name = get_nick_else_name(member)
-        member_avatar_url = get_user_avatar(interaction.user)
+        embed = EmbedFunctions().builder(
+            color = self.client.BOT_COLOR,
+            author = f"Keyword List for: `{interaction.user.display_name}`",
+            author_icon = interaction.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "Keywords:",
+                    output[:1000],
+                    True
+                ]
+            ]
+        )
 
-        embed = embed_builder(color = BOT_COLOR,
-                              author = f"Keyword List for: `{name}`",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
-
-                              field_one_name = "Keywords:",
-                              field_one_value = output[:1000],
-                              field_one_inline = True)
-
-        await interaction.response.send_message(embed=embed, ephemeral=True)
-
-        uses_update("command_uses", "keyowrd list")
+        await interaction.followup.send(embed=embed, ephemeral=True)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(KeywordList(client))

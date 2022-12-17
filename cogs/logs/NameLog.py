@@ -1,71 +1,65 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.variables import AUDIT_LOG_ID, SERVER_ID
-from utilities.partial_commands import get_user_avatar, embed_builder
+from lib.db_modules import AuditLogChannelDB, CommandUsesDB
+from lib.modules import EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class NameLog(nextcord.ext.commands.Cog):
+class NameLog(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###name#log###########################################################
+    ####################################################################################################
 
-    @nextcord.ext.commands.Cog.listener()
+    @nextcord_C.Cog.listener()
     async def on_member_update(self,
-                               before,
-                               after):
-        if not checks(before.guild, before.user):
+                               member_before: nextcord.Member,
+                               member_after: nextcord.Member):
+        """This function checks if a user changed their display name, if they did and the server has an audit-log-channel a log message will be generated."""
+
+        if member_before.display_name == member_after.display_name:
             return
 
-        if before.guild.id != SERVER_ID:
+        audit_log_id = AuditLogChannelDB().get(member_before.guild)
+
+        if not audit_log_id:
             return
 
-        if before == after and before.nick == after.nick:
-            return
+        self.client.Loggers.action_log(f"Guild: {member_before.guild.id} ~ User: {member_before.id} ~ name_log()\nBefore: {member_before.display_name} --> After: {member_after.display_name}")
 
-        print(f"name_log()\nName: {before} --> {after}\nNickname: {before.nick} --> {after.nick}")
+        embed = EmbedFunctions().builder(
+            color = nextcord.Color.yellow(),
+            thumbnail = member_before.display_avatar,
+            title = f"`{member_before.display_name}` Changed Their Name",
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "Name Before:",
+                    f"`{member_before.display_name}`",
+                    False
+                ],
 
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
+                [
+                    "Name After:",
+                    f"{member_after.display_name}",
+                    False
+                ]
+            ]
+        )
 
-        if before.nick != after.nick:
-            correct_before = before.nick
-            correct_after = after.nick
-            event = "Nickname"
-        elif before != after:
-            correct_before = before
-            correct_after = after
-            event = "Name ID"
+        audit_log_channel = member_before.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
 
-        member_avatar_url = get_user_avatar(before)
-
-        embed = embed_builder(title = f"{before} Changed Their {event}",
-                              color = nextcord.Color.yellow(),
-                              thumbnail = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
-
-                              field_one_name = f"{event} before:",
-                              field_one_value = correct_before,
-                              field_one_inline = False,
-
-                              field_two_name = f"{event} after:",
-                              field_two_value = correct_after,
-                              field_two_inline = False)
-
-        await AUDIT_LOG.send(embed=embed)
-
-        uses_update("log_activations", "name log")
+        CommandUsesDB().uses_update("log_activations", "name log")
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(NameLog(client))

@@ -1,67 +1,70 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 import os
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID
-from utilities.partial_commands import get_user_avatar, make_bulk_messages_csv, embed_builder
+from lib.db_modules import AuditLogChannelDB
+from lib.modules import Checks, Create, EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class Purge(nextcord.ext.commands.Cog):
+class Purge(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###purge###########################################################
+    ####################################################################################################
 
-    @nextcord.slash_command(name="purge", description="[MOD] clears the entered amount of messages in a channel")
-    @nextcord.ext.application_checks.has_permissions(manage_messages=True)
+    @nextcord.slash_command(name="clear", description="clears the entered amount of messages in a channel", default_member_permissions = nextcord.Permissions(manage_messages=True), name_localizations = {country_tag:"purge" for country_tag in nextcord.Locale})
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def purge(self,
                     interaction: nextcord.Interaction,
                     *,
                     amount: int = nextcord.SlashOption(description="amount of messages to be purged", required=True, min_value=1, max_value=1000)):
-        if not checks(interaction.guild, interaction.user):
-            return
+        """This command removes the given amount of last messages from a channel."""
 
-        print(f"{interaction.user}: /purge {amount}")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /purge {amount}")
 
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
+        await interaction.response.defer(ephemeral=True, with_message=True)
 
         messages = await interaction.channel.purge(limit=amount)
-        await interaction.response.send_message(f"Succesfully purged the last `{amount}` messages from {interaction.channel.mention}", ephemeral=True)
 
-        make_bulk_messages_csv(messages)
-
-        member_avatar_url = get_user_avatar(interaction.user)
-
-        embed = embed_builder(color = nextcord.Color.yellow(),
-                              author = "Mod Activity",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
-
-                              field_one_name = "/purge:",
-                              field_one_value = f"{interaction.user.mention} purged: `{amount} message(s)` in {interaction.channel.mention}",
-                              field_one_inline = False)
-
-        await AUDIT_LOG.send(embed=embed)
-        await AUDIT_LOG.send(file=nextcord.File("./storage/temp/bulk_messages.csv"))
-
-        os.remove("./storage/temp/bulk_messages.csv")
-
-        uses_update("mod_command_uses", "purge")
-
-    @purge.error
-    async def purge_error(self, interaction: nextcord.Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().success(f"Succesfully purged the last `{amount}` messages from {interaction.channel.mention}."), ephemeral=True)
 
 
+        audit_log_id = AuditLogChannelDB().get(interaction.guild)
 
-def setup(client):
+        if not audit_log_id:
+            return
+
+        Create().bulk_messages_csv(messages)
+
+        embed = EmbedFunctions().builder(
+            color = nextcord.Color.yellow(),
+            author = "Mod Activity",
+            author_icon = interaction.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "/purge:",
+                    f"{interaction.user.mention} purged: `{amount} message(s)` in {interaction.channel.mention}",
+                    False
+                ]
+            ]
+        )
+
+        audit_log_channel = interaction.guild.get_channel(audit_log_id)
+        sent_message = await audit_log_channel.send(embed=embed)
+        await sent_message.reply(file=nextcord.File(f"./storage/temp/bulk_messages_{messages[0].guild.id}_{messages[0].channel.id}_{len(messages)}.csv"), mention_author=False)
+
+        os.remove(f"./storage/temp/bulk_messages_{messages[0].guild.id}_{messages[0].channel.id}_{len(messages)}.csv")
+
+
+
+def setup(client: SomiBot):
     client.add_cog(Purge(client))

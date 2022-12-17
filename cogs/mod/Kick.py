@@ -1,83 +1,87 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.partial_commands import get_user_avatar, is_member_skillp, is_member_themself, embed_builder
-from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, SKILLP_ID
-
+from lib.db_modules import AuditLogChannelDB
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
-class Kick(nextcord.ext.commands.Cog):
+
+class Kick(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###kick###########################################################
+    ####################################################################################################
         
-    @nextcord.slash_command(name="kick", description="[MOD] kicks a member")
-    @nextcord.ext.application_checks.has_permissions(kick_members=True)
+    @nextcord.slash_command(name="kick", description="kicks a member", default_member_permissions = nextcord.Permissions(kick_members=True))
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def kick(self,
                    interaction: nextcord.Interaction,
                    *,
                    member: nextcord.Member = nextcord.SlashOption(description="Member to be kicked", required=True),
-                   delete_messages_days: int = nextcord.SlashOption(description="the amount of days someone's messages will get deleted for (nothing=1 day)", required=False, min_value=0, max_value=7),
                    reason: str = nextcord.SlashOption(description="Reason for the kick", required=False, min_length=2, max_length=1000)):
-        if not checks(interaction.guild, interaction.user):
+        """This command kicks a member with a reason."""
+
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /kick {member.id}\n{reason}")
+
+        await interaction.response.defer(ephemeral=True, with_message=True)
+
+        if interaction.user.id == member.id:
+            await interaction.followup.send(embed=EmbedFunctions().error("You can't ban yourself!"), ephemeral=True)
             return
 
-        print(f"{interaction.user}: /kick {member} {reason}")
-
-        if await is_member_skillp(interaction, member, source = "kick"):
-            return
-        if await is_member_themself(interaction, member, source = "kick"):
+        if interaction.user.top_role.position < member.top_role.position and interaction.user != interaction.user.guild.owner:
+            await interaction.followup.send(embed=EmbedFunctions().error("You can only kick a member, if your current top-role is above their current top-role!"), ephemeral=True)
             return
         
         try:
             if reason != None:
-                await member.send(f"You have been __**kicked**__ from `{member.guild.name}`\nFor the reason:\n`{reason}`\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
+                await member.send(f"You have been __**kicked**__ from `{member.guild.name}`\nFor the reason:\n`{reason}`")
             else:
-                await member.send(f"You have been __**kicked**__ from `{member.guild.name}`\nThere was no provided reason.\n\nIf you believe this was undeserved please message <@{SKILLP_ID}>\nCommunications with this bot will be closed, you won't be able to message me anymore!")
+                await member.send(f"You have been __**kicked**__ from `{member.guild.name}`\nThere was no provided reason.")
         except:
             pass
 
-        if delete_messages_days == None:
-            delete_messages_days = 1
-
         await member.kick(reason=reason)
 
-        await interaction.response.send_message(f"Succesfully kicked {member.mention}.", ephemeral=True)
-
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
-        member_avatar_url = get_user_avatar(interaction.user)
-
-        embed = embed_builder(color = nextcord.Color.orange(),
-                              author = "Mod Activity",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
-
-                              field_one_name = "/kick:",
-                              field_one_value = f"{interaction.user.mention} kicked: {member.mention} and deleted their messages for: `{delete_messages_days} day(s)`",
-                              field_one_inline = False,
-
-                              field_two_name = "Reason:",
-                              field_two_value = reason,
-                              field_two_inline = False)
-
-        await AUDIT_LOG.send(embed=embed)
-
-        uses_update("mod_command_uses", "kick")
-
-    @kick.error
-    async def kick_error(self, interaction: nextcord.Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().success(f"Succesfully kicked {member.mention}."), ephemeral=True)
 
 
+        audit_log_id = AuditLogChannelDB().get(interaction.guild)
 
-def setup(client):
+        if not audit_log_id:
+            return
+
+        embed = EmbedFunctions().builder(
+            color = nextcord.Color.orange(),
+            author = "Mod Activity",
+            author_icon = interaction.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "/kick:",
+                    f"{interaction.user.mention} kicked: {member.mention}",
+                    False
+                ],
+
+                [
+                    "Reason:",
+                    reason,
+                    False
+                ]
+            ]
+        )
+
+        audit_log_channel = interaction.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
+
+
+
+def setup(client: SomiBot):
     client.add_cog(Kick(client))

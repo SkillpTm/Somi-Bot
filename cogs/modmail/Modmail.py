@@ -1,108 +1,116 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
+from lib.db_modules import CommandUsesDB
+from lib.modules import EmbedFunctions
+from lib.utilities import SomiBot, YesNoButtons
 
-from database.database_command_uses import uses_update
-from utilities.partial_commands import get_user_avatar, embed_attachments, embed_builder, deactivate_view_children
-from utilities.variables import MOD_CHANNEL_ID, MOD_COLOR
 
-class QuestionModmail(nextcord.ui.View):
-    def __init__(self, response):
-        self.response: nextcord.Message = response
-        super().__init__(timeout = 30)
-        self.value = None
 
-    @nextcord.ui.button(label = "Yes", style=nextcord.ButtonStyle.green)
-    async def yes_modmail(self,
-                          button: nextcord.ui.Button,
-                          interaction: nextcord.Interaction):
-        self.value = True
-        await deactivate_view_children(self)
-        self.stop()
-
-    @nextcord.ui.button(label = "No", style=nextcord.ButtonStyle.red)
-    async def no_modmail(self,
-                         button: nextcord.ui.Button,
-                         interaction: nextcord.Interaction):
-        self.value = False
-        await deactivate_view_children(self)
-        self.stop()
-
-    async def on_timeout(self):
-        await deactivate_view_children(self)
-
-class Modmail(nextcord.ext.commands.Cog):
+class Modmail(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###modmail###########################################################
+    ####################################################################################################
 
-    @nextcord.ext.commands.Cog.listener()
+    @nextcord_C.Cog.listener()
     async def on_message(self,
-                         message):
+                         message: nextcord.Message):
+        """
+        This function allows anyone, who is in Somicord send a modmail via the bot pm channel, if:
+        - their messageis longer than 50 characters
+        - they press the "yes" button within 30 second
+        """
+
         if not isinstance(message.channel, nextcord.DMChannel):
             return
 
         if message.author.bot:
             return
 
-        if len(message.content) < 50:
-            await message.channel.send("Your modmail must be longer than 50 characters!")
+        SOMICORD = self.client.get_guild(self.client.SOMICORD_ID)
+
+        if not SOMICORD.get_member(message.author.id):
+            await message.channel.send(embed=EmbedFunctions().error("You have to be in Somicord to send a modmail!"))
             return
 
+        if len(message.content) < 50:
+            await message.channel.send(embed=EmbedFunctions().error("Your modmail must be longer than 50 characters! Please describe your problem precisely!"))
+            return
         
-        response = await message.reply("Do you really want to submit this as a modmail?")
-        view = QuestionModmail(response)
-        await response.edit("Do you really want to submit this as a modmail?", view=view)
+        response = await message.reply(embed=EmbedFunctions().info_message("Do you really want to submit this as a modmail?", self.client), mention_author=False)
+        view = YesNoButtons(response=response)
+        await response.edit(response.embeds[0], view=view, delete_after=70)
         await view.wait()
 
-        if not view.value or view.value == None:
-            await response.reply("Your modmail has **not** been submitted!")
+        if not view.value:
+            await response.reply(embed=EmbedFunctions().error("Your modmail has **not** been submitted!"), mention_author=False)
             return
 
-        print(f"{message.author}: modmail()\n{message.content}")
+        self.client.Loggers.action_log(f"User: {message.author.id} ~ modmail()\n{message.content}")
 
-        MOD_CHANNEL = self.client.get_channel(MOD_CHANNEL_ID)
-        user_thread = None
+        MOD_CHANNEL: nextcord.TextChannel = self.client.get_channel(self.client.SOMICORD_MOD_CHANNEL_ID)
+        user_thread: nextcord.Thread = None
 
-        for thread in MOD_CHANNEL.guild.threads:
-            if f"{message.author}" in f"{thread.name}":
+        for thread in MOD_CHANNEL.threads:
+            if f"{message.author.name}" in f"{thread.name}" and f"{message.author.discriminator}" in f"{thread.name}":
                 user_thread = thread
 
-        if user_thread == None:
-            user_thread = await MOD_CHANNEL.create_thread(name = f"Modmail ({message.author})", message = None, auto_archive_duration = 4320, type = nextcord.ChannelType.public_thread) #4320 is 3 days in minutes
+        if not user_thread:
+            async for thread in MOD_CHANNEL.archived_threads():
+                if f"{message.author.name}" in f"{thread.name}" and f"{message.author.discriminator}" in f"{thread.name}":
+                    user_thread = thread
+
+        if not user_thread:
+            user_thread = await MOD_CHANNEL.create_thread(
+                name = f"Modmail ({message.author})",
+                message = None,
+                auto_archive_duration = 4320, #4320 is 3 days in minutes
+                type = nextcord.ChannelType.public_thread
+            )
+
             for member in MOD_CHANNEL.members:
                 if not member.bot:
                     await user_thread.add_user(member)
 
-        member_avatar_url = get_user_avatar(message.author)
+        embed = EmbedFunctions().builder(
+            color = self.client.MOD_COLOR,
+            thumbnail = message.author.display_avatar.url,
+            title = f"Modmail by {message.author}",
+            description = f"__**Message:**__\n{message.content}"[:4096],
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "ID:",
+                    message.author.id,
+                    True
+                ],
 
-        embed = embed_builder(title = f"Modmail by {message.author}",
-                              description = f"__**Message:**__\n{message.content}"[:4096],
-                              color = MOD_COLOR,
-                              thumbnail = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
+                [
+                    "Member:",
+                    f"{message.author.mention}",
+                    True
+                ]
+            ]
+        )
 
-                              field_one_name = "ID:",
-                              field_one_value = message.author.id,
-                              field_one_inline = True,
+        embed, file_urls = EmbedFunctions().get_attachments(message.attachments, embed)
 
-                              field_two_name = "Member:",
-                              field_two_value = f"{message.author.mention}",
-                              field_two_inline = True)
+        sent_modmail = await user_thread.send(embed=embed)
+        
+        if file_urls != "":
+            await sent_modmail.reply(content=file_urls, mention_author=False)
 
-        await embed_attachments(user_thread, message, embed)
+        await message.reply(embed=EmbedFunctions().success("Your modmail has been submitted!"), mention_author=False)
 
-        await response.reply("Your modmail has been submitted!")
-
-        uses_update("command_uses", "modmail")
-
+        CommandUsesDB().uses_update("command_uses", "modmail")
 
 
-def setup(client):
+
+def setup(client: SomiBot):
     client.add_cog(Modmail(client))

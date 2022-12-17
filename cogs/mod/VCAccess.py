@@ -1,71 +1,82 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.partial_commands import get_user_avatar, embed_builder
-from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR
-
+from lib.db_modules import AuditLogChannelDB
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
-class VCAccess(nextcord.ext.commands.Cog):
+
+class VCAccess(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###vcaccess###########################################################
+    ####################################################################################################
 
-    @nextcord.slash_command(name="vcaccess", description="[MOD] grants/takes away a user's access to the voice channels (ignoring level roles)")
-    @nextcord.ext.application_checks.has_permissions(manage_channels=True)
+    @nextcord.slash_command(name="vc-access", description="grants/takes away a user's access to the voice-channels", default_member_permissions = nextcord.Permissions(manage_channels=True))
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def vcaccess(self,
                        interaction: nextcord.Interaction,
                        *,
+                       action: str = nextcord.SlashOption(description="which action do you want to take", required=True, choices=["Allow", "Forbid"]),
                        member: nextcord.Member = nextcord.SlashOption(description="member to be granted access/take access away", required=True)):
-        if not checks(interaction.guild, interaction.user):
+        """This command can restirct or grant access to all voice-channels in a guild."""
+
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /vc-access {action} {member.id}")
+
+        await interaction.response.defer(ephemeral=True, with_message=True)
+
+        if interaction.guild.voice_channels == []:
+                await interaction.followup.send(embed=EmbedFunctions().error("This server doesn't have any voice-channels."), ephemeral=True)
+                return
+
+        if action == "Allow":
+            for channel in interaction.guild.voice_channels:
+                await channel.set_permissions(member, connect = True, speak = True, stream = True, use_voice_activation = True)
+
+            await interaction.followup.send(embed=EmbedFunctions().success(f"{member.mention} now has access to all voice-channels."), ephemeral=True)
+
+        elif action == "Forbid":
+            for channel in interaction.guild.voice_channels:
+                await channel.set_permissions(member, connect = False, speak = False, stream = False, use_voice_activation = False)
+
+            await interaction.followup.send(embed=EmbedFunctions().success(f"{member.mention} now has lost access to all voice-channels"), ephemeral=True)
+
+
+        audit_log_id = AuditLogChannelDB().get(interaction.guild)
+
+        if not audit_log_id:
             return
 
-        print(f"{interaction.user}: /vcaccess {member}")
+        if action == "Allow":
+            mod_action = f"{interaction.user.mention} gave {member.mention} access to all voice-channels."
+        elif action == "Forbid":
+            mod_action = f"{interaction.user.mention} took access to all voice-channels from {member.mention} away."
 
-        for channel in interaction.guild.voice_channels:
-            #TODO change this from being a value
-            if not channel.permissions_for(member).value == 418863451712: #418863451712 = if the user already has those permissions on that channel
-                action_text = f"{interaction.user.mention} gave {member.mention} access to all voice channels."
+        embed = EmbedFunctions().builder(
+            color = self.client.MOD_COLOR,
+            author = "Mod Activity",
+            author_icon = interaction.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "/vc-access:",
+                    mod_action,
+                    False
+                ]
+            ]
+        )
 
-                await channel.set_permissions(member, connect = True, speak = True, stream = True, use_voice_activation = True)
-                await interaction.response.send_message(f"{member.mention} now has access to all voice channels!", ephemeral=True)
-
-            else:
-                action_text = f"{interaction.user.mention} took access from all voice channels of {member.mention} away."
-
-                await channel.set_permissions(member, connect = False, speak = False, stream = False, use_voice_activation = False)
-                await interaction.response.send_message(f"{member.mention} now lost access to all voice channels", ephemeral=True)
-
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
-        member_avatar_url = get_user_avatar(interaction.user)
-
-        embed = embed_builder(color = MOD_COLOR,
-                              author = "Mod Activity",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
-
-                              field_one_name = "/vcaccess:",
-                              field_one_value = action_text,
-                              field_one_inline = False)
-
-        await AUDIT_LOG.send(embed=embed)
-
-        uses_update("mod_command_uses", "vcaccess")
-
-    @vcaccess.error
-    async def error(self, interaction: nextcord.Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+        audit_log_channel = interaction.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(VCAccess(client))

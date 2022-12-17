@@ -1,73 +1,97 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.variables import HELP_OPTIONS, HELP_OUTPUT, BOT_COLOR
-from utilities.partial_commands import embed_builder, deactivate_view_children
-
-class HelpDropdownView(nextcord.ui.View):
-    def __init__(self, response):
-        self.response: nextcord.Message = response
-        super().__init__(timeout = 300)
-    
-    @nextcord.ui.string_select(placeholder = "select a command", min_values=1, max_values=1, options = HELP_OPTIONS)
-
-    async def callback(self,
-                       select,
-                       interaction):
-        selection = select.values[0]
-
-        print(f"{interaction.user}: /help {selection}")
-
-        embed = embed_builder(title = f"Help for /{selection}",
-                              color = BOT_COLOR,
-                              footer = "DEFAULT_KST_FOOTER",
-
-                              field_one_name = "Syntax:",
-                              field_one_value = HELP_OUTPUT[selection][0],
-                              field_one_inline = False,
-
-                              field_two_name = "Info:",
-                              field_two_value = HELP_OUTPUT[selection][1],
-                              field_two_inline = False)
-
-        await interaction.edit(content=None, embed=embed)
-
-        uses_update("help_selections", f"{selection}")
-
-    async def on_timeout(self):
-        await deactivate_view_children(self)
+from lib.db_modules import CommandUsesDB
+from lib.modules import Checks, EmbedFunctions, Get
+from lib.utilities import SomiBot
 
 
 
-class Help(nextcord.ext.commands.Cog):
+class Help(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###help###########################################################
+    ####################################################################################################
 
     @nextcord.slash_command(name='help', description='explanations for all command')
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def help(self,
-                   interaction: nextcord.Interaction):
-        if not checks(interaction.guild, interaction.user):
+                   interaction: nextcord.Interaction,
+                   *,
+                   commandname: str = nextcord.SlashOption(description="which command do you need help for", required=True, min_length=2, max_length=50)):
+        """This command generates a select box that is corresponding to all commands of the bot.
+           It delivers help for the usage of said commands."""
+
+        if not commandname.startswith("/"):
+            commandname = f"/{commandname}"
+
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /help")
+
+        await interaction.response.defer(ephemeral=True, with_message=True)
+
+        if commandname not in self.client.Lists.HELP_AUTOCOMPLETE_TUPLE:
+            await interaction.followup.send(embed=EmbedFunctions().error(f"`{commandname}` isn't a valid commandname."), ephemeral=True)
             return
 
-        print(f"{interaction.user}: /help")
+        HELP_OUTPUT = {**self.client.Lists.HELP_PERMISSION_OUTPUT, **self.client.Lists.HELP_NORMAL_OUTPUT}
 
-        response = await interaction.response.send_message("What command do you need help with?", ephemeral=True)
-        HelpDropView = HelpDropdownView(response)
-        await response.edit("What command do you need help with?", view=HelpDropView)
+        if len(HELP_OUTPUT[commandname]) == 3:
+            permissions_text = HELP_OUTPUT[commandname][2]
+        else:
+            permissions_text = ""
 
-        uses_update("command_uses", "help")
+        embed = EmbedFunctions.builder(
+            color = self.client.BOT_COLOR,
+            title = f"Help for `{commandname}`",
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "Syntax:",
+                    "\n".join([line.strip() for line in HELP_OUTPUT[commandname][0].split("\n")]),
+                    False
+                ],
+
+                [
+                    "Example:",
+                    HELP_OUTPUT[commandname][1],
+                    False
+                ],
+
+                [
+                    "Required Default Permissions:",
+                    permissions_text,
+                    False
+                ]
+            ]
+        )
+
+        await interaction.followup.send(embed=embed, ephemeral=True)
+
+        CommandUsesDB().uses_update("help_selections", f"{commandname[1:]}")
+
+    ####################################################################################################
+
+    @help.on_autocomplete("commandname")
+    async def autocomplete_reminder_delete(self,
+                                           interaction: nextcord.Interaction,
+                                           commandname: str):
+        all_commands = self.client.Lists.HELP_AUTOCOMPLETE_TUPLE
+        all_commands_dict = {}
+
+        for command in all_commands:
+            all_commands_dict.update({command: command[1:]})
+
+        autocomplete_dict = Get().autocomplete_dict_from_search_string(commandname, all_commands_dict)
+
+        await interaction.response.send_autocomplete(autocomplete_dict)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(Help(client))

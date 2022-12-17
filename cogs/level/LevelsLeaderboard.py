@@ -1,76 +1,70 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
-import nextcord.ext.commands
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from database.database_levels import get_all_user_levels
-from utilities.maincommands import checks
-from utilities.partial_commands import embed_builder, get_nick_else_name
-from utilities.variables import BOT_COLOR, DEFAULT_PFP
+from lib.db_modules import LevelsDB
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class LevelsLeaderboard(nextcord.ext.commands.Cog):
+class LevelsLeaderboard(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client: nextcord.ext.commands.Bot = client
+        self.client: SomiBot = client
 
-    from utilities.maincommands import levels
+    from lib.utilities.main_commands import levels
 
-    ###level#roles#add###########################################################
+    ####################################################################################################
 
-    @levels.subcommand(name = "leaderboard", description = "shows the top10 users by level of this server")
+    @levels.subcommand(name = "top", description = "shows the top users by level of this server", name_localizations = {country_tag:"leaderboard" for country_tag in nextcord.Locale})
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def levels_leaderboard(self,
                                  interaction: nextcord.Interaction):
-        if not checks(self.client, interaction.guild, interaction.user):
-            return
+        """Displays the top 10 (or less, if there isn't 10 users in the levels table) users by XP"""
 
-        print(f"{interaction.user}: /levels leaderboard")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /levels leaderboard")
 
         await interaction.response.defer(with_message=True)
 
-        user_ids_and_levels = get_all_user_levels(interaction.guild.id)
-        counter: int = 0
+        user_ids_and_levels = LevelsDB().get_all_user_levels(interaction.guild.id, 10)
         output: str = ""
-        print(len(user_ids_and_levels))
 
-        while counter < len(user_ids_and_levels):
-            for index, user in enumerate(user_ids_and_levels):
-                try:
-                    member = interaction.guild.get_member(user[0])
-                except:
-                    member = self.client.get_user(user[0])
+        for index, user in enumerate(user_ids_and_levels):
+            try:
+                member = interaction.guild.get_member(user[0])
+            except:
+                member = self.client.get_user(user[0])
 
-                name = get_nick_else_name(member)
+            if isinstance(member, nextcord.Member):
+                name = member.mention
+            elif isinstance(member, nextcord.User):
+                name = member.display_name
+            else:
+                name = "[Deleted User]"
 
-                output += f"**{index+1}. {name}**\nLevel: `{user[1]}`\n\n"
+            output += f"**{index+1}. {name}**\nLevel: `{user[1]}`\n\n"
 
-                counter += 1
-
-            if counter > 10:
-                break
-
-        if interaction.guild.icon is not None:
+        if interaction.guild.icon != None:
             server_icon_url = interaction.guild.icon
         else:
-            server_icon_url = DEFAULT_PFP
+            server_icon_url = self.client.DEFAULT_PFP
 
-        embed = embed_builder(title = f"Top users by level for `{interaction.guild.name}`",
-                              color = BOT_COLOR,
-                              description = output,
-                              thumbnail = server_icon_url,
-                              footer = "DEFAULT_KST_FOOTER")
+        embed = EmbedFunctions().builder(
+            color = self.client.BOT_COLOR,
+            thumbnail = server_icon_url,
+            title = f"Top users by level for `{interaction.guild.name}`",
+            description = output,
+            footer = "DEFAULT_KST_FOOTER"
+        )
 
         await interaction.followup.send(embed=embed)
 
-        uses_update("command_uses", "levels rank")
 
 
-
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(LevelsLeaderboard(client))

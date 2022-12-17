@@ -1,86 +1,91 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from database.database_custom import list_custom, delete_custom_command
-from utilities.maincommands import checks
-from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID, MOD_COLOR
-from utilities.partial_commands import get_user_avatar, restart_bot, make_input_command_clean, embed_builder, string_search_to_list
+from lib.db_modules import AuditLogChannelDB, CustomDB
+from lib.modules import Checks, EmbedFunctions, Get
+from lib.utilities import SomiBot
 
 
 
-class CustomDelete(nextcord.ext.commands.Cog):
+class CustomDelete(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    from utilities.maincommands import custom
+    from lib.utilities.main_commands import custom
 
-    ###custom#delete###########################################################
+    ####################################################################################################
 
-    @custom.subcommand(name = "delete", description = "[MOD] delete a custom command")
-    @nextcord.ext.application_checks.has_permissions(manage_guild=True)
+    @custom.subcommand(name = "delete", description = "delete a custom-command")
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def custom_delete(self,
                             interaction: nextcord.Interaction,
                             *,
-                            commandname: str = nextcord.SlashOption(description="custom command to be deleted", required=True, min_length=2, max_length=32)):
-        if not checks(interaction.guild, interaction.user):
-            return
+                            commandname: str = nextcord.SlashOption(description="custom-command to be deleted", required=True, min_length=2, max_length=50)):
+        """This command deletes a custom-command from the server's custom-commands"""
 
-        print(f"{interaction.user}: /custom delete {commandname}")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /custom delete {commandname}")
 
-        clean_commandname = make_input_command_clean(commandname)
+        await interaction.response.defer(ephemeral=True, with_message=True)
 
-        commandtext = delete_custom_command(interaction.guild.id, clean_commandname)
+        clean_commandname = Get().clean_input_command(commandname)
+
+        commandtext = CustomDB().delete_command(interaction.guild.id, clean_commandname)
 
         if commandtext == "":
-            await interaction.response.send_message(f"There is no custom command with the name `{clean_commandname}`.", ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().error(f"There is no custom-command with the name `{clean_commandname}`. \nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
             return
 
-        await interaction.response.send_message(f"The custom command `{clean_commandname}` has been removed.", ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().success(f"The custom-command `{clean_commandname}` has been deleted."), ephemeral=True)
 
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
-        member_avatar_url = get_user_avatar(interaction.user)
+        audit_log_id = AuditLogChannelDB().get(interaction.guild)
 
-        embed = embed_builder(color = MOD_COLOR,
-                              author = "Mod Activity",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
+        if not audit_log_id:
+            return
 
-                              field_one_name = "/custom delete:",
-                              field_one_value = f"{interaction.user.mention} deleted: `{clean_commandname}` from the custom commands.",
-                              field_one_inline = False,
-                              
-                              field_two_name = "Command text:",
-                              field_two_value = f"`{commandtext}`",
-                              field_two_inline = False)
+        embed = EmbedFunctions().builder(
+            color = self.client.MOD_COLOR,
+            author = "Mod Activity",
+            author_icon = interaction.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "/custom delete:",
+                    f"{interaction.user.mention} deleted: `{clean_commandname}` from the custom-commands.",
+                    False
+                ],
 
-        await AUDIT_LOG.send(embed=embed)
+                [
+                    "Command text:",
+                    f"`{commandtext}`",
+                    False
+                ]
+            ]
+        )
 
-        uses_update("mod_command_uses", "custom delete")
+        audit_log_channel = interaction.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
 
-        restart_bot()
-
-    @custom_delete.error
-    async def ban_error(self, interaction: nextcord.Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+    ####################################################################################################
 
     @custom_delete.on_autocomplete("commandname")
     async def autocomplete_commandname(self,
                                        interaction: nextcord.Interaction,
                                        commandname: str):
-        all_commandnames = list_custom(interaction.guild.id)
+        all_commandnames = CustomDB().list(interaction.guild.id)
 
-        autocomplete_list = string_search_to_list(commandname, all_commandnames)
+        all_commandnames_dict = {command: command for command in all_commandnames}
 
-        await interaction.response.send_autocomplete(autocomplete_list)
+        autocomplete_dict = Get().autocomplete_dict_from_search_string(commandname, all_commandnames_dict)
+
+        await interaction.response.send_autocomplete(autocomplete_dict)
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(CustomDelete(client))

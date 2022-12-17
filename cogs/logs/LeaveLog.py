@@ -1,71 +1,91 @@
 ###package#import###############################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
 import time
-
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
 
 ###self#imports###############################################################################
 
-from database.database_command_uses import uses_update
-from database.drop_user_data import drop_user_data_in_database
-from utilities.maincommands import checks
-from utilities.variables import AUDIT_LOG_ID, SERVER_ID
-from utilities.partial_commands import get_user_avatar, embed_builder
+from lib.db_modules import AuditLogChannelDB, KeywordDB, ReminderDB, CommandUsesDB
+from lib.modules import EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class LeaveLog(nextcord.ext.commands.Cog):
+class LeaveLog(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
     ###leave#log###########################################################
 
-    @nextcord.ext.commands.Cog.listener()
+    @nextcord_C.Cog.listener()
     async def on_member_remove(self,
-                               member):
-        if not checks(member.guild, member.user):
+                               member: nextcord.Member):
+        """
+        This function deletes someone's keywords, if they leave a server
+        Also if the user just left the last server with Somi their reminders
+        And if a server has an audit-log-channel set it generates a log message
+        """
+
+        self.client.Loggers.action_log(f"Guild: {member.guild.id} ~ User: {member.id} ~ leave_log()")
+
+        KeywordDB().delete_all(member.guild.id, member.id)
+
+        if member.mutual_guilds == []:
+            ReminderDB().delete_all(member.id)
+
+        audit_log_id = AuditLogChannelDB().get(member.guild)
+
+        if not audit_log_id:
             return
-        if member.guild.id != SERVER_ID:
-            return
 
-        print(f"leave_log() {member}")
+        async for entry in member.guild.audit_logs(limit=1, action=nextcord.AuditLogAction.ban):
+            if entry.target.id == member.id:
+                return
 
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
+        async for entry in member.guild.audit_logs(limit=1, action=nextcord.AuditLogAction.kick):
+            if entry.target.id == member.id:
+                return
 
-        joined_time = int(time.mktime(member.joined_at.timetuple()))
-        created_time = int(time.mktime(member.created_at.timetuple()))
-        member_avatar_url = get_user_avatar(member)
+        embed = EmbedFunctions().builder(
+            color = nextcord.Color.red(),
+            thumbnail = member.display_avatar,
+            title = f"Member Left: `{member}`",
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "ID:",
+                    member.id,
+                    False
+                ],
 
-        embed = embed_builder(title = f"Member Left: `{member}`",
-                              color = nextcord.Color.red(),
-                              thumbnail = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
+                [
+                    "Name:",
+                    member.mention,
+                    True
+                ],
 
-                              field_one_name = "ID:",
-                              field_one_value = member.id,
-                              field_one_inline = False,
+                [
+                    "Created at:",
+                    f"<t:{int(time.mktime(member.created_at.timetuple()))}>",
+                    True
+                ],
 
-                              field_two_name = "Name:",
-                              field_two_value = member.mention,
-                              field_two_inline = True,
-                              
-                              field_three_name = "Created at:",
-                              field_three_value = f"<t:{created_time}>",
-                              field_three_inline = True,
+                [
+                    "Joined at",
+                    f"<t:{int(time.mktime(member.joined_at.timetuple()))}>",
+                    True
+                ]
+            ]
+        )
 
-                              field_four_name = "Joined at",
-                              field_four_value = f"<t:{joined_time}>",
-                              field_four_inline = True)
+        audit_log_channel = member.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
 
-        await AUDIT_LOG.send(embed=embed)
-
-        drop_user_data_in_database(member)
-
-        uses_update("log_activations", "leave_log")
+        CommandUsesDB().uses_update("log_activations", "leave_log")
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(LeaveLog(client))

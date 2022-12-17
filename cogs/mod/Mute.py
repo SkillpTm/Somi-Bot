@@ -1,120 +1,134 @@
-###package#import###############################################################################
+####################################################################################################
 
 import datetime
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
+import pytz
+import time as unix_time
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.partial_commands import get_user_avatar, is_member_skillp, is_member_themself, time_to_seconds, embed_builder
-from utilities.variables import AUDIT_LOG_ID, MODERATOR_ID
+from lib.db_modules import AuditLogChannelDB
+from lib.modules import Checks, EmbedFunctions, Get
+from lib.utilities import SomiBot
 
 
 
-class Mute(nextcord.ext.commands.Cog):
+class Mute(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###mute###########################################################
+    ####################################################################################################
 
-    @nextcord.slash_command(name="mute", description="[MOD] mutes a user")
-    @nextcord.ext.application_checks.has_permissions(mute_members=True)
+    @nextcord.slash_command(name="mute", description="mutes a member", default_member_permissions = nextcord.Permissions(mute_members=True))
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def mute(self,
                    interaction: nextcord.Interaction,
                    *,
                    member: nextcord.Member = nextcord.SlashOption(description="the member to be muted", required=True),
-                   time: str = nextcord.SlashOption(description="the time to mute the member for (input: xy | xw |xd | xh | xm | xs) example: 5d7h28s)", required=True, min_length=2, max_length=30),
+                   time: str = nextcord.SlashOption(description="the time to mute the member for (input: xy | xw |xd | xh | xm | xs) example: 5d7h28s)", required=True, min_length=2, max_length=50),
                    reason: str = nextcord.SlashOption(description="reason for the mute", required=False, min_length=2, max_length=1000)):
-        if not checks(interaction.guild, interaction.user):
+        """This command mutes a member, with time and reason, if their current top-role is below your current top-role."""
+
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /mute {member.id} {time}\n{reason}")
+
+        await interaction.response.defer(ephemeral=True, with_message=True)
+
+        if interaction.user.id == member.id:
+            await interaction.followup.send(embed=EmbedFunctions().error("You can't mute yourself!"), ephemeral=True)
             return
 
-        print(f"{interaction.user}: /mute {member} {time} {reason}")
-
-        if await is_member_skillp(interaction, member, source = "mute"):
-            return
-        if await is_member_themself(interaction, member, source = "mute"):
+        if interaction.user.top_role.position < member.top_role.position and interaction.user != interaction.user.guild.owner:
+            await interaction.followup.send(embed=EmbedFunctions().error("You can only mute a member, if your current top-role is above their current top-role!"), ephemeral=True)
             return
 
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
-        total_seconds = time_to_seconds(time)
+        total_seconds = Get().seconds_from_time(time)
 
         if total_seconds == 0 or total_seconds > 2419200: #28d in seconds
-            await interaction.response.send_message(f"`{time}` is not a valid time period. Make sure to use the formating in the input description and that your time period is smaller than 28 days.", ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().error(f"`{time}` is not a valid time period. Make sure to use the formating in the input description and that your time period is smaller than 28 days."), ephemeral=True)
             return
 
-        await member.edit(timeout=nextcord.utils.utcnow()+datetime.timedelta(seconds=total_seconds))
+        await member.edit(timeout=datetime.datetime.now(pytz.timezone('UTC'))+datetime.timedelta(seconds=total_seconds))
 
-        await interaction.response.send_message(f"Succesfully muted {member.mention}.", ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().success(f"Succesfully muted {member.mention}."), ephemeral=True)
 
-        member_avatar_url = get_user_avatar(interaction.user)
 
-        embed = embed_builder(color = nextcord.Color.yellow(),
-                              author = "Mod Activity",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
+        audit_log_id = AuditLogChannelDB().get(interaction.guild)
 
-                              field_one_name = "/mute:",
-                              field_one_value = f"{interaction.user.mention} muted: {member.mention} for: `{time}`",
-                              field_one_inline = False,
+        if not audit_log_id:
+            return
 
-                              field_two_name = "Reason:",
-                              field_two_value = reason,
-                              field_two_inline = False)
+        embed = EmbedFunctions().builder(
+            color = nextcord.Color.yellow(),
+            author = "Mod Activity",
+            author_icon = interaction.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "/mute:",
+                    f"{interaction.user.mention} muted: {member.mention} for: `{time}` (that's until: <t:{int(unix_time.time()) + total_seconds}:F>)",
+                    False
+                ],
 
-        await AUDIT_LOG.send(embed=embed)
+                [
+                    "Reason:",
+                    reason,
+                    False
+                ]
+            ]
+        )
 
-        uses_update("mod_command_uses", "mute")
+        audit_log_channel = interaction.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
 
-    @mute.error
-    async def mute_error(self, interaction: nextcord.Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+    ####################################################################################################
 
-    ###unmute###########################################################
-
-    @nextcord.slash_command(name="unmute", description="[MOD] unmutes a user")
-    @nextcord.ext.application_checks.has_permissions(mute_members=True)
+    @nextcord.slash_command(name="unmute", description="unmutes a member", default_member_permissions = nextcord.Permissions(mute_members=True))
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def unmute(self,
                      interaction: nextcord.Interaction,
                      *,
                      member: nextcord.Member = nextcord.SlashOption(description="member to be unmuted", required=True)):
-        if not checks(interaction.guild, interaction.user):
-            return
+        """This command unmutes a member, if they were muted."""
 
-        print(f"{interaction.user}: /unmute {member}")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /unmute {member.id}")
 
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
+        await interaction.response.defer(ephemeral=True, with_message=True)
 
         if member.communication_disabled_until == None:
-            await interaction.response.send_message(f"{member.mention} wasn't muted", ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().error(f"{member.mention} wasn't muted."), ephemeral=True)
             return
 
         await member.edit(timeout=None)
-        await interaction.response.send_message(f"{member.mention} has been unmuted", ephemeral=True)
 
-        member_avatar_url = get_user_avatar(interaction.user)
-
-        embed = embed_builder(color = nextcord.Color.green(),
-                              author = "Mod Activity",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
-
-                              field_one_name = "/unmute:",
-                              field_one_value = f"{interaction.user.mention} unmuted: {member.mention}",
-                              field_one_inline = False)
-
-        await AUDIT_LOG.send(embed=embed)
-
-        uses_update("mod_command_uses", "unmute")
-
-    @unmute.error
-    async def unmute_error(self, interaction: nextcord.Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().success(f"{member.mention} has been unmuted"), ephemeral=True)
 
 
+        audit_log_id = AuditLogChannelDB().get(interaction.guild)
 
-def setup(client):
+        if not audit_log_id:
+            return
+
+        embed = EmbedFunctions().builder(
+            color = nextcord.Color.green(),
+            author = "Mod Activity",
+            author_icon = interaction.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "/unmute:",
+                    f"{interaction.user.mention} unmuted: {member.mention}",
+                    False
+                ]
+            ]
+        )
+
+        audit_log_channel = interaction.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
+
+
+
+def setup(client: SomiBot):
     client.add_cog(Mute(client))

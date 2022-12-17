@@ -1,70 +1,73 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.partial_commands import get_user_avatar, embed_builder
-from utilities.variables import UPDATES_ID, LIVE_ID, SNS_ID, REDDIT_ID, ROLES_ID, BOT_COLOR, ROLELIST
+from lib.db_modules import CommandUsesDB
+from lib.modules import EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
 class Roles(nextcord.ui.View):
     
-    def __init__(self):
+    def __init__(self, client):
         super().__init__(timeout=None)
+        self.client: SomiBot = client
+
+    ####################################################################################################
 
     async def handle_click(self,
                            button: nextcord.ui.Button,
                            interaction: nextcord.Interaction):
-        if not checks(interaction.guild, interaction.user):
-            return
+        """This function adds/removes the given role to/from a user, depending on, if they already have the given role"""
 
-        role_id, sep, role_name = button.custom_id.partition(".")
-        role = interaction.guild.get_role(int(role_id))
+        await interaction.response.defer(ephemeral=True, with_message=True)
+
+        role: nextcord.Role = interaction.guild.get_role(int(button.custom_id))
 
         if role in interaction.user.roles:
-            print(f"{interaction.user}: rolelist() remove {role}")
+            self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ rolelist() remove {role.id}")
 
             await interaction.user.remove_roles(role)
-            await interaction.response.send_message(f"The role: {role.mention} has been removed form your role list", ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().error(f"The role: {role.mention} has been removed form your role list"), ephemeral=True)
 
-            uses_update("role_selections", f"remove {role.name}")
+            CommandUsesDB().uses_update("role_selections", f"remove {role.name}")
         else:
-            print(f"{interaction.user}: rolelist() add {role.name}")
+            self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ rolelist() add {role.id}")
 
             await interaction.user.add_roles(role)
-            await interaction.response.send_message(f"The role: {role.mention} has been added to your role list", ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().success(f"The role: {role.mention} has been added to your role list"), ephemeral=True)
 
-            uses_update("role_selections", f"add {role.name}")
+            CommandUsesDB().uses_update("role_selections", f"add {role.name}")
 
+    ####################################################################################################
 
-    @nextcord.ui.button(label = "UPDATES", style=nextcord.ButtonStyle.blurple, custom_id=f"{UPDATES_ID}.{ROLELIST[UPDATES_ID]}")
+    @nextcord.ui.button(label = "UPDATES", style = nextcord.ButtonStyle.blurple, custom_id = f"{SomiBot.Lists.SOMICORD_UPDATE_ROLES_IDS['UPDATES_ID']}")
     async def UPDATES(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await self.handle_click(button, interaction)
 
-    @nextcord.ui.button(label = "LIVE", style=nextcord.ButtonStyle.blurple, custom_id=f"{LIVE_ID}.{ROLELIST[LIVE_ID]}")
+    @nextcord.ui.button(label = "LIVE", style = nextcord.ButtonStyle.blurple, custom_id = f"{SomiBot.Lists.SOMICORD_UPDATE_ROLES_IDS['LIVE_ID']}")
     async def LIVE(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await self.handle_click(button, interaction)
 
-    @nextcord.ui.button(label = "SNS", style=nextcord.ButtonStyle.blurple, custom_id=f"{SNS_ID}.{ROLELIST[SNS_ID]}")
+    @nextcord.ui.button(label = "SNS", style = nextcord.ButtonStyle.blurple, custom_id = f"{SomiBot.Lists.SOMICORD_UPDATE_ROLES_IDS['SNS_ID']}")
     async def SNS(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await self.handle_click(button, interaction)
 
-    @nextcord.ui.button(label = "REDDIT", style=nextcord.ButtonStyle.blurple, custom_id=f"{REDDIT_ID}.{ROLELIST[REDDIT_ID]}")
+    @nextcord.ui.button(label = "REDDIT", style = nextcord.ButtonStyle.blurple, custom_id = f"{SomiBot.Lists.SOMICORD_UPDATE_ROLES_IDS['REDDIT_ID']}")
     async def REDDIT(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await self.handle_click(button, interaction)
 
-    @nextcord.ui.button(label = "ROLES", style=nextcord.ButtonStyle.gray, custom_id="JeonSomi.ROLES")
+    @nextcord.ui.button(label = "ROLES", style=nextcord.ButtonStyle.gray, custom_id="SOMICORD.ROLES")
     async def ROLES(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        if not checks(interaction.guild, interaction.user):
-            return
+        """This function outputs anyone user's roles, upon button press"""
 
-        print(f"{interaction.user}: rolelist() ROLES")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ rolelist() ROLES")
+
+        await interaction.response.defer(ephemeral=True, with_message=True)
 
         rolelist = [role.mention for role in interaction.user.roles if role != interaction.guild.default_role]
         output = ""
@@ -72,55 +75,72 @@ class Roles(nextcord.ui.View):
         for i in range(len(rolelist)):
             output += f"{i + 1}. {rolelist[i]}\n"
 
-        member_avatar_url = get_user_avatar(interaction.user)
+        embed = EmbedFunctions().builder(
+            color = self.client.BOT_COLOR,
+            author = f"Rolelist for {interaction.user}",
+            author_icon = interaction.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "Roles:",
+                    output[:1000],
+                    True
+                ]
+            ]
+        )
 
-        embed = embed_builder(color = BOT_COLOR,
-                              author = f"Rolelist for {interaction.user}",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER",
+        await interaction.followup.send(embed=embed, ephemeral=True)
 
-                              field_one_name = "Roles:",
-                              field_one_value = output[:1000],
-                              field_one_inline = True)
-
-        await interaction.response.send_message(embed=embed, ephemeral=True)
-
-        uses_update("role_selections", "clicked ROLES")
+        CommandUsesDB().uses_update("role_selections", "clicked ROLES")
 
 
 
-class RoleSelection(nextcord.ext.commands.Cog):
+class RoleSelection(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###roleselection#generation###########################################################
+    ####################################################################################################
 
-    @nextcord.ext.commands.Cog.listener()
-    async def on_ready(self):
-        ROLES_CHANNEL = self.client.get_channel(ROLES_ID)
+    async def try_sending(self):
+        """This command checks if the last role selection embed is still in it's channel. If it isn't, it gets reposted again"""
+
+        ROLES_CHANNEL = self.client.get_channel(self.client.SOMICORD_ROLES_CHANNEL_ID)
 
         messages = await ROLES_CHANNEL.history(limit=None).flatten()
 
         if not messages == []:
             return
 
-        print("roleist() generated")
+        self.client.Loggers.action_log(f"Guild: {ROLES_CHANNEL.guild.id} ~ rolelist() generated")
 
-        embed = embed_builder(title = "Role selection",
-                              color = BOT_COLOR,
+        embed = EmbedFunctions.builder(
+            color = self.client.BOT_COLOR,
+            title = "Role selection",
+            fields = [
+                [
+                    "Info Roles",
+                    f"""
+                    Info roles will ping you for a certain event. The currtent info roles are:
+                    <@&{self.client.Lists.SOMICORD_UPDATE_ROLES_IDS['UPDATES_ID']}>: Informs you about big news (like a comeback).
+                    <@&{self.client.Lists.SOMICORD_UPDATE_ROLES_IDS['LIVE_ID']}>: Informs you about a SNS update.
+                    <@&{self.client.Lists.SOMICORD_UPDATE_ROLES_IDS['SNS_ID']}>: Informs you about a live from Somi.
+                    <@&{self.client.Lists.SOMICORD_UPDATE_ROLES_IDS['REDDIT_ID']}>: Informs you about a new post on r/Somi.
+                    """,
+                    False
+                ],
 
-                              field_one_name = "Info Roles",
-                              field_one_value = f"Info roles will ping you for a certain event. The currtent info roles are:\n<@&{UPDATES_ID}>: Informs you about big news (like a comeback).\n<@&{LIVE_ID}>: Informs you about a SNS update.\n<@&{SNS_ID}>: Informs you about a live from Somi.\n<@&{REDDIT_ID}>: Informs you about a new post on r/Somi.",
-                              field_one_inline = False,
+                [
+                    "How It Works",
+                    'Click the button of the role you want down below. If you want to get rid of a role afterwards just click the button again. If you are unsure about your current roles press the button "ROLES".',
+                    False
+                ]
+            ]
+        )
 
-                              field_two_name = "How It Works",
-                              field_two_value = 'Click the button of the role you want down below. If you want to get rid of a role afterwards just click the button again. If you are unsure about your current roles press the button "ROLES".',
-                              field_two_inline = False)
-
-        await ROLES_CHANNEL.send(embed=embed, view=Roles())
+        await ROLES_CHANNEL.send(embed=embed, view=Roles(self.client))
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(RoleSelection(client))

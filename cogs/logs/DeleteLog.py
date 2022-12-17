@@ -1,51 +1,60 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks, checks_forbidden_channels, checks_max_word_length
-from utilities.variables import AUDIT_LOG_ID,SERVER_ID
-from utilities.partial_commands import get_user_avatar, embed_attachments, embed_builder
+from lib.db_modules import AuditLogChannelDB, HiddenChannelsDB, CommandUsesDB
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import SomiBot
 
 
 
-class DeleteLog(nextcord.ext.commands.Cog):
+class DeleteLog(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###delete#log###########################################################
+    ####################################################################################################
 
-    @nextcord.ext.commands.Cog.listener()
+    @nextcord_C.Cog.listener()
     async def on_message_delete(self,
-                                message):
-        if not checks(message.guild, message.author):
+                                message: nextcord.Message):
+        """This function will create a delete-log message, if a guild has an audit-log-channel and if the message wasn't in a hidden-channel."""
+
+        if not Checks.message_in_guild(self.client, message):
             return
-        if message.guild.id != SERVER_ID or not checks_forbidden_channels(message.channel):
+
+        audit_log_id = AuditLogChannelDB().get(message.guild)
+
+        if not audit_log_id:
             return
 
-        print(f"{message.author}: delete_log()\n{message.content}")
+        if HiddenChannelsDB().check_channel_inserted(message.guild.id, message.channel.id):
+            return
 
-        AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
-        member_avatar_url = get_user_avatar(message.author)
+        self.client.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel: {message.channel.id} ~ User: {message.author.id} ~ delete_log()\nMessage: {message.content}")
 
-        embed = embed_builder(description = f"{message.author.mention} deleted a message in: {message.channel.mention}",
-                              color = nextcord.Color.red(),
-                              author = "Message Deleted",
-                              author_icon = member_avatar_url,
-                              footer = "DEFAULT_KST_FOOTER")
+        embed = EmbedFunctions().builder(
+            color = nextcord.Color.red(),
+            author = "Message Deleted",
+            author_icon = message.author.display_avatar,
+            description = f"{message.author.mention} deleted a message in: {message.channel.mention}\n\n{message.content}"[:4095],
+            footer = "DEFAULT_KST_FOOTER"
+        )
 
-        checks_max_word_length(message, embed, source = "delete_log")
+        embed, file_urls = EmbedFunctions().get_attachments(message.attachments, embed)
+        audit_log_channel = message.guild.get_channel(audit_log_id)
 
-        await embed_attachments(AUDIT_LOG, message, embed)
+        sent_message = await audit_log_channel.send(embed=embed)
 
-        uses_update("log_activations", "delete log")
+        if file_urls != "":
+            await sent_message.reply(content=file_urls, mention_author=False)
+
+        CommandUsesDB().uses_update("log_activations", "delete log")
 
 
 
-def setup(client):
+def setup(client: SomiBot):
     client.add_cog(DeleteLog(client))

@@ -1,14 +1,15 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
 
-###self#imports###############################################################################
+####################################################################################################
 
-from utilities.partial_commands import deactivate_view_children
+from lib.utilities.SomiBot import SomiBot
 
 
 
-class LastFmButtons(nextcord.ui.View):
+class PageButtons(nextcord.ui.View):
+
     def __init__(self, page, last_page, interaction):
         self.value = None
         self.page: int = page
@@ -16,18 +17,20 @@ class LastFmButtons(nextcord.ui.View):
         self.interaction: nextcord.Interaction = interaction
         super().__init__(timeout = 60)
 
+    ####################################################################################################
+
     @nextcord.ui.button(label = "start", style=nextcord.ButtonStyle.green)
-    async def lf_start(self,
-                       button: nextcord.ui.Button,
-                       interaction: nextcord.Interaction):
+    async def start(self,
+                    button: nextcord.ui.Button,
+                    interaction: nextcord.Interaction):
         self.page = 1
         self.value = True
         self.stop()
 
     @nextcord.ui.button(label = "<<", style=nextcord.ButtonStyle.green)
-    async def lf_left(self,
-                      button: nextcord.ui.Button,
-                      interaction: nextcord.Interaction):
+    async def left(self,
+                   button: nextcord.ui.Button,
+                   interaction: nextcord.Interaction):
         self.page -= 1
         if self.page == 0:
             self.page = 1
@@ -35,15 +38,15 @@ class LastFmButtons(nextcord.ui.View):
         self.stop()
 
     @nextcord.ui.button(label = " ", style=nextcord.ButtonStyle.gray, disabled=True)
-    async def lf_page_button(self,
-                             button: nextcord.ui.Button,
-                             interaction: nextcord.Interaction):
+    async def page_button(self,
+                          button: nextcord.ui.Button,
+                          interaction: nextcord.Interaction):
         pass
 
     @nextcord.ui.button(label = ">>", style=nextcord.ButtonStyle.red)
-    async def lf_right(self,
-                       button: nextcord.ui.Button,
-                       interaction: nextcord.Interaction):
+    async def right(self,
+                    button: nextcord.ui.Button,
+                    interaction: nextcord.Interaction):
         self.page += 1
         if self.page > self.last_page:
             self.page = self.last_page
@@ -51,20 +54,28 @@ class LastFmButtons(nextcord.ui.View):
         self.stop()
 
     @nextcord.ui.button(label = "end", style=nextcord.ButtonStyle.red)
-    async def lf_end(self,
-                     button: nextcord.ui.Button,
-                     interaction: nextcord.Interaction):
+    async def end(self,
+                  button: nextcord.ui.Button,
+                  interaction: nextcord.Interaction):
         self.page = self.last_page
         self.value = True
         self.stop()
 
+    ####################################################################################################
 
+    async def update_buttons(self):
+        await self.change_page_button()
+        await self.check_page_for_button_deactivation()
+
+    ####################################################################################################
 
     async def change_page_button(self):
         for child in self.children:
             if " " in child.label:
                 child.label = f"{self.page}/{self.last_page}"
         await self.interaction.edit_original_message(view=self)
+
+    ####################################################################################################
 
     async def check_page_for_button_deactivation(self):
         if self.page == 1:
@@ -79,5 +90,7 @@ class LastFmButtons(nextcord.ui.View):
 
         await self.interaction.edit_original_message(view=self)
 
+    ####################################################################################################
+
     async def on_timeout(self):
-        await deactivate_view_children(self)
+        await SomiBot.deactivate_view_children(self)

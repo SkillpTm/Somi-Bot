@@ -1,63 +1,104 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from database.database_levelroles import check_levelroles_for_server_role_and_level, add_role_to_level
-from utilities.maincommands import checks
-from utilities.partial_commands import level_roles_apply
-from utilities.variables import MODERATOR_ID
+from lib.db_modules import AuditLogChannelDB, LevelRolesDB
+from lib.modules import Checks, EmbedFunctions, LevelRoles
+from lib.utilities import SomiBot
 
 
 
-class LevelRolesAdd(nextcord.ext.commands.Cog):
+class ConfigLevelRoles(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    from utilities.maincommands import level_roles
+    from lib.utilities.main_commands import config
 
-    ###level#roles#add###########################################################
+    ####################################################################################################
 
-    @level_roles.subcommand(name = "add", description = "[MOD] set a role to be given, when a certain level is reached")
-    @nextcord.ext.application_checks.has_permissions(manage_roles=True)
-    async def level_roles_add(self,
-                              interaction: nextcord.Interaction,
-                              *,
-                              role: nextcord.Role = nextcord.SlashOption(description="the role users should get at the set level", required=True),
-                              level: int = nextcord.SlashOption(description="the level you're supposed to get a role", required=True, min_value=2, max_value=1000)):
-        if not checks(self.client, interaction.guild, interaction.user):
-            return
+    @config.subcommand(name = "level-roles", description = "set a role to be given, when a certain level is reached")
+    @nextcord_AC.check(Checks().interaction_in_guild())
+    async def config_level_roles(self,
+                                 interaction: nextcord.Interaction,
+                                 *,
+                                 action: str = nextcord.SlashOption(description="which action do you want to take", required=True, choices=["Add", "Remove"]),
+                                 role: nextcord.Role = nextcord.SlashOption(description="the role users should/ the role to be deleted", required=True),
+                                 level: int = nextcord.SlashOption(description="the level you're supposed to get a role", required=False, min_value=2, max_value=1000)):
+        """This command adds/deletes a level-role to/from the server's level-roles"""
 
-        print(f"{interaction.user}: /level-roles add {role.name} {level}")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /config level-roles {action} {role.id} {level}")
+
+        await interaction.response.defer(ephemeral=True, with_message=True)
 
         if interaction.user.top_role.position < role.position and interaction.user != interaction.user.guild.owner:
-            await interaction.response.send_message("You can only add roles to levelroles, if they are below your current top role!", ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().error("You can only add/remove a role as a level-role, if the role is below your current top role!"), ephemeral=True)
             return
 
-        already_used = check_levelroles_for_server_role_and_level(interaction.guild.id, role.id, level)
 
-        if already_used:
-            await interaction.response.send_message(f"The role {role.mention} already has a level assigned or the level `{level}` already has a role assugned!", ephemeral=True)
+        if action == "Add":
+            if not level:
+                await interaction.followup.send(embed=EmbedFunctions().error("You need to define a role **and** a level to add a new level-role."), ephemeral=True)
+                return
+
+            already_used = LevelRolesDB().check_role_or_level_inserted(interaction.guild.id, role.id, level)
+
+            if already_used:
+                await interaction.followup.send(embed=EmbedFunctions().error(f"{role.mention} already has a level assigned or the level `{level}` already has a role assigned!\nTo get a list of all level-roles use `/config info`."), ephemeral=True)
+                return
+
+            LevelRolesDB().insert_role(interaction.guild.id, role.id, level)
+
+            await interaction.followup.send(embed=EmbedFunctions().success(f"{role.mention} has been added to the level-roles.\nThe role is being applied to users now, this can take a few minutes."), ephemeral=True)
+            
+            await LevelRoles().apply(interaction.guild)
+            
+
+        elif action == "Remove":
+            already_used = LevelRolesDB().check_role_or_level_inserted(interaction.guild.id, role.id)
+
+            if not already_used:
+                await interaction.followup.send(embed=EmbedFunctions().error(f"{role.mention} isn't a level-role.\nTo get a list of all level-roles use `/config info`."), ephemeral=True)
+                return
+
+            LevelRolesDB().delete_role(interaction.guild.id, role.id)
+
+            await interaction.followup.send(embed=EmbedFunctions().success(f"{role.mention} has been removed from the level-roles.\nThe level-roles are being applied to users now, this can take a few minutes."), ephemeral=True)
+
+            await LevelRoles().remove_from_members(interaction.guild, role)
+
+
+        audit_log_id = AuditLogChannelDB().get(interaction.guild)
+
+        if not audit_log_id:
             return
 
-        add_role_to_level(interaction.guild.id, role.id, level)
+        if action == "Add":
+            mod_action = f"{interaction.user.mention} added: {role.mention} as a level-role at level `{level}`."   
+        elif action == "Remove":
+            mod_action = f"{interaction.user.mention} removed: {role.mention} from the level-roles."  
 
-        await level_roles_apply(interaction.guild)
+        embed = EmbedFunctions().builder(
+            color = self.client.MOD_COLOR,
+            author = "Mod Activity",
+            author_icon = interaction.user.display_avatar,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "/config level-roles:",
+                    mod_action,
+                    False
+                ]
+            ]
+        )
 
-        await interaction.response.send_message(f"The role {role.mention} has been added and applied as a new levelrole in this server!", ephemeral=True)     
-
-        uses_update("mod_command_uses", "level-roles add")
-
-    @level_roles_add.error
-    async def ban_error(self, interaction: nextcord.Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+        audit_log_channel = interaction.guild.get_channel(audit_log_id)
+        await audit_log_channel.send(embed=embed)
 
 
-
-def setup(client):
-    client.add_cog(LevelRolesAdd(client))
+def setup(client: SomiBot):
+    client.add_cog(ConfigLevelRoles(client))

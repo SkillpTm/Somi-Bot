@@ -1,91 +1,70 @@
-###package#import###############################################################################
+####################################################################################################
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
+import nextcord.ext.application_checks as nextcord_AC
 
-client = nextcord.ext.commands.Bot(intents=nextcord.Intents.all())
+####################################################################################################
 
-###self#imports###############################################################################
-
-from database.database_command_uses import uses_update
-from utilities.maincommands import checks
-from utilities.partial_commands import get_user_avatar, embed_builder, deactivate_view_children
-from utilities.variables import MODERATOR_ID, AUDIT_LOG_ID
-
+from lib.db_modules import AuditLogChannelDB
+from lib.modules import Checks, EmbedFunctions
+from lib.utilities import YesNoButtons, SomiBot
 
 
-class QuestionShutdown(nextcord.ui.View):
-    def __init__(self, interaction):
-        self.interaction: nextcord.Interaction = interaction
-        super().__init__(timeout = 30)
-        self.value = None
 
-    @nextcord.ui.button(label = "Yes", style=nextcord.ButtonStyle.green)
-    async def yes_shutown(self,
-                          button: nextcord.ui.Button,
-                          interaction: nextcord.Interaction):
-        self.value = True
-        await deactivate_view_children(self)
-        self.stop()
-
-    @nextcord.ui.button(label = "No", style=nextcord.ButtonStyle.red)
-    async def no_shutdown(self,
-                          button: nextcord.ui.Button,
-                          interaction: nextcord.Interaction):
-        self.value = False
-        await deactivate_view_children(self)
-        self.stop()
-
-class Shutdown(nextcord.ext.commands.Cog):
+class Shutdown(nextcord_C.Cog):
 
     def __init__(self, client):
-        self.client = client
+        self.client: SomiBot = client
 
-    ###shutdown###########################################################
+    ####################################################################################################
 
-    @nextcord.slash_command(name = "shutdown", description = "[MOD] shuts the bot down")
-    @nextcord.ext.application_checks.has_any_role(MODERATOR_ID)
+    @nextcord.slash_command(name = "shutdown", description = "shuts the bot down", guild_ids = [SomiBot.SOMICORD_ID], default_member_permissions=nextcord.Permissions(manage_guild=True))
+    @nextcord_AC.check(Checks().interaction_in_guild())
     async def shutdown(self,
                        interaction: nextcord.Interaction):
-        if not checks(interaction.guild, interaction.user):
-            return
+        """This command let's you shutdown the bot, it can only be executed from a moderator on Somicord."""
 
-        view = QuestionShutdown(interaction)
-        await interaction.response.send_message("Do you really want to shutdown the bot?", view=view, ephemeral=True)
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /shutdown")
+
+        await interaction.response.defer(ephemeral=True, with_message=True)
+
+        view = YesNoButtons(interaction=interaction)
+        await interaction.followup.send(embed=EmbedFunctions().info_message("Do you really want to shutdown the bot?", self.client), view=view, ephemeral=True)
         await view.wait()
 
-        if view.value == None or not view.value:
-            await interaction.followup.send("The bot has not been shutdown", ephemeral=True)
+        if not view.value:
+            await interaction.followup.send(embed=EmbedFunctions().error("The bot has not been shutdown"), ephemeral=True)
             return
 
-        elif view.value:
-            print(f"{interaction.user}: /shutdown")
+        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /shutdown went through")
 
-            await interaction.followup.send("The bot is being shutdown", ephemeral=True)
-
-            AUDIT_LOG = self.client.get_channel(AUDIT_LOG_ID)
-
-            member_avatar_url = get_user_avatar(interaction.user)
-
-            embed = embed_builder(color = nextcord.Color.orange(),
-                                  author = "Mod Activity",
-                                  author_icon = member_avatar_url,
-                                  footer = "DEFAULT_KST_FOOTER",
-
-                                  field_one_name = "/shutdown:",
-                                  field_one_value = f"{interaction.user.mention} shutdown the bot",
-                                  field_one_inline = False)
-
-            await AUDIT_LOG.send(embed=embed)
-
-            uses_update("mod_command_uses", "shutdown")
-
-            await self.client.close()
-
-    @shutdown.error
-    async def shutdown_error(self, interaction: nextcord.Interaction, error):
-        await interaction.response.send_message(f"Only <@&{MODERATOR_ID}> can use this command.", ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().success("The bot is being shutdown..."), ephemeral=True)
 
 
+        audit_log_id = AuditLogChannelDB().get(interaction.guild)
 
-def setup(client):
+        if audit_log_id:
+            embed = EmbedFunctions().builder(
+                color = nextcord.Color.orange(),
+                author = "Mod Activity",
+                author_icon = interaction.user.display_avatar,
+                footer = "DEFAULT_KST_FOOTER",
+                fields = [
+                    [
+                        "/shutdown:",
+                        f"{interaction.user.mention} shutdown the bot",
+                        False
+                    ]
+                ]
+            )
+
+            audit_log_channel = self.client.get_channel(audit_log_id)
+            await audit_log_channel.send(embed=embed)
+
+        await self.client.close()
+
+
+
+def setup(client: SomiBot):
     client.add_cog(Shutdown(client))

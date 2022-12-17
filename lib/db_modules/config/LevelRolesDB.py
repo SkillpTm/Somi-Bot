@@ -1,77 +1,132 @@
-import sqlite3
+####################################################################################################
+
+import nextcord
 import os
+import sqlite3
 
-database_path = os.path.join(os.path.dirname(__file__), '../storage/db/levelroles.db')
+####################################################################################################
 
-###check#db###########################################################
 
-def check_levelroles_for_server_role_and_level(server_id: int, role_id: int = None, level: int = None) -> bool:
-    conn = sqlite3.connect(database_path)
-    c = conn.cursor()
 
-    c.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='server{server_id}'")
+class LevelRolesDB():
 
-    if c.fetchone() == None :
-        c.execute(f"""CREATE TABLE server{server_id} (role_id text,
-                                                      level integer)""")
+    def __init__(self) -> None:
+        self.database_path = os.path.join(os.path.dirname(__file__), '../../../storage/db/config/level_roles.db')
+
+    ####################################################################################################
+
+    def create_table(self,
+                     server_id: int) -> None:
+        """Creates a table, if there isn't one already"""
+
+        conn = sqlite3.connect(self.database_path)
+        c = conn.cursor()
+
+        c.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='server{server_id}'")
+
+        if not c.fetchone():
+            c.execute(f"""CREATE TABLE server{server_id} (role_id text,
+                                                          level integer)""")
+
+            conn.commit()
+
+        conn.close()
+
+    ####################################################################################################
+
+    def check_role_or_level_inserted(self,
+                                     server_id: int,
+                                     role_id: int =  None,
+                                     level: int = None) -> bool:
+        """Returns a bool based on if role/level is already in db"""
+
+        self.create_table(server_id)
+
+        conn = sqlite3.connect(self.database_path)
+        c = conn.cursor()
+
+        if role_id != None:
+            c.execute(f"SELECT role_id FROM server{server_id} WHERE role_id='{role_id}'")
+
+            if c.fetchone() != None :
+                conn.close()
+
+                return True
+
+        if level != None:
+            c.execute(f"SELECT level FROM server{server_id} WHERE level='{level}'")
+
+            if c.fetchone() != None :
+                conn.close()
+
+                return True
+
+        conn.close()
+
+        return False
+
+    ####################################################################################################
+
+    def insert_role(self,
+                    server_id: int,
+                    role_id: int,
+                    level: int) -> None:
+        """Inserts a given role and level into the db"""
+
+        self.create_table(server_id)
+
+        conn = sqlite3.connect(self.database_path)
+        c = conn.cursor()
+
+        c.execute(f"""INSERT INTO server{server_id} VALUES ('{role_id}',
+                                                            '{level}')""")
 
         conn.commit()
 
-    if role_id:
-        c.execute(f"SELECT role_id FROM server{server_id} WHERE role_id='{role_id}'")
+        conn.close()
 
-        if c.fetchone() != None :
-            return True
+    ####################################################################################################
 
-    if level != None:
-        c.execute(f"SELECT level FROM server{server_id} WHERE level='{level}'")
+    def delete_role(self,
+                    server_id: int,
+                    role_id: int) -> None:
+        """Deletes a role/level from the db"""
 
-        if c.fetchone() != None :
-            return True
+        self.create_table(server_id)
 
-    conn.close()
+        conn = sqlite3.connect(self.database_path)
+        c = conn.cursor()
 
-    return False
+        c.execute(f"DELETE from server{server_id} WHERE role_id = '{role_id}'")
 
-###add#role#to#level###########################################################
+        conn.commit()
 
-def add_role_to_level(server_id: int, role_id: int, level: int) -> None:
-    conn = sqlite3.connect(database_path)
-    c = conn.cursor()
+        conn.close()
 
-    c.execute(f"""INSERT INTO server{server_id} VALUES ('{role_id}',
-                                                        '{level}')""")
+    ####################################################################################################
 
-    conn.commit()
+    async def roles_list(self,
+                         server: nextcord.Guild) -> list[list[tuple[int, int]]]:
+        """Returns a list of lists with role ids and their levels"""
 
-    conn.close()
+        from lib.modules.LevelRoles import LevelRoles
 
-###delete#level#role###########################################################
+        self.create_table(server.id)
 
-def delete_level_role(server_id: int, role_id: int) -> None:
-    conn = sqlite3.connect(database_path)
-    c = conn.cursor()
+        conn = sqlite3.connect(self.database_path)
+        c = conn.cursor()
 
-    c.execute(f"DELETE from server{server_id} WHERE role_id = '{role_id}'")
+        c.execute(f"SELECT * FROM server{server.id} ORDER BY level ASC")
 
-    conn.commit()
+        levels_and_roles = c.fetchall()
+        level_roles = [[int(level_role[0]), level_role[1]] for level_role in levels_and_roles]
 
-    conn.close()
+        for level_role in level_roles:
+            if not server.get_role(level_role[0]):
+                LevelRolesDB().delete_role(server.id, level_role[0])
+                await LevelRoles().remove_from_members(server, server.get_role(level_role[0]))
+                level_roles.remove(level_role)
 
-###get#server#roles#and#levels###########################################################
+        conn.close()
 
-def get_server_level_roles(server_id: int) -> list[list[tuple[str, int]]]:
-    conn = sqlite3.connect(database_path)
-    c = conn.cursor()
-
-    c.execute(f"SELECT * FROM server{server_id} ORDER BY level ASC")
-
-    levels_and_roles = c.fetchall()
-    levelroles = []
-
-    for tuple in levels_and_roles:
-        levelroles.append(list(tuple))
-
-    conn.close()
-
-    return levelroles
+        return level_roles

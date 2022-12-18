@@ -18,8 +18,11 @@ class LevelsDB():
 
     @staticmethod
     def calulate_level(total_xp: int) -> tuple[int, int]:
-        """This is the formular to calculate someone's level. Every level has 200xp more tahn the last one (Level 1 has 300 xp)
-            Meaning that the formular to get how much xp a level requires is: ((level - 1) * 200) + 300"""
+        """
+        This is the formular to calculate someone's level. Every level has 200xp more than the last one (Level 1 has 300 xp)
+        Meaning that the formular to get how much xp a level requires is: ((level - 1) * 200) + 300
+        To calculation for your level from your xp is: ((XP - 300) / 200) + 1
+        """
 
         user_level: int = 0
         current_level_xp_needed: int = 300

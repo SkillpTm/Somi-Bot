@@ -7,7 +7,7 @@ import time
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB
+from lib.db_modules import AuditLogChannelDB, HiddenChannelsDB
 from lib.modules import Create, EmbedFunctions
 from lib.utilities import SomiBot
 
@@ -211,6 +211,9 @@ class ExternalLogs(nextcord_C.Cog):
     async def on_bulk_message_delete(self,
                                      messages: list[nextcord.Message]):
         """A log that activates, when someone gets purged without using the bot"""
+
+        if HiddenChannelsDB().check_channel_inserted(messages[0].guild.id, messages[0].channel.id):
+            return
 
         audit_log_id = AuditLogChannelDB().get(messages[0].guild)
 

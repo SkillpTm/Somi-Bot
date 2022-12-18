@@ -76,35 +76,27 @@ class Get():
     def autocomplete_dict_from_search_string(search_string: str, autocomplete_dict: dict) -> dict:
         """Takes a string and a list/dict and filters for matching results, between the two"""
 
-        if search_string == "":
-            full_keys_output = {}
-
-            for key, value in autocomplete_dict.items():
-                if len(full_keys_output) < 25:
-                    full_keys_output.update({str(key): str(value)})
-
-            return full_keys_output
-
         output = {}
 
         for key, value in autocomplete_dict.items():
-            if str(value).lower().startswith(search_string.lower()) and len(output) < 25 and key not in output.keys():
-                output.update({str(key): str(value)})
+            if len(output) == 25:
+                break
 
-        if output == {}:
-            for key, value in autocomplete_dict.items():
-                if search_string.lower() in str(value).lower() and len(output) < 25 and key not in output.keys():
-                    output.update({str(key): str(value)})
+            if str(value).lower().startswith(search_string.lower()):
+                output[str(key)] = str(value)
+                continue
 
-        if len(output) < 25:
-            for key, value in autocomplete_dict.items():
-                if str(key).lower().startswith(search_string.lower()) and len(output) < 25 and key not in output.keys():
-                    output.update({str(key): str(value)})
+            if search_string.lower() in str(value).lower():
+                output[str(key)] = str(value)
+                continue
 
-            if output == {}:
-                for key, value in autocomplete_dict.items():
-                    if search_string.lower() in str(key).lower() and len(output) < 25 and key not in output.keys():
-                        output.update({str(key): str(value)})
+            if str(key).lower().startswith(search_string.lower()):
+                output[str(key)] = str(value)
+                continue
+
+            if search_string.lower() in str(key).lower():
+                output[str(key)] = str(value)
+                continue
 
         return output
 

@@ -47,22 +47,22 @@ class SomiBot(nextcord_C.Bot):
     SPOTIFY_ICON = "https://i.imgur.com/YKtWQK4.png"
 
     #SOMICORD Constants
-    REDDIT_FEED_ID = 1003709719447355512
+    REDDIT_FEED_ID = 586525079010148362
     SKILLP_JOINED_SOMICORD_TIME = 1573055760
-    SOMICORD_ID = 769668499605159998
-    SOMICORD_ROLES_CHANNEL_ID = 981636345556512778
-    SOMICORD_MOD_CHANNEL_ID = 992121127159726227
-    SOMICORD_MODERATOR_ID = 977950744806297620
-    SOMICORD_WELCOME_CHANNEL_ID = 847221019210809425
+    SOMICORD_ID = 562717668260446269
+    SOMICORD_ROLES_CHANNEL_ID = 987692984864768041
+    SOMICORD_MOD_CHANNEL_ID = 829872518717243432
+    SOMICORD_MODERATOR_ID = 587673639101661194
+    SOMICORD_WELCOME_CHANNEL_ID = 562717668285612135
     SOMICORD_WELCOME_GIF = "https://gfycat.com/partialoblongfreshwatereel"
 
     #Emotes
-    HEADS = "<:heads:998363203992031252>"
+    HEADS = "<:heads:1006982740748554290>"
     REACTION_EMOTE = "<a:aSomiBreathTaking:980083399005982801>"
     SOMI_BEST_GRILL_EMOTE = "<:SomiBestGrill:924281555772403722>"
     SOMI_F_EMOTE = "<:SomiF:829933531147796510>"
     SOMI_ONLY_EMOTE = "<:SomiONLY:829934613509177354>"
-    TAILS = "<:tails:998363225924046949>"
+    TAILS = "<:tails:1006982689674494073>"
 
     #Variables
     start_time = int(time.time())
@@ -76,7 +76,7 @@ class SomiBot(nextcord_C.Bot):
 
     def __init__(self):
         super().__init__(
-            application_id = 976963476771700786,
+            application_id = 939537452937412699,
             intents = nextcord.Intents.all(),
             status = nextcord.Status.online,
             activity = nextcord.Activity(type=nextcord.ActivityType.listening, name="XOXO - The First Album"),
@@ -193,7 +193,7 @@ class SomiBot(nextcord_C.Bot):
         if self.user.mentioned_in(message):
             await message.add_reaction(self.REACTION_EMOTE)
 
-            self.Loggers.action_log(f"Guild: {message.guild.id} ~ User: {message.author.id} ~ reacted() @ping")
+            self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel: {message.channel.id} ~ User: {message.author.id} ~ reacted() @ping")
 
             CommandUsesDB().uses_update("log_activations", "reacted @ping")
 
@@ -202,7 +202,7 @@ class SomiBot(nextcord_C.Bot):
         if "somionly" in str(message.content.lower()):
             await message.add_reaction(self.SOMI_ONLY_EMOTE)
 
-            self.Loggers.action_log(f"Guild: {message.guild.id} ~ User: {message.author.id} ~ reacted() @SOMIONLY")
+            self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel: {message.channel.id} ~ User: {message.author.id} ~ reacted() @SOMIONLY")
 
             CommandUsesDB().uses_update("log_activations", "reacted somionly")
 
@@ -213,7 +213,7 @@ class SomiBot(nextcord_C.Bot):
         if any(i in f" {message.content.lower()} " for i in f_words):
             await message.add_reaction(self.SOMI_F_EMOTE)
 
-            self.Loggers.action_log(f"Guild: {message.guild.id} ~ User: {message.author.id} ~ reacted() @SomiF")
+            self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel: {message.channel.id} ~ User: {message.author.id} ~ reacted() @SomiF")
 
             CommandUsesDB().uses_update("log_activations", "reacted SomiF")
 
@@ -222,7 +222,7 @@ class SomiBot(nextcord_C.Bot):
         if "<:somibestgrill:924281555772403722>" in str(message.content.lower()):
             await message.add_reaction(self.SOMI_BEST_GRILL_EMOTE)
 
-            self.Loggers.action_log(f"Guild: {message.guild.id} ~ User: {message.author.id} ~ reacted() @SomiBestGrill")
+            self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel: {message.channel.id} ~ User: {message.author.id} ~ reacted() @SomiBestGrill")
 
             CommandUsesDB().uses_update("log_activations", "reacted SomiBestGrill")
 

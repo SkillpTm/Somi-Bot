@@ -10,10 +10,10 @@ class Lists():
     SOMI_ID = 939537452937412699
 
     SOMICORD_UPDATE_ROLES_IDS = {
-        "UPDATES_ID": 992747153766219826,
-        "LIVE_ID": 992747222993215518,
-        "SNS_ID": 992747256388272138,
-        "REDDIT_ID": 1004420744601686186
+        "UPDATES_ID": 981654656457510953,
+        "LIVE_ID": 981655862907138128,
+        "SNS_ID": 981655771156721735,
+        "REDDIT_ID": 1004422485103628419
     }
 
 
@@ -569,6 +569,8 @@ class Lists():
             `#CHANNELNAME`:
             A channel on this server. (A channel in this context is a: text-channel, news-channel or thread of any kind)
             Default: current channel (if the action is set)
+
+            (note: The command 'config' has a search shortend as 'manage'.)
             """,
             "/config audit-log-channel [Set] [#audit-log]",
             "manage guild: ✅"
@@ -582,6 +584,8 @@ class Lists():
 
             `@ROLENAME`:
             A role on this server. (note: In order for Somi to apply this role, her role needs to be placed above this role.)
+
+            (note: The command 'config' has a search shortend as 'manage'.)
             """,
             "/config default-role [Set] [@Member]",
             "manage guild: ✅"
@@ -596,6 +600,8 @@ class Lists():
             `#CHANNELNAME`:
             A channel on this server. (A channel in this context is a: text-channel, news-channel or thread of any kind)
             Default: current channel
+
+            (note: The command 'config' has a search shortend as 'manage'.)
             """,
             "/config default-role [Add] [#general]",
             "manage guild: ✅"
@@ -604,7 +610,9 @@ class Lists():
         "/config info": [
             """
             ```/config info (no parameters)```
+
             (note: In order for Somi to properly execute some config commands her role needs to be above all roles she is supposed to manage.)
+            (note: The command 'config' has a search shortend as 'manage'.)
             """,
             "/config info",
             "manage guild: ✅"
@@ -619,6 +627,8 @@ class Lists():
             `#CHANNELNAME`:
             A channel on this server. (A channel in this context is a: text-channel, news-channel or thread of any kind)
             Default: current channel
+
+            (note: The command 'config' has a search shortend as 'manage'.)
             """,
             "/config level-ignore-channels [Add] [#bot-channel]",
             "manage guild: ✅"
@@ -636,6 +646,8 @@ class Lists():
             `level`:
             The level you want a new level-role to be applied from.
             Length requirments: 1-1000
+
+            (note: The command 'config' has a search shortend as 'manage'.)
             """,
             "/config level-roles [Add] [@active-community-member] [20]",
             "manage guild: ✅"

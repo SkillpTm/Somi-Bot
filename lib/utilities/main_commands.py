@@ -42,6 +42,6 @@ async def reminder(self, interaction: nextcord.Interaction):
 
 ####################################################################################################
 
-@client.slash_command(name='config', default_member_permissions=nextcord.Permissions(manage_guild=True))
+@client.slash_command(name='manage', default_member_permissions=nextcord.Permissions(manage_guild=True), name_localizations = {country_tag:"config" for country_tag in nextcord.Locale})
 async def config(self, interaction: nextcord.Interaction):
     pass

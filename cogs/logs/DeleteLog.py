@@ -26,6 +26,9 @@ class DeleteLog(nextcord_C.Cog):
         if not Checks.message_in_guild(self.client, message):
             return
 
+        if not message.content and len(message.attachments) < 1:
+            return
+
         audit_log_id = AuditLogChannelDB().get(message.guild)
 
         if not audit_log_id:

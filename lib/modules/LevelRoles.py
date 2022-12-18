@@ -46,17 +46,18 @@ class LevelRoles():
                 await self.remove_from_members(server, role)
                 return
 
-            if not role in member.roles:
-                for server_level_role in server_level_roles:
-                    if server_level_role in member.roles:
-                        await member.remove_roles(server_level_role)
+            if hasattr(member, "roles"):
+                if not role in member.roles:
+                    for server_level_role in server_level_roles:
+                        if server_level_role in member.roles:
+                            await member.remove_roles(server_level_role)
 
-                await member.add_roles(role)
+                    await member.add_roles(role)
 
     ####################################################################################################
 
     async def remove_from_members(self,
-                                  server: nextcord.guild,
+                                  server: nextcord.Guild,
                                   role: nextcord.Role) -> None:
         """This function removes a specific levelrole from all members of a guild"""
 
@@ -65,8 +66,9 @@ class LevelRoles():
         for user in all_users:
             member = server.get_member(user[0])
 
-            if role in member.roles:
-                await member.remove_roles(role)
+            if hasattr(member, "roles"):
+                if role in member.roles:
+                    await member.remove_roles(role)
 
         await self.apply(server)
 

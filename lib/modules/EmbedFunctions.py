@@ -6,6 +6,8 @@ import pytz
 
 ####################################################################################################
 
+from lib.modules.Get import Get
+
 
 
 class EmbedFunctions():
@@ -110,12 +112,12 @@ class EmbedFunctions():
                 fields: list[list[tuple[str, str, bool]]] = []) -> nextcord.Embed:
         """This function builds an embed and adds a default timestamp, if specified"""
 
-        embed = nextcord.Embed(title = title[:256],
+        embed = nextcord.Embed(title = Get().rid_of_whitespace(title[:256]),
                                url = title_url,
-                               description = description[:4096],
+                               description = Get().rid_of_whitespace(description[:4096]),
                                color = color)
 
-        embed.set_author(name = author[:256], url = author_url, icon_url = author_icon)
+        embed.set_author(name = Get().rid_of_whitespace(author[:256]), url = author_url, icon_url = author_icon)
         embed.set_thumbnail(url = thumbnail)
         embed.set_image(url = image)
 
@@ -124,7 +126,7 @@ class EmbedFunctions():
             
             embed.set_footer(text = datetime.datetime.now(pytz.timezone('Asia/Seoul')).strftime("%Y/%m/%d %H:%M:%S %Z"), icon_url = SomiBot.CLOCK_ICON)
         else:
-            embed.set_footer(text = footer[:2048], icon_url = footer_icon)
+            embed.set_footer(text = Get().rid_of_whitespace(footer[:2048]), icon_url = footer_icon)
 
         for field in fields[:25]:
             if field[0] == "" or field[0] == None:
@@ -136,6 +138,6 @@ class EmbedFunctions():
             if field[2] == None:
                 field[2] = True
             
-            embed.add_field(name = f"{field[0]}"[:256], value = f"{field[1]}"[:1024], inline = field[2])
+            embed.add_field(name = Get().rid_of_whitespace(f"{field[0]}"[:256]), value = Get().rid_of_whitespace(f"{field[1]}"[:1024]), inline = field[2])
 
         return embed

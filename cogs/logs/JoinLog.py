@@ -34,8 +34,14 @@ class JoinLog(nextcord_C.Cog):
         ####################################################################################################
 
         if member.guild.id == self.client.SOMICORD_ID:
-            SOMICORD_WELCOME_CHANNEL = self.client.get_channel(self.client.SOMICORD_WELCOME_CHANNEL_ID)
-            await SOMICORD_WELCOME_CHANNEL.send(f"Hey {member.mention}, welcome to Jeon Somi! What you waiting for - start chatting.\n{self.client.SOMICORD_WELCOME_GIF}")
+            SOMICORD_WELCOME_CHANNEL = member.guild.get_channel(self.client.SOMICORD_WELCOME_CHANNEL_ID)
+            welcome_embed = EmbedFunctions().builder(
+                color = self.client.BOT_COLOR,
+                description = f"Hey {member.mention}, welcome to `{member.guild.name}`!\nWhat you waiting for - start chatting.",
+                image = self.client.SOMICORD_WELCOME_GIF
+            )
+            welcome_response = await SOMICORD_WELCOME_CHANNEL.send(embed=welcome_embed)
+            await welcome_response.add_reaction(self.client.SOMI_WELCOME_EMOTE)
 
         ####################################################################################################
 

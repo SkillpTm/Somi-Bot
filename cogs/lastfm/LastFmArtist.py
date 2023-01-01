@@ -39,7 +39,7 @@ class LastFmArtist(nextcord_C.Cog):
             member = interaction.guild.get_member(interaction.user.id)
 
         if not timeframe:
-            timeframe = "overall"
+            timeframe = "ALL"
 
         lastfm_username = LastFmDB().get_user(member.id)
 
@@ -125,6 +125,7 @@ class LastFmArtist(nextcord_C.Cog):
                     # index_number
                     if 'chartlist-index' in str(td): # unique class name of the td needed
                         position = re.sub('\n', '', td.text)
+                        position = re.sub(' ', '', position)
 
                         if i == 1:
                             album_output += f"{position}. " # Album/track Spot

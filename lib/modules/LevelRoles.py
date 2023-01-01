@@ -76,6 +76,8 @@ class LevelRoles():
 
     @staticmethod
     def get_level_range_with_role(level_roles: list[list[tuple[int, int]]]) -> str:
+        """Makes a string of all the level-roles and their ranges, for which they apply"""
+
         output_role_list = ""
 
         for index, levelrole in enumerate(level_roles):

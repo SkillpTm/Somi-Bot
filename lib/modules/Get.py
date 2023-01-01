@@ -36,7 +36,7 @@ class Get():
     @staticmethod
     def seconds_from_time(time: str) -> int:
         """Converts a humanreadable time input into seconds:
-            4h4s = 14400"""
+            4h4s = 14404"""
 
         clean_time = time.replace(" ", "").lower()
         timeframes = re.findall(r"\d+[smhdwy]", clean_time)
@@ -50,13 +50,16 @@ class Get():
 
     @staticmethod
     async def message_object_from_link(link: str,
-                                       client: SomiBot) -> nextcord.Message:
+                                       client: SomiBot) -> nextcord.Message | None :
         """Generates a message object from a discord message link input"""
 
         server_id, channel_id, message_id = re.search(r"/channels/(\d+)/(\d+)/(\d+)", link).groups()
 
         channel = await client.fetch_channel(channel_id)
-        message: nextcord.Message = await channel.fetch_message(message_id)
+        try:
+            message: nextcord.Message = await channel.fetch_message(message_id)
+        except:
+            message = None
 
         return message
 
@@ -74,7 +77,7 @@ class Get():
 
     @staticmethod
     def autocomplete_dict_from_search_string(search_string: str, autocomplete_dict: dict) -> dict:
-        """Takes a string and a list/dict and filters for matching results, between the two"""
+        """Takes a string and a dict and filters for matching results, between the two"""
 
         output = {}
 
@@ -104,6 +107,7 @@ class Get():
     
     @staticmethod
     def markdown_safe(input_string: str) -> str:
+        """Backslashes markdown relevant characters"""
         CHAR_AND_REPLACMENT = {
             "*": "\*",
             "_": "\_",
@@ -121,6 +125,7 @@ class Get():
 
     @staticmethod
     def visible_users(client: SomiBot) -> int:
+        """Gets the number of unique users the client can see on all servers"""
         unique_users = set()
 
         for guild in client.guilds:
@@ -129,3 +134,13 @@ class Get():
                     unique_users.add(member.id)
 
         return len(unique_users)
+
+    ####################################################################################################
+
+    @staticmethod
+    def rid_of_whitespace(string: str) -> str:
+        """Removes leading whitesspace on all lines of a multi-line string"""
+
+        string = "\n".join([line.strip() for line in string.split("\n")])
+
+        return string

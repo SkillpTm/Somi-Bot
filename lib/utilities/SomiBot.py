@@ -287,6 +287,17 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
+    async def on_thread_join(self,
+                             thread: nextcord.Thread):
+        """This function overwrites the build in on_thread_join so that the client automatically joins all new threads."""
+
+        try:
+            await thread.join()
+        except:
+            pass
+
+    ####################################################################################################
+
     @staticmethod
     def restart() -> None:
         """This function will restart the bot, by closing and reopening the main file"""

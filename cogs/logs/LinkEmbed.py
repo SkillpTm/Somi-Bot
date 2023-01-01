@@ -34,6 +34,9 @@ class LinkEmbed(nextcord_C.Cog):
         link = re.search(fr'https?://(canary\.)?discord\.com/channels/{message.guild.id}\S+', message.content).group()
         original_message = await Get().message_object_from_link(link, self.client)
 
+        if not original_message:
+            return
+
         if HiddenChannelsDB().check_channel_inserted(message.guild.id, original_message.channel.id):
             return
 

@@ -20,7 +20,7 @@ class ReminderSend(nextcord_C.Cog):
 
     async def infinite_reminder_loop(self):
         while True:
-            await ReminderSend(self.client).reminder_send()
+            await self.reminder_send()
             await asyncio.sleep(2)
 
     ####################################################################################################

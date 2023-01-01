@@ -2,6 +2,7 @@
 
 import asyncio
 import nextcord.ext.commands as nextcord_C
+import requests
 
 ####################################################################################################
 
@@ -22,6 +23,12 @@ class ReminderSend(nextcord_C.Cog):
         while True:
             await self.reminder_send()
             await asyncio.sleep(2)
+
+            try:
+                requests.get("https://www.google.com/")
+
+            except (requests.ConnectionError, asyncio.CancelledError):
+                self.client.restart()
 
     ####################################################################################################
 

@@ -1,6 +1,5 @@
 ####################################################################################################
 
-import aiohttp.client_exceptions
 import asyncio
 import asyncpraw
 import nextcord
@@ -54,7 +53,7 @@ class SomiBot(nextcord_C.Bot):
     SOMICORD_MOD_CHANNEL_ID = 829872518717243432
     SOMICORD_MODERATOR_ID = 587673639101661194
     SOMICORD_WELCOME_CHANNEL_ID = 562717668285612135
-    SOMICORD_WELCOME_GIF = "https://gfycat.com/partialoblongfreshwatereel"
+    SOMICORD_WELCOME_GIF = "https://cdn.discordapp.com/attachments/1057785281253744640/1057785437931974666/somi_welcome_gif.gif"
 
     #Emotes
     HEADS = "<:heads:1006982740748554290>"
@@ -62,6 +61,7 @@ class SomiBot(nextcord_C.Bot):
     SOMI_BEST_GRILL_EMOTE = "<:SomiBestGrill:924281555772403722>"
     SOMI_F_EMOTE = "<:SomiF:829933531147796510>"
     SOMI_ONLY_EMOTE = "<:SomiONLY:829934613509177354>"
+    SOMI_WELCOME_EMOTE = "<a:aSomiWelcome:829917610765975552>"
     TAILS = "<:tails:1006982689674494073>"
 
     #Variables
@@ -134,8 +134,7 @@ class SomiBot(nextcord_C.Bot):
 
         self.api_login()
 
-        if not asyncio.iscoroutine(self.start_infinite_loops):
-            await self.start_infinite_loops()
+        await self.start_infinite_loops()
 
     ####################################################################################################
 
@@ -146,8 +145,7 @@ class SomiBot(nextcord_C.Bot):
 
         self.api_login()
 
-        if not asyncio.iscoroutine(self.start_infinite_loops):
-            await self.start_infinite_loops()
+        await self.start_infinite_loops()
 
     ####################################################################################################
 
@@ -175,11 +173,16 @@ class SomiBot(nextcord_C.Bot):
         from cogs.logs.Reddit import Reddit
         from cogs.reminders.ReminderSend import ReminderSend
 
-        try:
-            await asyncio.gather(Reddit(self).infinite_reddit_loop(), ReminderSend(self).infinite_reminder_loop())
+        loops: list[asyncio.Task] = [
+            asyncio.create_task(Reddit(self).infinite_reddit_loop()),
+            asyncio.create_task(ReminderSend(self).infinite_reminder_loop())
+        ]
 
-        except aiohttp.client_exceptions.ClientConnectorError: # fails on internet connection loss
-            return
+        try:
+            await asyncio.gather(*loops, return_exceptions=True)
+
+        except:
+            self.restart()
 
     ####################################################################################################
 
@@ -193,7 +196,7 @@ class SomiBot(nextcord_C.Bot):
         if self.user.mentioned_in(message):
             await message.add_reaction(self.REACTION_EMOTE)
 
-            self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel: {message.channel.id} ~ User: {message.author.id} ~ reacted() @ping")
+            self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel:{message.channel.id} ~ User: {message.author.id} ~ reacted() @ping")
 
             CommandUsesDB().uses_update("log_activations", "reacted @ping")
 
@@ -202,7 +205,7 @@ class SomiBot(nextcord_C.Bot):
         if "somionly" in str(message.content.lower()):
             await message.add_reaction(self.SOMI_ONLY_EMOTE)
 
-            self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel: {message.channel.id} ~ User: {message.author.id} ~ reacted() @SOMIONLY")
+            self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel:{message.channel.id} ~ User: {message.author.id} ~ reacted() @SOMIONLY")
 
             CommandUsesDB().uses_update("log_activations", "reacted somionly")
 
@@ -213,7 +216,7 @@ class SomiBot(nextcord_C.Bot):
         if any(i in f" {message.content.lower()} " for i in f_words):
             await message.add_reaction(self.SOMI_F_EMOTE)
 
-            self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel: {message.channel.id} ~ User: {message.author.id} ~ reacted() @SomiF")
+            self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel:{message.channel.id} ~ User: {message.author.id} ~ reacted() @SomiF")
 
             CommandUsesDB().uses_update("log_activations", "reacted SomiF")
 
@@ -222,7 +225,7 @@ class SomiBot(nextcord_C.Bot):
         if "<:somibestgrill:924281555772403722>" in str(message.content.lower()):
             await message.add_reaction(self.SOMI_BEST_GRILL_EMOTE)
 
-            self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel: {message.channel.id} ~ User: {message.author.id} ~ reacted() @SomiBestGrill")
+            self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel:{message.channel.id} ~ User: {message.author.id} ~ reacted() @SomiBestGrill")
 
             CommandUsesDB().uses_update("log_activations", "reacted SomiBestGrill")
 
@@ -255,6 +258,9 @@ class SomiBot(nextcord_C.Bot):
                                            exception: nextcord.ApplicationError) -> tuple[nextcord.Interaction, nextcord.ApplicationError]:
         """This function overwrites the build in on_application_command_completion function, to create a global error log and exception handler."""
         from lib.modules.EmbedFunctions import EmbedFunctions
+
+        if not hasattr(interaction, "channel"):
+            return
 
         self.Loggers.application_command_error(
             exception = exception,

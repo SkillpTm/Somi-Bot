@@ -34,17 +34,19 @@ class Reddit(nextcord_C.Cog):
             self.client.Loggers.bot_status("reddit_feed() ended")
 
             try:
-                await asyncio.wait_for(requests.Session().head("https://www.google.com/"), timeout=10)
+                requests.get("https://www.google.com/")
                 await asyncio.sleep(60)
                 await self.infinite_reddit_loop(self)
 
-            except (asyncio.TimeoutError, requests.exceptions.ConnectionError):
-                return
+            except (requests.ConnectionError):
+                self.client.restart()
 
     ####################################################################################################
 
     async def reddit_loop(self):
         """This function loops and waits for new posts in the given subs, if they got posted it will build and send the appropriate embeds"""
+
+        self.client.Loggers.bot_status("reddit_feed() started")
 
         subreddit: asyncpraw.models.Subreddit = await self.client.reddit.subreddit("somi", fetch=True)
         history_ids = RedditDB().get_history_ids(subreddit.display_name.lower())

@@ -1,6 +1,8 @@
 ####################################################################################################
 
+import aiohttp.client_exceptions
 import os
+import requests
 import time
 
 ####################################################################################################
@@ -20,7 +22,8 @@ for folder in os.listdir(f"./cogs/"):
 ####################################################################################################
 
 try:
+    requests.get("https://www.google.com/")
     client.run(client.Keychain.DISCORD_TOKEN)
-except:
-    time.sleep(20)
+except (requests.ConnectionError, aiohttp.client_exceptions.ClientConnectorError):
+    time.sleep(10)
     client.restart()

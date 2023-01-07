@@ -7,6 +7,7 @@ import nextcord.ext.commands as nextcord_C
 import time
 import pylast
 import os
+import requests
 import spotipy
 import sys
 
@@ -115,9 +116,12 @@ class SomiBot(nextcord_C.Bot):
 
     async def api_logout(self) -> None:
         """Logs the client from the Reddit and Spotify API out"""
-        
-        await self.reddit.close()
-        self.spotifyOAuth._session.close()
+
+        if hasattr(self, "reddit"):
+            await self.reddit.close()
+
+        if hasattr(self, "spotifyOAuth"):
+            self.spotifyOAuth._session.close()
 
     ####################################################################################################
 
@@ -152,18 +156,26 @@ class SomiBot(nextcord_C.Bot):
     async def on_close(self) -> None:
         """This function overwrites the build in on_close function"""
 
-        await self.api_logout()
-
         self.Loggers.bot_status(f"Logged out from {self.user}")
+
+        try:
+            requests.get("https://www.google.com/")
+            await self.api_logout()
+        except (requests.ConnectionError):
+            pass
 
     ####################################################################################################
 
     async def on_disconnect(self) -> None:
         """This function overwrites the build in on_disconnect function"""
 
-        await self.api_logout()
-
         self.Loggers.bot_status("Connection closed to Discord")
+
+        try:
+            requests.get("https://www.google.com/")
+            await self.api_logout()
+        except (requests.ConnectionError):
+            pass
 
     ####################################################################################################
 
@@ -173,16 +185,7 @@ class SomiBot(nextcord_C.Bot):
         from cogs.logs.Reddit import Reddit
         from cogs.reminders.ReminderSend import ReminderSend
 
-        loops: list[asyncio.Task] = [
-            asyncio.create_task(Reddit(self).infinite_reddit_loop()),
-            asyncio.create_task(ReminderSend(self).infinite_reminder_loop())
-        ]
-
-        try:
-            await asyncio.gather(*loops, return_exceptions=True)
-
-        except:
-            self.restart()
+        await asyncio.gather(Reddit(self).infinite_reddit_loop(), ReminderSend(self).infinite_reminder_loop())
 
     ####################################################################################################
 

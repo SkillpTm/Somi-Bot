@@ -34,9 +34,10 @@ class Reddit(nextcord_C.Cog):
             self.client.Loggers.bot_status("reddit_feed() ended")
 
             try:
-                requests.get("https://www.google.com/")
-                await asyncio.sleep(60)
-                await self.infinite_reddit_loop(self)
+                if not self.client.is_closed() and self.client.is_ready():
+                    requests.get("https://www.google.com/")
+                    await asyncio.sleep(60)
+                    await self.infinite_reddit_loop()
 
             except (requests.ConnectionError):
                 self.client.restart()

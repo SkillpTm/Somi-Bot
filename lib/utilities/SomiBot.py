@@ -313,8 +313,8 @@ class SomiBot(nextcord_C.Bot):
         for child in ButtonClass.children:
             child.disabled = True
             
-        response = getattr(ButtonClass, "response", None)
-        interaction = getattr(ButtonClass, "interaction", None)
+        response: nextcord.Message = getattr(ButtonClass, "response", None)
+        interaction: nextcord.Interaction = getattr(ButtonClass, "interaction", None)
         
         if response != None:
             await response.edit(view=ButtonClass)

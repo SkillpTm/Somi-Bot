@@ -4,6 +4,7 @@ import nextcord
 
 ####################################################################################################
 
+from lib.modules.EmbedFunctions import EmbedFunctions
 from lib.utilities.SomiBot import SomiBot
 
 
@@ -25,6 +26,16 @@ class YesNoButtons(nextcord.ui.View):
     async def yes(self,
                   button: nextcord.ui.Button,
                   interaction: nextcord.Interaction):
+        if self.interaction:
+            if self.interaction.user.id != interaction.user.id:
+                await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+                return
+
+        if self.response:
+            if self.response.author.id != interaction.user.id:
+                await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+                return
+
         self.value = True
         self.stop()
         await SomiBot.deactivate_view_children(self)
@@ -33,6 +44,16 @@ class YesNoButtons(nextcord.ui.View):
     async def no(self,
                  button: nextcord.ui.Button,
                  interaction: nextcord.Interaction):
+        if self.interaction:
+            if self.interaction.user.id != interaction.user.id:
+                await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+                return
+
+        if self.response:
+            if self.response.author.id != interaction.user.id:
+                await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+                return
+
         self.value = False
         self.stop()
         await SomiBot.deactivate_view_children(self)

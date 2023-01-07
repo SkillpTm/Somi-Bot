@@ -4,6 +4,7 @@ import nextcord
 
 ####################################################################################################
 
+from lib.modules.EmbedFunctions import EmbedFunctions
 from lib.utilities.SomiBot import SomiBot
 
 
@@ -23,6 +24,10 @@ class PageButtons(nextcord.ui.View):
     async def start(self,
                     button: nextcord.ui.Button,
                     interaction: nextcord.Interaction):
+        if self.interaction.user.id != interaction.user.id:
+            await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+            return
+
         self.page = 1
         self.value = True
         self.stop()
@@ -31,6 +36,10 @@ class PageButtons(nextcord.ui.View):
     async def left(self,
                    button: nextcord.ui.Button,
                    interaction: nextcord.Interaction):
+        if self.interaction.user.id != interaction.user.id:
+            await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+            return
+
         self.page -= 1
         if self.page == 0:
             self.page = 1
@@ -47,6 +56,10 @@ class PageButtons(nextcord.ui.View):
     async def right(self,
                     button: nextcord.ui.Button,
                     interaction: nextcord.Interaction):
+        if self.interaction.user.id != interaction.user.id:
+            await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+            return
+
         self.page += 1
         if self.page > self.last_page:
             self.page = self.last_page
@@ -57,6 +70,10 @@ class PageButtons(nextcord.ui.View):
     async def end(self,
                   button: nextcord.ui.Button,
                   interaction: nextcord.Interaction):
+        if self.interaction.user.id != interaction.user.id:
+            await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+            return
+
         self.page = self.last_page
         self.value = True
         self.stop()

@@ -34,6 +34,16 @@ class NameLog(nextcord_C.Cog):
 
         self.client.Loggers.action_log(f"Guild: {member_before.guild.id} ~ User: {member_before.id} ~ name_log()\nBefore: {member_before.display_name} --> After: {member_after.display_name}")
 
+        if member_before.display_name == member_before.name:
+            member_name_before = f"`{member_before.name}`"
+        else:
+            member_name_before = member_before.display_name
+ 
+        if member_after.display_name == member_before.name:
+            member_name_after = f"`{member_before.name}`"
+        else:
+            member_name_after = member_after.display_name
+
         embed = EmbedFunctions().builder(
             color = nextcord.Color.yellow(),
             thumbnail = member_before.display_avatar,
@@ -42,13 +52,13 @@ class NameLog(nextcord_C.Cog):
             fields = [
                 [
                     "Name Before:",
-                    f"`{member_before.display_name}`",
+                    f"{member_name_before}",
                     False
                 ],
 
                 [
                     "Name After:",
-                    f"{member_after.display_name}",
+                    f"{member_name_after}",
                     False
                 ]
             ]

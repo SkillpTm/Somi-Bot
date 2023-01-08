@@ -11,7 +11,7 @@ from lib.utilities.SomiBot import SomiBot
 class OptionsButton(nextcord.ui.View):
     
     def __init__(self,
-                 interaction: nextcord.Interaction):
+                 interaction: nextcord.Interaction = None):
         super().__init__(timeout = 60)
         self.interaction = interaction
         self.value: bool = None

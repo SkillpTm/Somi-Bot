@@ -25,6 +25,8 @@ class ReminderSend(nextcord_C.Cog):
             await asyncio.sleep(2)
 
             try:
+                if self.client.is_closed() and not self.client.is_ready():
+                    break
                 requests.get("https://www.google.com/")
 
             except (requests.ConnectionError, asyncio.CancelledError):

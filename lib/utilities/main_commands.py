@@ -4,7 +4,7 @@ import nextcord
 
 ####################################################################################################
 
-from lib.utilities import SomiBot
+from lib.utilities.SomiBot import SomiBot
 
 client = SomiBot()
 

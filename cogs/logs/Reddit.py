@@ -26,17 +26,16 @@ class Reddit(nextcord_C.Cog):
     async def infinite_reddit_loop(self):
         """This function checks for errors in the loop, if they occur and the bot still has internet, then it's an issue with Reddit"""
         try:
-            self.client.Loggers.bot_status("reddit_feed() started")
-
             await self.reddit_loop()
 
         except:
             self.client.Loggers.bot_status("reddit_feed() ended")
 
             try:
-                requests.get("https://www.google.com/")
-                await asyncio.sleep(60)
-                await self.infinite_reddit_loop(self)
+                if not self.client.is_closed() and self.client.is_ready():
+                    requests.get("https://www.google.com/")
+                    await asyncio.sleep(60)
+                    await self.infinite_reddit_loop()
 
             except (requests.ConnectionError):
                 self.client.restart()

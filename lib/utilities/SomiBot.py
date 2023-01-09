@@ -48,23 +48,23 @@ class SomiBot(nextcord_C.Bot):
     SPOTIFY_ICON = "https://i.imgur.com/YKtWQK4.png"
 
     #SOMICORD Constants
-    REDDIT_FEED_ID = 586525079010148362
+    REDDIT_FEED_ID = 1003709719447355512
     SKILLP_JOINED_SOMICORD_TIME = 1573055760
-    SOMICORD_ID = 562717668260446269
-    SOMICORD_ROLES_CHANNEL_ID = 987692984864768041
-    SOMICORD_MOD_CHANNEL_ID = 829872518717243432
-    SOMICORD_MODERATOR_ID = 587673639101661194
-    SOMICORD_WELCOME_CHANNEL_ID = 562717668285612135
+    SOMICORD_ID = 769668499605159998
+    SOMICORD_ROLES_CHANNEL_ID = 981636345556512778
+    SOMICORD_MOD_CHANNEL_ID = 992121127159726227
+    SOMICORD_MODERATOR_ID = 977950744806297620
+    SOMICORD_WELCOME_CHANNEL_ID = 847221019210809425
     SOMICORD_WELCOME_GIF = "https://cdn.discordapp.com/attachments/1057785281253744640/1057785437931974666/somi_welcome_gif.gif"
 
     #Emotes
-    HEADS = "<:heads:1006982740748554290>"
+    HEADS = "<:heads:998363203992031252>"
     REACTION_EMOTE = "<a:aSomiBreathTaking:980083399005982801>"
     SOMI_BEST_GRILL_EMOTE = "<:SomiBestGrill:924281555772403722>"
     SOMI_F_EMOTE = "<:SomiF:829933531147796510>"
     SOMI_ONLY_EMOTE = "<:SomiONLY:829934613509177354>"
     SOMI_WELCOME_EMOTE = "<a:aSomiWelcome:829917610765975552>"
-    TAILS = "<:tails:1006982689674494073>"
+    TAILS = "<:tails:998363225924046949>"
 
     #Variables
     start_time = int(time.time())
@@ -78,7 +78,7 @@ class SomiBot(nextcord_C.Bot):
 
     def __init__(self):
         super().__init__(
-            application_id = 939537452937412699,
+            application_id = 976963476771700786,
             intents = nextcord.Intents.all(),
             status = nextcord.Status.online,
             activity = nextcord.Activity(type=nextcord.ActivityType.listening, name="XOXO - The First Album"),
@@ -260,7 +260,7 @@ class SomiBot(nextcord_C.Bot):
     async def on_application_command_error(self,
                                            interaction: nextcord.Interaction,
                                            exception: nextcord.ApplicationError) -> tuple[nextcord.Interaction, nextcord.ApplicationError]:
-        """This function overwrites the build in on_application_command_completion function, to create a global error log and exception handler."""
+        """This function overwrites the build in on_application_command_error function, to create a global error log and exception handler."""
         from lib.modules.EmbedFunctions import EmbedFunctions
 
         if not hasattr(interaction, "channel"):

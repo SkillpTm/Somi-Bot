@@ -47,8 +47,8 @@ class About(nextcord_C.Cog):
                 ],
 
                 [
-                    "Current version:",
-                    f"{self.client.VERSION}",
+                    "Current Version:",
+                    f"`{self.client.VERSION}`",
                     True
                 ],
 
@@ -65,19 +65,19 @@ class About(nextcord_C.Cog):
                 ],
 
                 [
-                    "Visible users:",
+                    "Visible Users:",
                     f"`{Get().visible_users(self.client)}`",
                     True
                 ],
 
                 [
-                    "Global command executions",
-                    CommandUsesDB().get_total_uses("command_uses"),
+                    "Global Command Executions",
+                    f"`{CommandUsesDB().get_total_uses('command_uses')}`",
                     True
                 ],
 
                 [
-                    "Invite:",
+                    "Invites:",
                     "Currently there are no plans to have public invites. You might get an invite by asking Skillp#0309.",
                     False
                 ],

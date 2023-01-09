@@ -56,3 +56,24 @@ class CommandUsesDB():
         conn.commit()
 
         conn.close()
+
+    ####################################################################################################
+
+    def get_total_uses(self,
+                       table: str) -> int:
+        """This function adds up how often a command has been used, but adding +1 on every execution"""
+
+        self.create_table(table)
+
+        conn = sqlite3.connect(self.database_path)
+        c = conn.cursor()
+
+        c.execute(f"SELECT amount FROM {table}")
+
+        all_uses_list: list[tuple[int]] = c.fetchall()
+
+        total_uses = sum([command_uses[0] for command_uses in all_uses_list])
+
+        conn.close()
+
+        return total_uses

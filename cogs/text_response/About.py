@@ -6,7 +6,8 @@ import nextcord.ext.application_checks as nextcord_AC
 
 ####################################################################################################
 
-from lib.modules import Checks, EmbedFunctions
+from lib.db_modules import CommandUsesDB
+from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
@@ -54,6 +55,24 @@ class About(nextcord_C.Cog):
                 [
                     "Uptime:",
                     f"<t:{self.client.start_time}:R>",
+                    True
+                ],
+
+                [
+                    "Servers:",
+                    f"`{len(self.client.guilds)}`",
+                    True
+                ],
+
+                [
+                    "Visible users:",
+                    f"`{Get().visible_users(self.client)}`",
+                    True
+                ],
+
+                [
+                    "Global command executions",
+                    CommandUsesDB().get_total_uses("command_uses"),
                     True
                 ],
 

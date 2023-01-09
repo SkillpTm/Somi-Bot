@@ -10,6 +10,7 @@ import os
 import requests
 import spotipy
 import sys
+import time
 
 ####################################################################################################
 
@@ -134,7 +135,7 @@ class SomiBot(nextcord_C.Bot):
         self.add_view(Roles(self))
 
         self.Loggers.bot_status(f"Client {self.user} ready and logged in")
-        print(f"Client {self.user} ready and logged in")
+        print(f"{int(time.time())}: Client {self.user} ready and logged in")
 
         self.api_login()
 

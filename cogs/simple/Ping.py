@@ -7,7 +7,7 @@ import time
 
 ####################################################################################################
 
-from lib.modules import Checks, Get
+from lib.modules import Checks
 from lib.utilities import SomiBot
 
 
@@ -29,18 +29,14 @@ class Ping(nextcord_C.Cog):
 
         self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /ping")
 
-        visible_users = Get().visible_users(self.client)
-
         await interaction.response.send_message(content = f"DWSP latency (ping) = `{self.client.latency * 1000:,.0f}ms`" + 
-                                                          f"\nUptime = <t:{self.client.start_time}:R>" + 
-                                                          f"\nVisible Users: `{visible_users}`")
+                                                          f"\nUptime = <t:{self.client.start_time}:R>")
 
         end = time.time()
         
         await interaction.edit_original_message(content = f"DWSP latency (ping) = `{self.client.latency * 1000:,.0f}ms`" + 
                                                           f"\nResponse time: `{(end-start) * 1000 :,.0f}ms`" +
-                                                          f"\nUptime = <t:{self.client.start_time}:R>" +
-                                                          f"\nVisible Users: `{visible_users}`")
+                                                          f"\nUptime = <t:{self.client.start_time}:R>")
 
 
 

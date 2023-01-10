@@ -77,6 +77,7 @@ class Lists():
         "/vc-access",
         "/weather",
         "/wolfram",
+        "/youtube",
     )
 
 
@@ -502,32 +503,21 @@ class Lists():
             """,
             "/wolfram [What is 20C° in Fahrenheit?]",
         ],
+
+        "/youtube": [
+            """
+            ```/youtube [query]```
+            `query`:
+            A query for what video to find on YouTube.
+            Length requirments: 2-200
+
+            (note: The command 'youtube' has a search shortend as 'yt'.)
+            """,
+            "/youtube [Jeon Somi XOXO MV]",
+        ]
     }
 
 
-
-    HELP_PERMISSION_OPTIONS = [
-        nextcord.SelectOption(label="/ban"),
-        nextcord.SelectOption(label="/close"),
-        nextcord.SelectOption(label="/config audit-log-channel"),
-        nextcord.SelectOption(label="/config default-role"),
-        nextcord.SelectOption(label="/config hidden-channels"),
-        nextcord.SelectOption(label="/config info"),
-        nextcord.SelectOption(label="/config level-ignore-channels"),
-        nextcord.SelectOption(label="/config level-roles"),
-        nextcord.SelectOption(label="/custom add"),
-        nextcord.SelectOption(label="/custom delete"),
-        nextcord.SelectOption(label="/edit"),
-        nextcord.SelectOption(label="/kick"),
-        nextcord.SelectOption(label="/mute"),
-        nextcord.SelectOption(label="/open"),
-        nextcord.SelectOption(label="/purge"),
-        nextcord.SelectOption(label="/send"),
-        nextcord.SelectOption(label="/slowmode"),
-        nextcord.SelectOption(label="/unban"),
-        nextcord.SelectOption(label="/unmute"),
-        nextcord.SelectOption(label="/vc-access")
-    ]
 
     HELP_PERMISSION_OUTPUT = {
         "/ban": [

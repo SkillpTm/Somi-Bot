@@ -33,3 +33,5 @@ class Keychain():
     WEATHER_API_KEY: str = os.getenv("WEATHER_API_KEY")
 
     WOLFRAM_APP_ID: str = os.getenv("WOLFRAM_APP_ID")
+
+    YOUTUBE_API_KEY: str = os.getenv("YOUTUBE_API_KEY")

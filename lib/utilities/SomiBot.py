@@ -2,6 +2,7 @@
 
 import asyncio
 import asyncpraw
+import googleapiclient.discovery
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import time
@@ -113,6 +114,12 @@ class SomiBot(nextcord_C.Bot):
             user_agent = "testscript by u/SkillpTm"
         )
 
+        self.youtube = googleapiclient.discovery.build(
+            'youtube',
+            'v3',
+            developerKey = self.Keychain.YOUTUBE_API_KEY
+        )
+
     ####################################################################################################
 
     async def api_logout(self) -> None:
@@ -123,6 +130,9 @@ class SomiBot(nextcord_C.Bot):
 
         if hasattr(self, "spotifyOAuth"):
             self.spotifyOAuth._session.close()
+
+        if hasattr(self, "youtube"):
+            self.youtube.close()
 
     ####################################################################################################
 

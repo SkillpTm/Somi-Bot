@@ -47,7 +47,7 @@ class KeywordSend(nextcord_C.Cog):
             user_keywords_in_content = []
 
             for keyword in user_keywords:
-                if f" {keyword} " in re.sub('<[^ ]+?>', "", message.content.lower()): # regex -> message without emotes
+                if f" {keyword} " in re.sub('<[^ ]+?>', "", message.content.lower()) or re.sub('<[^ ]+?>', "", message.content.lower()).startswith(f"{keyword} ") or re.sub('<[^ ]+?>', "", message.content.lower()).endswith(f" {keyword}") or re.sub('<[^ ]+?>', "", message.content.lower()) == f"{keyword}": # regex -> message without emotes
                     user_keywords_in_content.append(keyword)
 
             if user_keywords_in_content == []:

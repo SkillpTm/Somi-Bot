@@ -71,14 +71,14 @@ class About(nextcord_C.Cog):
                 ],
 
                 [
-                    "Global Command Executions",
+                    "Global Command Executions:",
                     f"`{CommandUsesDB().get_total_uses('command_uses')}`",
                     True
                 ],
 
                 [
                     "Invites:",
-                    "Currently there are no plans to have public invites. You might get an invite by asking Skillp#0309.",
+                    "Currently there are no plans to have public invites. You might get an invite by asking `skillp`.",
                     False
                 ],
 

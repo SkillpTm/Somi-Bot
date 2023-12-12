@@ -60,7 +60,7 @@ class JoinLog(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = nextcord.Color.green(),
             thumbnail = member.display_avatar,
-            title = f"New Member Joined: `{member}`",
+            title = f"New Member Joined: `{member.display_name}`",
             footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [

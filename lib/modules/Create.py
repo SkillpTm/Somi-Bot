@@ -31,7 +31,7 @@ class Create():
                 writer.writerow(
                     {
                         "Author ID": message.author.id,
-                        "Author Name": message.author.name,
+                        "Author Name": message.author.display_name,
                         "Send at": message_sent_time,
                         "Content": message.content
                     }

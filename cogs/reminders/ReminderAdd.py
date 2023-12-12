@@ -54,7 +54,7 @@ class ReminderAdd(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,
-            author = f"Reminder Set for {interaction.user}",
+            author = f"Reminder Set for {interaction.user.display_name}",
             author_icon = interaction.user.display_avatar,
             description = reminder,
             footer = "DEFAULT_KST_FOOTER",

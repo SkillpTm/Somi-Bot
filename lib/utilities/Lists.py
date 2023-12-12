@@ -186,12 +186,11 @@ class Lists():
 
         "/help": [
             """
-            ```/help optional[commandtype]```
-            `commandtype`:
-            The commandtype for which you require help.
-            Default: 'Normal-Commands'
+            ```/help [commandname]```
+            `commandname`:
+            The commandname for which you require help.
             """,
-            "/help [Permission-Commands]"
+            "/help [/help]"
         ],
 
         "/keyword add": [

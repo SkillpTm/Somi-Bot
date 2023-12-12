@@ -81,7 +81,7 @@ class Modmail(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = self.client.MOD_COLOR,
             thumbnail = message.author.display_avatar.url,
-            title = f"Modmail by {message.author}",
+            title = f"Modmail by {message.author.display_name}",
             description = f"__**Message:**__\n{message.content}"[:4096],
             footer = "DEFAULT_KST_FOOTER",
             fields = [

@@ -59,7 +59,7 @@ class LinkEmbed(nextcord_C.Cog):
             footer_icon = self.client.LINK_EMBED_ICON,
             fields = [
                 [
-                    f"{original_message.author.name} said:",
+                    f"{original_message.author.display_name} said:",
                     message_content[:1024],
                     False
                 ]

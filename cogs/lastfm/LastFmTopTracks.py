@@ -87,7 +87,7 @@ class LastFmTopTracks(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = self.client.LASTFM_COLOR,
-            author = f"{member.display_name} top tracks {LASTFM_TIMEFRAMES_TEXT[timeframe]}",
+            author = f"{member.display_name} Top Tracks: {LASTFM_TIMEFRAMES_TEXT[timeframe]}",
             author_icon = self.client.LASTFM_ICON,
             description = output,
             footer = "DEFAULT_KST_FOOTER"

@@ -80,11 +80,11 @@ class LastFmArtist(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = self.client.LASTFM_COLOR,
             thumbnail = cover_image,
-            author = f"{lastfm_username} stats for {artist_name.text} {LASTFM_TIMEFRAMES_ARTIST_TEXT[timeframe]}",
+            author = f"{member.display_name} X {artist_name.text}: {LASTFM_TIMEFRAMES_ARTIST_TEXT[timeframe]}",
             author_url = f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}?date_preset={timeframe}",
             author_icon = self.client.LASTFM_ICON,
-            description = f"`{lastfm_username}` has __**{artist_stats[0]}**__ scrobbles for this artist.\n" +
-                          f"`{lastfm_username}` has played **{artist_stats[2]}** tracks on **{artist_stats[1]}** of their albums.\n\n" +
+            description = f"Total plays: __**{artist_stats[0]}**__\n" +
+                          f"Listened to: **{artist_stats[1]}** Albums // **{artist_stats[2]}** Tracks\n\n" +
                           f"**Top Albums**\n" +
                           f"{album_output}\n" +
                           f"**Top Tracks**\n" +

@@ -76,7 +76,7 @@ class LastFmNowPlaying(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = self.client.LASTFM_COLOR,
             thumbnail = cover_image,
-            author = f"{lastfm_username} is listening to:",
+            author = f"{member.display_name} is listening to:",
             author_icon = self.client.LASTFM_ICON,
             description = output,
             footer = "DEFAULT_KST_FOOTER"

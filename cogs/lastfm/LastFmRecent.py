@@ -94,7 +94,7 @@ class LastFmRecent(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = self.client.LASTFM_COLOR,
-            author = f"{member} recently played:",
+            author = f"{member.display_name} recently played:",
             author_icon = self.client.LASTFM_ICON,
             description = output,
             footer = "DEFAULT_KST_FOOTER"

@@ -62,7 +62,8 @@ class LastFmProfile(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = self.client.LASTFM_COLOR,
             thumbnail = lastfm_user_pfp,
-            title = f"LastFm User Information: `{member.display_name}`",
+            author = f"{member.display_name} LastFm User Data",
+            author_icon = self.client.LASTFM_ICON,
             footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [

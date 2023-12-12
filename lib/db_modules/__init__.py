@@ -12,4 +12,3 @@ from lib.db_modules.CustomDB import CustomDB
 from lib.db_modules.FeedbackDB import FeedbackDB
 from lib.db_modules.LastFmDB import LastFmDB
 from lib.db_modules.LevelsDB import LevelsDB
-from lib.db_modules.RedditDB import RedditDB

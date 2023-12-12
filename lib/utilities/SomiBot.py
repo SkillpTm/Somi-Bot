@@ -1,7 +1,6 @@
 ####################################################################################################
 
 import asyncio
-import asyncpraw
 import googleapiclient.discovery
 import nextcord
 import nextcord.ext.commands as nextcord_C
@@ -33,39 +32,36 @@ class SomiBot(nextcord_C.Bot):
     GENIUS_COLOR = 0xf6f069
     LASTFM_COLOR = 0xd0232b
     MOD_COLOR = nextcord.Color.blue()
-    REDDIT_COLOR = 0xfe4600
 
     #URLs
-    BAN_HAMMER_GIF = "https://gfycat.com/bonygiddycoati"
-    CLOCK_ICON = "https://i.imgur.com/nqDFTTP.png"
-    GENIUS_ICON = "https://i.imgur.com/XF1cOBN.png"
+    BAN_HAMMER_GIF = "https://somibot.skillp.dev/cdn/gifs/BAN_HAMMER_GIF.gif"
+    CLOCK_ICON = "https://somibot.skillp.dev/cdn/images/CLOCK_ICON.png"
+    GENIUS_ICON = "https://somibot.skillp.dev/cdn/images/GENIUS_ICON.png"
     DEFAULT_PFP = "https://cdn.discordapp.com/embed/avatars/0.png"
-    LASTFM_ICON = "https://i.imgur.com/a8QaskN.png"
-    LINK_EMBED_ICON = "https://i.imgur.com/jgXT7if.png"
-    OPENWEATHERMAP_ICON = "https://i.imgur.com/drJnhNn.png"
-    REDDIT_ICON = "https://i.imgur.com/yXrvhM9.png"
-    R_SOMI_DEFAULT_ICON = "https://i.imgur.com/HtTGMwc.gif"
-    SOMI_BEST_GRILL_IMAGE = "https://i.imgur.com/65E2MWr.png"
-    SPOTIFY_ICON = "https://i.imgur.com/YKtWQK4.png"
+    LASTFM_ICON = "https://somibot.skillp.dev/cdn/images/LASTFM_ICON.png"
+    LINK_EMBED_ICON = "https://somibot.skillp.dev/cdn/images/LINK_EMBED_ICON.png"
+    OPENWEATHERMAP_ICON = "https://somibot.skillp.dev/cdn/images/OPENWEATHERMAP_ICON.png"
+    R_SOMI_DEFAULT_ICON = "https://somibot.skillp.dev/cdn/gifs/R_SOMI_DEFAULT_ICON.gif"
+    SOMI_BEST_GRILL_IMAGE = "https://somibot.skillp.dev/cdn/images/SOMI_BEST_GRILL_IMAGE.png"
+    SPOTIFY_ICON = "https://somibot.skillp.dev/cdn/images/SPOTIFY_ICON.png"
 
     #SOMICORD Constants
-    REDDIT_FEED_ID = 1003709719447355512
     SKILLP_JOINED_SOMICORD_TIME = 1573055760
-    SOMICORD_ID = 769668499605159998
-    SOMICORD_ROLES_CHANNEL_ID = 981636345556512778
-    SOMICORD_MOD_CHANNEL_ID = 992121127159726227
-    SOMICORD_MODERATOR_ID = 977950744806297620
-    SOMICORD_WELCOME_CHANNEL_ID = 847221019210809425
-    SOMICORD_WELCOME_GIF = "https://cdn.discordapp.com/attachments/1057785281253744640/1057785437931974666/somi_welcome_gif.gif"
+    SOMICORD_ID = 562717668260446269
+    SOMICORD_ROLES_CHANNEL_ID = 987692984864768041
+    SOMICORD_MOD_CHANNEL_ID = 829872518717243432
+    SOMICORD_MODERATOR_ID = 587673639101661194
+    SOMICORD_WELCOME_CHANNEL_ID = 562717668285612135
+    SOMICORD_WELCOME_GIF = "https://somibot.skillp.dev/cdn/gifs/SOMICORD_WELCOME_GIF.gif"
 
     #Emotes
-    HEADS = "<:heads:998363203992031252>"
+    HEADS = "<:heads:1006982740748554290>"
     REACTION_EMOTE = "<a:aSomiBreathTaking:980083399005982801>"
     SOMI_BEST_GRILL_EMOTE = "<:SomiBestGrill:924281555772403722>"
     SOMI_F_EMOTE = "<:SomiF:829933531147796510>"
     SOMI_ONLY_EMOTE = "<:SomiONLY:829934613509177354>"
     SOMI_WELCOME_EMOTE = "<a:aSomiWelcome:829917610765975552>"
-    TAILS = "<:tails:998363225924046949>"
+    TAILS = "<:tails:1006982689674494073>"
 
     #Variables
     start_time = int(time.time())
@@ -79,10 +75,10 @@ class SomiBot(nextcord_C.Bot):
 
     def __init__(self):
         super().__init__(
-            application_id = 976963476771700786,
+            application_id = 939537452937412699,
             intents = nextcord.Intents.all(),
             status = nextcord.Status.online,
-            activity = nextcord.Activity(type=nextcord.ActivityType.listening, name="XOXO - The First Album"),
+            activity = nextcord.Activity(type=nextcord.ActivityType.listening, name="Ex-Mas"),
             allowed_mentions = nextcord.AllowedMentions(everyone=False),
             owner_id = 378214190378123264
         )
@@ -90,7 +86,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     def api_login(self) -> None:
-        """This function adds API logins from LastFm, Spotify and Reddit on to the client"""
+        """This function adds API logins from LastFm, Spotify and YouTube on to the client"""
 
         self.lf_network = pylast.LastFMNetwork(
             api_key = Keychain().LAST_FM_API_KEY,
@@ -106,14 +102,6 @@ class SomiBot(nextcord_C.Bot):
             scope="user-read-currently-playing"
         )
 
-        self.reddit = asyncpraw.Reddit(
-            client_id = Keychain().REDDIT_ID,
-            client_secret = Keychain().REDDIT_SECRET,
-            username = "SomiBot",
-            password = Keychain().REDDIT_PASSWORD,
-            user_agent = "testscript by u/SkillpTm"
-        )
-
         self.youtube = googleapiclient.discovery.build(
             'youtube',
             'v3',
@@ -123,10 +111,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def api_logout(self) -> None:
-        """Logs the client from the Reddit and Spotify API out"""
-
-        if hasattr(self, "reddit"):
-            await self.reddit.close()
+        """Logs the client from the Spotify and YouTube API out"""
 
         if hasattr(self, "spotifyOAuth"):
             self.spotifyOAuth._session.close()
@@ -144,19 +129,10 @@ class SomiBot(nextcord_C.Bot):
         await RoleSelection(self).try_sending()
         self.add_view(Roles(self))
 
+        await self.api_logout()
+
         self.Loggers.bot_status(f"Client {self.user} ready and logged in")
         print(f"{int(time.time())}: Client {self.user} ready and logged in")
-
-        self.api_login()
-
-        await self.start_infinite_loops()
-
-    ####################################################################################################
-
-    async def on_resumed(self) -> None:
-        """This function overwrites the build in on_resumed function"""
-
-        self.Loggers.bot_status("Connection to Discord resumed")
 
         self.api_login()
 
@@ -191,12 +167,11 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def start_infinite_loops(self) -> None:
-        """This function starts an infinite loop for the Reddit and ReminderSend cog, which continues until the bot loses internet or gets shutdown"""
+        """This function starts an infinite loop for the ReminderSend cog, which continues until the bot loses internet or gets shutdown"""
 
-        from cogs.logs.Reddit import Reddit
         from cogs.reminders.ReminderSend import ReminderSend
 
-        await asyncio.gather(Reddit(self).infinite_reddit_loop(), ReminderSend(self).infinite_reminder_loop())
+        await asyncio.gather(ReminderSend(self).infinite_reminder_loop())
 
     ####################################################################################################
 

@@ -20,10 +20,6 @@ class Keychain():
     
     LAST_FM_COOKIES: str = os.getenv("LAST_FM_COOKIES")
 
-    REDDIT_ID: str = os.getenv("REDDIT_ID")
-    REDDIT_SECRET: str = os.getenv("REDDIT_SECRET")
-    REDDIT_PASSWORD: str = os.getenv("REDDIT_PASSWORD")
-
     SPOTIPY_CLIENT_ID: str = os.getenv("SPOTIPY_CLIENT_ID")
     SPOTIPY_CLIENT_SECRET: str = os.getenv("SPOTIPY_CLIENT_SECRET")
     SPOTIPY_REDIRECT_URI: str = os.getenv("SPOTIPY_REDIRECT_URI")

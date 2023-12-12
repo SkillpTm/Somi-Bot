@@ -57,10 +57,6 @@ class Roles(nextcord.ui.View):
     async def SNS(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await self.handle_click(button, interaction)
 
-    @nextcord.ui.button(label = "REDDIT", style = nextcord.ButtonStyle.blurple, custom_id = f"{SomiBot.Lists.SOMICORD_UPDATE_ROLES_IDS['REDDIT_ID']}")
-    async def REDDIT(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        await self.handle_click(button, interaction)
-
     @nextcord.ui.button(label = "ROLES", style=nextcord.ButtonStyle.gray, custom_id="SOMICORD.ROLES")
     async def ROLES(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """This function outputs anyone user's roles, upon button press"""
@@ -125,7 +121,6 @@ class RoleSelection(nextcord_C.Cog):
                     <@&{self.client.Lists.SOMICORD_UPDATE_ROLES_IDS['UPDATES_ID']}>: Informs you about big news (like a comeback).
                     <@&{self.client.Lists.SOMICORD_UPDATE_ROLES_IDS['LIVE_ID']}>: Informs you about a SNS update.
                     <@&{self.client.Lists.SOMICORD_UPDATE_ROLES_IDS['SNS_ID']}>: Informs you about a live from Somi.
-                    <@&{self.client.Lists.SOMICORD_UPDATE_ROLES_IDS['REDDIT_ID']}>: Informs you about a new post on r/Somi.
                     """,
                     False
                 ],

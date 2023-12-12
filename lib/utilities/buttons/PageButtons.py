@@ -46,7 +46,7 @@ class PageButtons(nextcord.ui.View):
         self.value = True
         self.stop()
 
-    @nextcord.ui.button(label = " ", style=nextcord.ButtonStyle.gray, disabled=True)
+    @nextcord.ui.button(label = "/", style=nextcord.ButtonStyle.gray, disabled=True)
     async def page_button(self,
                           button: nextcord.ui.Button,
                           interaction: nextcord.Interaction):
@@ -88,7 +88,7 @@ class PageButtons(nextcord.ui.View):
 
     async def change_page_button(self):
         for child in self.children:
-            if " " in child.label:
+            if "/" in child.label:
                 child.label = f"{self.page}/{self.last_page}"
         await self.interaction.edit_original_message(view=self)
 

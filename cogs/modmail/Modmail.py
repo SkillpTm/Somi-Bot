@@ -45,7 +45,7 @@ class Modmail(nextcord_C.Cog):
         
         response = await message.reply(embed=EmbedFunctions().info_message("Do you really want to submit this as a modmail?", self.client), mention_author=False)
         view = YesNoButtons(response=response)
-        await response.edit(response.embeds[0], view=view, delete_after=70)
+        await response.edit(embed=response.embeds[0], view=view, delete_after=70)
         await view.wait()
 
         if not view.value:
@@ -75,7 +75,7 @@ class Modmail(nextcord_C.Cog):
             )
 
             for member in MOD_CHANNEL.members:
-                if not member.bot:
+                if not member.bot and member.id != 108218817531887616:
                     await user_thread.add_user(member)
 
         embed = EmbedFunctions().builder(

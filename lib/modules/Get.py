@@ -111,9 +111,7 @@ class Get():
         CHAR_AND_REPLACMENT = {
             "*": "\*",
             "_": "\_",
-            "[": "\[",
-            "]": "\]",
-            "#": "\#",
+            "|": "\|",
         }
 
         for char, replacment in CHAR_AND_REPLACMENT.items():

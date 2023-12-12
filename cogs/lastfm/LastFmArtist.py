@@ -116,10 +116,12 @@ class LastFmArtist(nextcord_C.Cog):
         # this html structure should always appear, all other scenarios got fail saved
         for tablebody in results_albums_and_tracks:
             i+=1
-            # i=1 -> working on album
-            # i=2 -> working on track
-            if i == 3:
+            # i=2 -> working on album
+            # i=4 -> working on track
+            if i == 5:
                 break
+            if not i % 2 == 0:
+                continue
             for tr in tablebody:
                 for td in tr:
                     # index_number
@@ -127,9 +129,9 @@ class LastFmArtist(nextcord_C.Cog):
                         position = re.sub('\n', '', td.text)
                         position = re.sub(' ', '', position)
 
-                        if i == 1:
+                        if i == 2:
                             album_output += f"{position}. " # Album/track Spot
-                        elif i == 2:
+                        elif i == 4:
                             track_output += f"{position}. " # Album/track Spot
 
                     # album/track with url    
@@ -139,9 +141,9 @@ class LastFmArtist(nextcord_C.Cog):
                         name_for_url = re.sub('\n', '', td.text)
                         name_for_url = urllib.parse.quote_plus(name_for_url)
 
-                        if i == 1:
+                        if i == 2:
                             album_output += f"[{name}](https://www.last.fm/music/{artist_for_url}/{name_for_url}/) " # URL and album name
-                        elif i == 2:
+                        elif i == 4:
                             track_output += f"[{name}](https://www.last.fm/music/{artist_for_url}/_/{name_for_url}/) " # URL and track name
 
                     # scrobble amount
@@ -160,9 +162,9 @@ class LastFmArtist(nextcord_C.Cog):
                                         for key, value in SCROBBLE_REPLACMENTS.items():
                                             scorbble_amount = scorbble_amount.replace(key, f" {value}") # has to be done after re.sub, to keep that space before plays
 
-                                        if i == 1:
+                                        if i == 2:
                                             album_output += f"- *({scorbble_amount})*\n" # Scrobble amount for album/track
-                                        elif i == 2:
+                                        elif i == 4:
                                             track_output += f"- *({scorbble_amount})*\n"# Scrobble amount for album/track
 
         return artist_name, cover_image, artist_stats, album_output, track_output

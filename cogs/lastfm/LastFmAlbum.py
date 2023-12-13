@@ -27,12 +27,12 @@ class LastFmAlbum(nextcord_C.Cog):
     @lastfm.subcommand(name = "album", description = "shows you your LastFm stats for any album")
     @nextcord_AC.check(Checks().interaction_in_guild())
     async def lastfm_album(self,
-                            interaction: nextcord.Interaction,
-                            *,
-                            artist: str = nextcord.SlashOption(description="the artist you want to see your stats for", required=False, min_length=2, max_length=100),
-                            album: str = nextcord.SlashOption(description="the album you want to see your stats for", required=False, min_length=2, max_length=100),
-                            member: nextcord.Member = nextcord.SlashOption(description="the user you want to be shown, what they're listening to", required=False),
-                            timeframe: str = nextcord.SlashOption(description="the timeframe you want the top tracks for", required=False, choices=LASTFM_TIMEFRAMES_WEBSCRAPING)):
+                           interaction: nextcord.Interaction,
+                           *,
+                           artist: str = nextcord.SlashOption(description="the artist you want to see your stats for", required=False, min_length=2, max_length=100),
+                           album: str = nextcord.SlashOption(description="the album you want to see your stats for", required=False, min_length=2, max_length=100),
+                           member: nextcord.Member = nextcord.SlashOption(description="the user you want to be shown, what they're listening to", required=False),
+                           timeframe: str = nextcord.SlashOption(description="the timeframe you want the top tracks for", required=False, choices=LASTFM_TIMEFRAMES_WEBSCRAPING)):
         """This command webscrapes the data of a user from LastFm to get their top tracks for a certain album"""
 
         if artist and album or not artist and not album:

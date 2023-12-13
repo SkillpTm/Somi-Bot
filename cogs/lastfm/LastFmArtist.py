@@ -79,7 +79,7 @@ class LastFmArtist(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = self.client.LASTFM_COLOR,
             thumbnail = cover_image_url,
-            author = f"{member.display_name} X {type_name.text}: {LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}",
+            author = f"{member.display_name} X {type_name}: {LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}",
             author_url = f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}?date_preset={timeframe}",
             author_icon = self.client.LASTFM_ICON,
             description = f"Total plays: __**{metadata_list[0]}**__\n" +

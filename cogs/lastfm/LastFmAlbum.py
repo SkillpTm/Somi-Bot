@@ -32,7 +32,7 @@ class LastFmAlbum(nextcord_C.Cog):
                             artist: str = nextcord.SlashOption(description="the artist you want to see your stats for", required=False, min_length=2, max_length=100),
                             album: str = nextcord.SlashOption(description="the album you want to see your stats for", required=False, min_length=2, max_length=100),
                             member: nextcord.Member = nextcord.SlashOption(description="the user you want to be shown, what they're listening to", required=False),
-                            timeframe: str = nextcord.SlashOption(description="the timeframe you want the top albums for", required=False, choices=LASTFM_TIMEFRAMES_WEBSCRAPING)):
+                            timeframe: str = nextcord.SlashOption(description="the timeframe you want the top tracks for", required=False, choices=LASTFM_TIMEFRAMES_WEBSCRAPING)):
         """This command webscrapes the data of a user from LastFm to get their top tracks for a certain album"""
 
         if artist and album or not artist and not album:

@@ -34,9 +34,6 @@ LAST_FM_PASSWORD = "ENTER VALUE"
 LAST_FM_API_KEY = "ENTER VALUE"
 LAST_FM_API_SECRET = "ENTER VALUE"
 
-# On how to get this checkout this comment https://stackoverflow.com/questions/23102833/how-to-scrape-a-website-which-requires-login-using-python-and-beautifulsoup/61140905#61140905
-LAST_FM_COOKIES = "ENTER VALUE"
-
 # https://developer.spotify.com/
 SPOTIPY_CLIENT_ID="ENTER VALUE"
 SPOTIPY_CLIENT_SECRET="ENTER VALUE"
@@ -53,4 +50,22 @@ WOLFRAM_APP_ID="ENTER VALUE"
 
 # https://developers.google.com/docs/api/quickstart/python
 YOUTUBE_API_KEY="ENTER VALUE"
+```
+
+3. Make a json file at .\env.json with these variables:
+
+```sh
+# On how to get this checkout this comment https://stackoverflow.com/questions/23102833/how-to-scrape-a-website-which-requires-login-using-python-and-beautifulsoup/61140905#61140905
+LAST_FM_COOKIES = {
+    'ENETER VALUES': 'ENETER VALUES',
+}
+LAST_FM_HEADERS = {
+    'ENETER VALUES': 'ENETER VALUES',
+}
+```
+
+4. Now run the bot:
+
+```sh
+py .\main.py
 ```

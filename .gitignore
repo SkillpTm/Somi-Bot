@@ -163,3 +163,4 @@ cython_debug/
 template.py
 bulk_messages.csv
 *.png
+env.json

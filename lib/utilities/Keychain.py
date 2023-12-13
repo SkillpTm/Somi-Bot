@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 import dotenv
+import json
 import os
 
 ####################################################################################################
@@ -17,8 +18,12 @@ class Keychain():
     LAST_FM_PASSWORD: str = os.getenv("LAST_FM_PASSWORD")
     LAST_FM_API_KEY: str = os.getenv("LAST_FM_API_KEY")
     LAST_FM_API_SECRET: str = os.getenv("LAST_FM_API_SECRET")
+
+    with open('env.json') as env_json:
+        env_json_data = json.loads(env_json.read())
     
-    LAST_FM_COOKIES: str = os.getenv("LAST_FM_COOKIES")
+    LAST_FM_COOKIES = env_json_data["LAST_FM_COOKIES"]
+    LAST_FM_HEADERS = env_json_data["LAST_FM_HEADERS"]
 
     SPOTIPY_CLIENT_ID: str = os.getenv("SPOTIPY_CLIENT_ID")
     SPOTIPY_CLIENT_SECRET: str = os.getenv("SPOTIPY_CLIENT_SECRET")

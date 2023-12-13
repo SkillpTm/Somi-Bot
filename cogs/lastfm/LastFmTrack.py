@@ -11,7 +11,7 @@ import urllib.parse
 
 from lib.db_modules import LastFmDB
 from lib.modules import Checks, EmbedFunctions, Webscrape
-from lib.utilities import LASTFM_TIMEFRAMES_WEBSCRAPING, LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT, LASTFM_COOKIES, LASTFM_HEADERS, SomiBot
+from lib.utilities import LASTFM_TIMEFRAMES_WEBSCRAPING, LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT, SomiBot
 
 
 
@@ -71,7 +71,7 @@ class LastFmTrack(nextcord_C.Cog):
 
         artist_for_url = urllib.parse.quote_plus(artist)
         track_for_url = urllib.parse.quote_plus(track)
-        page = requests.get(f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}", cookies=LASTFM_COOKIES, headers=LASTFM_HEADERS)
+        page = requests.get(f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}", cookies=self.client.Keychain.LAST_FM_COOKIES, headers=self.client.Keychain.LAST_FM_HEADERS)
 
         if not page.status_code == 200:
             await interaction.followup.send(embed=EmbedFunctions().error(f"The track `{artist} - {track}` couldn't be found on LastFm."))

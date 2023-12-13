@@ -28,8 +28,8 @@ class Webscrape():
         artist_name = ""
         cover_image_url = ""
         metadata_list = [""]
-        album_list_output = ""
-        track_list_output = ""
+        album_output = ""
+        track_output = ""
 
         if type_flag: # artists/album/track
             type_name = self.type_name(soup, type_flag)

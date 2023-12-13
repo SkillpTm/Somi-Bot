@@ -4,15 +4,17 @@ import nextcord
 
 ####################################################################################################
 
+from storage.Config import Config
+
 
 
 class Lists():
-    SOMI_ID = 939537452937412699
+    SOMI_ID = Config.APPLICATION_ID
 
     SOMICORD_UPDATE_ROLES_IDS = {
-        "UPDATES_ID": 981654656457510953,
-        "LIVE_ID": 981655862907138128,
-        "SNS_ID": 981655771156721735,
+        "UPDATES_ID": Config.UPDATES_ROLE_ID,
+        "LIVE_ID": Config.LIVE_ROLE_ID,
+        "SNS_ID": Config.SNS_ROLE_ID,
     }
 
 

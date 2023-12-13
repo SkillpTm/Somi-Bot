@@ -18,6 +18,7 @@ from lib.db_modules.CommandUsesDB import CommandUsesDB
 from lib.utilities.Keychain import Keychain
 from lib.utilities.Lists import Lists
 from lib.utilities.Loggers import Loggers
+from storage.Config import Config
 
 
 
@@ -47,21 +48,20 @@ class SomiBot(nextcord_C.Bot):
 
     #SOMICORD Constants
     SKILLP_JOINED_SOMICORD_TIME = 1573055760
-    SOMICORD_ID = 562717668260446269
-    SOMICORD_ROLES_CHANNEL_ID = 987692984864768041
-    SOMICORD_MOD_CHANNEL_ID = 829872518717243432
-    SOMICORD_MODERATOR_ID = 587673639101661194
-    SOMICORD_WELCOME_CHANNEL_ID = 562717668285612135
+    SOMICORD_ID = Config.MODMAIL_SERVER_ID
+    SOMICORD_ROLES_CHANNEL_ID = Config.ROLES_CHANNEL_ID
+    SOMICORD_MOD_CHANNEL_ID = Config.MODMAIL_CHANNEL_ID
+    SOMICORD_WELCOME_CHANNEL_ID = Config.WELCOME_CHANNEL_ID
     SOMICORD_WELCOME_GIF = "https://somibot.skillp.dev/cdn/gifs/SOMICORD_WELCOME_GIF.gif"
 
     #Emotes
-    HEADS = "<:heads:1006982740748554290>"
-    REACTION_EMOTE = "<a:aSomiBreathTaking:980083399005982801>"
-    SOMI_BEST_GRILL_EMOTE = "<:SomiBestGrill:924281555772403722>"
-    SOMI_F_EMOTE = "<:SomiF:829933531147796510>"
-    SOMI_ONLY_EMOTE = "<:SomiONLY:829934613509177354>"
-    SOMI_WELCOME_EMOTE = "<a:aSomiWelcome:829917610765975552>"
-    TAILS = "<:tails:1006982689674494073>"
+    HEADS = Config.HEADS
+    REACTION_EMOTE = Config.REACTION_EMOTE
+    SOMI_BEST_GRILL_EMOTE = Config().SOMI_BEST_GRILL_EMOTE
+    SOMI_F_EMOTE = Config.SOMI_F_EMOTE
+    SOMI_ONLY_EMOTE = Config.SOMI_ONLY_EMOTE
+    SOMI_WELCOME_EMOTE = Config.SOMI_WELCOME_EMOTE
+    TAILS = Config.TAILS
 
     #Variables
     start_time = int(time.time())
@@ -75,12 +75,12 @@ class SomiBot(nextcord_C.Bot):
 
     def __init__(self):
         super().__init__(
-            application_id = 939537452937412699,
+            application_id = Config.APPLICATION_ID,
             intents = nextcord.Intents.all(),
             status = nextcord.Status.online,
             activity = nextcord.Activity(type=nextcord.ActivityType.listening, name="Ex-Mas"),
             allowed_mentions = nextcord.AllowedMentions(everyone=False),
-            owner_id = 378214190378123264
+            owner_id = Config.OWNER_ID
         )
 
     ####################################################################################################

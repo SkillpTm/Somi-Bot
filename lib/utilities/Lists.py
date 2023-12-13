@@ -301,7 +301,7 @@ class Lists():
             A preset timeframe that will limit from when on to gather data.
             Default: 'All Time'
             """,
-            f"/lf artist [Jeon Somi] [XOXO] [<@{SOMI_ID}>] [Past Week]"
+            f"/lf album [Jeon Somi] [XOXO] [<@{SOMI_ID}>] [Past Week]"
         ],
 
         "/lf np": [
@@ -401,6 +401,30 @@ class Lists():
             (note: The subcommand 'toptracks' has a search shortend as 'tt'.)
             """,
             f"/lf toptracks [<@{SOMI_ID}>] [Past Half a Year]"
+        ],
+
+        "/lf track": [
+            """
+            ```/lf track optional[artist] optional[track] optional[@USERNAME] optional[timeframe]```
+            `artist`:
+            An artist who exists with this __exact__ name on LastFm.
+            Default: If you have a LastFm account connected to Somi this will default to what you're playing right now or to what you last listened to.
+            Length requirments: 2-100 characters
+
+            `track`:
+            A track which exists with this __exact__ name on LastFm.
+            Default: If you have a LastFm account connected to Somi this will default to what you're playing right now or to what you last listened to.
+            Length requirments: 2-100 characters
+
+            `@USERNAME`:
+            A user on this server, who has a LastFm account connected to Somi.
+            Default: you
+
+            `timeframe`:
+            A preset timeframe that will limit from when on to gather data.
+            Default: 'All Time'
+            """,
+            f"/lf track [Jeon Somi] [XOXO] [<@{SOMI_ID}>] [Past Week]"
         ],
 
         "/lyrics": [

@@ -92,7 +92,7 @@ class LastFmAlbum(nextcord_C.Cog):
             author_url = f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/{album_for_url}?date_preset={timeframe}",
             author_icon = self.client.LASTFM_ICON,
             description = f"Total plays: __**{metadata_list[0]}**__\n" +
-                          f"by [{artist_name}]()\n\n" +
+                          f"by [{artist_name}](https://www.last.fm/music/{artist_for_url})\n\n" +
                           f"**Top Albums**\n" +
                           f"{album_output}\n" +
                           f"**Top Tracks**\n" +

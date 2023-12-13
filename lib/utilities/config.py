@@ -34,7 +34,7 @@ LASTFM_TIMEFRAMES_TEXT = {
     "overall": "of all time:"
 }
 
-LASTFM_TIMEFRAMES_ARTIST = {
+LASTFM_TIMEFRAMES_WEBSCRAPING = {
     "Past Week": "LAST_7_DAYS",
     "Past Month": "LAST_30_DAYS",
     "Past Quarter": "LAST_90_DAYS",
@@ -43,7 +43,7 @@ LASTFM_TIMEFRAMES_ARTIST = {
     "All Time": "ALL"
 }
 
-LASTFM_TIMEFRAMES_ARTIST_TEXT = {
+LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT = {
     "LAST_7_DAYS": "Past Week",
     "LAST_30_DAYS": "Past Month",
     "LAST_90_DAYS": "Past Quarter",

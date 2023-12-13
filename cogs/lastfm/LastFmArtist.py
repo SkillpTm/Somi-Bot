@@ -11,7 +11,7 @@ import urllib.parse
 
 from lib.db_modules import LastFmDB
 from lib.modules import Checks, EmbedFunctions, Webscrape
-from lib.utilities import LASTFM_TIMEFRAMES_ARTIST, LASTFM_TIMEFRAMES_ARTIST_TEXT, LASTFM_COOKIES, LASTFM_HEADERS, SomiBot
+from lib.utilities import LASTFM_TIMEFRAMES_WEBSCRAPING, LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT, LASTFM_COOKIES, LASTFM_HEADERS, SomiBot
 
 
 
@@ -31,7 +31,7 @@ class LastFmArtist(nextcord_C.Cog):
                             *,
                             artist: str = nextcord.SlashOption(description="the artist you want to see your stats for", required=False, min_length=2, max_length=100),
                             member: nextcord.Member = nextcord.SlashOption(description="the user you want to be shown, what they're listening to", required=False),
-                            timeframe: str = nextcord.SlashOption(description="the timeframe you want the top albums for", required=False, choices=LASTFM_TIMEFRAMES_ARTIST)):
+                            timeframe: str = nextcord.SlashOption(description="the timeframe you want the top albums for", required=False, choices=LASTFM_TIMEFRAMES_WEBSCRAPING)):
         """This command webscrapes the data of a user from LastFm to get their top tracks and top albums for a certain artist"""
 
         if not member:
@@ -71,7 +71,7 @@ class LastFmArtist(nextcord_C.Cog):
         soup = BeautifulSoup(page.content, "html.parser")
 
         if "didn't scrobble any albums by this artist during the selected date range. Try expanding the date range or view scrobbles for " in str(soup.text):
-            await interaction.followup.send(embed=EmbedFunctions().error(f"{member.mention} hasn't listened to the artist `{artist}` in the timeframe: `{LASTFM_TIMEFRAMES_ARTIST_TEXT[timeframe]}`"))
+            await interaction.followup.send(embed=EmbedFunctions().error(f"{member.mention} hasn't listened to the artist `{artist}` in the timeframe: `{LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}`"))
             return
 
         type_name, artist_name, cover_image_url, metadata_list, track_output, album_output = Webscrape().library_subpage(soup, artist_for_url, "artist")
@@ -79,7 +79,7 @@ class LastFmArtist(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = self.client.LASTFM_COLOR,
             thumbnail = cover_image_url,
-            author = f"{member.display_name} X {type_name.text}: {LASTFM_TIMEFRAMES_ARTIST_TEXT[timeframe]}",
+            author = f"{member.display_name} X {type_name.text}: {LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}",
             author_url = f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}?date_preset={timeframe}",
             author_icon = self.client.LASTFM_ICON,
             description = f"Total plays: __**{metadata_list[0]}**__\n" +

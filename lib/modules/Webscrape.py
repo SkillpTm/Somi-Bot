@@ -60,7 +60,8 @@ class Webscrape():
             found_type_name = str(soup.find("h2", class_="library-header-title"))
             found_type_name_list = found_type_name.split("<span class=")
             type_name: list[str] = found_type_name_list[0].split('<h2 class="library-header-title">')
-            type_name = re.sub('\n', '', type_name[1].strip())
+            type_name: str = type_name[1].replace("</h2>", "")
+            type_name = re.sub('\n', '', type_name.strip())
 
         return type_name
 
@@ -156,11 +157,11 @@ class Webscrape():
 
             if current_element_album != 1 or type_flag == "album":
                 track_output += f"{position}. "
-                track_output += f"[{safe_name}](https://www.last.fm/music/{artist_for_url}/_/{element_name_for_url}/ "
+                track_output += f"[{safe_name}](https://www.last.fm/music/{artist_for_url}/_/{element_name_for_url}/) "
                 track_output += f"- *({scrobbles})*\n"
             else:
                 album_output += f"{position}. "
-                album_output += f"[{safe_name}](https://www.last.fm/music/{artist_for_url}/{element_name_for_url}/ "
+                album_output += f"[{safe_name}](https://www.last.fm/music/{artist_for_url}/{element_name_for_url}/) "
                 album_output += f"- *({scrobbles})*\n"
         
         return track_output, album_output

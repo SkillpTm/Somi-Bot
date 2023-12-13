@@ -280,6 +280,30 @@ class Lists():
             f"/lf artist [Jeon Somi] [<@{SOMI_ID}>] [Past Week]"
         ],
 
+        "/lf album": [
+            """
+            ```/lf album optional[artist] optional[album] optional[@USERNAME] optional[timeframe]```
+            `artist`:
+            An artist who exists with this __exact__ name on LastFm.
+            Default: If you have a LastFm account connected to Somi this will default to what you're playing right now or to what you last listened to.
+            Length requirments: 2-100 characters
+
+            `album`:
+            An album which exists with this __exact__ name on LastFm.
+            Default: If you have a LastFm account connected to Somi this will default to what you're playing right now or to what you last listened to.
+            Length requirments: 2-100 characters
+
+            `@USERNAME`:
+            A user on this server, who has a LastFm account connected to Somi.
+            Default: you
+
+            `timeframe`:
+            A preset timeframe that will limit from when on to gather data.
+            Default: 'All Time'
+            """,
+            f"/lf artist [Jeon Somi] [XOXO] [<@{SOMI_ID}>] [Past Week]"
+        ],
+
         "/lf np": [
             """
             ```/lf np optional[@USERNAME]```

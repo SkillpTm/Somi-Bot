@@ -75,16 +75,16 @@ class LastFmArtist(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().error(f"{member.mention} hasn't listened to the artist `{artist}` in the timeframe: `{LASTFM_TIMEFRAMES_ARTIST_TEXT[timeframe]}`"))
             return
 
-        artist_name, cover_image, artist_stats, album_output, track_output = self.webscrape_artist_page(soup, artist_for_url)
+        artist_name, artist_image_url, artist_metadata, album_output, track_output = self.webscrape_artist_page(soup, artist_for_url)
 
         embed = EmbedFunctions().builder(
             color = self.client.LASTFM_COLOR,
-            thumbnail = cover_image,
+            thumbnail = artist_image_url,
             author = f"{member.display_name} X {artist_name.text}: {LASTFM_TIMEFRAMES_ARTIST_TEXT[timeframe]}",
             author_url = f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}?date_preset={timeframe}",
             author_icon = self.client.LASTFM_ICON,
-            description = f"Total plays: __**{artist_stats[0]}**__\n" +
-                          f"Listened to: **{artist_stats[1]}** Albums // **{artist_stats[2]}** Tracks\n\n" +
+            description = f"Total plays: __**{artist_metadata[0]}**__\n" +
+                          f"Listened to: **{artist_metadata[1]}** Albums // **{artist_metadata[2]}** Tracks\n\n" +
                           f"**Top Albums**\n" +
                           f"{album_output}\n" +
                           f"**Top Tracks**\n" +
@@ -97,77 +97,57 @@ class LastFmArtist(nextcord_C.Cog):
     ####################################################################################################
 
     @staticmethod
-    def webscrape_artist_page(soup, artist_for_url):
+    def webscrape_artist_page(soup: BeautifulSoup, artist_for_url: str) -> tuple[str, str, list[str], str, str]:
         """This function webscrapes the artist page of a given user"""
 
-        artist_name: str = soup.find("h2", class_="library-header-title") # Artist name
+        artist_name: str = str(soup.find("h2", class_="library-header-title").text)
 
-        results_image = soup.find("span", class_="avatar library-header-image")
-        cover_image: str = results_image.img["src"] # Artist iamge
+        found_image = soup.find("span", class_="avatar library-header-image")
+        artist_image_url: str = str(found_image.img["src"])
 
-        results_stats = soup.find_all("p", class_="metadata-display")
-        artist_stats = [stat.text for stat in results_stats] # (Scrobbles, Albums, Tracks) amount
+        found_metadata = soup.find_all("p", class_="metadata-display")
+        artist_metadata = [str(metadata.text) for metadata in found_metadata] # [Scrobbles, Albums, Tracks]
 
-        results_albums_and_tracks = soup.find_all("tbody")
-        album_output = "" # index_number, album with url - scrobble amount
-        track_output = "" # index_number, track with url - scrobble amount
-        i=0
+        found_positions = soup.find_all("td", class_="chartlist-index")
+        positions_list = [str(position.text).replace(" ", "").replace("\n", "") for position in found_positions]
 
-        # this html structure should always appear, all other scenarios got fail saved
-        for tablebody in results_albums_and_tracks:
-            i+=1
-            # i=2 -> working on album
-            # i=4 -> working on track
-            if i == 5:
-                break
-            if not i % 2 == 0:
-                continue
-            for tr in tablebody:
-                for td in tr:
-                    # index_number
-                    if 'chartlist-index' in str(td): # unique class name of the td needed
-                        position = re.sub('\n', '', td.text)
-                        position = re.sub(' ', '', position)
+        found_names = soup.find_all("td", class_="chartlist-name")
+        names_list = [str(name.text) for name in found_names if str(name.text).replace("\n", "")]
 
-                        if i == 2:
-                            album_output += f"{position}. " # Album/track Spot
-                        elif i == 4:
-                            track_output += f"{position}. " # Album/track Spot
+        found_scorbbles = soup.find_all("span", class_="chartlist-count-bar-value")
+        scorbbles_list = [re.sub(r"[^\d]", "", scrobbles.text) for scrobbles in found_scorbbles]
 
-                    # album/track with url    
-                    if 'chartlist-name' in str(td): # unique class name of the td needed
-                        name = Get().markdown_safe(re.sub('\n', '', td.text)) # can be both album and track
+        album_output = ""
+        track_output = ""
+        current_element_album = 0
 
-                        name_for_url = re.sub('\n', '', td.text)
-                        name_for_url = urllib.parse.quote_plus(name_for_url)
+        for position, name, scrobbles in zip(positions_list, names_list, scorbbles_list):
+            if int(position) == 1:
+                current_element_album += 1 # setting a flag for if we're working on albums or tracks
 
-                        if i == 2:
-                            album_output += f"[{name}](https://www.last.fm/music/{artist_for_url}/{name_for_url}/) " # URL and album name
-                        elif i == 4:
-                            track_output += f"[{name}](https://www.last.fm/music/{artist_for_url}/_/{name_for_url}/) " # URL and track name
+            name = re.sub('\n', '', name) # can be both album and track
 
-                    # scrobble amount
-                    if 'chartlist-count-bar' in str(td): # unique class name of the td needed
-                        for span1 in td:
-                            for a in span1:
-                                for span2 in a:
-                                    if "chartlist-count-bar-value" in str(span2): # unique class name of the span needed
-                                        scorbble_amount = re.sub('\n', '', span2.text)
-                                        scorbble_amount = re.sub(' ', '', scorbble_amount)
-                                        SCROBBLE_REPLACMENTS = {
-                                            "scrobbles": "plays",
-                                            "scrobble": "play"
-                                        }
+            safe_name = Get().markdown_safe(name)
 
-                                        for key, value in SCROBBLE_REPLACMENTS.items():
-                                            scorbble_amount = scorbble_amount.replace(key, f" {value}") # has to be done after re.sub, to keep that space before plays
+            name_for_url = urllib.parse.quote_plus(name)
 
-                                        if i == 2:
-                                            album_output += f"- *({scorbble_amount})*\n" # Scrobble amount for album/track
-                                        elif i == 4:
-                                            track_output += f"- *({scorbble_amount})*\n"# Scrobble amount for album/track
 
-        return artist_name, cover_image, artist_stats, album_output, track_output
+            if int(scrobbles) == 1:
+                scrobbles += " play"
+            else:
+                scrobbles += " plays"
+
+
+            if current_element_album == 1:
+                album_output += f"{position}. "
+                album_output += f"[{safe_name}](https://www.last.fm/music/{artist_for_url}/{name_for_url}/ "
+                album_output += f"- *({scrobbles})*\n"
+            else:
+                track_output += f"{position}. "
+                track_output += f"[{safe_name}](https://www.last.fm/music/{artist_for_url}/_/{name_for_url}/ "
+                track_output += f"- *({scrobbles})*\n"
+        
+        return artist_name, artist_image_url, artist_metadata, album_output, track_output
 
 
 

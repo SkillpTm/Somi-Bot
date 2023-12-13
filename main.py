@@ -14,10 +14,14 @@ client = SomiBot()
 ####################################################################################################
 
 for folder in os.listdir(f"./cogs/"):
-    if os.path.isdir(f"./cogs/{folder}/"):
-        for file in os.listdir(f"./cogs/{folder}/"):
-            if file.endswith(".py"):
-                client.load_extension(f"cogs.{folder}.{file[:-3]}")
+    if not os.path.isdir(f"./cogs/{folder}/"):
+        continue
+    
+    for file in os.listdir(f"./cogs/{folder}/"):
+        if not file.endswith(".py"):
+            continue
+
+        client.load_extension(f"cogs.{folder}.{file[:-3]}")
 
 ####################################################################################################
 

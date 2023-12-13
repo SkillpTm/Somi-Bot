@@ -83,15 +83,16 @@ class LastFmAlbum(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().error(f"{member.mention} hasn't listened to the album `{artist} - {album}` in the timeframe: `{LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}`"))
             return
 
-        type_name, artist_name, cover_image_url, metadata_list, track_output, album_output = Webscrape().library_subpage(soup, album_for_url, "album")
+        type_name, artist_name, cover_image_url, metadata_list, track_output, album_output = Webscrape().library_subpage(soup, artist_for_url, "album")
 
         embed = EmbedFunctions().builder(
             color = self.client.LASTFM_COLOR,
             thumbnail = cover_image_url,
-            author = f"{member.display_name} X {artist_name} - {type_name}: {LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}",
+            author = f"{member.display_name} X {type_name}: {LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}",
             author_url = f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/{album_for_url}?date_preset={timeframe}",
             author_icon = self.client.LASTFM_ICON,
-            description = f"Total plays: __**{metadata_list[0]}**__\n\n" +
+            description = f"Total plays: __**{metadata_list[0]}**__\n" +
+                          f"by [{artist_name}]()\n\n" +
                           f"**Top Albums**\n" +
                           f"{album_output}\n" +
                           f"**Top Tracks**\n" +

@@ -19,7 +19,7 @@ class Webscrape():
 
     def library_subpage(self,
                         soup: BeautifulSoup,
-                        type_name_for_url: str,
+                        artist_for_url: str,
                         type_flag: str) -> tuple[str, str, str, list[str], str, str]: # type_flag can be "artist", "album" or "track"
         """Manages depending on the type_flag what data to webscrape and returns the data
            type in all contextes here means either artist, album or track, depending on the flag"""
@@ -44,7 +44,7 @@ class Webscrape():
             metadata_list = self.type_metadata(soup)
 
         if any(i == type_flag for i in ["artist", "album"]): # artist/album
-            track_output, album_output = self.output_lists(soup, type_name_for_url, type_flag)
+            track_output, album_output = self.output_lists(soup, artist_for_url, type_flag)
 
         return type_name, artist_name, cover_image_url, metadata_list, track_output, album_output
 
@@ -127,7 +127,7 @@ class Webscrape():
 
     ####################################################################################################
 
-    def output_lists(self, soup: BeautifulSoup, type_name_for_url: str, type_flag: str) -> tuple[str, str]:
+    def output_lists(self, soup: BeautifulSoup, artist_for_url: str, type_flag: str) -> tuple[str, str]:
         """Formates the positions, album/track names and scrobbles and the URLs for the output"""
 
         positions_list = self.type_element_positions(soup)
@@ -156,11 +156,11 @@ class Webscrape():
 
             if current_element_album != 1 or type_flag == "album":
                 track_output += f"{position}. "
-                track_output += f"[{safe_name}](https://www.last.fm/music/{type_name_for_url}/_/{element_name_for_url}/ "
+                track_output += f"[{safe_name}](https://www.last.fm/music/{artist_for_url}/_/{element_name_for_url}/ "
                 track_output += f"- *({scrobbles})*\n"
             else:
                 album_output += f"{position}. "
-                album_output += f"[{safe_name}](https://www.last.fm/music/{type_name_for_url}/{element_name_for_url}/ "
+                album_output += f"[{safe_name}](https://www.last.fm/music/{artist_for_url}/{element_name_for_url}/ "
                 album_output += f"- *({scrobbles})*\n"
         
         return track_output, album_output

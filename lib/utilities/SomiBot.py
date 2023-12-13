@@ -26,7 +26,7 @@ class SomiBot(nextcord_C.Bot):
 
     #Meta
     SOMICORD_INVITE = "https://discord.gg/Frd7WYg"
-    VERSION = "3.0"
+    VERSION = "3.1"
 
     #Colors
     BOT_COLOR = 0xffa6fc

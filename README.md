@@ -9,7 +9,7 @@ Originally it was created to fullfil all needs of Somicord.
 skillp
 
 <h4>Current version:</h4>
-3.0
+3.1
 
 <h4>Invites:</h4>
 There are currently no plans to have public invites. You might get an invite by asking skillp.
@@ -21,8 +21,9 @@ You can report bugs and make suggestions with /feedback
 
 This repo isn't inherintly meant for you to clone it and spin up your own version. If you still want to do that, follow these steps:
 
-1. Replace the information in .\storage\config.py with the one of your bot.
-2. Make a .env at .\\.env with these variables:
+1. Install Python 3.12 @ https://www.python.org/downloads/release/python-3120/
+2. Replace the information in .\storage\config.py with the one of your bot.
+3. Make a .env at .\\.env with these variables:
 
 ```sh
 # https://discord.com/developers/applications
@@ -52,7 +53,7 @@ WOLFRAM_APP_ID="ENTER VALUE"
 YOUTUBE_API_KEY="ENTER VALUE"
 ```
 
-3. Make a json file at .\env.json with these variables:
+4. Make a json file at .\env.json with these variables:
 
 ```sh
 # On how to get this checkout this comment https://stackoverflow.com/questions/23102833/how-to-scrape-a-website-which-requires-login-using-python-and-beautifulsoup/61140905#61140905
@@ -64,7 +65,7 @@ LAST_FM_HEADERS = {
 }
 ```
 
-4. Now run the bot:
+5. Now run the bot:
 
 ```sh
 py .\main.py

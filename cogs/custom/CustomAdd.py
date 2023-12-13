@@ -37,7 +37,7 @@ class CustomAdd(nextcord_C.Cog):
 
         clean_commandname = Get().clean_input_command(commandname)
 
-        if not re.match("^[\da-z]+$", clean_commandname):
+        if not re.match(r"^[\da-z]+$", clean_commandname):
             await interaction.followup.send(embed=EmbedFunctions().error("You can only have letters and numbers in your custom-commandname!"), ephemeral=True)
             return
 

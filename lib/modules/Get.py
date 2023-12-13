@@ -109,9 +109,9 @@ class Get():
     def markdown_safe(input_string: str) -> str:
         """Backslashes markdown relevant characters"""
         CHAR_AND_REPLACMENT = {
-            "*": "\*",
-            "_": "\_",
-            "|": "\|",
+            "*": r"\*",
+            "_": r"\_",
+            "|": r"\|",
         }
 
         for char, replacment in CHAR_AND_REPLACMENT.items():

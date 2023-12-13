@@ -36,7 +36,7 @@ class KeywordAdd(nextcord_C.Cog):
 
         clean_keyword = str(keyword.lower().replace(" ", ""))
 
-        if not re.match("^[\da-z]+$", clean_keyword):
+        if not re.match(r"^[\da-z]+$", clean_keyword):
             await interaction.followup.send(embed=EmbedFunctions().error(f"You can only have letters and numbers in your keywords!"), ephemeral=True)
             return
 

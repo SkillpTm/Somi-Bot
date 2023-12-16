@@ -20,26 +20,25 @@ class CommandUsesDB(CommonDB):
     ####################################################################################################
 
     def uses_update(self,
-                    column_name: str) -> None:
+                    command_name: str) -> None:
         """This function adds up how often a command has been used, but adding +1 on every execution"""
 
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"SELECT amount FROM {self.table_name} WHERE name = '{column_name}'")
+        c.execute(f"SELECT amount FROM {self.table_name} WHERE name = '{command_name}'")
 
-        if not c.fetchone():
-            c.execute(f"INSERT INTO {self.table_name} VALUES ('{column_name}', 0)")
+        amount = c.fetchone()
 
-            conn.commit()
+        if not amount:
+            self.insert(command_name, 0)
 
-        c.execute(f"SELECT amount FROM {self.table_name} WHERE name = '{column_name}'")
-        new_amount = c.fetchone()[0] + 1
+            c.execute(f"SELECT amount FROM {self.table_name} WHERE name = '{command_name}'")
+            amount = c.fetchone()
 
-        c.execute(f"UPDATE {self.table_name} SET amount = '{new_amount}' WHERE name = '{column_name}'")
+        c.execute(f"UPDATE {self.table_name} SET amount = '{amount[0] + 1}' WHERE name = '{command_name}'")
 
         conn.commit()
-
         conn.close()
 
     ####################################################################################################
@@ -50,11 +49,17 @@ class CommandUsesDB(CommonDB):
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"SELECT amount FROM {self.table_name}")
+        c.execute(f"SELECT name FROM sqlite_master WHERE type='table'")
 
-        all_uses_list: list[tuple[int]] = c.fetchall()
+        all_table_names = c.fetchall()
+        total_uses = 0
 
-        total_uses = sum([command_uses[0] for command_uses in all_uses_list])
+        for table_name in all_table_names:
+            
+            c.execute(f"SELECT amount FROM {table_name[0]}")
+
+            all_uses_list: list[tuple[int]] = c.fetchall()
+            total_uses += sum([command_uses[0] for command_uses in all_uses_list])
 
         conn.close()
 

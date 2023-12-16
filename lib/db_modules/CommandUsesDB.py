@@ -44,7 +44,7 @@ class CommandUsesDB(CommonDB):
     ####################################################################################################
 
     def get_total_uses(self) -> int:
-        """This function adds up how often a command has been used, but adding +1 on every execution"""
+        """This function adds up how often all commands on all tables have been used"""
 
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()

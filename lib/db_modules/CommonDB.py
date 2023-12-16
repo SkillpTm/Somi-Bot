@@ -36,3 +36,22 @@ class CommonDB():
             conn.commit()
 
         conn.close()
+
+    ####################################################################################################
+    
+    def insert(self,
+               *inputs) -> None:
+        """Inserts the inputs provided in that order in the DB"""
+
+        conn = sqlite3.connect(self.database_path)
+        c = conn.cursor()
+
+        values = f"({', '.join([str(element) for element in inputs])})"
+
+        c.execute(f"INSERT INTO {self.table_name} VALUES {values}")
+
+        conn.commit()
+        conn.close()
+
+    ####################################################################################################
+    

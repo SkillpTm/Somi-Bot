@@ -6,47 +6,34 @@ import sqlite3
 
 ####################################################################################################
 
+from lib.db_modules.CommonDB import CommonDB
+
 
 
 class LevelRolesDB():
 
-    def __init__(self) -> None:
+    def __init__(self,
+                 server_id: int) -> None:
         self.database_path = os.path.join(os.path.dirname(__file__), '../../../storage/db/config/level_roles.db')
 
-    ####################################################################################################
-
-    def create_table(self,
-                     server_id: int) -> None:
-        """Creates a table, if there isn't one already"""
-
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
-
-        c.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='server{server_id}'")
-
-        if not c.fetchone():
-            c.execute(f"""CREATE TABLE server{server_id} (role_id text,
-                                                          level integer)""")
-
-            conn.commit()
-
-        conn.close()
+        self.table_name = f"server{server_id}"
+        self.table_structure = """(role_id text,
+                                   level integer)"""
+        
+        CommonDB.create_table(self.table_name, self.database_path, self.table_structure)
 
     ####################################################################################################
 
     def check_role_or_level_inserted(self,
-                                     server_id: int,
                                      role_id: int =  None,
                                      level: int = None) -> bool:
         """Returns a bool based on if role/level is already in db"""
-
-        self.create_table(server_id)
 
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
         if role_id != None:
-            c.execute(f"SELECT role_id FROM server{server_id} WHERE role_id='{role_id}'")
+            c.execute(f"SELECT role_id FROM {self.table_name} WHERE role_id='{role_id}'")
 
             if c.fetchone() != None :
                 conn.close()
@@ -54,7 +41,7 @@ class LevelRolesDB():
                 return True
 
         if level != None:
-            c.execute(f"SELECT level FROM server{server_id} WHERE level='{level}'")
+            c.execute(f"SELECT level FROM {self.table_name} WHERE level='{level}'")
 
             if c.fetchone() != None :
                 conn.close()
@@ -68,17 +55,14 @@ class LevelRolesDB():
     ####################################################################################################
 
     def insert_role(self,
-                    server_id: int,
                     role_id: int,
                     level: int) -> None:
         """Inserts a given role and level into the db"""
 
-        self.create_table(server_id)
-
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"""INSERT INTO server{server_id} VALUES ('{role_id}',
+        c.execute(f"""INSERT INTO {self.table_name} VALUES ('{role_id}',
                                                             '{level}')""")
 
         conn.commit()
@@ -88,16 +72,13 @@ class LevelRolesDB():
     ####################################################################################################
 
     def delete_role(self,
-                    server_id: int,
                     role_id: int) -> None:
         """Deletes a role/level from the db"""
-
-        self.create_table(server_id)
 
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"DELETE from server{server_id} WHERE role_id = '{role_id}'")
+        c.execute(f"DELETE from {self.table_name} WHERE role_id = '{role_id}'")
 
         conn.commit()
 
@@ -111,12 +92,10 @@ class LevelRolesDB():
 
         from lib.modules.LevelRoles import LevelRoles
 
-        self.create_table(server.id)
-
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"SELECT * FROM server{server.id} ORDER BY level ASC")
+        c.execute(f"SELECT * FROM {self.table_name} ORDER BY level ASC")
 
         levels_and_roles = c.fetchall()
         level_roles = [[int(level_role[0]), level_role[1]] for level_role in levels_and_roles]

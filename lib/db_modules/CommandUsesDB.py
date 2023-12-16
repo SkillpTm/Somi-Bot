@@ -5,53 +5,42 @@ import sqlite3
 
 ####################################################################################################
 
+from lib.db_modules.CommonDB import CommonDB
+
+
+
 class CommandUsesDB():
 
-    def __init__(self) -> None:
+    def __init__(self,
+                 table_name: str) -> None:
         self.database_path = os.path.join(os.path.dirname(__file__), '../../storage/db/command_uses.db')
 
-    ####################################################################################################
+        self.table_name = table_name
+        self.table_structure = """(name text,
+                                   amount integer)"""
 
-    def create_table(self,
-                     table: str) -> None:
-        """Creates a table, if there isn't one already"""
-
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
-
-        c.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table}'")
-
-        if not c.fetchone():
-            c.execute(f"""CREATE TABLE {table} (name text,
-                                                amount integer)""")
-
-            conn.commit()
-
-        conn.close()
+        CommonDB.create_table(self.table_name, self.database_path, self.table_structure)
 
     ####################################################################################################
 
     def uses_update(self,
-                    table: str,
                     column_name: str) -> None:
         """This function adds up how often a command has been used, but adding +1 on every execution"""
-
-        self.create_table(table)
 
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"SELECT amount FROM {table} WHERE name = '{column_name}'")
+        c.execute(f"SELECT amount FROM {self.table_name} WHERE name = '{column_name}'")
 
         if not c.fetchone():
-            c.execute(f"INSERT INTO {table} VALUES ('{column_name}', 0)")
+            c.execute(f"INSERT INTO {self.table_name} VALUES ('{column_name}', 0)")
 
             conn.commit()
 
-        c.execute(f"SELECT amount FROM {table} WHERE name = '{column_name}'")
+        c.execute(f"SELECT amount FROM {self.table_name} WHERE name = '{column_name}'")
         new_amount = c.fetchone()[0] + 1
 
-        c.execute(f"UPDATE {table} SET amount = '{new_amount}' WHERE name = '{column_name}'")
+        c.execute(f"UPDATE {self.table_name} SET amount = '{new_amount}' WHERE name = '{column_name}'")
 
         conn.commit()
 
@@ -59,16 +48,13 @@ class CommandUsesDB():
 
     ####################################################################################################
 
-    def get_total_uses(self,
-                       table: str) -> int:
+    def get_total_uses(self) -> int:
         """This function adds up how often a command has been used, but adding +1 on every execution"""
-
-        self.create_table(table)
 
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"SELECT amount FROM {table}")
+        c.execute(f"SELECT amount FROM {self.table_name}")
 
         all_uses_list: list[tuple[int]] = c.fetchall()
 

@@ -6,44 +6,31 @@ import sqlite3
 
 ####################################################################################################
 
+from lib.db_modules.CommonDB import CommonDB
+
 
 
 class AuditLogChannelDB():
 
-    def __init__(self) -> None:
+    def __init__(self,
+                 server_id: int) -> None:
         self.database_path = os.path.join(os.path.dirname(__file__), '../../../storage/db/config/audit_log_channel.db')
 
-    ####################################################################################################
-
-    def create_table(self,
-                     server_id: int) -> None:
-        """Creates a table, if there isn't one already"""
-
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
-
-        c.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='server{server_id}'")
-
-        if not c.fetchone():
-            c.execute(f"CREATE TABLE server{server_id} (channel_id text)")
-
-            conn.commit()
-
-        conn.close()
+        self.table_name = f"server{server_id}"
+        self.table_structure = """(channel_id text)"""
+        
+        CommonDB.create_table(self.table_name, self.database_path, self.table_structure)
 
     ####################################################################################################
 
     def insert_channel(self,
-                       server_id: int,
                        channel_id: int) -> None:
         """Inserts a given channel id into the table of the server"""
-
-        self.create_table(server_id)
 
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"INSERT INTO server{server_id} VALUES ('{channel_id}')")
+        c.execute(f"INSERT INTO {self.table_name} VALUES ('{channel_id}')")
 
         conn.commit()
 
@@ -51,16 +38,13 @@ class AuditLogChannelDB():
 
     ####################################################################################################
 
-    def drop_table(self,
-                   server_id: int) -> None:
+    def drop_table(self) -> None:
         """Deletes the table of the server"""
-
-        self.create_table(server_id)
 
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"DROP TABLE server{server_id}")
+        c.execute(f"DROP TABLE {self.table_name}")
 
         conn.commit()
 
@@ -72,12 +56,10 @@ class AuditLogChannelDB():
             server: nextcord.Guild) -> int | None:
         """Gets the audit log channel of the given server"""
 
-        self.create_table(server.id)
-
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"SELECT channel_id FROM server{server.id} WHERE rowid = '1'")
+        c.execute(f"SELECT channel_id FROM {self.table_name} WHERE rowid = '1'")
 
         channel_id = c.fetchone()
 

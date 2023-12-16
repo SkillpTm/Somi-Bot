@@ -7,12 +7,23 @@ import random
 
 ####################################################################################################
 
+from lib.db_modules.CommonDB import CommonDB
+
 
 
 class LevelsDB():
 
-    def __init__(self) -> None:
+    def __init__(self,
+                 server_id: int) -> None:
         self.database_path = os.path.join(os.path.dirname(__file__), '../../storage/db/levels.db')
+
+        self.table_name = f"server{server_id}"
+        self.table_structure = """(user_id text,
+                                   message_count integer,
+                                   total_xp integer,
+                                   cooldown_time integer)"""
+        
+        CommonDB.create_table(self.table_name, self.database_path, self.table_structure)
 
     ####################################################################################################
 
@@ -38,17 +49,16 @@ class LevelsDB():
 
     ####################################################################################################
 
-    def create_table(self,
-                     server_id: int) -> None:
+    def create_table(self) -> None:
         """Creates a table, if there isn't one already"""
 
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='server{server_id}'")
+        c.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{self.table_name}'")
 
         if not c.fetchone():
-            c.execute(f"""CREATE TABLE server{server_id} (user_id text,
+            c.execute(f"""CREATE TABLE {self.table_name} (user_id text,
                                                           message_count integer,
                                                           total_xp integer,
                                                           cooldown_time integer)""")
@@ -60,19 +70,16 @@ class LevelsDB():
     ####################################################################################################
 
     def insert_user(self,
-                    server_id: int,
                     user_id: int) -> None:
         """Inserts a user into the levels db, if they aren't already"""
-
-        self.create_table(server_id)
 
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"SELECT user_id FROM server{server_id} WHERE user_id='{user_id}'")
+        c.execute(f"SELECT user_id FROM {self.table_name} WHERE user_id='{user_id}'")
 
         if not c.fetchone():
-            c.execute(f"""INSERT INTO server{server_id} VALUES ('{user_id}',
+            c.execute(f"""INSERT INTO {self.table_name} VALUES ('{user_id}',
                                                                 '0',
                                                                 '0',
                                                                 '0')""")
@@ -84,23 +91,20 @@ class LevelsDB():
     ####################################################################################################
 
     def increase_user_xp(self,
-                         server_id: int,
                          user_id: int) -> None:
         """Increases the message count, total xp and sets the cooldown of a user"""
-
-        self.create_table(server_id)
 
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"SELECT * FROM server{server_id} WHERE user_id='{user_id}'")
+        c.execute(f"SELECT * FROM {self.table_name} WHERE user_id='{user_id}'")
 
         user_data = c.fetchone()
         message_count: int = user_data[1] + 1
         total_xp: int = user_data[2] + random.choice(range(10, 15))
         cooldown_time: int = int(time.time()) + random.choice(range(55, 65))
 
-        c.execute(f"UPDATE server{server_id} SET message_count='{message_count}', total_xp='{total_xp}', cooldown_time={cooldown_time} WHERE user_id='{user_id}'")
+        c.execute(f"UPDATE {self.table_name} SET message_count='{message_count}', total_xp='{total_xp}', cooldown_time={cooldown_time} WHERE user_id='{user_id}'")
 
         conn.commit()
 
@@ -109,16 +113,13 @@ class LevelsDB():
     ####################################################################################################
 
     def get_user_cooldown(self,
-                          server_id: int,
                           user_id: int) -> int:
         """Returns the cooldown of a user form the db"""
-
-        self.create_table(server_id)
 
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"SELECT cooldown_time FROM server{server_id} WHERE user_id='{user_id}'")
+        c.execute(f"SELECT cooldown_time FROM {self.table_name} WHERE user_id='{user_id}'")
 
         cooldown_time: int = c.fetchone()[0]
 
@@ -129,16 +130,13 @@ class LevelsDB():
     ####################################################################################################
 
     def get_user_level(self,
-                       server_id: int,
                        user_id: int) -> tuple[int, int]:
         """Calulates the level of a user and returns it with their id"""
-
-        self.create_table(server_id)
 
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"SELECT total_xp FROM server{server_id} WHERE user_id='{user_id}'")
+        c.execute(f"SELECT total_xp FROM {self.table_name} WHERE user_id='{user_id}'")
 
         user_level, xp_until_next_level = LevelsDB().calulate_level(c.fetchone()[0])
 
@@ -147,16 +145,13 @@ class LevelsDB():
     ####################################################################################################
 
     def get_user_rank(self,
-                      server_id: int,
                       user_id: int) -> int:
         """Gets the rank of a user on the server"""
-
-        self.create_table(server_id)
 
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"SELECT * FROM (SELECT user_id, ROW_NUMBER() OVER (ORDER BY total_xp DESC) FROM server{server_id}) WHERE user_id='{user_id}'")
+        c.execute(f"SELECT * FROM (SELECT user_id, ROW_NUMBER() OVER (ORDER BY total_xp DESC) FROM {self.table_name}) WHERE user_id='{user_id}'")
 
         user_and_rank = c.fetchone()
 
@@ -166,16 +161,13 @@ class LevelsDB():
     ####################################################################################################
 
     def get_all_user_levels(self,
-                            server_id: int,
                             limit: int = 10_000_000) -> list[list[tuple[int, int]]]:
         """Returns all users with their levels in a list"""
-
-        self.create_table(server_id)
 
         conn = sqlite3.connect(self.database_path)
         c = conn.cursor()
 
-        c.execute(f"SELECT user_id, total_xp FROM server{server_id} ORDER BY total_xp DESC LIMIT {limit}")
+        c.execute(f"SELECT user_id, total_xp FROM {self.table_name} ORDER BY total_xp DESC LIMIT {limit}")
 
         xp_and_ids = c.fetchall()
         user_ids_and_levels = []

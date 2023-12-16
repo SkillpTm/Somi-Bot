@@ -1,6 +1,5 @@
 ####################################################################################################
 
-import os
 import sqlite3
 
 ####################################################################################################
@@ -9,19 +8,16 @@ from lib.db_modules.CommonDB import CommonDB
 
 
 
-class FeedbackDB():
+class FeedbackDB(CommonDB):
 
     def __init__(self) -> None:
-        self.database_path = os.path.join(os.path.dirname(__file__), '../../storage/db/feedback.db')
-
-        self.table_name = "feedback"
-        self.table_structure = """(server_id text,
-                                   user_id text,
-                                   user_name text,
-                                   submission_time text,
-                                   feedback text)"""
-        
-        CommonDB.create_table(self.table_name, self.database_path, self.table_structure)
+        super().__init__(database_path = "../../storage/db/feedback.db",
+                         table_name = "feedback",
+                         table_structure = """(server_id text,
+                                               user_id text,
+                                               user_name text,
+                                               submission_time text,
+                                               feedback text)""")
 
     ####################################################################################################
 

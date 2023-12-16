@@ -1,6 +1,5 @@
 ####################################################################################################
 
-import os
 import sqlite3
 import time
 import random
@@ -11,19 +10,16 @@ from lib.db_modules.CommonDB import CommonDB
 
 
 
-class LevelsDB():
+class LevelsDB(CommonDB):
 
     def __init__(self,
                  server_id: int) -> None:
-        self.database_path = os.path.join(os.path.dirname(__file__), '../../storage/db/levels.db')
-
-        self.table_name = f"server{server_id}"
-        self.table_structure = """(user_id text,
-                                   message_count integer,
-                                   total_xp integer,
-                                   cooldown_time integer)"""
-        
-        CommonDB.create_table(self.table_name, self.database_path, self.table_structure)
+        super().__init__(database_path = "../../storage/db/levels.db",
+                         table_name = f"server{server_id}",
+                         table_structure = """(user_id text,
+                                               message_count integer,
+                                               total_xp integer,
+                                               cooldown_time integer)""")
 
     ####################################################################################################
 

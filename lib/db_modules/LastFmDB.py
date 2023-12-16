@@ -1,6 +1,5 @@
 ####################################################################################################
 
-import os
 import sqlite3
 
 ####################################################################################################
@@ -9,17 +8,14 @@ from lib.db_modules.CommonDB import CommonDB
 
 
 
-class LastFmDB():
+class LastFmDB(CommonDB):
 
     def __init__(self) -> None:
-        self.database_path = os.path.join(os.path.dirname(__file__), '../../storage/db/lastfm.db')
-
-        self.table_name = "lastfmUsers"
-        self.table_structure = """(discord_user_id text,
-                                   lastfm_username text)"""
+        super().__init__(database_path = "../../storage/db/lastfm.db",
+                         table_name = "lastfmUsers",
+                         table_structure = """(discord_user_id text,
+                                               lastfm_username text)""")
         
-        CommonDB.create_table(self.table_name, self.database_path, self.table_structure)
-
     ####################################################################################################
 
     def get_user(self,

@@ -1,6 +1,5 @@
 ####################################################################################################
 
-import os
 import sqlite3
 import time
 
@@ -10,19 +9,16 @@ from lib.db_modules.CommonDB import CommonDB
 
 
 
-class ReminderDB():
+class ReminderDB(CommonDB):
 
     def __init__(self,
                  user_id: int) -> None:
-        self.database_path = os.path.join(os.path.dirname(__file__), '../../../storage/db/user_data/reminders.db')
-
-        self.table_name = f"user{user_id}"
-        self.table_structure = """(reminder_time integer,
-                                   bot_reply_link text,
-                                   delete_id integer,
-                                   clean_reminder text)"""
-        
-        CommonDB.create_table(self.table_name, self.database_path, self.table_structure)
+        super().__init__(database_path = "../../../storage/db/user_data/reminders.db",
+                         table_name = f"user{user_id}",
+                         table_structure = """(reminder_time integer,
+                                               bot_reply_link text,
+                                               delete_id integer,
+                                               clean_reminder text)""")
 
     ####################################################################################################
 

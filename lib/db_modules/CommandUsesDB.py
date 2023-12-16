@@ -1,6 +1,5 @@
 ####################################################################################################
 
-import os
 import sqlite3
 
 ####################################################################################################
@@ -9,17 +8,14 @@ from lib.db_modules.CommonDB import CommonDB
 
 
 
-class CommandUsesDB():
+class CommandUsesDB(CommonDB):
 
     def __init__(self,
                  table_name: str) -> None:
-        self.database_path = os.path.join(os.path.dirname(__file__), '../../storage/db/command_uses.db')
-
-        self.table_name = table_name
-        self.table_structure = """(name text,
-                                   amount integer)"""
-
-        CommonDB.create_table(self.table_name, self.database_path, self.table_structure)
+        super().__init__(database_path = "../../storage/db/command_uses.db",
+                         table_name = table_name,
+                         table_structure = """(name text,
+                                               amount integer)""")
 
     ####################################################################################################
 

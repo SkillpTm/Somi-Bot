@@ -1,6 +1,5 @@
 ####################################################################################################
 
-import os
 import sqlite3
 
 ####################################################################################################
@@ -9,18 +8,16 @@ from lib.db_modules.CommonDB import CommonDB
 
 
 
-class KeywordDB():
+class KeywordDB(CommonDB):
 
     def __init__(self,
                  server_id: int,
                  user_id: int) -> None:
-        self.database_path = os.path.join(os.path.dirname(__file__), '../../../storage/db/user_data/keywords.db')
-        
-        self.table_name = f"server{server_id}_user{user_id}"
-        self.first_part_table_name = f"server{server_id}"
-        self.table_structure = """(keyword text)"""
+        super().__init__(database_path = "../../../storage/db/user_data/keywords.db",
+                         table_name = f"server{server_id}_user{user_id}",
+                         table_structure = """(keyword text)""")
 
-        CommonDB.create_table(self.table_name, self.database_path, self.table_structure)
+        self.first_part_table_name = f"server{server_id}"
 
     ####################################################################################################
 

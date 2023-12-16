@@ -1,6 +1,5 @@
 ####################################################################################################
 
-import os
 import sqlite3
 
 ####################################################################################################
@@ -9,17 +8,14 @@ import sqlite3
 from lib.db_modules.CommonDB import CommonDB
 
 
-class CustomDB():
+class CustomDB(CommonDB):
 
     def __init__(self,
                  server_id: int) -> None:
-        self.database_path = os.path.join(os.path.dirname(__file__), '../../storage/db/custom_commands.db')
-
-        self.table_name = f"server{server_id}"
-        self.table_structure = """(clean_commandname text,
-                                   commandtext text)"""
-
-        CommonDB.create_table(self.table_name, self.database_path, self.table_structure)
+        super().__init__(database_path = "../../storage/db/custom_commands.db",
+                         table_name = f"server{server_id}",
+                         table_structure = """(clean_commandname text,
+                                               commandtext text)""")
 
     ####################################################################################################
 

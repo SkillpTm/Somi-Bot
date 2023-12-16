@@ -1,7 +1,6 @@
 ####################################################################################################
 
 import nextcord
-import os
 import sqlite3
 
 ####################################################################################################
@@ -10,16 +9,13 @@ from lib.db_modules.CommonDB import CommonDB
 
 
 
-class DefaultRoleDB():
+class DefaultRoleDB(CommonDB):
 
     def __init__(self,
                  server_id: int) -> None:
-        self.database_path = os.path.join(os.path.dirname(__file__), '../../../storage/db/config/default_role.db')
-
-        self.table_name = f"server{server_id}"
-        self.table_structure = """(role_id text)"""
-        
-        CommonDB.create_table(self.table_name, self.database_path, self.table_structure)
+        super().__init__(database_path = "../../../storage/db/config/default_role.db",
+                         table_name = f"server{server_id}",
+                         table_structure = """(role_id text)""")
 
     ####################################################################################################
 

@@ -22,18 +22,22 @@ You can report bugs and make suggestions with /feedback
 This repo isn't inherintly meant for you to clone it and spin up your own version. If you still want to do that, follow these steps:
 
 1. Install Python 3.12 @ https://www.python.org/downloads/release/python-3120/
-2. Replace the information in .\storage\config.py with the one of your bot.
-3. Make a .env at .\\.env with these variables:
+2. Install requirements:
+```sh
+pip install -r .\requirements.txt
+```
+3. Replace the information in .\storage\config.py with the one of your bot.
+4. Make a .env at .\\.env with these variables:
 
 ```sh
 # https://discord.com/developers/applications
 DISCORD_TOKEN="ENTER VALUE"
 
 # https://www.last.fm/api
-LAST_FM_USERNAME = "ENTER VALUE"
-LAST_FM_PASSWORD = "ENTER VALUE"
-LAST_FM_API_KEY = "ENTER VALUE"
-LAST_FM_API_SECRET = "ENTER VALUE"
+LAST_FM_USERNAME="ENTER VALUE"
+LAST_FM_PASSWORD="ENTER VALUE"
+LAST_FM_API_KEY="ENTER VALUE"
+LAST_FM_API_SECRET="ENTER VALUE"
 
 # https://developer.spotify.com/
 SPOTIPY_CLIENT_ID="ENTER VALUE"
@@ -53,19 +57,19 @@ WOLFRAM_APP_ID="ENTER VALUE"
 YOUTUBE_API_KEY="ENTER VALUE"
 ```
 
-4. Make a json file at .\env.json with these variables:
+5. Make a json file at .\env.json with these variables:
 
-```sh
-# On how to get this checkout this comment https://stackoverflow.com/questions/23102833/how-to-scrape-a-website-which-requires-login-using-python-and-beautifulsoup/61140905#61140905
+```json
+// On how to get this checkout this comment https://stackoverflow.com/questions/23102833/how-to-scrape-a-website-which-requires-login-using-python-and-beautifulsoup/61140905#61140905
 LAST_FM_COOKIES = {
-    'ENETER VALUES': 'ENETER VALUES',
-}
+    "ENETER VALUES": "ENETER VALUES",
+},
 LAST_FM_HEADERS = {
-    'ENETER VALUES': 'ENETER VALUES',
+    "ENETER VALUES": "ENETER VALUES",
 }
 ```
 
-5. Now run the bot:
+6. Now run the bot:
 
 ```sh
 py .\main.py

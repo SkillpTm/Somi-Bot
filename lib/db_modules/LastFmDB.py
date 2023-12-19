@@ -1,9 +1,5 @@
 ####################################################################################################
 
-import sqlite3
-
-####################################################################################################
-
 from lib.db_modules.CommonDB import CommonDB
 
 
@@ -13,56 +9,52 @@ class LastFmDB(CommonDB):
     def __init__(self) -> None:
         super().__init__(database_path = "../../storage/db/lastfm.db",
                          table_name = "lastfmUsers",
-                         table_structure = """(discord_user_id text,
+                         table_structure = """(discord_id text,
                                                lastfm_username text)""")
+
+    ####################################################################################################
+
+    def add(self,
+            user_id: int,
+            lastfm_username: str) -> bool:
+        """add the lastfm username with the discord id in the db"""
+
+        inserted = self._insert(select_column = "lastfm_username",
+                                where_column = "discord_id",
+                                check_value = str(user_id),
+                                values = [user_id, lastfm_username])
         
-    ####################################################################################################
+        self._close(commit = inserted)
 
-    def get_user(self,
-                 user_id: int) -> str:
-        """This function returna the lf username of a discord user, if they have set one"""
-
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
-
-        c.execute(f"SELECT lastfm_username FROM {self.table_name} WHERE discord_user_id = '{user_id}'")
-
-        lf_user = c.fetchone()
-
-        if not lf_user:
-            conn.close()
-            return None
-
-        conn.close()
-        return lf_user[0]
+        return inserted
 
     ####################################################################################################
 
-    def set_user(self,
-                 user_id: int,
-                 lastfm_username: str) -> None:
-        """This function connects a discord and lastfm user in the db"""
+    def delete(self,
+               user_id: int) -> bool:
+        """deletes the user from the db"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        deleted = self._delete(select_column = "discord_id",
+                               where_column = "discord_id",
+                               check_value = str(user_id))
+        
+        self._close(commit = deleted)
 
-        c.execute(f"INSERT INTO {self.table_name} VALUES ('{user_id}', '{lastfm_username}')")
-
-        conn.commit()
-
-        conn.close()
-
+        return deleted
+    
     ####################################################################################################
 
-    def reset_user(self,
-                   user_id: int) -> None:
-        """This function removes a user's info from the db"""
+    def get(self,
+            user_id: int) -> str:
+        """get the lastfm username from the user with their discord id"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        username = self._get(select_column = "lastfm_username",
+                             where_column = "discord_id",
+                             check_value = str(user_id))
 
-        c.execute(f"DELETE FROM {self.table_name} WHERE discord_user_id = '{str(user_id)}'")
+        self._close(commit = False)
 
-        conn.commit()
-
-        conn.close()
+        if not username:
+            return ""
+        else:
+            return username[0]

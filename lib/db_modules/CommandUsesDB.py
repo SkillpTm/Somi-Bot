@@ -1,9 +1,5 @@
 ####################################################################################################
 
-import sqlite3
-
-####################################################################################################
-
 from lib.db_modules.CommonDB import CommonDB
 
 
@@ -19,48 +15,44 @@ class CommandUsesDB(CommonDB):
 
     ####################################################################################################
 
-    def uses_update(self,
-                    command_name: str) -> None:
-        """This function adds up how often a command has been used, but adding +1 on every execution"""
+    def update(self,
+               command_name: str) -> None:
+        """increases the uses count of a command"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        inserted = self._insert(select_column = "amount",
+                                where_column = "name",
+                                check_value = command_name,
+                                values = [command_name, 0])
 
-        c.execute(f"SELECT amount FROM {self.table_name} WHERE name = '{command_name}'")
+        amount = self._get(select_column = "amount",
+                           where_column = "name",
+                           check_value = command_name)
 
-        amount = c.fetchone()
+        self.cur.execute(f"""UPDATE {self.table_name}
+                             SET amount = '{amount[0] + 1}'
+                             WHERE name = '{command_name}'""")
 
-        if not amount:
-            self.insert(command_name, 0)
-
-            c.execute(f"SELECT amount FROM {self.table_name} WHERE name = '{command_name}'")
-            amount = c.fetchone()
-
-        c.execute(f"UPDATE {self.table_name} SET amount = '{amount[0] + 1}' WHERE name = '{command_name}'")
-
-        conn.commit()
-        conn.close()
+        self._close(commit = True)
 
     ####################################################################################################
 
-    def get_total_uses(self) -> int:
-        """This function adds up how often all commands on all tables have been used"""
+    def get_total(self) -> int:
+        """calulates the total command uses of all commands on all tables"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        self.cur.execute(f"""SELECT name
+                             FROM sqlite_master
+                             WHERE type='table'""")
 
-        c.execute(f"SELECT name FROM sqlite_master WHERE type='table'")
-
-        all_table_names = c.fetchall()
+        all_table_names = self.cur.fetchall()
         total_uses = 0
 
         for table_name in all_table_names:
-            
-            c.execute(f"SELECT amount FROM {table_name[0]}")
+            self.cur.execute(f"""SELECT amount
+                                 FROM {table_name[0]}""")
 
-            all_uses_list: list[tuple[int]] = c.fetchall()
+            all_uses_list: list[tuple[int]] = self.cur.fetchall()
             total_uses += sum([command_uses[0] for command_uses in all_uses_list])
 
-        conn.close()
+        self._close(commit = False)
 
         return total_uses

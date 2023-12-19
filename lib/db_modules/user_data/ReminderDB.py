@@ -1,6 +1,5 @@
 ####################################################################################################
 
-import sqlite3
 import time
 
 ####################################################################################################
@@ -13,133 +12,112 @@ class ReminderDB(CommonDB):
 
     def __init__(self,
                  user_id: int) -> None:
-        super().__init__(database_path = "../../../storage/db/user_data/reminders.db",
+        super().__init__(database_path = "../../storage/db/user_data/reminders.db",
                          table_name = f"user{user_id}",
-                         table_structure = """(reminder_time integer,
-                                               bot_reply_link text,
-                                               delete_id integer,
-                                               clean_reminder text)""")
+                         table_structure = """(time integer,
+                                               link text,
+                                               id integer,
+                                               text text)""")
 
     ####################################################################################################
 
-    def create(self,
-               reminder_time: int,
-               bot_reply_link: str,
-               delete_id: str,
-               clean_reminder: str) -> None:
-        """This function adds a new """
+    def add(self,
+            time: int,
+            link: str,
+            id: str,
+            text: str) -> None:
+        """adds the reminder to the table"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        inserted = self._insert(values = [time, link, id, text])
 
-        c.execute(f"INSERT INTO {self.table_name} VALUES ('{reminder_time}', '{bot_reply_link}', '{delete_id}', '{clean_reminder}')")
-
-        conn.commit()
-
-        conn.close()
+        self._close(commit = inserted)
 
     ####################################################################################################
 
     def delete(self,
-               delete_id: str) -> bool | str:
-        """This function deletes a reminder from the user's table. If the delete_id is 'ALL', it will immeaditly return back"""
+               id: str) -> bool:
+        """deletes the reminder from the table"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        deleted = self._delete(select_column = "id",
+                               where_column = "id",
+                               check_value = id)
+        
+        self._close(commit = deleted)
 
-        if delete_id == "ALL":
-            conn.close()
-            return "ALL"
-
-        c.execute(f"SELECT delete_id FROM {self.table_name} WHERE delete_id = '{delete_id}'")
-
-        if not c.fetchone():
-            conn.close()
-            return False
-
-        c.execute(f"DELETE from {self.table_name} WHERE delete_id = '{delete_id}'")
-
-        conn.commit()
-
-        conn.close()
-        return True
+        return deleted
 
     ####################################################################################################
 
     def delete_all(self) -> None:
-        """This function drops a user's reminder table"""
+        """drops the user's table"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        self._drop()
+        self._close(commit = True)
+
+    ####################################################################################################
+
+    def get_reminder(self,
+                     id: int) -> tuple[str, str]:
+        """get the link and reminder text of the reminder"""
+
+        reminder = self._get(select_column = "link, text",
+                             where_column = "id",
+                             check_value = str(id),
+                             multiple_columns = True)
         
-        c.execute(f"DROP TABLE {self.table_name}")
+        link: str = reminder[0]
+        text: str = reminder[1]
 
-        conn.commit()
+        self._close(commit = False)
 
-        conn.close()
-
-    ####################################################################################################
-
-    def user_list(self) -> list[list[tuple[int, str, int, str]]]:
-        """
-        This function returns a list of all reminders of a user with the following structure:
-        List[List[reminder time, bot reply link, delete id, reminder text]]
-        """
-
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
-
-        c.execute(f"SELECT * FROM {self.table_name} ORDER BY reminder_time ASC")
-        all_reminders = c.fetchall()
-
-        for index, reminder in enumerate(all_reminders):
-            all_reminders[index] = list(reminder)
-
-        conn.close()
-        return all_reminders
+        return link, text
 
     ####################################################################################################
 
-    def get_times(self) -> list[list[int, int, int]]:
-        """
-        This function returns a list of all reminder times, of all users
-        List[User[user_id, reminder_time, delete_id]]
-        """
+    def get_list(self) -> list[list[tuple[int, str, int, str]]]:
+        """get a list of lists with all times, links, ids and texts of the user"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        reminders = self._get(select_column = "*",
+                              order_column = "time",
+                              order_type = "ASC",
+                              multiple_columns = True,
+                              multiple_columns_and_rows = True)
+        
+        self._close(commit = False)
 
-        c.execute("SELECT name FROM sqlite_master WHERE type='table'")
-        all_tables = c.fetchall()
-        all_users_reminder_times: list[list[int, int, int]] = []
+        return reminders
 
-        for user in all_tables:
-            c.execute(f"SELECT reminder_time, delete_id FROM {user[0]} ORDER BY reminder_time ASC")
-            user_reminder_times = c.fetchall()
+    ####################################################################################################
+
+    def get_all(self) -> list[list[int, int, int]]:
+        """get a list of lists with all user's reminders as: user id, time and id"""
+
+        self.cur.execute("""SELECT name
+                            FROM sqlite_master
+                            WHERE type='table'""")
+        
+        all_table_names = self.cur.fetchall()
+        all_users_times: list[list[int, int, int]] = []
+
+        for user in all_table_names:
+            user = user[0]
+
+            self.cur.execute(f"""SELECT time, id
+                                 FROM {user}
+                                 ORDER BY reminder_time ASC""")
+
+            user_times_ids = self.cur.fetchall()
             current_time = int(time.time())
 
-            for reminder_time in user_reminder_times:
-                if reminder_time[0] > current_time:
+            for time_and_id in user_times_ids:
+                reminder_time = time_and_id[0]
+                id = time_and_id[1]
+
+                if reminder_time > current_time:
                     break
                 
-                all_users_reminder_times.append([int(user[0][4:]), reminder_time[0], reminder_time[1]])
+                all_users_times.append([int(user[4:]), reminder_time, id])
 
-        conn.close()
-        return all_users_reminder_times
+        self._close(commit = False)
 
-    ####################################################################################################
-
-    def get_contents(self, delete_id: int) -> tuple[str, str]:
-        """This function returns the reminder and the bot reply link, from a delete id"""
-
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
-
-        c.execute(f"SELECT bot_reply_link, clean_reminder FROM {self.table_name} WHERE delete_id = '{delete_id}'")
-
-        contents = c.fetchone()
-        bot_reply_link: str = contents[0]
-        reminder_text: str = contents[1]
-
-        conn.close()
-        return bot_reply_link, reminder_text
+        return all_users_times

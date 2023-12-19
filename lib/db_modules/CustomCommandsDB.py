@@ -1,105 +1,81 @@
 ####################################################################################################
 
-import sqlite3
-
-####################################################################################################
-
 
 from lib.db_modules.CommonDB import CommonDB
 
 
-class CustomDB(CommonDB):
+class CustomCommandsDB(CommonDB):
 
     def __init__(self,
                  server_id: int) -> None:
         super().__init__(database_path = "../../storage/db/custom_commands.db",
                          table_name = f"server{server_id}",
-                         table_structure = """(clean_commandname text,
-                                               commandtext text)""")
+                         table_structure = """(name text,
+                                               text text)""")
 
     ####################################################################################################
-
-    def create_command(self,
-                       clean_commandname: str,
-                       commandtext: str) -> bool:
-        """This function adds a custom command to the server, if there isn't already a custom command with the same name"""
-
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
-
-        c.execute(f"SELECT clean_commandname FROM server{self.table_name} WHERE clean_commandname = '{clean_commandname}'")
         
-        if c.fetchone():
-            conn.close()
-            return False
+    def add(self,
+            name: str,
+            text: str) -> bool:
+        """adds the command to the table"""
 
-        c.execute(f"INSERT INTO server{self.table_name} VALUES ('{clean_commandname}', '{commandtext}')")
+        inserted = self._insert(select_column = "name",
+                                where_column = "name",
+                                check_value = name,
+                                values = [name, text])
+        
+        self._close(commit = inserted)
 
-        conn.commit()
-
-        conn.close()
-        return True
+        return inserted
 
     ####################################################################################################
+        
+    def delete(self,
+               name: str) -> str:
+        """deletes the command from the table"""        
 
-    def delete_command(self,
-                       clean_commandname: str) -> str:
-        """This function will delete a custom command, if the command was deleted it will return the commandtext, otherwise an empty string"""
+        text = self._get(select_column = "text",
+                         where_column = "name",
+                         check_value = name)
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        deleted = self._delete(select_column = "name",
+                               where_column = "name",
+                               check_value = name)
 
-        c.execute(f"SELECT clean_commandname FROM server{self.table_name} WHERE clean_commandname = '{clean_commandname}'")
+        self._close(commit = deleted)
 
-        if not c.fetchone():
-            conn.close()
+        if not deleted:
             return ""
-
-        c.execute(f"SELECT commandtext FROM server{self.table_name} WHERE clean_commandname = '{clean_commandname}'")
-
-        commandtext = c.fetchone()[0]
-
-        c.execute(f"DELETE from server{self.table_name} WHERE clean_commandname = '{clean_commandname}'")
-
-        conn.commit()
-
-        conn.close()
-        return commandtext
+        else:
+            return text[0]
 
     ####################################################################################################
+        
+    def get_text(self,
+                 name: str) -> str:
+        """get the output text for a command"""
 
-    def list(self) -> list | list[str]:
-        """This command returns a list of all custom commands a server has. If the server has no custom commands it will retrun an empty list"""
+        text = self._get(select_column = "text",
+                         where_column = "name",
+                         check_value = name)
+        
+        self._close(commit = False)
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
-
-        c.execute(f"SELECT clean_commandname FROM server{self.table_name} ORDER BY clean_commandname ASC")
-
-        tuple_all_commandnames = c.fetchall()
-        all_commandnames = [commandname[0] for commandname in tuple_all_commandnames]
-
-        conn.close()
-        return all_commandnames
-
-    ####################################################################################################
-
-    def get_command_text(self,
-                         clean_commandname: str) -> str:
-        """This function will get the command text of a custom command, if the input custom command doesn't exist it will return an empty string"""
-
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
-
-        c.execute(f"SELECT clean_commandname FROM server{self.table_name} WHERE clean_commandname = '{clean_commandname}'")
-
-        if not c.fetchone():
-            conn.close()
+        if not text:
             return ""
+        else:
+            return text[0]
 
-        c.execute(f"SELECT commandtext FROM server{self.table_name} WHERE clean_commandname = '{clean_commandname}'")
+    ####################################################################################################
 
-        commandtext = c.fetchone()[0]
+    def get_list(self) -> list:
+        """get all commandnames for the server"""
 
-        conn.close()
-        return commandtext
+        command_list = self._get(select_column = "name",
+                                 order_column = "name",
+                                 order_type = "ASC")
+        
+        self._close(commit = False)
+
+        return command_list

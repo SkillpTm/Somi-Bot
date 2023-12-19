@@ -1,6 +1,5 @@
 ####################################################################################################
 
-import sqlite3
 import time
 import random
 
@@ -19,7 +18,7 @@ class LevelsDB(CommonDB):
                          table_structure = """(user_id text,
                                                message_count integer,
                                                total_xp integer,
-                                               cooldown_time integer)""")
+                                               cooldown integer)""")
 
     ####################################################################################################
 
@@ -28,7 +27,7 @@ class LevelsDB(CommonDB):
         """
         This is the formular to calculate someone's level. Every level has 200xp more than the last one (Level 1 has 300 xp)
         Meaning that the formular to get how much xp a level requires is: ((level - 1) * 200) + 300
-        To calculation for your level from your xp is: ((XP - 300) / 200) + 1
+        To formular for your level from your xp is: ((XP - 300) / 200) + 1
         """
 
         user_level: int = 0
@@ -45,134 +44,120 @@ class LevelsDB(CommonDB):
 
     ####################################################################################################
 
-    def create_table(self) -> None:
-        """Creates a table, if there isn't one already"""
+    def add(self,
+            user_id: int) -> None:
+        """adds a user to the table, but notably DOESN'T commit"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        inserted = self._insert(select_column = "user_id",
+                                where_column = "user_id",
+                                check_value = user_id,
+                                values = [str(user_id), 0, 0, 0])
 
-        c.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{self.table_name}'")
-
-        if not c.fetchone():
-            c.execute(f"""CREATE TABLE {self.table_name} (user_id text,
-                                                          message_count integer,
-                                                          total_xp integer,
-                                                          cooldown_time integer)""")
-
-            conn.commit()
-
-        conn.close()
 
     ####################################################################################################
 
-    def insert_user(self,
-                    user_id: int) -> None:
-        """Inserts a user into the levels db, if they aren't already"""
-
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
-
-        c.execute(f"SELECT user_id FROM {self.table_name} WHERE user_id='{user_id}'")
-
-        if not c.fetchone():
-            c.execute(f"""INSERT INTO {self.table_name} VALUES ('{user_id}',
-                                                                '0',
-                                                                '0',
-                                                                '0')""")
-
-            conn.commit()
-
-        conn.close()
-
-    ####################################################################################################
-
-    def increase_user_xp(self,
+    def increase_xp(self,
                          user_id: int) -> None:
-        """Increases the message count, total xp and sets the cooldown of a user"""
+        """increase the user's xp, their messages count and their cooldown"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        self.add(user_id)
 
-        c.execute(f"SELECT * FROM {self.table_name} WHERE user_id='{user_id}'")
+        user_data = self._get(select_column = "*",
+                              where_column = "user_id",
+                              check_value = str(user_id),
+                              multiple_columns = True)
 
-        user_data = c.fetchone()
         message_count: int = user_data[1] + 1
         total_xp: int = user_data[2] + random.choice(range(10, 15))
-        cooldown_time: int = int(time.time()) + random.choice(range(55, 65))
+        cooldown: int = int(time.time()) + random.choice(range(55, 65))
 
-        c.execute(f"UPDATE {self.table_name} SET message_count='{message_count}', total_xp='{total_xp}', cooldown_time={cooldown_time} WHERE user_id='{user_id}'")
+        self.cur.execute(f"""UPDATE {self.table_name}
+                             SET message_count='{message_count}', total_xp='{total_xp}', cooldown={cooldown}
+                             WHERE user_id='{user_id}'""")
 
-        conn.commit()
-
-        conn.close()
+        self._close(commit = True)
 
     ####################################################################################################
 
-    def get_user_cooldown(self,
+    def get_cooldown(self,
                           user_id: int) -> int:
-        """Returns the cooldown of a user form the db"""
+        """gtes the user's cooldown"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        self.add(user_id)
 
-        c.execute(f"SELECT cooldown_time FROM {self.table_name} WHERE user_id='{user_id}'")
-
-        cooldown_time: int = c.fetchone()[0]
-
-        conn.close()
-
-        return cooldown_time
+        cooldown = self._get(select_column = "cooldown",
+                             where_column = "user_id",
+                             check_value = str(user_id))
+        
+        self._close(commit = True)
+        
+        return cooldown[0]
 
     ####################################################################################################
 
-    def get_user_level(self,
+    def get_level(self,
                        user_id: int) -> tuple[int, int]:
-        """Calulates the level of a user and returns it with their id"""
+        """get the user's level and the xp required until their next level"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        self.add(user_id)
 
-        c.execute(f"SELECT total_xp FROM {self.table_name} WHERE user_id='{user_id}'")
+        total_xp = self._get(select_column = "total_xp",
+                             where_column = "user_id",
+                             check_value = str(user_id))
+        
+        self._close(commit = True)
+        
+        if not total_xp:
+            total_xp = 0 
+        else:
+            total_xp = total_xp[0]
 
-        user_level, xp_until_next_level = LevelsDB().calulate_level(c.fetchone()[0])
-
-        return user_level, xp_until_next_level
+        return self.calulate_level(total_xp)
 
     ####################################################################################################
 
-    def get_user_rank(self,
+    def get_rank(self,
                       user_id: int) -> int:
-        """Gets the rank of a user on the server"""
+        """get the leaderboard position of the user in this server"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        self.add(user_id)
 
-        c.execute(f"SELECT * FROM (SELECT user_id, ROW_NUMBER() OVER (ORDER BY total_xp DESC) FROM {self.table_name}) WHERE user_id='{user_id}'")
+        self.cur.execute(f"""SELECT row_num
+                             FROM (
+                                 SELECT user_id,
+                                     ROW_NUMBER() OVER (ORDER BY total_xp DESC) AS row_num
+                                 FROM {self.table_name}
+                             )
+                             WHERE user_id='{user_id}'""")
 
-        user_and_rank = c.fetchone()
+        rank = self.cur.fetchone()[0]
 
-        return user_and_rank[1]
+        self._close(commit = True)
+
+        return rank
 
 
     ####################################################################################################
 
     def get_all_user_levels(self,
                             limit: int = 10_000_000) -> list[list[tuple[int, int]]]:
-        """Returns all users with their levels in a list"""
+        """get a list of lists with user ids and their levels, sorted by most xp"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        self.cur.execute(f"""SELECT user_id, total_xp
+                             FROM {self.table_name}
+                             ORDER BY total_xp DESC
+                             LIMIT {limit}""")
 
-        c.execute(f"SELECT user_id, total_xp FROM {self.table_name} ORDER BY total_xp DESC LIMIT {limit}")
+        ids_and_xp: list[tuple[str, int]] = self.cur.fetchall()
+        ids_and_levels = []
 
-        xp_and_ids = c.fetchall()
-        user_ids_and_levels = []
+        for current_user in ids_and_xp:
+            current_user = list(current_user)
 
-        for tuple_xp_and_id in xp_and_ids:
-            current_user = list(tuple_xp_and_id)
+            user_level, xp_until_next_level = self.calulate_level(current_user[1])
 
-            user_level, xp_until_next_level = LevelsDB().calulate_level(current_user[1])
+            ids_and_levels.append([int(current_user[0]), user_level])
 
-            user_ids_and_levels.append([int(current_user[0]), user_level])
+        self._close(commit = False)
 
-        return user_ids_and_levels
+        return ids_and_levels

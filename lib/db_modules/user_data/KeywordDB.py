@@ -1,9 +1,5 @@
 ####################################################################################################
 
-import sqlite3
-
-####################################################################################################
-
 from lib.db_modules.CommonDB import CommonDB
 
 
@@ -13,112 +9,96 @@ class KeywordDB(CommonDB):
     def __init__(self,
                  server_id: int,
                  user_id: int) -> None:
-        super().__init__(database_path = "../../../storage/db/user_data/keywords.db",
+        self.first_part_table_name = f"server{server_id}"
+
+        super().__init__(database_path = "../../storage/db/user_data/keywords.db",
                          table_name = f"server{server_id}_user{user_id}",
                          table_structure = """(keyword text)""")
-
-        self.first_part_table_name = f"server{server_id}"
 
     ####################################################################################################
 
     def add(self,
             keyword: str) -> bool:
-        """This function will add a keyword to a user's table"""
+        """adds the keyword to the table"""
+
+        inserted = self._insert(select_column = "keyword",
+                                where_column = "keyword",
+                                check_value = keyword,
+                                values = [keyword])
         
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
-
-        c.execute(f"SELECT keyword FROM {self.table_name} WHERE keyword = '{keyword}'")
-
-        if c.fetchone():
-            conn.close()
-            return False
-
-        c.execute(f"INSERT INTO {self.table_name} VALUES ('{keyword}')")
-
-        conn.commit()
-
-        conn.close()
-        return True
+        self._close(commit = inserted)
+        
+        return inserted
 
     ####################################################################################################
 
     def delete(self,
-               keyword: str) -> bool | str:
-        """This function deletes a keyword from the user's table. If the keyword input is 'ALL', it will immeaditly return back"""
+               keyword: str) -> bool:
+        """deletes the keyword from the table"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
-
-        if keyword == "ALL":
-            conn.close()
-            return "ALL"
-
-        c.execute(f"SELECT keyword FROM {self.table_name} WHERE keyword = '{keyword}'")
+        deleted = self._delete(select_column = "keyword",
+                               where_column = "keyword",
+                               check_value = keyword)
         
-        if not c.fetchone():
-            conn.close()
-            return False
+        self._close(commit = deleted)
 
-        c.execute(f"DELETE from {self.table_name} WHERE keyword = '{keyword}'")
-
-        conn.commit()
-
-        conn.close()
-        return True
+        return deleted
 
     ####################################################################################################
 
     def delete_all(self) -> None:
-        """This function drops a user's keyword table"""
+        """drops the table with the keywords"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
-
-        c.execute(f"DROP TABLE {self.table_name}")
-        conn.commit()
-
-        conn.close()
+        self._drop()
+        self._close(commit = True)
 
     ####################################################################################################
 
     def user_list(self) -> list[str]:
-        """This function returns a list of all the keywords a user has"""
+        """gets a list with all keywords of the user"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
+        keywords = self._get(select_column = "keyword",
+                             order_column = "keyword",
+                             order_type = "ASC")
+        
+        self._close(commit = False)
 
-        c.execute(f"SELECT keyword FROM {self.table_name} ORDER BY keyword ASC")
-        all_keywords = c.fetchall()
-
-        user_keywords = [keyword[0] for keyword in all_keywords]
-
-        conn.close()
-        return user_keywords
+        return keywords
 
     ####################################################################################################
 
     def get_all(self) -> dict[int, list[str]]:
-        """This function returns a dict with all users on the guild and their keywords"""
+        """gets all users with their keywords from this server, except for the provided user and their keywords"""
 
-        conn = sqlite3.connect(self.database_path)
-        c = conn.cursor()
-
-        c.execute(f"""SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '{self.first_part_table_name}%'
-                      EXCEPT SELECT name FROM sqlite_master WHERE name = '{self.table_name}'""")
-        all_user_tables = c.fetchall()
+        self.cur.execute(f"""SELECT name
+                             FROM sqlite_master
+                             WHERE type='table'
+                                 AND name LIKE '{self.first_part_table_name}%'
+                             EXCEPT SELECT name
+                             FROM sqlite_master
+                             WHERE name = '{self.table_name}'""")
+        
+        all_user_table_names: list[tuple[str]] = self.cur.fetchall()
         all_users_keywords: dict[int, list[str]] = {}
 
-        for user in all_user_tables:
-            c.execute(f"SELECT keyword FROM {user[0]} ORDER BY keyword ASC")
-            tuple_user_keywords = c.fetchall()
-            this_user_keywords: list[str] = [keyword[0] for keyword in tuple_user_keywords]
+        for user in all_user_table_names:
+            user = user[0]
+            
+            self.cur.execute(f"""SELECT keyword
+                                    FROM {user}
+                                    ORDER BY keyword ASC""")
+            
+            user_keywords: list[tuple[str]] = self.cur.fetchall()
+            user_keywords = [keyword[0] for keyword in user_keywords]
 
-            if this_user_keywords != []:
-                underscore_position = user[0].find("_")
-                user_id = int(user[0][underscore_position+5:])
+            if not user_keywords:
+                continue
 
-                all_users_keywords.update({user_id: this_user_keywords})
+            underscore_position = user.find("_")
+            user_id = int(user[underscore_position+5:])
 
-        conn.close()
+            all_users_keywords.update({user_id: user_keywords})
+
+        self._close(commit = False)
+
         return all_users_keywords

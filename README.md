@@ -61,11 +61,13 @@ YOUTUBE_API_KEY="ENTER VALUE"
 
 ```json
 // On how to get this checkout this comment https://stackoverflow.com/questions/23102833/how-to-scrape-a-website-which-requires-login-using-python-and-beautifulsoup/61140905#61140905
-LAST_FM_COOKIES = {
-    "ENETER VALUES": "ENETER VALUES",
-},
-LAST_FM_HEADERS = {
-    "ENETER VALUES": "ENETER VALUES",
+{
+    "LAST_FM_COOKIES": {
+        "ENETER VALUES": "ENETER VALUES",
+    },
+    "LAST_FM_HEADERS": {
+        "ENETER VALUES": "ENETER VALUES",
+    }
 }
 ```
 

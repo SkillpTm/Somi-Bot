@@ -26,8 +26,8 @@ class CommonDB():
     ####################################################################################################
 
     def _close(self,
-              *,
-              commit: bool) -> None:
+               *,
+               commit: bool) -> None:
         """closes the connection to the db and commits if needed"""
 
         if commit:

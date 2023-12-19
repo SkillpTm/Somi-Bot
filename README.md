@@ -59,7 +59,7 @@ YOUTUBE_API_KEY="ENTER VALUE"
 
 5. Make a json file at .\env.json with these variables:
 
-```json
+```jsonc
 // On how to get this checkout this comment https://stackoverflow.com/questions/23102833/how-to-scrape-a-website-which-requires-login-using-python-and-beautifulsoup/61140905#61140905
 {
     "LAST_FM_COOKIES": {

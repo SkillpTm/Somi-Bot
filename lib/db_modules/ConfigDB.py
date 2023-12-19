@@ -74,7 +74,7 @@ class ConfigDB(CommonDB):
     ####################################################################################################
 
     def delete(self,
-               data_1: str) -> bool:
+               data_1: str | int) -> bool:
         """deletes the role/channel id from the db"""
 
         in_table = False

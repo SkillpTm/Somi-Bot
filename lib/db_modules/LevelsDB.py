@@ -57,7 +57,7 @@ class LevelsDB(CommonDB):
     ####################################################################################################
 
     def increase_xp(self,
-                         user_id: int) -> None:
+                    user_id: int) -> None:
         """increase the user's xp, their messages count and their cooldown"""
 
         self.add(user_id)
@@ -80,7 +80,7 @@ class LevelsDB(CommonDB):
     ####################################################################################################
 
     def get_cooldown(self,
-                          user_id: int) -> int:
+                     user_id: int) -> int:
         """gtes the user's cooldown"""
 
         self.add(user_id)
@@ -96,7 +96,7 @@ class LevelsDB(CommonDB):
     ####################################################################################################
 
     def get_level(self,
-                       user_id: int) -> tuple[int, int]:
+                  user_id: int) -> tuple[int, int]:
         """get the user's level and the xp required until their next level"""
 
         self.add(user_id)
@@ -117,7 +117,7 @@ class LevelsDB(CommonDB):
     ####################################################################################################
 
     def get_rank(self,
-                      user_id: int) -> int:
+                 user_id: int) -> int:
         """get the leaderboard position of the user in this server"""
 
         self.add(user_id)

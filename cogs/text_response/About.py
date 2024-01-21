@@ -78,7 +78,7 @@ class About(nextcord_C.Cog):
 
                 [
                     "Invites:",
-                    f"You can invite Somi using this [Link]({self.client.SOMI_INVITE}). Additionally you can checkout Somi's code on [GitHub]({self.client.SOMI_GITHUB}).",
+                    f"You can invite Somi using this [link]({self.client.SOMI_INVITE}). Additionally you can checkout Somi's code on [GitHub]({self.client.SOMI_GITHUB}).",
                     False
                 ],
 

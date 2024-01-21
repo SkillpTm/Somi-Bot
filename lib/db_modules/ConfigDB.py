@@ -29,13 +29,14 @@ class ConfigDB(CommonDB):
         """adds the role/channel id to the config db"""
 
         in_table = False
+        in_table2 = False
 
         if any(element == self.config_type for element in ["AuditLogChannel", "DefaultRole"]): # these 2 can only exist once, so we check against the type
             in_table = self._check_if_in_table(select_column = "type",
                                                where_column = "type",
                                                check_value = self.config_type)
 
-        else: # the rest of the config_types can have multiple vales, so we check for the id at data_1
+        else: # the rest of the config_types can have multiple values, so we check for the id at data_1
             in_table_temp = self._check_if_in_table(select_column = "type",
                                                     where_column = "data_1",
                                                     check_value = data_1)
@@ -52,15 +53,12 @@ class ConfigDB(CommonDB):
                 else:
                     in_table = False
 
-            else:
-                in_table = False
-
         if self.config_type == "LevelRoles": # LevelRoles need to be checked for, if the level already exists, aswell as the id
-            in_table = self._check_if_in_table(select_column = "data_2",
+            in_table2 = self._check_if_in_table(select_column = "data_2",
                                                where_column = "data_2",
                                                check_value = data_2)
-            
-        if in_table:
+        
+        if in_table or in_table2:
             self._close(commit = False)
 
             return False
@@ -121,8 +119,7 @@ class ConfigDB(CommonDB):
     ####################################################################################################
 
     async def get_list(self,
-                       *,
-                       server: nextcord.Guild) -> list[str] | list[list[str, str]]: # Make output
+                       server: nextcord.Guild) -> int | list[int] | list[list[int, int]]:
         """gets a list of all channel/role ids or a list of lists with the LevelRoles ids and the levels"""
 
         if self.config_type != "LevelRoles":
@@ -143,18 +140,30 @@ class ConfigDB(CommonDB):
         self._close(commit = False)
 
         if any(element == self.config_type for element in ["AuditLogChannel", "HiddenChannels", "LevelIgnoreChannels"]):
+            ids = [int(id) for id in ids]
+
             for id in ids:
-                if not server.get_channel(int(id)):
+                if not server.get_channel(id):
                     self.delete(id)
                     ids.remove(id)
+            
+            if ids and self.config_type == "AuditLogChannel":
+                ids = ids[0]
 
         elif self.config_type == "DefaultRole":
+            ids = [int(id) for id in ids]
+
             for id in ids:
-                if not server.get_role(int(id)):
+                if not server.get_role(id):
                     self.delete(id)
                     ids.remove(id)
+            
+            if ids:
+                ids = ids[0]
 
         elif self.config_type == "LevelRoles":
+            ids = [[int(id_level[0]), int(id_level[1])] for id_level in ids]
+
             for id_level in ids:
                 if not server.get_role(id_level[0]):
                     from lib.modules.LevelRoles import LevelRoles

@@ -31,7 +31,7 @@ class LevelsLeaderboard(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        user_ids_and_levels = LevelsDB().get_all_user_levels(interaction.guild.id, 10)
+        user_ids_and_levels = LevelsDB(interaction.guild.id).get_all_user_levels(10)
         output: str = ""
 
         for index, user in enumerate(user_ids_and_levels):
@@ -47,9 +47,9 @@ class LevelsLeaderboard(nextcord_C.Cog):
             else:
                 name = "[Deleted User]"
 
-            output += f"**{index+1}. {name}**\nLevel: `{user[1]}`\n\n"
+            output += f"**{index+1}. {name}** - Level: __`{user[1]}`__\n"
 
-        if interaction.guild.icon != None:
+        if not interaction.guild.icon:
             server_icon_url = interaction.guild.icon
         else:
             server_icon_url = self.client.DEFAULT_PFP
@@ -57,7 +57,7 @@ class LevelsLeaderboard(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,
             thumbnail = server_icon_url,
-            title = f"Top users by level for `{interaction.guild.name}`",
+            title = f"`{interaction.guild.name}`: Top users by level",
             description = output,
             footer = "DEFAULT_KST_FOOTER"
         )

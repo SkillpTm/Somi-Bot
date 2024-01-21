@@ -6,7 +6,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB, DefaultRoleDB
+from lib.db_modules import ConfigDB
 from lib.modules import Checks, EmbedFunctions
 from lib.utilities import SomiBot
 
@@ -39,54 +39,56 @@ class ConfigDefaultRole(nextcord_C.Cog):
 
 
         if action == "Set":
-            if role != interaction.guild.default_role:
-                if interaction.user.top_role.position < role.position and interaction.user != interaction.user.guild.owner:
-                    await interaction.followup.send(embed=EmbedFunctions().error("You can only set/unset a role as a default-role, if the role is below your current top role!"), ephemeral=True)
-                    return
-
             if role == interaction.guild.default_role:
                 await interaction.followup.send(embed=EmbedFunctions().error("To set a new default-role you need to provide a role in the command."), ephemeral=True)
                 return
 
-            DefaultRoleDB().drop_table(interaction.guild.id)
-            DefaultRoleDB().insert_role(interaction.guild.id, role.id)
+            if interaction.user.top_role.position < role.position and interaction.user != interaction.user.guild.owner:
+                await interaction.followup.send(embed=EmbedFunctions().error("You can only set a role as the default-role, if the role is below your current top role!"), ephemeral=True)
+                return
+            
+            added = ConfigDB(interaction.guild.id, "DefaultRole").add(role.id)
+
+            if not added:
+                await interaction.followup.send(embed=EmbedFunctions().error("This server already has a default-role.\nUnset your default-role first."), ephemeral=True)
+                return
 
             await interaction.followup.send(embed=EmbedFunctions().success(f"{role.mention} is from now on this server's default-role.\nThe role is being applied to users now, this can take a few minutes."), ephemeral=True)
 
+            mod_action = f"{interaction.user.mention} set: {role.mention} as the new default-role."
+
             for member in interaction.guild.members:
-                if not role in member.roles and not member.bot:
+                if role not in member.roles and not member.bot:
                     await member.add_roles(role)
 
+
         elif action == "Unset":
-            role_id = DefaultRoleDB().get(interaction.guild)
-            if not role_id:
+            role_id: int = await ConfigDB(interaction.guild.id, "DefaultRole").get_list(interaction.guild)
+            deleted = ConfigDB(interaction.guild.id, "DefaultRole").delete(role_id)
+
+            if not deleted:
                 await interaction.followup.send(embed=EmbedFunctions().error("This server doesn't have a default-role."), ephemeral=True)
                 return
 
             role = interaction.guild.get_role(role_id)
 
             if interaction.user.top_role.position < role.position and interaction.user != interaction.user.guild.owner:
-                await interaction.followup.send(embed=EmbedFunctions().error("You can only set/unset a role as a default-role, if the role is below your current top role!"), ephemeral=True)
+                await interaction.followup.send(embed=EmbedFunctions().error("You can only unset a role as the default-role, if the role is below your current top role!"), ephemeral=True)
                 return
 
-            DefaultRoleDB().drop_table(interaction.guild.id)
+            await interaction.followup.send(embed=EmbedFunctions().success("This server now doesn't have a default-role anymore.\nThe role is being removed from all users, this may take a few minutes."), ephemeral=True)  
 
-            await interaction.followup.send(embed=EmbedFunctions().success("This server now doesn't have a default-role anymore. The role is being removed from all users, this may take a few minutes."), ephemeral=True)  
+            mod_action = f"{interaction.user.mention} unset: <@&{role.id}> as the default-role."  
 
             for member in interaction.guild.members:
                 if role in member.roles:
                     await member.remove_roles(role)
 
 
-        audit_log_id = AuditLogChannelDB().get(interaction.guild)
+        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
 
         if not audit_log_id:
             return
-
-        if action == "Set":
-            mod_action = f"{interaction.user.mention} set: {role.mention} as the new default-role."   
-        elif action == "Unset":
-            mod_action = f"{interaction.user.mention} unset: <@&{role_id}> as the default-role."  
 
         embed = EmbedFunctions().builder(
             color = self.client.MOD_COLOR,

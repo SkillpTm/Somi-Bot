@@ -7,7 +7,7 @@ import time
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB, HiddenChannelsDB
+from lib.db_modules import CommandUsesDB, ConfigDB
 from lib.modules import Create, EmbedFunctions
 from lib.utilities import SomiBot
 
@@ -26,7 +26,7 @@ class ExternalLogs(nextcord_C.Cog):
                             member: nextcord.Member):
         """A log that activates, when someone gets banned without using the bot"""
 
-        audit_log_id = AuditLogChannelDB().get(guild)
+        audit_log_id: int = await ConfigDB(guild.id, "AuditLogChannel").get_list(guild)
 
         if not audit_log_id:
             return
@@ -63,6 +63,8 @@ class ExternalLogs(nextcord_C.Cog):
         audit_log_channel = guild.get_channel(audit_log_id)
         await audit_log_channel.send(embed=embed)
 
+        CommandUsesDB("log_activations").update("external log")
+
     ####################################################################################################
 
     @nextcord_C.Cog.listener()
@@ -71,7 +73,7 @@ class ExternalLogs(nextcord_C.Cog):
                               member: nextcord.Member):
         """A log that activates, when someone gets unbanned without using the bot"""
 
-        audit_log_id = AuditLogChannelDB().get(guild)
+        audit_log_id: int = await ConfigDB(guild.id, "AuditLogChannel").get_list(guild)
 
         if not audit_log_id:
             return
@@ -102,6 +104,8 @@ class ExternalLogs(nextcord_C.Cog):
         audit_log_channel = guild.get_channel(audit_log_id)
         await audit_log_channel.send(embed=embed)
 
+        CommandUsesDB("log_activations").update("external log")
+
     ####################################################################################################
 
     @nextcord_C.Cog.listener()
@@ -109,7 +113,7 @@ class ExternalLogs(nextcord_C.Cog):
                                member: nextcord.Member):
         """A log that activates, when someone gets kicked without using the bot"""
         
-        audit_log_id = AuditLogChannelDB().get(member.guild)
+        audit_log_id: int = await ConfigDB(member.guild.id, "AuditLogChannel").get_list(member.guild)
 
         if not audit_log_id:
             return
@@ -149,6 +153,8 @@ class ExternalLogs(nextcord_C.Cog):
         audit_log_channel = member.guild.get_channel(audit_log_id)
         await audit_log_channel.send(embed=embed)
 
+        CommandUsesDB("log_activations").update("external log")
+
     ####################################################################################################
 
     @nextcord_C.Cog.listener()
@@ -160,7 +166,7 @@ class ExternalLogs(nextcord_C.Cog):
         if member_before.communication_disabled_until == member_after.communication_disabled_until:
             return
         
-        audit_log_id = AuditLogChannelDB().get(member_before.guild)
+        audit_log_id: int = await ConfigDB(member_before.guild.id, "AuditLogChannel").get_list(member_before.guild)
 
         if not audit_log_id:
             return
@@ -205,6 +211,8 @@ class ExternalLogs(nextcord_C.Cog):
         audit_log_channel = member_before.guild.get_channel(audit_log_id)
         await audit_log_channel.send(embed=embed)
 
+        CommandUsesDB("log_activations").update("external log")
+
     ####################################################################################################
 
     @nextcord_C.Cog.listener()
@@ -212,12 +220,12 @@ class ExternalLogs(nextcord_C.Cog):
                                      messages: list[nextcord.Message]):
         """A log that activates, when someone gets purged without using the bot"""
 
-        if HiddenChannelsDB().check_channel_inserted(messages[0].guild.id, messages[0].channel.id):
-            return
-
-        audit_log_id = AuditLogChannelDB().get(messages[0].guild)
+        audit_log_id: int = await ConfigDB(messages[0].guild.id, "AuditLogChannel").get_list(messages[0].guild)
 
         if not audit_log_id:
+            return
+
+        if messages[0].channel.id in await ConfigDB(messages[0].guild.id, "HiddenChannels").get_list(messages[0].guild):
             return
 
         async for entry in messages[0].guild.audit_logs(limit=1, action=nextcord.AuditLogAction.message_bulk_delete):
@@ -247,6 +255,8 @@ class ExternalLogs(nextcord_C.Cog):
         await sent_message.reply(file=nextcord.File(f"./storage/temp/bulk_messages_{messages[0].guild.id}_{messages[0].channel.id}_{len(messages)}.csv"), mention_author=False)
 
         os.remove(f"./storage/temp/bulk_messages_{messages[0].guild.id}_{messages[0].channel.id}_{len(messages)}.csv")
+
+        CommandUsesDB("log_activations").update("external log")
 
 
 

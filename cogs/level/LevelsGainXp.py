@@ -3,11 +3,10 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import re
-import time
 
 ####################################################################################################
 
-from lib.db_modules import LevelsDB, LevelIgnoreChannelsDB
+from lib.db_modules import ConfigDB, LevelsDB
 from lib.modules import Checks, LevelRoles
 from lib.utilities import SomiBot
 
@@ -35,22 +34,16 @@ class LevelsGainXp(nextcord_C.Cog):
 
         if not len(re.sub('<[^ ]+?>', "",message.content)) > 10:
             return
-
-        ignore_channel_ids = LevelIgnoreChannelsDB().channels_list(message.guild)
+        
+        ignore_channel_ids = await ConfigDB(message.guild.id, "LevelIgnoreChannels").get_list(message.guild)
 
         if message.channel.id in ignore_channel_ids:
             return
 
-        LevelsDB().insert_user(message.guild.id, message.author.id)
-
-        cooldown_time = LevelsDB().get_user_cooldown(message.guild.id, message.author.id)
-
-        if cooldown_time >= int(time.time()):
+        if not LevelsDB(message.guild.id).increase_xp(message.author.id):
             return
 
-        LevelsDB().increase_user_xp(message.guild.id, message.author.id)
-
-        user_level, xp_until_next_level =  LevelsDB().get_user_level(message.guild.id, message.author.id)
+        user_level, xp_until_next_level =  LevelsDB(message.guild.id).get_level(message.author.id)
 
         await LevelRoles().apply(message.guild, [[message.author.id, user_level]])
 

@@ -7,7 +7,7 @@ import os
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB, HiddenChannelsDB
+from lib.db_modules import ConfigDB
 from lib.modules import Checks, Create, EmbedFunctions
 from lib.utilities import SomiBot
 
@@ -37,10 +37,10 @@ class Purge(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().success(f"Succesfully purged the last `{amount}` messages from {interaction.channel.mention}."), ephemeral=True)
 
 
-        if HiddenChannelsDB().check_channel_inserted(interaction.guild.id, interaction.channel.id):
+        if interaction.channel.id in await ConfigDB(interaction.guild.id, "HiddenChannels").get_list(interaction.guild):
             return
 
-        audit_log_id = AuditLogChannelDB().get(interaction.guild)
+        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
 
         if not audit_log_id:
             return

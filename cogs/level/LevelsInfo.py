@@ -6,7 +6,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 ####################################################################################################
 
-from lib.db_modules import LevelIgnoreChannelsDB, LevelRolesDB
+from lib.db_modules import ConfigDB
 from lib.modules import Checks, EmbedFunctions, LevelRoles
 from lib.utilities import SomiBot
 
@@ -31,24 +31,26 @@ class LevelsInfo(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        level_roles = await LevelRolesDB().roles_list(interaction.guild)
+        level_roles: list[list[int]] = await ConfigDB(interaction.guild.id, "LevelRoles").get_list(interaction.guild)
 
         for level_role in level_roles:
-            if not interaction.guild.get_role(level_role[0]):
-                LevelRolesDB().delete_role(interaction.guild.id, level_role[0])
-                await LevelRoles().remove_from_members(interaction.guild, interaction.guild.get_role(level_role[0]))
-                level_roles.remove(level_role)
+            if interaction.guild.get_role(level_role[0]):
+                continue
+
+            deleted = ConfigDB(interaction.guild.id, "LevelRoles").delete(level_role[0])
+            await LevelRoles().remove_from_members(interaction.guild, interaction.guild.get_role(level_role[0]))
+            level_roles.remove(level_role)
 
         output_role_list = LevelRoles().get_level_range_with_role(level_roles)
-        ignore_channel_ids = LevelIgnoreChannelsDB().channels_list(interaction.guild)
+        ignore_channel_ids: list[int] = await ConfigDB(interaction.guild.id, "LevelIgnoreChannels").get_list(interaction.guild)
         output_ignore_channels = ""
-            
-
-        for channel_id in ignore_channel_ids:
-            output_ignore_channels += f"<#{channel_id}>\n"
+        
 
         if output_role_list == "":
             output_role_list = "`This server doesn't have any level-roles.`"
+
+        for channel_id in ignore_channel_ids:
+            output_ignore_channels += f"<#{channel_id}>\n"
 
         if output_ignore_channels == "":
             output_ignore_channels = "`In this server you can earn XP in all channels`"

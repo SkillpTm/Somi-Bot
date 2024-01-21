@@ -6,7 +6,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB, DefaultRoleDB
+from lib.db_modules import ConfigDB
 from lib.modules import Checks, EmbedFunctions
 from lib.utilities import SomiBot
 
@@ -29,7 +29,7 @@ class Close(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        default_role_id = DefaultRoleDB().get(interaction.guild)
+        default_role_id: int = await ConfigDB(interaction.guild.id, "DefaultRole").get_list(interaction.guild)
 
         if not default_role_id:
             await interaction.followup.send(embed=EmbedFunctions().error("You need to set a default-role, to be able to close the server.\nSet a default-role with `/config default-role`"), ephemeral=True)
@@ -48,7 +48,7 @@ class Close(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().success("Closed the server sucessfully.\n To re-open it use `/open`"), ephemeral=True)
 
 
-        audit_log_id = AuditLogChannelDB().get(interaction.guild)
+        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
 
         if not audit_log_id:
             return
@@ -82,7 +82,7 @@ class Close(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        default_role_id = DefaultRoleDB().get(interaction.guild)
+        default_role_id: int = await ConfigDB(interaction.guild.id, "DefaultRole").get_list(interaction.guild)
 
         if not default_role_id:
             await interaction.followup.send(embed=EmbedFunctions().error("You need to set a default-role, to be able to open the server.\nSet a default-role with `/config default-role`"), ephemeral=True)
@@ -101,7 +101,7 @@ class Close(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().success("Re-opened the server sucessfully."), ephemeral=True)
 
 
-        audit_log_id = AuditLogChannelDB().get(interaction.guild)
+        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
 
         if not audit_log_id:
             return

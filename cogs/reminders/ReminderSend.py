@@ -22,7 +22,7 @@ class ReminderSend(nextcord_C.Cog):
     async def infinite_reminder_loop(self):
         while True:
             await self.reminder_send()
-            await asyncio.sleep(2)
+            await asyncio.sleep(1)
 
             try:
                 if self.client.is_closed() and not self.client.is_ready():
@@ -40,36 +40,31 @@ class ReminderSend(nextcord_C.Cog):
         If the current time is larger or egal to the reminder time, then the reminder gets send to the user and delete from the db.
         """  
 
-        reminders = ReminderDB().get_times()
-
-        if reminders == []:
-            return
+        reminders = ReminderDB(self.client.user.id).get_current()
 
         for reminder in reminders:
-            user_id = reminder[0]
-            noti_user = await self.client.fetch_user(user_id)
-            delete_id = reminder[2]
 
-            bot_reply_link, reminder_text = ReminderDB().get_contents(user_id, delete_id)
+            reminder_time, reminder_link, reminder_id, reminder_text = ReminderDB(reminder[0]).get_reminder(reminder[1])
 
-            self.client.Loggers.action_log(f"User: {user_id} ~ reminder()\n{reminder_text}")
+            self.client.Loggers.action_log(f"User: {reminder[0]} ~ reminder()\n{reminder_text}")
 
             embed = EmbedFunctions().builder(
                 color = self.client.BOT_COLOR,
                 title = "Reminder Notification",
-                title_url = bot_reply_link,
+                title_url = reminder_link,
                 description = reminder_text,
                 footer = "DEFAULT_KST_FOOTER"
             )
 
             try:
-                await noti_user.send(embed=embed)
+                reminder_user = await self.client.fetch_user(reminder[0])
+                await reminder_user.send(embed=embed)
             except:
-                self.client.Loggers.action_warning(f"reminder() {noti_user.id} couldn't be reminded, because their pms aren't open to the client")
+                self.client.Loggers.action_warning(f"reminder() {reminder[0]} couldn't be reminded, because their pms aren't open to the client")
 
-            ReminderDB().delete(user_id, delete_id)
+            ReminderDB(reminder[0]).delete(reminder_id)
 
-            CommandUsesDB().uses_update("command_uses", "reminder send")
+            CommandUsesDB("command_uses").update("reminder send")
 
 
 

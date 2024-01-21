@@ -33,22 +33,12 @@ class KeywordDelete(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        user_keywords = KeywordDB().user_list(interaction.guild.id, interaction.user.id)
-
-        if user_keywords == []:
-            await interaction.followup.send(embed=EmbedFunctions().error("You don't have any keywords to be deleted!"), ephemeral=True)
+        if not KeywordDB(interaction.guild.id, interaction.user.id).get_list():
+            await interaction.followup.send(embed=EmbedFunctions().error("You don't have any keywords.\nTo add a keyword use `/keyword add`."), ephemeral=True)
             return
 
-        if not keyword == "ALL":
-            clean_keyword = keyword.lower().replace(" ", "")
-        else:
-            clean_keyword = keyword
 
-        deleted = KeywordDB().delete(interaction.guild.id, interaction.user.id, clean_keyword)
-
-
-
-        if deleted == "ALL":
+        if keyword == "ALL":
             view = YesNoButtons(interaction=interaction)
             await interaction.followup.send(embed=EmbedFunctions().info_message("Do you really want to delete **ALL** your keywords __**(they can't be recovered)**__?", self.client), view=view, ephemeral=True)
             await view.wait()
@@ -58,7 +48,7 @@ class KeywordDelete(nextcord_C.Cog):
                 return
 
             elif view.value:
-                KeywordDB().delete_all(interaction.user.id)
+                KeywordDB(interaction.guild.id, interaction.user.id).delete_all()
 
                 self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /reminder delete {keyword} went through")
 
@@ -66,12 +56,15 @@ class KeywordDelete(nextcord_C.Cog):
                 return
 
 
+        keyword = keyword.lower().replace(" ", "")
+
+        deleted = KeywordDB(interaction.guild.id, interaction.user.id).delete(keyword)
 
         if not deleted:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"You don't have a keyword called `{clean_keyword}`.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().error(f"You don't have a keyword called `{keyword}`.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)
             return
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"`{clean_keyword}` has been deleted from your keywords."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().success(f"`{keyword}` has been deleted from your keywords."), ephemeral=True)
 
     ####################################################################################################
 
@@ -79,7 +72,7 @@ class KeywordDelete(nextcord_C.Cog):
     async def autocomplete_keyword_delete(self,
                                           interaction: nextcord.Interaction,
                                           keyword: str):
-        all_user_keywords = KeywordDB().user_list(interaction.guild.id, interaction.user.id)
+        all_user_keywords = KeywordDB(interaction.guild.id, interaction.user.id).get_list()
 
         all_user_keywords_dict = {user_keyword: user_keyword for user_keyword in all_user_keywords}
 

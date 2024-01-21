@@ -35,7 +35,7 @@ class FeedbackModal(nextcord.ui.Modal):
 
         self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /feedback submission:\n{self.feedback.value}")
 
-        FeedbackDB().submit(interaction.guild.id, interaction.user.id, str(interaction.user).replace("'", "‘"), kst_time, self.feedback.value.replace("'", "‘"))
+        FeedbackDB().add(interaction.guild.id, interaction.user.id, str(interaction.user), kst_time, self.feedback.value)
 
         await interaction.response.send_message("Your feedback has been submitted!", ephemeral=True)
 

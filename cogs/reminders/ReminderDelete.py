@@ -31,21 +31,12 @@ class ReminderDelete(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        user_reminders = ReminderDB().user_list(interaction.user.id)
-
-        if user_reminders == []:
+        if not ReminderDB(interaction.user.id).get_list():
             await interaction.followup.send(embed=EmbedFunctions().error("You don't have any reminders to be deleted!"), ephemeral=True)
             return
 
-        if not reminder_id.isdigit() and reminder_id != "ALL":
-            await interaction.followup.send(embed=EmbedFunctions().error(f"`{reminder_id}` isn't a valid reminder id."), ephemeral=True)
-            return
 
-        deleted = ReminderDB().delete(interaction.user.id, reminder_id)
-
-        
-
-        if deleted == "ALL":
+        if reminder_id == "ALL":
             view = YesNoButtons(interaction=interaction)
             await interaction.followup.send(embed=EmbedFunctions().info_message("Do you really want to delete **ALL** your reminders __**(they can't be recovered)?**__", self.client), view=view, ephemeral=True)
             await view.wait()
@@ -55,7 +46,7 @@ class ReminderDelete(nextcord_C.Cog):
                 return
                 
             elif view.value:
-                ReminderDB().delete_all(interaction.user.id)
+                ReminderDB(interaction.user.id).delete_all()
 
                 self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /reminder delete {reminder_id} went through")
 
@@ -63,6 +54,11 @@ class ReminderDelete(nextcord_C.Cog):
                 return
 
 
+        if not reminder_id.isdigit():
+            await interaction.followup.send(embed=EmbedFunctions().error(f"`{reminder_id}` isn't a valid reminder id."), ephemeral=True)
+            return
+
+        deleted = ReminderDB(interaction.user.id).delete(reminder_id)
 
         if not deleted:
             await interaction.followup.send(embed=EmbedFunctions().error(f"You don't have a reminder with the ID `{reminder_id}`.\nTo get a list of your reminders use `/reminder list`."), ephemeral=True)
@@ -76,7 +72,7 @@ class ReminderDelete(nextcord_C.Cog):
     async def autocomplete_reminder_delete(self,
                                            interaction: nextcord.Interaction,
                                            reminder_id: str):
-        user_reminders = ReminderDB().user_list(interaction.user.id)
+        user_reminders = ReminderDB(interaction.user.id).get_list()
         delete_ids = {}
 
         for reminder in user_reminders:

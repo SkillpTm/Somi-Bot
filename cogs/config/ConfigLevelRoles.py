@@ -6,7 +6,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB, LevelRolesDB
+from lib.db_modules import ConfigDB
 from lib.modules import Checks, EmbedFunctions, LevelRoles
 from lib.utilities import SomiBot
 
@@ -45,42 +45,37 @@ class ConfigLevelRoles(nextcord_C.Cog):
                 await interaction.followup.send(embed=EmbedFunctions().error("You need to define a role **and** a level to add a new level-role."), ephemeral=True)
                 return
 
-            already_used = LevelRolesDB().check_role_or_level_inserted(interaction.guild.id, role.id, level)
+            added = ConfigDB(interaction.guild.id, "LevelRoles").add(role.id, level)
 
-            if already_used:
-                await interaction.followup.send(embed=EmbedFunctions().error(f"{role.mention} already has a level assigned or the level `{level}` already has a role assigned!\nTo get a list of all level-roles use `/config info`."), ephemeral=True)
+            if not added:
+                await interaction.followup.send(embed=EmbedFunctions().error(f"{role.mention} already has a level assigned or the level `{level}` already has a role assigned!\nTo get a list of all the level-roles use `/config info`."), ephemeral=True)
                 return
-
-            LevelRolesDB().insert_role(interaction.guild.id, role.id, level)
 
             await interaction.followup.send(embed=EmbedFunctions().success(f"{role.mention} has been added to the level-roles.\nThe role is being applied to users now, this can take a few minutes."), ephemeral=True)
             
+            mod_action = f"{interaction.user.mention} added: {role.mention} as a level-role at level `{level}`."
+
             await LevelRoles().apply(interaction.guild)
             
 
         elif action == "Remove":
-            already_used = LevelRolesDB().check_role_or_level_inserted(interaction.guild.id, role.id)
+            deleted = ConfigDB(interaction.guild.id, "LevelRoles").delete(role.id)
 
-            if not already_used:
-                await interaction.followup.send(embed=EmbedFunctions().error(f"{role.mention} isn't a level-role.\nTo get a list of all level-roles use `/config info`."), ephemeral=True)
+            if not deleted:
+                await interaction.followup.send(embed=EmbedFunctions().error(f"{role.mention} isn't a level-role.\nTo get a list of all the level-roles use `/config info`."), ephemeral=True)
                 return
 
-            LevelRolesDB().delete_role(interaction.guild.id, role.id)
+            await interaction.followup.send(embed=EmbedFunctions().success(f"{role.mention} has been removed from the level-roles.\nThe level-roles are being re-applied to users now, this can take a few minutes."), ephemeral=True)
 
-            await interaction.followup.send(embed=EmbedFunctions().success(f"{role.mention} has been removed from the level-roles.\nThe level-roles are being applied to users now, this can take a few minutes."), ephemeral=True)
+            mod_action = f"{interaction.user.mention} removed: {role.mention} from the level-roles."  
 
             await LevelRoles().remove_from_members(interaction.guild, role)
 
 
-        audit_log_id = AuditLogChannelDB().get(interaction.guild)
+        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
 
         if not audit_log_id:
             return
-
-        if action == "Add":
-            mod_action = f"{interaction.user.mention} added: {role.mention} as a level-role at level `{level}`."   
-        elif action == "Remove":
-            mod_action = f"{interaction.user.mention} removed: {role.mention} from the level-roles."  
 
         embed = EmbedFunctions().builder(
             color = self.client.MOD_COLOR,

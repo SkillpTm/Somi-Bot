@@ -6,7 +6,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB, DefaultRoleDB, HiddenChannelsDB, LevelIgnoreChannelsDB, LevelRolesDB
+from lib.db_modules import ConfigDB
 from lib.modules import Checks, EmbedFunctions, LevelRoles
 from lib.utilities import SomiBot
 
@@ -84,25 +84,25 @@ class ConfigInfo(nextcord_C.Cog):
     async def get_config_data(interaction: nextcord.Interaction) -> tuple[str, str, str, str, str]:
         """This function gets all the data that can be configured and if there is none, it just replaces with a default text."""
 
-        audit_log_id = AuditLogChannelDB().get(interaction.guild)
+        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
 
         if audit_log_id:
             audit_log_output = f"<#{audit_log_id}>"
         else:
-            audit_log_output = "`This server doesn't have a desginated channel for audit Log messages.`"
+            audit_log_output = "`This server doesn't have a desginated channel for audit-Log messages.`"
 
 
-        default_role_id = DefaultRoleDB().get(interaction.guild)
+        default_role_id: int = await ConfigDB(interaction.guild.id, "DefaultRole").get_list(interaction.guild)
 
         if default_role_id:
             default_role_output = f"<@&{default_role_id}>"
         else:
-            default_role_output = "`This server doesn't have a desginated default role.`"
+            default_role_output = "`This server doesn't have a desginated default-role.`"
 
 
-        hidden_channel_ids = HiddenChannelsDB().channels_list(interaction.guild)
+        hidden_channel_ids: list[int] = await ConfigDB(interaction.guild.id, "HiddenChannels").get_list(interaction.guild)
 
-        if hidden_channel_ids != []:
+        if hidden_channel_ids:
             hidden_channels_output = ""
 
             for hidden_channel_id in hidden_channel_ids:
@@ -112,9 +112,9 @@ class ConfigInfo(nextcord_C.Cog):
             hidden_channels_output = "`This server doesn't have any hidden-channels.`"
 
 
-        level_ignore_channel_ids = LevelIgnoreChannelsDB().channels_list(interaction.guild)
+        level_ignore_channel_ids: list[int] = await ConfigDB(interaction.guild.id, "LevelIgnoreChannels").get_list(interaction.guild)
 
-        if level_ignore_channel_ids != []:
+        if level_ignore_channel_ids:
             level_ignore_channels_output = ""
 
             for level_ignore_channel_id in level_ignore_channel_ids:
@@ -124,9 +124,9 @@ class ConfigInfo(nextcord_C.Cog):
             level_ignore_channels_output = "`This server doesn't have any level-ignore-channels.`"
 
 
-        level_roles = await LevelRolesDB().roles_list(interaction.guild)
+        level_roles = await ConfigDB(interaction.guild.id, "LevelRoles").get_list(interaction.guild)
 
-        if level_roles != []:
+        if level_roles:
             level_roles_output = LevelRoles().get_level_range_with_role(level_roles)
 
         else:

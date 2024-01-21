@@ -77,7 +77,7 @@ class ReminderAdd(nextcord_C.Cog):
 
         bot_reply = await interaction.original_message()
 
-        ReminderDB().create(interaction.user.id, reminder_time, bot_reply.jump_url, delete_id, reminder.replace("'", "‘"))
+        ReminderDB(interaction.user.id).add(reminder_time, bot_reply.jump_url, delete_id, reminder)
 
 
 

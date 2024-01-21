@@ -7,7 +7,7 @@ import re
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB, CustomDB
+from lib.db_modules import ConfigDB, CustomCommandsDB
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -35,22 +35,22 @@ class CustomAdd(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        clean_commandname = Get().clean_input_command(commandname)
+        commandname = Get().clean_input_command(commandname)
 
-        if not re.match(r"^[\da-z]+$", clean_commandname):
+        if not re.match(r"^[\da-z]+$", commandname):
             await interaction.followup.send(embed=EmbedFunctions().error("You can only have letters and numbers in your custom-commandname!"), ephemeral=True)
             return
 
-        added = CustomDB().create_command(interaction.guild.id, clean_commandname, commandtext.replace("'", "‘"))
+        added = CustomCommandsDB(interaction.guild.id).add(commandname, commandtext)
 
         if not added:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"A custom-command with the name `{clean_commandname}` already exists.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().error(f"A custom-command with the name `{commandname}` already exists.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
             return
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"Your custom-command with the name `{clean_commandname}` has been created."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().success(f"Your custom-command with the name `{commandname}` has been created."), ephemeral=True)
 
 
-        audit_log_id = AuditLogChannelDB().get(interaction.guild)
+        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
 
         if not audit_log_id:
             return
@@ -63,7 +63,7 @@ class CustomAdd(nextcord_C.Cog):
             fields = [
                 [
                     "/custom add:",
-                    f"{interaction.user.mention} added: `{clean_commandname}` as a custom-command.",
+                    f"{interaction.user.mention} added: `{commandname}` as a custom-command.",
                     False
                 ],
 

@@ -40,7 +40,7 @@ class LastFmArtist(nextcord_C.Cog):
         if not timeframe:
             timeframe = "ALL"
 
-        lastfm_username = LastFmDB().get_user(member.id)
+        lastfm_username = LastFmDB().get(member.id)
 
         if not lastfm_username:
             await interaction.response.send_message(embed=EmbedFunctions().error(f"{member.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)

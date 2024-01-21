@@ -6,7 +6,7 @@ import time
 
 ###self#imports###############################################################################
 
-from lib.db_modules import AuditLogChannelDB, KeywordDB, ReminderDB, CommandUsesDB
+from lib.db_modules import KeywordDB, ReminderDB, CommandUsesDB, ConfigDB
 from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
@@ -32,10 +32,10 @@ class LeaveLog(nextcord_C.Cog):
 
         KeywordDB().delete_all(member.guild.id, member.id)
 
-        if member.mutual_guilds == []:
+        if not member.mutual_guilds:
             ReminderDB().delete_all(member.id)
 
-        audit_log_id = AuditLogChannelDB().get(member.guild)
+        audit_log_id: int = await ConfigDB(member.guild.id, "AuditLogChannel").get_list(member.guild)
 
         if not audit_log_id:
             return
@@ -83,7 +83,7 @@ class LeaveLog(nextcord_C.Cog):
         audit_log_channel = member.guild.get_channel(audit_log_id)
         await audit_log_channel.send(embed=embed)
 
-        CommandUsesDB().uses_update("log_activations", "leave_log")
+        CommandUsesDB("log_activations").update("leave log")
 
 
 

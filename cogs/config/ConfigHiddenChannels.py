@@ -6,7 +6,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB, HiddenChannelsDB
+from lib.db_modules import ConfigDB
 from lib.modules import Checks, EmbedFunctions
 from lib.utilities import TEXT_CHANNELS, SomiBot
 
@@ -37,36 +37,35 @@ class ConfigHiddenChannels(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        already_inserted = HiddenChannelsDB().check_channel_inserted(interaction.guild.id, channel.id)
 
         if action == "Add":
-            if already_inserted:
-                await interaction.followup.send(embed=EmbedFunctions().error(f"{channel.mention} is already a hidden-channel.\nTo get a list of the hidden-channels use `/config info`."), ephemeral=True)
-                return
+            added = ConfigDB(interaction.guild.id, "HiddenChannels").add(channel.id)
 
-            HiddenChannelsDB().insert_channel(interaction.guild.id, channel.id)
+            if not added:
+                await interaction.followup.send(embed=EmbedFunctions().error(f"{channel.mention} is already a hidden-channel.\nTo get a list of all the hidden-channels use `/config info`."), ephemeral=True)
+                return
 
             await interaction.followup.send(embed=EmbedFunctions().success(f"{channel.mention} has been added to the hidden-channels."), ephemeral=True)
         
-        elif action == "Remove":
-            if not already_inserted:
-                await interaction.followup.send(embed=EmbedFunctions().error(f"{channel.mention} isn't a hidden-channel.\nTo get a list of the hidden-channels use `/config info`."), ephemeral=True)
-                return
+            mod_action = f"{interaction.user.mention} added: {channel.mention} as a hidden-channel."   
 
-            HiddenChannelsDB().delete_channel(interaction.guild.id, channel.id)
+
+        elif action == "Remove":
+            deleted = ConfigDB(interaction.guild.id, "HiddenChannels").delete(channel.id)
+
+            if not deleted:
+                await interaction.followup.send(embed=EmbedFunctions().error(f"{channel.mention} isn't a hidden-channel.\nTo get a list of all the hidden-channels use `/config info`."), ephemeral=True)
+                return
 
             await interaction.followup.send(embed=EmbedFunctions().success(f"{channel.mention} has been removed from the hidden-channels."), ephemeral=True)
 
+            mod_action = f"{interaction.user.mention} removed: {channel.mention} from the hidden-channels."  
 
-        audit_log_id = AuditLogChannelDB().get(interaction.guild)
+
+        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
 
         if not audit_log_id:
             return
-
-        if action == "Add":
-            mod_action = f"{interaction.user.mention} added: {channel.mention} as a hidden-channel."   
-        elif action == "Remove":
-            mod_action = f"{interaction.user.mention} removed: {channel.mention} from the hidden-channels."  
 
         embed = EmbedFunctions().builder(
             color = self.client.MOD_COLOR,

@@ -72,13 +72,13 @@ class About(nextcord_C.Cog):
 
                 [
                     "Global Command Executions:",
-                    f"`{CommandUsesDB().get_total_uses('command_uses')}`",
+                    f"`{CommandUsesDB('command_uses').get_total()}`",
                     True
                 ],
 
                 [
                     "Invites:",
-                    "Currently there are no plans to have public invites. You might get an invite by asking `skillp`.",
+                    f"You can invite Somi using this [Link]({self.client.SOMI_INVITE}). Additionally you can checkout Somi's code on [GitHub]({self.client.SOMI_GITHUB}).",
                     False
                 ],
 

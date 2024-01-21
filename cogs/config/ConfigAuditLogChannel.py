@@ -6,7 +6,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB
+from lib.db_modules import ConfigDB
 from lib.modules import Checks, EmbedFunctions
 from lib.utilities import TEXT_CHANNELS, SomiBot
 
@@ -39,29 +39,31 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
 
 
         if action == "Set":
-            AuditLogChannelDB().drop_table(interaction.guild.id)
-            AuditLogChannelDB().insert_channel(interaction.guild.id, channel.id)
+            added = ConfigDB(interaction.guild.id, "AuditLogChannel").add(channel.id)
 
+            if not added:
+                await interaction.followup.send(embed=EmbedFunctions().error(f"This server already has an audit-log-channel.\nUnset your audit-log-channel first."), ephemeral=True)
+                return
+                
             await interaction.followup.send(embed=EmbedFunctions().success(f"{channel.mention} is from now on this server's audit-log-channel."), ephemeral=True)
 
-        elif action == "Unset":
-            channel_id = AuditLogChannelDB().get(interaction.guild)
-            if not channel_id:
-                await interaction.followup.send(embed=EmbedFunctions().error("This server doesn't have an audit-log-channel."), ephemeral=True)
-                return
-
-            AuditLogChannelDB().drop_table(interaction.guild.id)
-
-            await interaction.followup.send(embed=EmbedFunctions().success("This server now doesn't have a audit-log-channel anymore."), ephemeral=True)
-
-
-        if action == "Set":
             audit_log_channel = channel
             mod_action = f"{interaction.user.mention} set: {channel.mention} as the new audit-log-channel."
 
+
         elif action == "Unset":
+            channel_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
+            deleted = ConfigDB(interaction.guild.id, "AuditLogChannel").delete(channel.id)
+
+            if not deleted:
+                await interaction.followup.send(embed=EmbedFunctions().error("This server doesn't have an audit-log-channel."), ephemeral=True)
+                return
+            
+            await interaction.followup.send(embed=EmbedFunctions().success("You successfully unset this server's audit-log-channel."), ephemeral=True)
+
             audit_log_channel = interaction.guild.get_channel(channel_id)
             mod_action = f"{interaction.user.mention} unset: <#{channel_id}> as the audit-log-channel."
+
 
         embed = EmbedFunctions().builder(
             color = self.client.MOD_COLOR,

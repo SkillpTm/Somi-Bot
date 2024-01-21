@@ -36,16 +36,12 @@ class LevelsRank(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        LevelsDB().insert_user(member.guild.id, member.id)
-
-        user_level, xp_until_next_level = LevelsDB().get_user_level(interaction.guild.id, member.id)
-
+        user_level, xp_until_next_level = LevelsDB().get_level(interaction.guild.id, member.id)
         next_level_xp = (user_level-1) * 200 + 300
-
         xp_progress_to_next_level = next_level_xp - xp_until_next_level
         
-        percent: float = 20 * (float(xp_progress_to_next_level) / float(next_level_xp))
-        percent_bar: str = "[" + "█" * int(percent) + " -" * (20 - int(percent)) + "]"
+        percent = 20 * (float(xp_progress_to_next_level) / float(next_level_xp))
+        percent_bar = "[" + "█" * int(percent) + " -" * (20 - int(percent)) + "]"
 
         output_percentage = int((float(xp_progress_to_next_level) / float(next_level_xp)) * 100)
 
@@ -57,7 +53,7 @@ class LevelsRank(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,
             thumbnail = member.display_avatar.url,
-            title = f"Stats for `{member.display_name}` on `{interaction.guild.name}`",
+            title = f"Rank for `{member.display_name}` on `{interaction.guild.name}`",
             footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
@@ -68,7 +64,7 @@ class LevelsRank(nextcord_C.Cog):
 
                 [
                     "Rank:",
-                    f"`{LevelsDB().get_user_rank(interaction.guild.id, member.id)}`",
+                    f"`{LevelsDB().get_rank(interaction.guild.id, member.id)}`",
                     True
                 ],
 

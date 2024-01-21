@@ -6,7 +6,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB, LevelIgnoreChannelsDB
+from lib.db_modules import ConfigDB
 from lib.modules import Checks, EmbedFunctions
 from lib.utilities import TEXT_CHANNELS, SomiBot
 
@@ -36,36 +36,34 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        already_inserted = LevelIgnoreChannelsDB().check_channel_inserted(interaction.guild.id, channel.id)
 
         if action == "Add":
-            if already_inserted:
-                await interaction.followup.send(embed=EmbedFunctions().error(f"{channel.mention} is already a level-ignore-channel.\nTo get a list of the level-ignore-channels use `/config info`."), ephemeral=True)
+            added = ConfigDB(interaction.guild.id, "LevelIgnoreChannels").add(channel.id)
+
+            if not added:
+                await interaction.followup.send(embed=EmbedFunctions().error(f"{channel.mention} is already a level-ignore-channel.\nTo get a list of all the level-ignore-channels use `/config info`."), ephemeral=True)
                 return
 
-            LevelIgnoreChannelsDB().insert_channel(interaction.guild.id, channel.id)
+            await interaction.followup.send(embed=EmbedFunctions().success(f"{channel.mention} has been added to the level-ignore-channels.\nThere won't be any XP gain in there anymore."), ephemeral=True)
 
-            await interaction.followup.send(embed=EmbedFunctions().success(f"{channel.mention} has been added to the level-ignore-channels.\nThere is won't be any XP gain in there anymore."), ephemeral=True)
-        
+            mod_action = f"{interaction.user.mention} added: {channel.mention} as a level-ignore-channel."
+
         elif action == "Remove":
-            if not already_inserted:
-                await interaction.followup.send(embed=EmbedFunctions().error(f"{channel.mention} isn't a level-ignore-channel.\nTo get a list of the level-ignore-channels use `/config info`."), ephemeral=True)
-                return
+            deleted = ConfigDB(interaction.guild.id, "LevelIgnoreChannels").delete(channel.id)
 
-            LevelIgnoreChannelsDB().delete_channel(interaction.guild.id, channel.id)
+            if not deleted:
+                await interaction.followup.send(embed=EmbedFunctions().error(f"{channel.mention} isn't a level-ignore-channel.\nTo get a list of all the level-ignore-channels use `/config info`."), ephemeral=True)
+                return
 
             await interaction.followup.send(embed=EmbedFunctions().success(f"{channel.mention} has been removed from the level-ignore-channels.\n You can now earn XP there again."), ephemeral=True)
 
+            mod_action = f"{interaction.user.mention} removed: {channel.mention} from the level-ignore-channels."  
 
-        audit_log_id = AuditLogChannelDB().get(interaction.guild)
+
+        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
 
         if not audit_log_id:
             return
-
-        if action == "Add":
-            mod_action = f"{interaction.user.mention} added: {channel.mention} as a level-ignore-channel."   
-        elif action == "Remove":
-            mod_action = f"{interaction.user.mention} removed: {channel.mention} from the level-ignore-channels."  
 
         embed = EmbedFunctions().builder(
             color = self.client.MOD_COLOR,

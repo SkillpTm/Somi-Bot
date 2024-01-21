@@ -34,14 +34,14 @@ class Roles(nextcord.ui.View):
             await interaction.user.remove_roles(role)
             await interaction.followup.send(embed=EmbedFunctions().error(f"The role: {role.mention} has been removed form your role list"), ephemeral=True)
 
-            CommandUsesDB().uses_update("role_selections", f"remove {role.name}")
+            CommandUsesDB("role_selections").update(f"remove {role.name}")
         else:
             self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ rolelist() add {role.id}")
 
             await interaction.user.add_roles(role)
             await interaction.followup.send(embed=EmbedFunctions().success(f"The role: {role.mention} has been added to your role list"), ephemeral=True)
 
-            CommandUsesDB().uses_update("role_selections", f"add {role.name}")
+            CommandUsesDB("role_selections").update(f"add {role.name}")
 
     ####################################################################################################
 
@@ -87,7 +87,7 @@ class Roles(nextcord.ui.View):
 
         await interaction.followup.send(embed=embed, ephemeral=True)
 
-        CommandUsesDB().uses_update("role_selections", "clicked ROLES")
+        CommandUsesDB("role_selections").update("clicked ROLES")
 
 
 

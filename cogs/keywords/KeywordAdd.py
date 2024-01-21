@@ -34,19 +34,19 @@ class KeywordAdd(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        clean_keyword = str(keyword.lower().replace(" ", ""))
+        keyword = str(keyword.lower().replace(" ", ""))
 
-        if not re.match(r"^[\da-z]+$", clean_keyword):
+        if not re.match(r"^[\da-z]+$", keyword):
             await interaction.followup.send(embed=EmbedFunctions().error(f"You can only have letters and numbers in your keywords!"), ephemeral=True)
             return
 
-        added = KeywordDB().add(interaction.guild.id, interaction.user.id, clean_keyword)
+        added = KeywordDB(interaction.guild.id, interaction.user.id).add(keyword)
 
         if not added:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"You already have `{clean_keyword}` as a keyword.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().error(f"You already have `{keyword}` as a keyword.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)
             return
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"`{clean_keyword}` has been added to your keywords."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().success(f"`{keyword}` has been added to your keywords."), ephemeral=True)
 
 
 

@@ -31,9 +31,9 @@ class KeywordList(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        user_keywords = KeywordDB().user_list(interaction.guild.id, interaction.user.id)
+        user_keywords = KeywordDB(interaction.guild.id, interaction.user.id).get_list()
 
-        if user_keywords == []:
+        if not user_keywords:
             await interaction.followup.send(embed=EmbedFunctions().error("You don't have any keywords.\nTo add a keyword use `/keyword add`."), ephemeral=True)
             return
 
@@ -50,7 +50,7 @@ class KeywordList(nextcord_C.Cog):
             fields = [
                 [
                     "Keywords:",
-                    output[:1000],
+                    output,
                     True
                 ]
             ]

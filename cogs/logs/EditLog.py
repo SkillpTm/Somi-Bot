@@ -5,7 +5,7 @@ import nextcord.ext.commands as nextcord_C
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB, HiddenChannelsDB, CommandUsesDB
+from lib.db_modules import CommandUsesDB, ConfigDB
 from lib.modules import Checks, EmbedFunctions
 from lib.utilities import SomiBot
 
@@ -27,12 +27,12 @@ class EditLog(nextcord_C.Cog):
         if not Checks.message_in_guild(self.client, message_before):
             return
 
-        audit_log_id = AuditLogChannelDB().get(message_before.guild)
+        audit_log_id: int = await ConfigDB(message_before.guild.id, "AuditLogChannel").get_list(message_before.guild)
 
         if not audit_log_id:
             return
 
-        if HiddenChannelsDB().check_channel_inserted(message_before.guild.id, message_before.channel.id):
+        if message_before.channel.id in await ConfigDB(message_before.guild.id, "HiddenChannels").get_list(message_before.guild):
             return
 
         if message_before.content == message_after.content:
@@ -97,7 +97,7 @@ class EditLog(nextcord_C.Cog):
         if file_urls != "":
             await sent_message.reply(content=file_urls, mention_author=False)
 
-        CommandUsesDB().uses_update("log_activations", "edit log")
+        CommandUsesDB("log_activations").update("edit log")
 
 
 

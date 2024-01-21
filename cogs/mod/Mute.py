@@ -9,7 +9,7 @@ import time as unix_time
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB
+from lib.db_modules import ConfigDB
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -55,7 +55,7 @@ class Mute(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().success(f"Succesfully muted {member.mention}."), ephemeral=True)
 
 
-        audit_log_id = AuditLogChannelDB().get(interaction.guild)
+        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
 
         if not audit_log_id:
             return
@@ -106,7 +106,7 @@ class Mute(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().success(f"{member.mention} has been unmuted"), ephemeral=True)
 
 
-        audit_log_id = AuditLogChannelDB().get(interaction.guild)
+        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
 
         if not audit_log_id:
             return

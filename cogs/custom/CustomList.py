@@ -6,7 +6,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 ####################################################################################################
 
-from lib.db_modules import CustomDB
+from lib.db_modules import CustomCommandsDB
 from lib.modules import Checks, EmbedFunctions
 from lib.utilities import SomiBot
 
@@ -29,7 +29,7 @@ class CustomList(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        all_commandnames = CustomDB().list(interaction.guild.id)
+        all_commandnames: list[str] = CustomCommandsDB(interaction.guild.id).get_list()
 
         if all_commandnames == []:
             await interaction.followup.send(embed=EmbedFunctions().error("There are no custom-commands on this server.\nTo add a custom-command use `/custom add`."), ephemeral=True)

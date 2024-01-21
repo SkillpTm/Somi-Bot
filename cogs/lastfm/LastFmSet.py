@@ -34,7 +34,7 @@ class LastFmSet(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message = True)
 
-        lastfm_username = LastFmDB().get_user(interaction.user.id)
+        lastfm_username = LastFmDB().get(interaction.user.id)
 
         if lastfm_username:
             await interaction.followup.send(embed=EmbedFunctions().error(f"You already set a LastFm account.\nTo reset your LastFm account use `/lf reset`."), ephemeral=True)
@@ -48,7 +48,7 @@ class LastFmSet(nextcord_C.Cog):
 
         recent_user_data = request_url.json()
 
-        LastFmDB().set_user(interaction.user.id, recent_user_data["user"]["name"])
+        LastFmDB().add(interaction.user.id, recent_user_data["user"]["name"])
 
         await interaction.followup.send(embed=EmbedFunctions().success(f"You were succesfully connected with the LastFm user `{recent_user_data['user']['name']}`"), ephemeral=True)
 
@@ -62,13 +62,13 @@ class LastFmSet(nextcord_C.Cog):
 
         self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /lf reset")
 
-        lastfm_username = LastFmDB().get_user(interaction.user.id)
+        lastfm_username = LastFmDB().get(interaction.user.id)
 
         if not lastfm_username:
             await interaction.response.send_message(embed=EmbedFunctions().error("You don't have a LastFm account setup."), ephemeral=True)
             return
 
-        LastFmDB().reset_user(interaction.user.id)
+        LastFmDB().delete(interaction.user.id)
 
         await interaction.response.send_message(embed=EmbedFunctions().success("You succesfully reset your LastFm account."), ephemeral=True)
 

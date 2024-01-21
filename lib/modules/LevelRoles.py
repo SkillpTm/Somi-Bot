@@ -4,7 +4,7 @@ import nextcord
 
 ####################################################################################################
 
-from lib.db_modules.config.LevelRolesDB import LevelRolesDB
+from lib.db_modules.ConfigDB import ConfigDB
 from lib.db_modules.LevelsDB import LevelsDB
 
 
@@ -22,9 +22,9 @@ class LevelRoles():
         """This function checks for the inputed users (or all users of a guild), if they have the correct levelrole.
            If they don't, it findes out, which level role they should have and applys it."""
 
-        levelroles = await LevelRolesDB().roles_list(server)
+        levelroles = await ConfigDB(server.id, "LevelRoles").get_list(server)
         if input_users == [[0, 0]]:
-            input_users = LevelsDB().get_all_user_levels(server.id)
+            input_users = LevelsDB(server.id).get_all_user_levels()
 
         if levelroles == []:
             return
@@ -42,7 +42,7 @@ class LevelRoles():
             role = server.get_role(levelrole_id)
 
             if not role:
-                LevelRolesDB().delete_role(server.id, levelrole_id)
+                levelroles = ConfigDB(server.id, "LevelRoles").delete(levelrole_id)
                 await self.remove_from_members(server, role)
                 return
 
@@ -61,7 +61,7 @@ class LevelRoles():
                                   role: nextcord.Role) -> None:
         """This function removes a specific levelrole from all members of a guild"""
 
-        all_users = LevelsDB().get_all_user_levels(server.id)
+        all_users = LevelsDB(server.id).get_all_user_levels()
 
         for user in all_users:
             member = server.get_member(user[0])

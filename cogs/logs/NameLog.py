@@ -5,7 +5,7 @@ import nextcord.ext.commands as nextcord_C
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB, CommandUsesDB
+from lib.db_modules import CommandUsesDB, ConfigDB
 from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
@@ -27,7 +27,7 @@ class NameLog(nextcord_C.Cog):
         if member_before.display_name == member_after.display_name:
             return
 
-        audit_log_id = AuditLogChannelDB().get(member_before.guild)
+        audit_log_id: int = await ConfigDB(member_before.guild.id, "AuditLogChannel").get_list(member_before.guild)
 
         if not audit_log_id:
             return
@@ -47,7 +47,7 @@ class NameLog(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = nextcord.Color.yellow(),
             thumbnail = member_before.display_avatar,
-            title = f"`{member_before.display_name}` Changed Their Name",
+            title = f"`{member_before.name}` Changed Their Name",
             footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
@@ -67,7 +67,7 @@ class NameLog(nextcord_C.Cog):
         audit_log_channel = member_before.guild.get_channel(audit_log_id)
         await audit_log_channel.send(embed=embed)
 
-        CommandUsesDB().uses_update("log_activations", "name log")
+        CommandUsesDB("log_activations").update("name log")
 
 
 

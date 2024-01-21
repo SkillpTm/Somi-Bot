@@ -73,7 +73,7 @@ class Help(nextcord_C.Cog):
 
         await interaction.followup.send(embed=embed, ephemeral=True)
 
-        CommandUsesDB().uses_update("help_selections", f"{commandname[1:]}")
+        CommandUsesDB("help_selections").update(f"{commandname[1:]}")
 
     ####################################################################################################
 

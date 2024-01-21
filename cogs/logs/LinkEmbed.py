@@ -7,7 +7,7 @@ import re
 
 ####################################################################################################
 
-from lib.db_modules import HiddenChannelsDB, CommandUsesDB
+from lib.db_modules import CommandUsesDB, ConfigDB
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -37,7 +37,7 @@ class LinkEmbed(nextcord_C.Cog):
         if not original_message:
             return
 
-        if HiddenChannelsDB().check_channel_inserted(message.guild.id, original_message.channel.id):
+        if original_message.channel.id in await ConfigDB(original_message.guild.id, "HiddenChannels").get_list(original_message.guild):
             return
 
         if original_message.content == "" and len(original_message.attachments) == 0:
@@ -69,7 +69,7 @@ class LinkEmbed(nextcord_C.Cog):
         embed, file_urls = EmbedFunctions().get_attachments(original_message.attachments, embed, limit = 1)
         await message.reply(embed=embed, mention_author=False)
 
-        CommandUsesDB().uses_update("log_activations", "auto embed")
+        CommandUsesDB("log_activations").update("auto embed")
 
 
 

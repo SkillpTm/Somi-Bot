@@ -6,7 +6,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 ####################################################################################################
 
-from lib.db_modules import CustomDB
+from lib.db_modules import CustomCommandsDB
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -29,21 +29,21 @@ class CustomCommand(nextcord_C.Cog):
 
         self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /customcommand {commandname}")
 
-        clean_commandname = Get().clean_input_command(commandname)
+        commandname = Get().clean_input_command(commandname)
 
-        commandtext = CustomDB().get_command_text(interaction.guild.id, clean_commandname)
+        commandtext = CustomCommandsDB(interaction.guild.id).get_text(commandname)
 
         if commandtext == "":
-            await interaction.response.send_message(embed=EmbedFunctions().error(f"There is no custom-command with the name `{clean_commandname}`.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().error(f"There is no custom-command with the name `{commandname}`.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
             return
 
-        await interaction.response.send_message(commandtext.replace("‘", "'"))
+        await interaction.response.send_message(commandtext)
 
     @customcommand.on_autocomplete("commandname")
     async def autocomplete_commandname(self,
                                        interaction: nextcord.Interaction,
                                        commandname: str):
-        all_commandnames = CustomDB().list(interaction.guild.id)
+        all_commandnames = CustomCommandsDB(interaction.guild.id).get_list()
 
         all_commandnames_dict = {command: command for command in all_commandnames}
 

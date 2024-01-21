@@ -6,7 +6,7 @@ import time
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB, DefaultRoleDB, CommandUsesDB
+from lib.db_modules import CommandUsesDB, ConfigDB
 from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
@@ -45,14 +45,14 @@ class JoinLog(nextcord_C.Cog):
 
         ####################################################################################################
 
-        default_role_id = DefaultRoleDB().get(member.guild)
+        default_role_id: int = await ConfigDB(member.guild.id, "DefaultRole").get_list(member.guild)
 
         if default_role_id:
             await member.add_roles(member.guild.get_role(default_role_id))
 
         ####################################################################################################
 
-        audit_log_id = AuditLogChannelDB().get(member.guild)
+        audit_log_id: int = await ConfigDB(member.guild.id, "AuditLogChannel").get_list(member.guild)
 
         if not audit_log_id:
             return
@@ -86,7 +86,7 @@ class JoinLog(nextcord_C.Cog):
         audit_log_channel = member.guild.get_channel(audit_log_id)
         await audit_log_channel.send(embed=embed)
 
-        CommandUsesDB().uses_update("log_activations", "join log")
+        CommandUsesDB("log_activations").update("join log")
 
 
 

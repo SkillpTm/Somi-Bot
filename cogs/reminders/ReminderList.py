@@ -29,9 +29,9 @@ class ReminderList(nextcord_C.Cog):
 
         self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /reminder list")
 
-        user_reminders = ReminderDB().user_list(interaction.user.id)
+        user_reminders = ReminderDB(interaction.user.id).get_list()
 
-        if user_reminders == []:
+        if not user_reminders:
             await interaction.response.send_message(embed=EmbedFunctions().error("You don't have any reminders.\nTo add a reminder use `/reminder add`."), ephemeral=True)
             return
 

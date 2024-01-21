@@ -6,7 +6,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 ####################################################################################################
 
-from lib.db_modules import AuditLogChannelDB
+from lib.db_modules import ConfigDB
 from lib.modules import Checks, EmbedFunctions
 from lib.utilities import SomiBot
 
@@ -29,7 +29,7 @@ class Restart(nextcord_C.Cog):
         
         await interaction.response.send_message(embed=EmbedFunctions().success("Restarting bot..."), ephemeral=True)
 
-        audit_log_id = AuditLogChannelDB().get(interaction.guild)
+        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
 
         if audit_log_id:
             embed = EmbedFunctions().builder(

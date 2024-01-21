@@ -108,7 +108,7 @@ class Modmail(nextcord_C.Cog):
 
         await message.reply(embed=EmbedFunctions().success("Your modmail has been submitted!"), mention_author=False)
 
-        CommandUsesDB().uses_update("command_uses", "modmail")
+        CommandUsesDB("command_uses").update("modmail")
 
 
 

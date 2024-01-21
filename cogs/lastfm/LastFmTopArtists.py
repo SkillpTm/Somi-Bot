@@ -4,7 +4,6 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 import requests
-import urllib.parse
 
 ####################################################################################################
 
@@ -40,7 +39,7 @@ class LastFmTopArtists(nextcord_C.Cog):
 
         self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /lf topartists {member.id} {timeframe}")
 
-        lastfm_username = LastFmDB().get_user(member.id)
+        lastfm_username = LastFmDB().get(member.id)
 
         if not lastfm_username:
             await interaction.response.send_message(embed=EmbedFunctions().error(f"{member.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)

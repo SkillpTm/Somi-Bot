@@ -66,6 +66,34 @@ class CommonDB():
             return False
 
     ####################################################################################################
+        
+    def _sanitize(self,
+                  values: list):
+        """sanitizes any input values for sql"""
+
+        for index, element in enumerate(values):
+            if not isinstance(element, str):
+                continue
+
+            values[index] = element.replace("'", "‘")
+
+        return values
+    
+    ####################################################################################################
+
+    def _desanitize(self,
+                    values: list):
+        """desanitizes any input values form sql"""
+
+        for index, element in enumerate(values):
+            if not isinstance(element, str):
+                continue
+
+            values[index] = element.replace("‘", "'")
+
+        return values
+
+    ####################################################################################################
     
     def _insert(self,
                 *,
@@ -80,6 +108,7 @@ class CommonDB():
             if self._check_if_in_table(select_column, where_column, check_value):
                 return False
 
+        values = self._sanitize(values)
         values = f"({', '.join([f"'{element}'" for element in values])})"
 
         self.cur.execute(f"""INSERT INTO {self.table_name}
@@ -146,10 +175,16 @@ class CommonDB():
 
         if not multiple_columns: # if there is multiple values we don't just want the first tuple value
             all_values = [element[0] for element in all_values]
+            all_values = self._desanitize(all_values)
+
         elif not multiple_columns_and_rows:
             all_values = [list(element) for element in all_values][0]
+            all_values = self._desanitize(all_values)
+
         else:
             all_values = [list(element) for element in all_values]
+            for index, sub_list in enumerate(all_values):
+                all_values[index] = self._desanitize(sub_list)
 
         return all_values
     

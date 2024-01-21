@@ -80,26 +80,33 @@ class Get():
         """Takes a string and a dict and filters for matching results, between the two"""
 
         output = {}
+        iteration = 0
 
-        for key, value in autocomplete_dict.items():
+        while iteration != 4:
             if len(output) == 25:
-                break
+                    break
 
-            if str(value).lower().startswith(search_string.lower()):
-                output[str(key)] = str(value)
-                continue
+            for key, value in autocomplete_dict.items():
+                if len(output) == 25:
+                    break
 
-            if search_string.lower() in str(value).lower():
-                output[str(key)] = str(value)
-                continue
+                if iteration == 0 and str(value).lower().startswith(search_string.lower()):
+                    output[str(key)] = str(value)
+                    continue
 
-            if str(key).lower().startswith(search_string.lower()):
-                output[str(key)] = str(value)
-                continue
+                if iteration == 1 and search_string.lower() in str(value).lower():
+                    output[str(key)] = str(value)
+                    continue
 
-            if search_string.lower() in str(key).lower():
-                output[str(key)] = str(value)
-                continue
+                if iteration == 2 and str(key).lower().startswith(search_string.lower()):
+                    output[str(key)] = str(value)
+                    continue
+
+                if iteration == 3 and search_string.lower() in str(key).lower():
+                    output[str(key)] = str(value)
+                    continue
+            
+            iteration += 1
 
         return output
 

@@ -52,6 +52,16 @@ class ReminderAdd(nextcord_C.Cog):
         while len(delete_id) < 10:
             delete_id += str(random.choice(range(0, 9)))
 
+            if len(delete_id) != 10:
+                continue
+
+            all_reminders = ReminderDB(interaction.user.id).get_list()
+
+            for reminder_element in all_reminders:
+                if delete_id == str(reminder_element[2]):
+                    delete_id = ""
+                    break
+
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,
             author = f"Reminder Set for {interaction.user.display_name}",

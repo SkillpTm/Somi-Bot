@@ -42,6 +42,7 @@ class Lists():
         "/emoji",
         "/feedback",
         "/help",
+        "/invite",
         "/kick",
         "/keyword add",
         "/keyword delete",
@@ -50,6 +51,7 @@ class Lists():
         "/levels info",
         "/levels leaderboard",
         "/levels rank",
+        "/lf album",
         "/lf artist",
         "/lf np",
         "/lf profile",
@@ -59,6 +61,7 @@ class Lists():
         "/lf topalbums",
         "/lf topartists",
         "/lf toptracks",
+        "lf track",
         "/lyrics",
         "/mute",
         "/open",
@@ -193,6 +196,13 @@ class Lists():
             The commandname for which you require help.
             """,
             "/help [/help]"
+        ],
+
+        "/invite": [
+            """
+            ```/invite (no parameters)```
+            """,
+            "/invite"
         ],
 
         "/keyword add": [

@@ -23,7 +23,7 @@ class LevelsDB(CommonDB):
     ####################################################################################################
 
     @staticmethod
-    def calulate_level(total_xp: int) -> tuple[int, int]:
+    def _calulate_level(total_xp: int) -> tuple[int, int]:
         """
         This is the formular to calculate someone's level. Every level has 200xp more than the last one (Level 1 has 300 xp)
         Meaning that the formular to get how much xp a level requires is: ((level - 1) * 200) + 300
@@ -44,7 +44,7 @@ class LevelsDB(CommonDB):
 
     ####################################################################################################
 
-    def add(self,
+    def _add(self,
             user_id: int) -> None:
         """adds a user to the table, but notably DOESN'T commit"""
 
@@ -56,11 +56,32 @@ class LevelsDB(CommonDB):
 
     ####################################################################################################
 
+    def _get_cooldown(self,
+                      user_id: int) -> int:
+        """gtes the user's cooldown"""
+
+        self._add(user_id)
+
+        cooldown = self._get(select_column = "cooldown",
+                             where_column = "user_id",
+                             check_value = str(user_id))
+        
+        return cooldown[0]
+
+    ####################################################################################################
+
     def increase_xp(self,
-                    user_id: int) -> None:
+                    user_id: int) -> bool:
         """increase the user's xp, their messages count and their cooldown"""
 
-        self.add(user_id)
+        self._add(user_id)
+
+        cooldown_time = self._get_cooldown(user_id)
+
+        if cooldown_time >= int(time.time()):
+            self._close(commit = False)
+            
+            return False
 
         user_data = self._get(select_column = "*",
                               where_column = "user_id",
@@ -77,21 +98,7 @@ class LevelsDB(CommonDB):
 
         self._close(commit = True)
 
-    ####################################################################################################
-
-    def get_cooldown(self,
-                     user_id: int) -> int:
-        """gtes the user's cooldown"""
-
-        self.add(user_id)
-
-        cooldown = self._get(select_column = "cooldown",
-                             where_column = "user_id",
-                             check_value = str(user_id))
-        
-        self._close(commit = True)
-        
-        return cooldown[0]
+        return True
 
     ####################################################################################################
 
@@ -99,7 +106,7 @@ class LevelsDB(CommonDB):
                   user_id: int) -> tuple[int, int]:
         """get the user's level and the xp required until their next level"""
 
-        self.add(user_id)
+        self._add(user_id)
 
         total_xp = self._get(select_column = "total_xp",
                              where_column = "user_id",
@@ -112,7 +119,7 @@ class LevelsDB(CommonDB):
         else:
             total_xp = total_xp[0]
 
-        return self.calulate_level(total_xp)
+        return self._calulate_level(total_xp)
 
     ####################################################################################################
 
@@ -120,7 +127,7 @@ class LevelsDB(CommonDB):
                  user_id: int) -> int:
         """get the leaderboard position of the user in this server"""
 
-        self.add(user_id)
+        self._add(user_id)
 
         self.cur.execute(f"""SELECT row_num
                              FROM (
@@ -154,7 +161,7 @@ class LevelsDB(CommonDB):
         for current_user in ids_and_xp:
             current_user = list(current_user)
 
-            user_level, xp_until_next_level = self.calulate_level(current_user[1])
+            user_level, xp_until_next_level = self._calulate_level(current_user[1])
 
             ids_and_levels.append([int(current_user[0]), user_level])
 

@@ -54,7 +54,7 @@ class KeywordDB(CommonDB):
 
     ####################################################################################################
 
-    def user_list(self) -> list[str]:
+    def get_list(self) -> list[str]:
         """gets a list with all keywords of the user"""
 
         keywords = self._get(select_column = "keyword",

@@ -25,6 +25,8 @@ from storage.Config import Config
 class SomiBot(nextcord_C.Bot):
 
     #Meta
+    SOMI_GITHUB = "https://github.com/SkillpTm/Somi-Bot"
+    SOMI_INVITE = "https://somibot.skillp.dev/"
     SOMICORD_INVITE = "https://discord.gg/Frd7WYg"
     VERSION = "3.1"
 
@@ -187,7 +189,7 @@ class SomiBot(nextcord_C.Bot):
 
             self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel:{message.channel.id} ~ User: {message.author.id} ~ reacted() @ping")
 
-            CommandUsesDB().uses_update("log_activations", "reacted @ping")
+            CommandUsesDB("log_activations").update("reacted @ping")
 
         ####################################################################################################
 
@@ -196,7 +198,7 @@ class SomiBot(nextcord_C.Bot):
 
             self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel:{message.channel.id} ~ User: {message.author.id} ~ reacted() @SOMIONLY")
 
-            CommandUsesDB().uses_update("log_activations", "reacted somionly")
+            CommandUsesDB("log_activations").update("reacted somionly")
 
         ####################################################################################################
 
@@ -207,7 +209,7 @@ class SomiBot(nextcord_C.Bot):
 
             self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel:{message.channel.id} ~ User: {message.author.id} ~ reacted() @SomiF")
 
-            CommandUsesDB().uses_update("log_activations", "reacted SomiF")
+            CommandUsesDB("log_activations").update("reacted SomiF")
 
         ####################################################################################################
 
@@ -216,7 +218,7 @@ class SomiBot(nextcord_C.Bot):
 
             self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel:{message.channel.id} ~ User: {message.author.id} ~ reacted() @SomiBestGrill")
 
-            CommandUsesDB().uses_update("log_activations", "reacted SomiBestGrill")
+            CommandUsesDB("log_activations").update("reacted SomiBestGrill")
 
         return await super().on_message(message)
 
@@ -238,7 +240,7 @@ class SomiBot(nextcord_C.Bot):
             commandname += f" {interaction.application_command.name}"
 
         if commandname != "":
-            CommandUsesDB().uses_update("command_uses", f"{commandname}")
+            CommandUsesDB("command_uses").update(f"{commandname}")
 
     ####################################################################################################
 

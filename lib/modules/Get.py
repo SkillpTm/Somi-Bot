@@ -71,7 +71,7 @@ class Get():
 
         commandname = commandname.replace(" ", "").replace("/", "")
 
-        return commandname.lower().replace("'", "‘")
+        return commandname.lower()
 
     ####################################################################################################
 

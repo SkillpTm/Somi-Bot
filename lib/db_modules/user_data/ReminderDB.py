@@ -57,20 +57,17 @@ class ReminderDB(CommonDB):
     ####################################################################################################
 
     def get_reminder(self,
-                     id: int) -> tuple[str, str]:
-        """get the link and reminder text of the reminder"""
+                     id: int) -> tuple[int, str, int, str]:
+        """get the reminder from it's id as: time, link, id, text"""
 
-        reminder = self._get(select_column = "link, text",
+        reminder = self._get(select_column = "*",
                              where_column = "id",
                              check_value = str(id),
                              multiple_columns = True)
-        
-        link: str = reminder[0]
-        text: str = reminder[1]
 
         self._close(commit = False)
 
-        return link, text
+        return reminder[0], reminder[1], reminder[2], reminder[3]
 
     ####################################################################################################
 
@@ -89,8 +86,8 @@ class ReminderDB(CommonDB):
 
     ####################################################################################################
 
-    def get_all(self) -> list[list[int, int, int]]:
-        """get a list of lists with all user's reminders as: user id, time and id"""
+    def get_current(self) -> list[list[int, int]]:
+        """get a list of lists with all user's reminders as: user id and id"""
 
         self.cur.execute("""SELECT name
                             FROM sqlite_master
@@ -104,7 +101,7 @@ class ReminderDB(CommonDB):
 
             self.cur.execute(f"""SELECT time, id
                                  FROM {user}
-                                 ORDER BY reminder_time ASC""")
+                                 ORDER BY time ASC""")
 
             user_times_ids = self.cur.fetchall()
             current_time = int(time.time())
@@ -116,7 +113,7 @@ class ReminderDB(CommonDB):
                 if reminder_time > current_time:
                     break
                 
-                all_users_times.append([int(user[4:]), reminder_time, id])
+                all_users_times.append([int(user[4:]), id])
 
         self._close(commit = False)
 

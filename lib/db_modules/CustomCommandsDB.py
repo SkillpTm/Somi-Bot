@@ -35,9 +35,9 @@ class CustomCommandsDB(CommonDB):
                name: str) -> str:
         """deletes the command from the table"""        
 
-        text = self._get(select_column = "text",
-                         where_column = "name",
-                         check_value = name)
+        text: list[str] = self._get(select_column = "text",
+                                    where_column = "name",
+                                    check_value = name)
 
         deleted = self._delete(select_column = "name",
                                where_column = "name",
@@ -56,9 +56,9 @@ class CustomCommandsDB(CommonDB):
                  name: str) -> str:
         """get the output text for a command"""
 
-        text = self._get(select_column = "text",
-                         where_column = "name",
-                         check_value = name)
+        text: list[str] = self._get(select_column = "text",
+                                    where_column = "name",
+                                    check_value = name)
         
         self._close(commit = False)
 

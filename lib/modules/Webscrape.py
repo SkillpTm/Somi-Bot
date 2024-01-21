@@ -63,7 +63,7 @@ class Webscrape():
             type_name: str = type_name[1].replace("</h2>", "")
             type_name = re.sub('\n', '', type_name.strip())
 
-        return type_name
+        return Get().markdown_safe(type_name)
 
     ####################################################################################################
 
@@ -73,7 +73,7 @@ class Webscrape():
 
         artist_name = str(soup.find("a", class_="text-colour-link").text)
 
-        return artist_name
+        return Get().markdown_safe(artist_name)
 
     ####################################################################################################
 

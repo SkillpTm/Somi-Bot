@@ -68,7 +68,7 @@ class LastFmProfile(nextcord_C.Cog):
             fields = [
                 [
                     "LastFm name:",
-                    f"[{profile_user_data['user']['name']}]({Get().markdown_safe(profile_user_data['user']['url'])})",
+                    f"[{Get().markdown_safe(profile_user_data['user']['name'])}]({profile_user_data['user']['url']})",
                     True
                 ],
 

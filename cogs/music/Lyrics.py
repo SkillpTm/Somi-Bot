@@ -1,13 +1,14 @@
 ####################################################################################################
 
-import lyricsgenius
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
+import requests
+import urllib.parse
 
 ####################################################################################################
 
-from lib.modules import Checks, EmbedFunctions
+from lib.modules import Checks, EmbedFunctions, Webscrape
 from lib.utilities import SomiBot
 
 
@@ -44,29 +45,34 @@ class Lyrics(nextcord_C.Cog):
             await interaction.response.send_message(embed=EmbedFunctions().error("Please select a valid artist **and** a valid song or play a song on Spotify!"), ephemeral=True)
             return
 
+        headers = {"Authorization": f"Bearer {self.client.Keychain.GENIUS_ACCESS_TOKEN}"}
+        artist_song = urllib.parse.quote_plus(f"{artist}+{song}")
+        search_response = requests.get(f"https://api.genius.com/search?q={artist_song}", headers=headers).json()
+
+        if not search_response["response"]["hits"] or search_response["response"]["hits"][0]["type"] != "song":
+            await interaction.response.send_message(embed=EmbedFunctions().error("Please select a valid artist **and** a valid song or play a song on Spotify!"), ephemeral=True)
+            return
+        
         await interaction.response.defer(with_message=True)
         
-        genius = lyricsgenius.Genius(self.client.Keychain.GENIUS_ACCESS_TOKEN)
+        song_url = search_response["response"]["hits"][0]["result"]["url"]
 
-        genius_song = genius.search_song(title=song, artist=artist)
+        lyrics_text = Webscrape().genius_lyrics(song_url)
 
-        if not hasattr(genius_song, "lyrics"):
+        if not lyrics_text:
             await interaction.followup.send(embed=EmbedFunctions().error(f"Your search for:\nArtist: `{artist}`\nSong: `{song}`\n__failed__, please try again!"))
             return
-
-        genius_song_lyrics = genius_song.lyrics[:-5] #Get rid of an error in the wrapper
         
-        if genius_song_lyrics[len(genius_song_lyrics)-1].isdigit:
-            genius_song_lyrics = genius_song_lyrics[:-1] #Get rid of another error in the wrapper
+        song_response = requests.get(f"https://api.genius.com/songs/{search_response["response"]["hits"][0]["result"]["id"]}", headers=headers).json()
+
 
         embed = EmbedFunctions().builder(
             color = self.client.GENIUS_COLOR,
-            thumbnail = genius_song.header_image_thumbnail_url,
-            author = f"{genius_song.artist}",
+            thumbnail = song_response["response"]["song"]["song_art_image_url"],
+            author = song_response["response"]["song"]["title"],
             author_icon = self.client.GENIUS_ICON,
-            title = f"{genius_song.title}",
-            title_url = genius_song.url,
-            description = genius_song_lyrics[:4096],
+            author_url = song_url,
+            description = lyrics_text,
             footer = "Lyrics powered by Genius"
         )
 

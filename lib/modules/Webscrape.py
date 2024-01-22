@@ -2,6 +2,7 @@
 
 from bs4 import BeautifulSoup
 import re
+import requests
 import urllib.parse
 
 ####################################################################################################
@@ -165,3 +166,25 @@ class Webscrape():
                 album_output += f"- *({scrobbles})*\n"
         
         return track_output, album_output
+    
+    ####################################################################################################
+    
+    @staticmethod
+    def genius_lyrics(song_url: str) -> str:
+        """Webscrapes the lyrics of a song"""
+
+        soup = BeautifulSoup(requests.get(song_url).content, "html.parser")
+
+        lyrics_div = list(soup.find_all("div", class_="Lyrics__Container-sc-1ynbvzw-1 kUgSbL"))
+        lyrics_text = ""
+
+        for element in lyrics_div:
+            br_pattern = re.compile(r'<br\s*/*>', re.IGNORECASE)
+            clean_string = re.sub(br_pattern, '\n', str(element))
+            tag_pattern = re.compile(r'<.*?>')
+            clean_string = re.sub(tag_pattern, '', clean_string)
+
+            lyrics_text += clean_string
+
+        return lyrics_text
+            

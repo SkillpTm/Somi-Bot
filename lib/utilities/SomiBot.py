@@ -26,7 +26,7 @@ class SomiBot(nextcord_C.Bot):
 
     #Meta
     SOMI_GITHUB = "https://github.com/SkillpTm/Somi-Bot"
-    SOMI_INVITE = "https://somibot.skillp.dev/"
+    SOMI_INVITE = "https://somibot.skillp.dev/invite.html"
     SOMICORD_INVITE = "https://discord.gg/Frd7WYg"
     VERSION = "3.1"
 

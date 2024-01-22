@@ -8,3 +8,4 @@ from lib.db_modules.CustomCommandsDB import CustomCommandsDB
 from lib.db_modules.FeedbackDB import FeedbackDB
 from lib.db_modules.LastFmDB import LastFmDB
 from lib.db_modules.LevelsDB import LevelsDB
+from lib.db_modules.WeatherDB import WeatherDB

@@ -9,6 +9,7 @@ import requests
 
 ####################################################################################################
 
+from lib.db_modules import WeatherDB
 from lib.modules import Checks, EmbedFunctions
 from lib.utilities import SomiBot
 
@@ -26,19 +27,33 @@ class Weather(nextcord_C.Cog):
     async def weather(self,
                       interaction: nextcord.Interaction,
                       *,
-                      location: str = nextcord.SlashOption(description="the location you want to know the weather of", required=True, min_length=2, max_length=50)): #TODO store the locations and then use them for autocomplete
+                      location: str = nextcord.SlashOption(description="the location you want to know the weather of", required=False, min_length=2, max_length=50)):
         """This command outputs various statistics about the weather of any place (that's on openweathermap)"""
+
+        if not location:
+            location = WeatherDB().get(interaction.user.id)
+
+            #if the user hasn't saved a location yet
+            if not location:
+                location = "Seoul" # default location value
 
         self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /weather {location}")
 
+        input_location = location
         location = location.replace(" ", "+")
         location = location.replace("#", "")
 
         request_url = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={self.client.Keychain.WEATHER_API_KEY}&q={location}&units=metric")
 
         if not request_url.status_code == 200:
-            await interaction.response.send_message(embed=EmbedFunctions().error(f"{location} couldn't be found."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().error(f"{input_location} couldn't be found."), ephemeral=True)
             return
+        
+        inserted = WeatherDB().add(interaction.user.id, location)
+
+        if not inserted:
+            WeatherDB().delete(interaction.user.id)
+            inserted = WeatherDB().add(interaction.user.id, location)
 
         await interaction.response.defer(with_message = True)
 

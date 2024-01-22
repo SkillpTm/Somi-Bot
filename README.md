@@ -9,7 +9,7 @@ Originally it was created to fullfil all needs of Somicord.
 
 <h4>Invite</h4>
 
-You can invite Somi here https://somibot.skillp.dev/
+You can invite Somi here https://somibot.skillp.dev/invite.html
 
 <h4>Features</h4>
 Commands/other features include, but aren't limited to:

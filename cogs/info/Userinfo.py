@@ -87,7 +87,7 @@ class Userinfo(nextcord_C.Cog):
                 ],
 
                 [
-                    "Boosted:",
+                    "Booster:",
                     booster,
                     True
                 ]

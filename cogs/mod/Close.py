@@ -43,6 +43,7 @@ class Close(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().error("The server is already closed.\n To re-open it use `/open`"), ephemeral=True)
             return
 
+        await interaction.guild.edit(invites_disabled = True)
         await default_role.edit(permissions=nextcord.Permissions(permissions = default_role.permissions.value, send_messages = False, send_messages_in_threads = False, add_reactions = False))
 
         await interaction.followup.send(embed=EmbedFunctions().success("Closed the server sucessfully.\n To re-open it use `/open`"), ephemeral=True)
@@ -96,6 +97,7 @@ class Close(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().error("The server is already open.\n To close it use `/close`"), ephemeral=True)
             return
 
+        await interaction.guild.edit(invites_disabled = False)
         await default_role.edit(permissions=nextcord.Permissions(permissions = default_role.permissions.value, send_messages = True, send_messages_in_threads = True, add_reactions = True))
 
         await interaction.followup.send(embed=EmbedFunctions().success("Re-opened the server sucessfully."), ephemeral=True)

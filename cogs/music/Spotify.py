@@ -24,7 +24,8 @@ class Spotify(nextcord_C.Cog):
     async def spotify(self,
                       interaction: nextcord.Interaction,
                       *,
-                      member: nextcord.Member = nextcord.SlashOption(description="the user listening to Spotify", required=False)):
+                      member: nextcord.Member = nextcord.SlashOption(description="the user listening to Spotify", required=False),
+                      details: str = nextcord.SlashOption(description="do you want to get additional information on the song and artist", required=False, choices=["Yes", "No"])):
         """
         This command displays what song someone is playing currently, if they have their Spotify connected to their discord.
         To get data about a track, it uses the Spotipy API wrapper.
@@ -64,13 +65,70 @@ class Spotify(nextcord_C.Cog):
 
         artists = ", ".join(map(str, artists_with_urls))
 
+        fields = []
+
+        if details == "Yes":
+            track_duration_min = int(round(track_spotipy["duration_ms"] / 1000) / 60)
+            track_duration_sec = round(track_spotipy["duration_ms"] / 1000) % 60
+            track_duration = f"{track_duration_min}:{track_duration_sec}"
+
+            if track_spotipy["explicit"]:
+                track_explicit = "Yes"
+            else:
+                track_explicit = "No"
+
+            artist_spotipy = spotifyObject.artist(f"spotify:artist:{track_spotipy['artists'][0]['id']}")
+
+
+            fields = [
+                [
+                    "Track Duration:",
+                    f"`{track_duration}`",
+                    True
+                ],
+
+                [
+                    "Track Explicit:",
+                    track_explicit,
+                    True
+                ],
+
+                [
+                    "Track Popularity:",
+                    f"`{int(track_spotipy['popularity'])}/100`",
+                    True
+                ],
+
+                [
+                    "Artist Followers:",
+                    f"{'{:,}'.format(int(artist_spotipy['followers']['total']))}",
+                    True
+                ],
+
+                [
+                    "Artist Popularity:",
+                    f"`{int(artist_spotipy['popularity'])}/100`",
+                    True
+                ],
+
+                [
+                    "Artist Genres:",
+                    ", ".join(map(str, artist_spotipy['genres'])),
+                    False
+                ]
+            ]
+
+
+
+
         embed = EmbedFunctions().builder(
             description = f"[{track_name}]({track_url})\non [{album_name}]({album_url})\nby {artists}",
             color = member_activity.color,
             thumbnail = cover_url,
             author = f"{member.display_name} is listening to:",
             author_icon = self.client.SPOTIFY_ICON,
-            footer = "DEFAULT_KST_FOOTER"
+            footer = "DEFAULT_KST_FOOTER",
+            fields = fields
         )
 
         await interaction.followup.send(embed=embed)

@@ -71,7 +71,7 @@ class EditLog(nextcord_C.Cog):
             if file_urls != "":
                 await sent_message.reply(content=file_urls, mention_author=False)
 
-            CommandUsesDB().uses_update("log_activations", "edit log")
+            CommandUsesDB("log_activations").update("edit log")
             return
 
 

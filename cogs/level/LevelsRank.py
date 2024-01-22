@@ -36,7 +36,7 @@ class LevelsRank(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        user_level, xp_until_next_level = LevelsDB().get_level(interaction.guild.id, member.id)
+        user_level, xp_until_next_level = LevelsDB(interaction.guild.id).get_level(member.id)
         next_level_xp = (user_level-1) * 200 + 300
         xp_progress_to_next_level = next_level_xp - xp_until_next_level
         
@@ -64,7 +64,7 @@ class LevelsRank(nextcord_C.Cog):
 
                 [
                     "Rank:",
-                    f"`{LevelsDB().get_rank(interaction.guild.id, member.id)}`",
+                    f"`{LevelsDB(interaction.guild.id).get_rank(member.id)}`",
                     True
                 ],
 

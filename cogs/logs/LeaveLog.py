@@ -30,10 +30,10 @@ class LeaveLog(nextcord_C.Cog):
 
         self.client.Loggers.action_log(f"Guild: {member.guild.id} ~ User: {member.id} ~ leave_log()")
 
-        KeywordDB().delete_all(member.guild.id, member.id)
+        KeywordDB(member.guild.id, member.id).delete_all()
 
         if not member.mutual_guilds:
-            ReminderDB().delete_all(member.id)
+            ReminderDB(member.id).delete_all()
 
         audit_log_id: int = await ConfigDB(member.guild.id, "AuditLogChannel").get_list(member.guild)
 

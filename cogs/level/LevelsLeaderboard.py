@@ -49,7 +49,7 @@ class LevelsLeaderboard(nextcord_C.Cog):
 
             output += f"**{index+1}. {name}** - Level: __`{user[1]}`__\n"
 
-        if not interaction.guild.icon:
+        if interaction.guild.icon:
             server_icon_url = interaction.guild.icon
         else:
             server_icon_url = self.client.DEFAULT_PFP

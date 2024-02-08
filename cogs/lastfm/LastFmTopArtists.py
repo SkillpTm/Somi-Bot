@@ -4,7 +4,6 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 import requests
-import urllib.parse
 
 ####################################################################################################
 
@@ -78,7 +77,7 @@ class LastFmTopArtists(nextcord_C.Cog):
         output = ""
 
         for artist in top_artists_user_data["topartists"]["artist"]:
-            artist_url = urllib.parse.quote_plus(artist['url'])
+            artist_url = artist['url']
             
             artist_name = Get().markdown_safe(artist['name'])
             output += f"{artist['@attr']['rank']}. **[{artist_name}]({artist_url})** - *({artist['playcount']} plays)*\n"

@@ -4,7 +4,6 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 import requests
-import urllib.parse
 
 ####################################################################################################
 
@@ -78,8 +77,8 @@ class LastFmTopAlbums(nextcord_C.Cog):
         output = ""
 
         for album in top_albums_user_data["topalbums"]["album"]:
-            album_url = urllib.parse.quote_plus(album['url'])
-            artist_url = urllib.parse.quote_plus(album['artist']['url'])
+            album_url = album['url']
+            artist_url = album['artist']['url']
 
             album_name = Get().markdown_safe(album['name'])
             artist_name = Get().markdown_safe(album['artist']['name'])

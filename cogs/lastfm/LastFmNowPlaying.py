@@ -55,7 +55,7 @@ class LastFmNowPlaying(nextcord_C.Cog):
         output = ""
 
         for track in np_user_data["recenttracks"]["track"]:
-            track_url = urllib.parse.quote_plus(track['url'])
+            track_url = track['url']
             artist_name_for_url = urllib.parse.quote_plus(track['artist']['#text'])
             album_name_for_url = urllib.parse.quote_plus(track['album']['#text'])
 

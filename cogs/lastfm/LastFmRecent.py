@@ -75,7 +75,7 @@ class LastFmRecent(nextcord_C.Cog):
 
         for track in recent_user_data["recenttracks"]["track"]:
             i += 1
-            track_url = urllib.parse.quote_plus(track['url'])
+            track_url = track['url']
             artist_name_for_url = urllib.parse.quote_plus(track['artist']['#text'])
 
             track_name = Get().markdown_safe(track['name'])

@@ -202,9 +202,9 @@ class SomiBot(nextcord_C.Bot):
 
         ####################################################################################################
 
-        f_words = [" f ", self.SOMI_F_EMOTE.lower()]
+        f_strings = [" f ", "\nf ", self.SOMI_F_EMOTE.lower()]
 
-        if any(i in f" {message.content.lower()} " for i in f_words):
+        if any(f_string in f" {message.content.lower()} " for f_string in f_strings):
             await message.add_reaction(self.SOMI_F_EMOTE)
 
             self.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel:{message.channel.id} ~ User: {message.author.id} ~ reacted() @SomiF")

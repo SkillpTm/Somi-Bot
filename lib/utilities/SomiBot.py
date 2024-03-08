@@ -202,7 +202,7 @@ class SomiBot(nextcord_C.Bot):
 
         ####################################################################################################
 
-        f_strings = [" f ", "\nf ", self.SOMI_F_EMOTE.lower()]
+        f_strings = [" f ", "\nf ", " f\n", self.SOMI_F_EMOTE.lower()]
 
         if any(f_string in f" {message.content.lower()} " for f_string in f_strings):
             await message.add_reaction(self.SOMI_F_EMOTE)

@@ -32,13 +32,13 @@ class Coinflip(nextcord_C.Cog):
 
         random_start = random.randint(0, 1)
         if random_start == 0:
-            value1 = self.client.HEADS
-            value2 = self.client.TAILS
+            value1 = self.client.HEADS_EMOTE
+            value2 = self.client.TAILS_EMOTE
         else:
-            value1 = self.client.TAILS
-            value2 = self.client.HEADS
+            value1 = self.client.TAILS_EMOTE
+            value2 = self.client.HEADS_EMOTE
 
-        result = f"Result:\n{random.choice([self.client.HEADS, self.client.TAILS])}"
+        result = f"Result:\n{random.choice([self.client.HEADS_EMOTE, self.client.TAILS_EMOTE])}"
 
         await interaction.followup.send(value1)
 

@@ -57,13 +57,13 @@ class SomiBot(nextcord_C.Bot):
     SOMICORD_WELCOME_GIF = "https://somibot.skillp.dev/cdn/gifs/SOMICORD_WELCOME_GIF.gif"
 
     #Emotes
-    HEADS = Config.HEADS
+    HEADS_EMOTE = Config.HEADS_EMOTE
     REACTION_EMOTE = Config.REACTION_EMOTE
     SOMI_BEST_GRILL_EMOTE = Config().SOMI_BEST_GRILL_EMOTE
     SOMI_F_EMOTE = Config.SOMI_F_EMOTE
     SOMI_ONLY_EMOTE = Config.SOMI_ONLY_EMOTE
     SOMI_WELCOME_EMOTE = Config.SOMI_WELCOME_EMOTE
-    TAILS = Config.TAILS
+    TAILS_EMOTE = Config.TAILS_EMOTE
 
     #Variables
     start_time = int(time.time())

@@ -162,5 +162,4 @@ cython_debug/
 *.db
 template.py
 bulk_messages.csv
-*.png
 env.json

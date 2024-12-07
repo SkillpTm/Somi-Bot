@@ -44,7 +44,6 @@ class SomiBot(nextcord_C.Bot):
     LASTFM_ICON = "https://somibot.skillp.dev/cdn/images/LASTFM_ICON.png"
     LINK_EMBED_ICON = "https://somibot.skillp.dev/cdn/images/LINK_EMBED_ICON.png"
     OPENWEATHERMAP_ICON = "https://somibot.skillp.dev/cdn/images/OPENWEATHERMAP_ICON.png"
-    R_SOMI_DEFAULT_ICON = "https://somibot.skillp.dev/cdn/gifs/R_SOMI_DEFAULT_ICON.gif"
     SOMI_BEST_GRILL_IMAGE = "https://somibot.skillp.dev/cdn/images/SOMI_BEST_GRILL_IMAGE.png"
     SPOTIFY_ICON = "https://somibot.skillp.dev/cdn/images/SPOTIFY_ICON.png"
 
@@ -80,7 +79,7 @@ class SomiBot(nextcord_C.Bot):
             application_id = Config.APPLICATION_ID,
             intents = nextcord.Intents.all(),
             status = nextcord.Status.online,
-            activity = nextcord.Activity(type=nextcord.ActivityType.listening, name="Ex-Mas"),
+            activity = nextcord.Activity(type=nextcord.ActivityType.listening, name="Ice Cream"),
             allowed_mentions = nextcord.AllowedMentions(everyone=False),
             owner_id = Config.OWNER_ID
         )

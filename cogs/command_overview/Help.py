@@ -19,15 +19,18 @@ class Help(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name='help', description='explanations for all command')
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def help(self,
-                   interaction: nextcord.Interaction,
-                   *,
-                   commandname: str = nextcord.SlashOption(description="which command do you need help for", required=True, min_length=2, max_length=50)):
+    @nextcord.slash_command(name='help', description='explanations for every command')
+    @nextcord_AC.check(not Checks.interaction_not_by_bot)
+    async def help(
+        self,
+        interaction: nextcord.Interaction,
+        *,
+        commandname: str = nextcord.SlashOption(description="which command do you need help for", required=True, min_length=2, max_length=50)
+    ) -> None:
         """This command generates a select box that is corresponding to all commands of the bot.
            It delivers help for the usage of said commands."""
 
+        # ensure /[name] syntax
         if not commandname.startswith("/"):
             commandname = f"/{commandname}"
 
@@ -35,16 +38,18 @@ class Help(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
+        # if not a command name return early
         if commandname not in self.client.Lists.HELP_AUTOCOMPLETE_TUPLE:
             await interaction.followup.send(embed=EmbedFunctions().error(f"`{commandname}` isn't a valid commandname."), ephemeral=True)
             return
 
         HELP_OUTPUT = {**self.client.Lists.HELP_PERMISSION_OUTPUT, **self.client.Lists.HELP_NORMAL_OUTPUT}
 
+        # check if the command is a permission command (permission command dicts have 3 elements, regular just 2)
         if len(HELP_OUTPUT[commandname]) == 3:
             permissions_text = HELP_OUTPUT[commandname][2]
         else:
-            permissions_text = ""
+            permissions_text = "" # an empty string will lead for the field to no be displayed
 
         embed = EmbedFunctions.builder(
             color = self.client.BOT_COLOR,
@@ -78,9 +83,13 @@ class Help(nextcord_C.Cog):
     ####################################################################################################
 
     @help.on_autocomplete("commandname")
-    async def autocomplete_reminder_delete(self,
-                                           interaction: nextcord.Interaction,
-                                           commandname: str):
+    async def autocomplete_reminder_delete(
+        self,
+        interaction: nextcord.Interaction,
+        commandname: str
+    ) -> None:
+        """provides autocomplete suggestions to discord"""
+
         all_commands = self.client.Lists.HELP_AUTOCOMPLETE_TUPLE
         all_commands_dict = {}
 

@@ -41,20 +41,20 @@ class Checks():
 
 
     @staticmethod
-    def interaction_by_bot() -> bool:
+    def interaction_not_by_bot() -> bool:
         """This function checks, if an interaction was created by a bot"""
 
         def predicate(interaction: nextcord.Interaction) -> bool:
-            return interaction.user.bot
+            return not interaction.user.bot
         
         return predicate
     
     ####################################################################################################
 
     @staticmethod
-    def message_by_bot(
+    def message_not_by_bot(
         message: nextcord.Message
     ) -> bool:
         """This function checks, if a message was send by a bot"""
 
-        return message.author.bot == False
+        return not message.author.bot

@@ -7,14 +7,14 @@ import nextcord.ext.application_checks as nextcord_AC
 ####################################################################################################
 
 from lib.db_modules import ConfigDB
-from lib.modules import Checks, EmbedFunctions, LevelRoles
+from lib.modules import Checks, EmbedFunctions, Get, LevelRoles
 from lib.utilities import SomiBot
 
 
 
 class ConfigInfo(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     from lib.utilities.main_commands import config
@@ -22,12 +22,14 @@ class ConfigInfo(nextcord_C.Cog):
     ####################################################################################################
 
     @config.subcommand(name = "info", description = "get information on how this server is configured")
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def config_info(self,
-                          interaction: nextcord.Interaction):
+    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    async def config_info(
+        self,
+        interaction: nextcord.Interaction
+    ) -> None:
         """This command outputs a server's configuration info and some explanations."""
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /config info")
+        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/config info"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
@@ -82,49 +84,68 @@ class ConfigInfo(nextcord_C.Cog):
 
     @staticmethod
     async def get_config_data(interaction: nextcord.Interaction) -> tuple[str, str, str, str, str]:
-        """This function gets all the data that can be configured and if there is none, it just replaces with a default text."""
+        """This function gets all the data that can be configured and if there is none, it just replaces with a default text.
+           It also validates that all channels/roles still exist and if not cleans up the db"""
 
         audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
 
-        if audit_log_id:
-            audit_log_output = f"<#{audit_log_id}>"
-        else:
+        if not audit_log_id or not interaction.guild.get_channel(audit_log_id):
+            # delete the channel, if it doesn't exist anymore (if none is set, delete will return early without problems)
+            ConfigDB(interaction.guild.id, "AuditLogChannel").delete(audit_log_id)
             audit_log_output = "`This server doesn't have a desginated channel for audit-Log messages.`"
+        else:
+            audit_log_output = f"<#{audit_log_id}>"
 
 
         default_role_id: int = await ConfigDB(interaction.guild.id, "DefaultRole").get_list(interaction.guild)
 
-        if default_role_id:
-            default_role_output = f"<@&{default_role_id}>"
-        else:
+        if not default_role_id or not interaction.guild.get_role(default_role_id):
+            # delete the role, if it doesn't exist anymore (if none is set, delete will return early without problems)
+            ConfigDB(interaction.guild.id, "DefaultRole").delete(default_role_id)
             default_role_output = "`This server doesn't have a desginated default-role.`"
+        else:
+            default_role_output = f"<@&{default_role_id}>"
 
 
         hidden_channel_ids: list[int] = await ConfigDB(interaction.guild.id, "HiddenChannels").get_list(interaction.guild)
+        hidden_channels_output = ""
 
-        if hidden_channel_ids:
-            hidden_channels_output = ""
+        # check if all hidden channels still exits, the ones that do, get added to the output
+        for index, hidden_channel_id in enumerate(hidden_channel_ids):
+            if not interaction.guild.get_channel(hidden_channel_id):
+                hidden_channel_ids.pop(index)
+                ConfigDB(interaction.guild.id, "HiddenChannels").delete(hidden_channel_id)
+                continue
+            
+            hidden_channels_output +=  f"<#{hidden_channel_id}>\n"
 
-            for hidden_channel_id in hidden_channel_ids:
-                hidden_channels_output +=  f"<#{hidden_channel_id}>\n"
-
-        else:
+        if not hidden_channels_output:
             hidden_channels_output = "`This server doesn't have any hidden-channels.`"
 
 
         level_ignore_channel_ids: list[int] = await ConfigDB(interaction.guild.id, "LevelIgnoreChannels").get_list(interaction.guild)
+        level_ignore_channels_output = ""
 
-        if level_ignore_channel_ids:
-            level_ignore_channels_output = ""
+        # check if all level ignore channels still exits, the ones that do, get added to the output
+        for index, level_ignore_channel_id in enumerate(level_ignore_channel_ids):
+            if not interaction.guild.get_channel(level_ignore_channel_id):
+                level_ignore_channel_ids.pop(index)
+                ConfigDB(interaction.guild.id, "LevelIgnoreChannels").delete(level_ignore_channel_id)
+                continue
+            
+            level_ignore_channels_output +=  f"<#{level_ignore_channel_id}>\n"
 
-            for level_ignore_channel_id in level_ignore_channel_ids:
-                level_ignore_channels_output +=  f"<#{level_ignore_channel_id}>\n"
-
-        else:
+        if not level_ignore_channels_output:
             level_ignore_channels_output = "`This server doesn't have any level-ignore-channels.`"
 
 
-        level_roles = await ConfigDB(interaction.guild.id, "LevelRoles").get_list(interaction.guild)
+        level_roles: list[list[int, int]] = await ConfigDB(interaction.guild.id, "LevelRoles").get_list(interaction.guild)
+
+        # check if all level roles still exits, the ones that do, get added to the output
+        for index, level_role in enumerate(level_roles):
+            if not interaction.guild.get_role(level_role[0]):
+                level_roles.pop(index)
+                ConfigDB(interaction.guild.id, "LevelRoles").delete(level_role[0])
 
         if level_roles:
             level_roles_output = LevelRoles().get_level_range_with_role(level_roles)
@@ -137,5 +158,5 @@ class ConfigInfo(nextcord_C.Cog):
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(ConfigInfo(client))

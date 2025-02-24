@@ -158,3 +158,33 @@ class Get():
         string = "\n".join([line.strip() for line in string.split("\n")])
 
         return string
+    
+    ####################################################################################################
+
+    @staticmethod
+    def interaction_log_message(
+        interaction: nextcord.Interaction,
+        command_name: str,
+        command_args: dict[str: str] = {}
+    ) -> str:
+        """makes the log message for an interaction"""
+
+        # log_message = f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /help"
+
+        ouput = ""
+
+        ouput += f"{command_name} "
+        ouput += f"~ User: {interaction.user.id} "
+
+        # check if the interaction was in a guild or dm
+        if interaction.guild:
+            ouput += f"~ Guild: {interaction.guild.id} "
+            ouput += f"~ Channel: {interaction.channel.id} "
+        else:
+            ouput += "~ Guild: DM channel "
+
+        ouput = "args: "
+        for key, value in command_args.items():
+            ouput = f"[{key}: {value}]"
+
+        return ouput

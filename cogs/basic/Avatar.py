@@ -37,7 +37,7 @@ class Avatar(nextcord_C.Cog):
         self.client.Loggers.action_log(Get().interaction_log_message(
             interaction,
             "/avatar",
-            {"user": user.id}
+            {"user": str(user.id)}
         ))
 
         await interaction.response.defer(with_message=True)

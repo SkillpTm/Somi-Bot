@@ -37,7 +37,7 @@ class Banner(nextcord_C.Cog):
         self.client.Loggers.action_log(Get().interaction_log_message(
             interaction,
             "/banner",
-            {"user": user.id}
+            {"user": str(user.id)}
         ))
 
         if not user.banner:

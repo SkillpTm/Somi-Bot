@@ -165,7 +165,7 @@ class Get():
     def interaction_log_message(
         interaction: nextcord.Interaction,
         command_name: str,
-        command_args: dict[str: str] = {}
+        command_args: dict[str, str] = {}
     ) -> str:
         """makes the log message for an interaction"""
 

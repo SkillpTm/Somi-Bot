@@ -23,10 +23,7 @@ class ConfigInfo(nextcord_C.Cog):
 
     @config.subcommand(name = "info", description = "get information on how this server is configured")
     @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
-    async def config_info(
-        self,
-        interaction: nextcord.Interaction
-    ) -> None:
+    async def config_info(self, interaction: nextcord.Interaction) -> None:
         """This command outputs a server's configuration info and some explanations."""
 
         self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/config info"))

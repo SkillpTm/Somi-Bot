@@ -25,10 +25,7 @@ class CustomList(nextcord_C.Cog):
         name_localizations = {country_tag:"custom-list" for country_tag in nextcord.Locale}
     )
     @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
-    async def custom_list(
-        self,
-        interaction: nextcord.Interaction
-    ) -> None:
+    async def custom_list(self, interaction: nextcord.Interaction) -> None:
         """This command provides a list of all custom-commands of a guild"""
 
         self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/custom list"))

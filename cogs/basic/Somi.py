@@ -20,10 +20,7 @@ class Somi(nextcord_C.Cog):
 
     @nextcord.slash_command(name = "somi", description = "speaks facts")
     @nextcord_AC.check(Checks().interaction_not_by_bot())
-    async def somi(
-        self,
-        interaction: nextcord.Interaction
-    ) -> None:
+    async def somi(self,interaction: nextcord.Interaction) -> None:
         """This command tells you the truth"""
 
         self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/somi"))

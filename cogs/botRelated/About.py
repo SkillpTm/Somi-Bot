@@ -21,10 +21,7 @@ class About(nextcord_C.Cog):
 
     @nextcord.slash_command(name = "about", description = "tells you about Somi bot")
     @nextcord_AC.check(Checks().interaction_not_by_bot())
-    async def about(
-        self,
-        interaction: nextcord.Interaction
-    ) -> None:
+    async def about(self, interaction: nextcord.Interaction) -> None:
         """This command outputs various information about the bot to the user"""
 
         self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/about"))

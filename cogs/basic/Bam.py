@@ -20,10 +20,7 @@ class Bam(nextcord_C.Cog):
 
     @nextcord.slash_command(name = "bam", description = "bams a member")
     @nextcord_AC.check(Checks().interaction_not_by_bot())
-    async def bam(
-        self,
-        interaction: nextcord.Interaction
-    ) -> None:
+    async def bam(self, interaction: nextcord.Interaction) -> None:
         """This command fake bans someone"""
 
         self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/bam"))

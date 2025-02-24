@@ -22,10 +22,7 @@ class Severinfo(nextcord_C.Cog):
         
     @nextcord.slash_command(name = "si", description = "gives information about this server", name_localizations = {country_tag:"serverinfo" for country_tag in nextcord.Locale})
     @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
-    async def serverinfo(
-        self,
-        interaction: nextcord.Interaction
-    ) -> None:
+    async def serverinfo(self, interaction: nextcord.Interaction) -> None:
         """This command gives you infomration about a server"""
 
         self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/serverinfo"))

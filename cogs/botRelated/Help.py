@@ -25,7 +25,7 @@ class Help(nextcord_C.Cog):
         self,
         interaction: nextcord.Interaction,
         *,
-        command_name: str = nextcord.SlashOption(
+        commandname: str = nextcord.SlashOption(
             description="which command do you need help for",
             required=True,
             min_length=2,
@@ -36,44 +36,44 @@ class Help(nextcord_C.Cog):
            It delivers help for the usage of said commands."""
 
         # ensure /[name] syntax
-        if not command_name.startswith("/"):
-            command_name = f"/{command_name}"
+        if not commandname.startswith("/"):
+            commandname = f"/{commandname}"
 
         self.client.Loggers.action_log(Get().interaction_log_message(
             interaction,
             "/help",
-            {"command_name": command_name}
+            {"commandname": commandname}
         ))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         # if not a command name return early
-        if command_name not in self.client.Lists.HELP_AUTOCOMPLETE_TUPLE:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"`{command_name}` isn't a valid command name."), ephemeral=True)
+        if commandname not in self.client.Lists.HELP_AUTOCOMPLETE_TUPLE:
+            await interaction.followup.send(embed=EmbedFunctions().error(f"`{commandname}` isn't a valid command name."), ephemeral=True)
             return
 
         HELP_OUTPUT = {**self.client.Lists.HELP_PERMISSION_OUTPUT, **self.client.Lists.HELP_NORMAL_OUTPUT}
 
         # check if the command is a permission command (permission command dicts have 3 elements, regular just 2)
-        if len(HELP_OUTPUT[command_name]) == 3:
-            permissions_text = HELP_OUTPUT[command_name][2]
+        if len(HELP_OUTPUT[commandname]) == 3:
+            permissions_text = HELP_OUTPUT[commandname][2]
         else:
             permissions_text = "" # an empty string will lead for the field to no be displayed
 
         embed = EmbedFunctions.builder(
             color = self.client.BOT_COLOR,
-            title = f"Help for `{command_name}`",
+            title = f"Help for `{commandname}`",
             footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "Syntax:",
-                    "\n".join([line.strip() for line in HELP_OUTPUT[command_name][0].split("\n")]),
+                    "\n".join([line.strip() for line in HELP_OUTPUT[commandname][0].split("\n")]),
                     False
                 ],
 
                 [
                     "Example:",
-                    HELP_OUTPUT[command_name][1],
+                    HELP_OUTPUT[commandname][1],
                     False
                 ],
 
@@ -87,15 +87,15 @@ class Help(nextcord_C.Cog):
 
         await interaction.followup.send(embed=embed, ephemeral=True)
 
-        CommandUsesDB("help_selections").update(f"{command_name[1:]}")
+        CommandUsesDB("help_selections").update(f"{commandname[1:]}")
 
     ####################################################################################################
 
-    @help.on_autocomplete("command_name")
+    @help.on_autocomplete("commandname")
     async def autocomplete_reminder_delete(
         self,
         interaction: nextcord.Interaction,
-        command_name: str
+        commandname: str
     ) -> None:
         """provides autocomplete suggestions to discord"""
 
@@ -105,7 +105,7 @@ class Help(nextcord_C.Cog):
         for command in all_commands:
             all_commands_dict.update({command: command[1:]})
 
-        autocomplete_dict = Get().autocomplete_dict_from_search_string(command_name, all_commands_dict)
+        autocomplete_dict = Get().autocomplete_dict_from_search_string(commandname, all_commands_dict)
 
         await interaction.response.send_autocomplete(autocomplete_dict)
 

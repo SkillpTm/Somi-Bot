@@ -11,6 +11,7 @@ import requests
 import spotipy
 import sys
 import time
+import wolframalpha
 
 ####################################################################################################
 
@@ -105,6 +106,8 @@ class SomiBot(nextcord_C.Bot):
             redirect_uri = Keychain().SPOTIPY_REDIRECT_URI,
             scope="user-read-currently-playing"
         )
+
+        self.wolfram_client = wolframalpha.Client(self.Keychain.WOLFRAM_APP_ID)
 
         self.youtube = googleapiclient.discovery.build(
             'youtube',

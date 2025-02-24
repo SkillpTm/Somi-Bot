@@ -22,7 +22,7 @@ class ConfigHiddenChannels(nextcord_C.Cog):
     ####################################################################################################
 
     @config.subcommand(name = "hidden-channels", description = "add/remove a hidden-channel to this server")
-    @nextcord_AC.check(Checks().interaction_in_guild and Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
     async def config_hidden_channels(
         self,
         interaction: nextcord.Interaction,
@@ -120,7 +120,6 @@ class ConfigHiddenChannels(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().success(f"{channel.mention} has been removed from the hidden-channels."), ephemeral=True)
         return deleted
-
 
 
 

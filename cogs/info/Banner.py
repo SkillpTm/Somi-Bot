@@ -6,35 +6,42 @@ import nextcord.ext.application_checks as nextcord_AC
 
 ####################################################################################################
 
-from lib.modules import Checks, EmbedFunctions
+from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
 
 class Banner(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
 
     @nextcord.slash_command(name = "banner", description = "posts someone's banner")
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def banner(self,
-                     interaction: nextcord.Interaction,
-                     *,
-                     member: nextcord.Member = nextcord.SlashOption(description="the user you want the banner from", required=False)):
+    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    async def banner(
+        self,
+        interaction: nextcord.Interaction,
+        *,
+        user: nextcord.User = nextcord.SlashOption(
+            description="the user you want the banner from",
+            required=False
+        )
+    ) -> None:
         """This command reposts anyone's banner in an embed"""
 
-        if not member:
-            member = interaction.guild.get_member(interaction.user.id)
+        if not user:
+            user = interaction.user
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /banner {member.id}")
+        self.client.Loggers.action_log(Get().interaction_log_message(
+            interaction,
+            "/banner",
+            {"user": user.id}
+        ))
 
-        user = await self.client.fetch_user(member.id)
-
-        if not hasattr(user.banner, "url"):
-            await interaction.response.send_message(embed=EmbedFunctions().error(f"The user {member.mention} doesn't have a banner."), ephemeral=True)
+        if not user.banner:
+            await interaction.response.send_message(embed=EmbedFunctions().error(f"The user {user.mention} doesn't have a banner."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
@@ -42,7 +49,7 @@ class Banner(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,
             image = user.banner.url,
-            title = f"Banner of: `{member.display_name}`",
+            title = f"Banner of: `{user.display_name}`",
             title_url = user.banner.url,
             footer = "DEFAULT_KST_FOOTER"
         )
@@ -51,5 +58,5 @@ class Banner(nextcord_C.Cog):
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(Banner(client))

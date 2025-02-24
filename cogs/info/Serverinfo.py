@@ -8,31 +8,33 @@ import time
 
 ####################################################################################################
 
-from lib.modules import Checks, EmbedFunctions
+from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
 
 class Severinfo(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
         
     @nextcord.slash_command(name = "si", description = "gives information about this server", name_localizations = {country_tag:"serverinfo" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def serverinfo(self,
-                         interaction: nextcord.Interaction):
+    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    async def serverinfo(
+        self,
+        interaction: nextcord.Interaction
+    ) -> None:
         """This command gives you infomration about a server"""
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /serverinfo")
+        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/serverinfo"))
 
         await interaction.response.defer(with_message=True)
 
         guild_with_counts = await self.client.fetch_guild(interaction.guild.id, with_counts=True)
 
-        if interaction.guild.icon != None:
+        if interaction.guild.icon:
             server_icon_url = interaction.guild.icon
         else:
             server_icon_url = self.client.DEFAULT_PFP
@@ -79,5 +81,5 @@ class Severinfo(nextcord_C.Cog):
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(Severinfo(client))

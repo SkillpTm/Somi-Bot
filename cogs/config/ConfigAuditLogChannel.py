@@ -27,28 +27,42 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
         self,
         interaction: nextcord.Interaction,
         *,
-        action: str = nextcord.SlashOption(description="which action do you want to take", required=True, choices=["Set", "Unset"]),
-        channel: nextcord.abc.GuildChannel = nextcord.SlashOption(channel_types=TEXT_CHANNELS, description="the channel to be set/unset", required=False)
+        action: str = nextcord.SlashOption(
+            description="which action do you want to take",
+            required=True,
+            choices=["Set", "Unset"]
+        ),
+        channel: nextcord.abc.GuildChannel = nextcord.SlashOption(
+            description="the channel to be set/unset",
+            required=False,
+            channel_types=TEXT_CHANNELS
+        )
     ) -> None:
         """This command sets/unsets the audit-log-channel of the server."""
 
         if not channel:
             channel = interaction.channel
 
-        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/config audit-log-channel", {action: str(channel.id)}))
+        self.client.Loggers.action_log(Get().interaction_log_message(
+            interaction,
+            "/config audit-log-channel",
+            {"action": action, "channel": str(channel.id)}
+        ))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
 
         if action == "Set":
-            await self.setChannel(interaction, channel)
+            if not await self.setChannel(interaction, channel):
+                return
             mod_action = f"{interaction.user.mention} set: {channel.mention} as the new audit-log-channel."
 
 
         elif action == "Unset":
             # we get the channel_id from the db in case the current audit log channel was deleted and "channel" is unreliable
             channel_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
-            await self.unsetChannel(interaction, channel_id)
+            if not await self.unsetChannel(interaction, channel_id):
+                return
 
             mod_action = f"{interaction.user.mention} unset: <#{channel_id}> as the audit-log-channel."
 

@@ -30,6 +30,10 @@ class Reload(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
+        if interaction.user.id != self.client.owner_id:
+            await interaction.followup.send(embed=EmbedFunctions().error("You aren't the bot's owner"), ephemeral=True)
+            return
+
         for folder in os.listdir(f"./cogs/"):
             if os.path.isdir(f"./cogs/{folder}/"):
                 for extension in os.listdir(f"./cogs/{folder}/"):

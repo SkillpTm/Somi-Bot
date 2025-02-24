@@ -26,6 +26,11 @@ class Restart(nextcord_C.Cog):
         """This command restarts the bot, it can only be executed from a moderator on Somicord"""
 
         self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /restart")
+
+        if interaction.user.id != self.client.owner_id:
+            await interaction.response.send_message(embed=EmbedFunctions().error("You aren't the bot's owner"), ephemeral=True)
+            return
+
         
         await interaction.response.send_message(embed=EmbedFunctions().success("Restarting bot..."), ephemeral=True)
 

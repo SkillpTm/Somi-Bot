@@ -29,6 +29,10 @@ class Shutdown(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
+        if interaction.user.id != self.client.owner_id:
+            await interaction.followup.send(embed=EmbedFunctions().error("You aren't the bot's owner"), ephemeral=True)
+            return
+
         view = YesNoButtons(interaction=interaction)
         await interaction.followup.send(embed=EmbedFunctions().info_message("Do you really want to shutdown the bot?", self.client), view=view, ephemeral=True)
         await view.wait()

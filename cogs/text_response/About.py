@@ -14,18 +14,20 @@ from lib.utilities import SomiBot
 
 class About(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
 
     @nextcord.slash_command(name = "about", description = "tells you about Somi bot")
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def about(self,
-                    interaction: nextcord.Interaction):
+    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    async def about(
+        self,
+        interaction: nextcord.Interaction
+    ) -> None:
         """This command outputs various information about the bot to the user"""
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /about")
+        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/about"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
@@ -53,7 +55,7 @@ class About(nextcord_C.Cog):
                 ],
 
                 [
-                    "Uptime:",
+                    "Uptime (since):",
                     f"<t:{self.client.start_time}:R>",
                     True
                 ],
@@ -94,5 +96,5 @@ class About(nextcord_C.Cog):
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(About(client))

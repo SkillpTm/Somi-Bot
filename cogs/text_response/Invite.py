@@ -6,29 +6,31 @@ import nextcord.ext.application_checks as nextcord_AC
 
 ####################################################################################################
 
-from lib.modules import Checks
+from lib.modules import Checks, Get
 from lib.utilities import SomiBot
 
 
 
 class Invite(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
 
     @nextcord.slash_command(name = "invite", description = "posts the bot's invite link")
     @nextcord_AC.check(Checks().interaction_in_guild())
-    async def invite(self,
-                     interaction: nextcord.Interaction):
+    async def invite(
+        self,
+        interaction: nextcord.Interaction
+    ) -> None:
         """This command posts the invite link for the bot"""
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /invite")
+        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/about"))
 
         await interaction.response.send_message(f"<{self.client.SOMI_INVITE}>")
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(Invite(client))

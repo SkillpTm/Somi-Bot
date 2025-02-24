@@ -19,7 +19,7 @@ class Emoji(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name="emoji", description="make an emoji larger")
+    @nextcord.slash_command(name="emote", description="make an emoji larger", name_localizations = {country_tag:"emoji" for country_tag in nextcord.Locale})
     @nextcord_AC.check(Checks().interaction_not_by_bot())
     async def emoji(
         self,

@@ -19,12 +19,12 @@ class Get():
     ####################################################################################################
 
     @staticmethod
-    def kst_timestamp(source: str = None) -> str:
+    def kst_timestamp(slash_kst_format: bool = False) -> str:
         """This function returns the current time as a humanreadable string"""
 
         now_korea = datetime.datetime.now(pytz.timezone('Asia/Seoul'))
 
-        if source == "/kst":
+        if slash_kst_format:
             format = "Date: `%Y/%m/%d`\nTime: `%H:%M:%S %Z`"
         else:
             format = "%Y/%m/%d %H:%M:%S %Z"

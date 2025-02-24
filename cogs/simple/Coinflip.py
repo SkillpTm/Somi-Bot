@@ -8,40 +8,39 @@ import random
 
 ####################################################################################################
 
-from lib.modules import Checks
+from lib.modules import Checks, Get
 from lib.utilities import SomiBot
 
 
 
 class Coinflip(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
     
     @nextcord.slash_command(name = "coinflip", description = "does a coinflip")
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def coinflip(self,
-                       interaction: nextcord.Interaction):
+    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    async def coinflip(self, interaction: nextcord.Interaction) -> None:
         """This command does a coinflip with a small animation"""
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /coinflip")
+        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/coinflip"))
 
         await interaction.response.defer(with_message=True)
 
-        random_start = random.randint(0, 1)
-        if random_start == 0:
+        # make start icon random (for animation)
+        if random.randint(0, 1):
             value1 = self.client.HEADS_EMOTE
             value2 = self.client.TAILS_EMOTE
         else:
             value1 = self.client.TAILS_EMOTE
             value2 = self.client.HEADS_EMOTE
 
-        result = f"Result:\n{random.choice([self.client.HEADS_EMOTE, self.client.TAILS_EMOTE])}"
-
         await interaction.followup.send(value1)
 
+        # the first value in coin_animation's lists, is how long it is dispalyed and the 2nd which icon is shown
+        result = f"Result:\n{random.choice([self.client.HEADS_EMOTE, self.client.TAILS_EMOTE])}"
         coin_animation = [[0.2, value2], [0.2, value1], [0.2, value2], [0.4, value1], [0.8, value2], [1, result]]
 
         for step in coin_animation:
@@ -50,5 +49,5 @@ class Coinflip(nextcord_C.Cog):
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(Coinflip(client))

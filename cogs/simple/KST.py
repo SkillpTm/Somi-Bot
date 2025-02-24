@@ -13,22 +13,21 @@ from lib.utilities import SomiBot
 
 class KST(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
 
     @nextcord.slash_command(name = "kst", description = "shows the current time in KST")
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def kst(self,
-                  interaction: nextcord.Interaction):
+    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    async def kst(self, interaction: nextcord.Interaction) -> None:
         """This command will display the current date and time in KST"""
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /kst")
+        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/kst"))
 
-        await interaction.response.send_message(Get().kst_timestamp(source = "/kst"))
+        await interaction.response.send_message(Get().kst_timestamp(True))
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(KST(client))

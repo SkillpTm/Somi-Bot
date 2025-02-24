@@ -23,6 +23,7 @@ async def config(self, interaction: nextcord.Interaction) -> None:
 
 @client.slash_command(
     name='custom',
+    guild_ids = client.guilds,
     default_member_permissions=nextcord.Permissions(manage_messages=True, manage_guild=True)
 )
 async def custom(self, interaction: nextcord.Interaction) -> None:

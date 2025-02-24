@@ -45,7 +45,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
         self.client.Loggers.action_log(Get().interaction_log_message(
             interaction,
             "/config default-role",
-            {"action": action, "channel": str(role.id)}
+            {"action": action, "role": str(role.id)}
         ))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
@@ -62,14 +62,13 @@ class ConfigDefaultRole(nextcord_C.Cog):
                 if role not in member.roles and not member.bot:
                     await member.add_roles(role)
 
-
         elif action == "Unset":
             # we get the role_id from the db in case the current defsault role was deleted and "role" is unreliable
             role_id: int = await ConfigDB(interaction.guild.id, "DefaultRole").get_list(interaction.guild)
 
             if not await self.unsetRole(interaction, role):
                 return
-
+            
             mod_action = f"{interaction.user.mention} unset: <@&{role_id}> as the default-role."  
 
             # remove the role from all users
@@ -127,6 +126,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().success(f"{role.mention} is from now on this server's default-role.\nThe role is being applied to users now, this can take a few minutes."), ephemeral=True)
         return added
 
+    ####################################################################################################
 
     @staticmethod
     async def unsetRole(

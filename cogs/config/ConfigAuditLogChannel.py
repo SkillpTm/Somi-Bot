@@ -55,15 +55,16 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
         if action == "Set":
             if not await self.setChannel(interaction, channel):
                 return
+            
             mod_action = f"{interaction.user.mention} set: {channel.mention} as the new audit-log-channel."
-
 
         elif action == "Unset":
             # we get the channel_id from the db in case the current audit log channel was deleted and "channel" is unreliable
             channel_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
+            
             if not await self.unsetChannel(interaction, channel_id):
                 return
-
+            
             mod_action = f"{interaction.user.mention} unset: <#{channel_id}> as the audit-log-channel."
 
 

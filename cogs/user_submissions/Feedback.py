@@ -7,12 +7,13 @@ import nextcord.ext.application_checks as nextcord_AC
 ####################################################################################################
 
 from lib.db_modules import FeedbackDB
-from lib.modules import Checks, Get
+from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
 class FeedbackModal(nextcord.ui.Modal):
-    def __init__(self, client):
+
+    def __init__(self, client) -> None:
         super().__init__("Please submit your feedback down below!", timeout=None)
         self.client: SomiBot = client
 
@@ -27,38 +28,41 @@ class FeedbackModal(nextcord.ui.Modal):
 
         self.add_item(self.feedback)
 
-    async def callback(self,
-                       interaction: nextcord.Interaction):
+    async def callback(
+        self,
+        interaction: nextcord.Interaction
+    ) -> None:
         """Submits the feedback to the db"""
-        
-        kst_time = Get().kst_timestamp(source = "/feedback")
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /feedback submission:\n{self.feedback.value}")
+        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/feedback"), {"submission": self.feedback.value})
 
-        FeedbackDB().add(interaction.guild.id, interaction.user.id, str(interaction.user), kst_time, self.feedback.value)
+        #TODO send this response into the support server
+        FeedbackDB().add(interaction.guild.id, interaction.user.id, str(interaction.user), Get().kst_timestamp(), self.feedback.value)
 
-        await interaction.response.send_message("Your feedback has been submitted!", ephemeral=True)
+        await interaction.response.send_message(embed=EmbedFunctions().success("Your feedback has been submitted!"), ephemeral=True)
 
 
 
 class Feedback(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
 
     @nextcord.slash_command(name = "feedback", description = "give feedback to the bot, with a suggestion or submit a bug-report")
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def feedback(self,
-                       interaction: nextcord.Interaction):
+    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    async def feedback(
+        self,
+        interaction: nextcord.Interaction
+    ) -> None:
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /feedback")
+        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/feedback"))
 
         modal = FeedbackModal(self.client)
         await interaction.response.send_modal(modal=modal)
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(Feedback(client))

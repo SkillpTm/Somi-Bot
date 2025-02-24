@@ -15,7 +15,7 @@ from lib.utilities import SomiBot
 
 class CustomAdd(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     from lib.utilities.main_commands import custom
@@ -23,20 +23,37 @@ class CustomAdd(nextcord_C.Cog):
     ####################################################################################################
 
     @custom.subcommand(name = "add", description = "add a custom-command to this server")
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def custom_add(self,
-                         interaction: nextcord.Interaction,
-                         *,
-                         commandname: str = nextcord.SlashOption(description="new custom-command name", required=True, min_length=2, max_length=50),
-                         commandtext: str = nextcord.SlashOption(description="the content of the new custom-command", required=True, min_length=2, max_length=1000)):
+    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    async def custom_add(
+        self,
+        interaction: nextcord.Interaction,
+        *,
+        commandname: str = nextcord.SlashOption(
+            description="new custom-command name",
+            required=True,
+            min_length=2,
+            max_length=50
+        ),
+        commandtext: str = nextcord.SlashOption(
+            description="the content of the new custom-command",
+            required=True,
+            min_length=2,
+            max_length=1000
+        )
+    ) -> None:
         """This command adds a custom-command to the server's custom-commands"""
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /custom add {commandname}:\n{commandtext}")
+        self.client.Loggers.action_log(Get().interaction_log_message(
+            interaction,
+            "/custom add",
+            {"commandname": commandname, "commandtext": commandtext}
+        ))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         commandname = Get().clean_input_command(commandname)
 
+        # make sure commandname is only letters and numbers
         if not re.match(r"^[\da-z]+$", commandname):
             await interaction.followup.send(embed=EmbedFunctions().error("You can only have letters and numbers in your custom-commandname!"), ephemeral=True)
             return
@@ -75,10 +92,9 @@ class CustomAdd(nextcord_C.Cog):
             ]
         )
 
-        audit_log_channel = interaction.guild.get_channel(audit_log_id)
-        await audit_log_channel.send(embed=embed)
+        await interaction.guild.get_channel(audit_log_id).send(embed=embed)
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(CustomAdd(client))

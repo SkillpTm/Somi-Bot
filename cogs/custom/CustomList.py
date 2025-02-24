@@ -7,40 +7,47 @@ import nextcord.ext.application_checks as nextcord_AC
 ####################################################################################################
 
 from lib.db_modules import CustomCommandsDB
-from lib.modules import Checks, EmbedFunctions
+from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
 
 class CustomList(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "cl", description = "a list of all custom-commands on this server", name_localizations = {country_tag:"custom-list" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def custom_list(self,
-                          interaction: nextcord.Interaction):
+    @nextcord.slash_command(
+        name = "cl",
+        description = "a list of all custom-commands on this server",
+        name_localizations = {country_tag:"custom-list" for country_tag in nextcord.Locale}
+    )
+    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    async def custom_list(
+        self,
+        interaction: nextcord.Interaction
+    ) -> None:
         """This command provides a list of all custom-commands of a guild"""
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /custom list")
+        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/custom list"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         all_commandnames: list[str] = CustomCommandsDB(interaction.guild.id).get_list()
 
-        if all_commandnames == []:
+        if not all_commandnames:
             await interaction.followup.send(embed=EmbedFunctions().error("There are no custom-commands on this server.\nTo add a custom-command use `/custom add`."), ephemeral=True)
             return
 
         output = ""
 
+        # formatting the output
         for commandname in all_commandnames:
             output += f"/cc `{commandname}`\n"
 
-        if interaction.guild.icon != None:
+        if interaction.guild.icon:
             server_icon_url = interaction.guild.icon
         else:
             server_icon_url = self.client.DEFAULT_PFP
@@ -63,5 +70,5 @@ class CustomList(nextcord_C.Cog):
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(CustomList(client))

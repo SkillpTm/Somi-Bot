@@ -14,7 +14,7 @@ from lib.utilities import SomiBot
 
 class Help(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
@@ -102,5 +102,5 @@ class Help(nextcord_C.Cog):
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(Help(client))

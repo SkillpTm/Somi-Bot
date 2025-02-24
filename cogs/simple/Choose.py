@@ -7,38 +7,50 @@ import random
 
 ####################################################################################################
 
-from lib.modules import Checks, EmbedFunctions
+from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import OptionsButton, SomiBot
 
 
 
 class Choose(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
     
     @nextcord.slash_command(name = "select", description = "let the bot choose one of the options for you!", name_localizations = {country_tag:"choose" for country_tag in nextcord.Locale})
     @nextcord_AC.check(Checks().interaction_in_guild())
-    async def choose(self,
-                     interaction: nextcord.Interaction,
-                     *,
-                     option1: str = nextcord.SlashOption(description="first option", required=True, min_length=1, max_length=200),
-                     option2: str = nextcord.SlashOption(description="second option", required=True, min_length=1, max_length=200),
-                     option3: str = nextcord.SlashOption(description="third option", required=False, min_length=1, max_length=200),
-                     option4: str = nextcord.SlashOption(description="fourth option", required=False, min_length=1, max_length=200),
-                     option5: str = nextcord.SlashOption(description="fifth option", required=False, min_length=1, max_length=200),
-                     option6: str = nextcord.SlashOption(description="sixth option", required=False, min_length=1, max_length=200),
-                     option7: str = nextcord.SlashOption(description="seventh option", required=False, min_length=1, max_length=200),
-                     option8: str = nextcord.SlashOption(description="eigth option", required=False, min_length=1, max_length=200),
-                     option9: str = nextcord.SlashOption(description="ninth option", required=False, min_length=1, max_length=200),
-                     option10: str = nextcord.SlashOption(description="tenth option", required=False, min_length=1, max_length=200)):
+    async def choose(
+        self,
+        interaction: nextcord.Interaction,
+        *,
+        option1: str = nextcord.SlashOption(description="first option", required=True, min_length=1, max_length=200),
+        option2: str = nextcord.SlashOption(description="second option", required=True, min_length=1, max_length=200),
+        option3: str = nextcord.SlashOption(description="third option", required=False, min_length=1, max_length=200),
+        option4: str = nextcord.SlashOption(description="fourth option", required=False, min_length=1, max_length=200),
+        option5: str = nextcord.SlashOption(description="fifth option", required=False, min_length=1, max_length=200),
+        option6: str = nextcord.SlashOption(description="sixth option", required=False, min_length=1, max_length=200),
+        option7: str = nextcord.SlashOption(description="seventh option", required=False, min_length=1, max_length=200),
+        option8: str = nextcord.SlashOption(description="eigth option", required=False, min_length=1, max_length=200),
+        option9: str = nextcord.SlashOption(description="ninth option", required=False, min_length=1, max_length=200),
+        option10: str = nextcord.SlashOption(description="tenth option", required=False, min_length=1, max_length=200)
+    ) -> None:
         """This command randomly chooses between one of the select 2-10 options"""
 
-        options = [[value, name] for name, value in locals().items() if name.startswith('option') and value != None]
+        options: dict[str, str] = {}
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /choose {options}")
+        # get all the options that got actually filled in
+        for name, value in locals().items():
+            if name.startswith('option') and value != None:
+                options[name] = value
+
+
+        self.client.Loggers.action_log(Get().interaction_log_message(
+            interaction,
+            "/choose",
+            options
+        ))
 
         await interaction.response.defer(with_message=True)
 
@@ -46,22 +58,26 @@ class Choose(nextcord_C.Cog):
 
 
         view = OptionsButton(interaction=interaction)
-        await interaction.followup.send(f"I have chosen __Option {chosen_option[1][int(len(chosen_option[1])-1)]}__:\n`{chosen_option[0]}`", view=view)
+        await interaction.followup.send(f"I have chosen __Option {chosen_option[0][-1]}__:\n`{chosen_option[1]}`", view=view)
         await view.wait()
 
-        if view.value:
+        # if the button to see all options not pressed return early
+        if not view.value:
+            return
 
-            output = ""
+        AllOptionsOutput = ""
 
-            for option in options:
-                if option != chosen_option:
-                    output += f"Option {option[1][int(len(option[1])-1)]}: {option[0]}\n"
-                else:
-                    output += f"__**Option {option[1][int(len(option[1])-1)]}: {option[0]}**__\n"
+        for name, value in options.items():
+            # if the option is the chosen option underscore it
+            if name == chosen_option[0]:
+                AllOptionsOutput += f"__**Option {name[-1]}: {value}**__\n"
+                continue
 
-            await interaction.followup.send(embed=EmbedFunctions().info_message(output, self.client)) 
+            AllOptionsOutput += f"Option {name[-1]}: {value}\n"
+
+        await interaction.followup.send(embed=EmbedFunctions().info_message(AllOptionsOutput, self.client)) 
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(Choose(client))

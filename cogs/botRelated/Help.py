@@ -25,7 +25,12 @@ class Help(nextcord_C.Cog):
         self,
         interaction: nextcord.Interaction,
         *,
-        command_name: str = nextcord.SlashOption(description="which command do you need help for", required=True, min_length=2, max_length=50)
+        command_name: str = nextcord.SlashOption(
+            description="which command do you need help for",
+            required=True,
+            min_length=2,
+            max_length=50
+        )
     ) -> None:
         """This command generates a select box that is corresponding to all commands of the bot.
            It delivers help for the usage of said commands."""
@@ -34,7 +39,11 @@ class Help(nextcord_C.Cog):
         if not command_name.startswith("/"):
             command_name = f"/{command_name}"
 
-        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/help"))
+        self.client.Loggers.action_log(Get().interaction_log_message(
+            interaction,
+            "/help",
+            {"command_name": command_name}
+        ))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 

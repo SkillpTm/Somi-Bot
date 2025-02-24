@@ -26,6 +26,9 @@ class SomiBot(nextcord_C.Bot):
 
     #Meta
     SOMI_GITHUB = "https://github.com/SkillpTm/Somi-Bot"
+    SOMI_TOS = "https://github.com/SkillpTm/Somi-Bot/wiki/Terms-of-Service--of-@Somi%236418"
+    SOMI_PP = "https://github.com/SkillpTm/Somi-Bot/wiki/Privacy-Policy-of-@Somi%236418"
+    SOMI_CONTACT_EMAIL = "somibot0309@gmail.com"
     SOMI_INVITE = "https://somibot.skillp.dev/invite/"
     SOMICORD_INVITE = "https://discord.gg/Frd7WYg"
     VERSION = "3.1"

@@ -88,6 +88,12 @@ class About(nextcord_C.Cog):
                     "Issues:",
                     "You can report bugs and make suggestions by using /feedback!",
                     False
+                ],
+
+                [
+                    "Data and Usage:",
+                    f"Here you can find our [Terms of Service]({self.client.SOMI_TOS}) and [Privacy Policy]({self.client.SOMI_PP}). Additionally you're able to make inquiries at {self.client.SOMI_CONTACT_EMAIL}.",
+                    False
                 ]
             ]
         )

@@ -34,7 +34,7 @@ class Avatar(nextcord_C.Cog):
         if not user:
             user = interaction.user
 
-        self.client.Loggers.action_log(Get().interaction_log_message(
+        self.client.Loggers.action_log(Get().log_message(
             interaction,
             "/avatar",
             {"user": str(user.id)}

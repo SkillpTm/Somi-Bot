@@ -34,7 +34,7 @@ class Wolfram(nextcord_C.Cog):
     ) -> None:
         """This command uses the given query and sends it to the wolfram API, if a short answer can be found, it will be responded with"""
 
-        self.client.Loggers.action_log(Get().interaction_log_message(
+        self.client.Loggers.action_log(Get().log_message(
             interaction,
             "/wolfram",
             {"query": query}

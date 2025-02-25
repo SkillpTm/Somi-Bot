@@ -24,7 +24,7 @@ class About(nextcord_C.Cog):
     async def about(self, interaction: nextcord.Interaction) -> None:
         """This command outputs various information about the bot to the user"""
 
-        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/about"))
+        self.client.Loggers.action_log(Get().log_message(interaction, "/about"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 

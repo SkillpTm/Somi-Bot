@@ -25,7 +25,7 @@ class Severinfo(nextcord_C.Cog):
     async def serverinfo(self, interaction: nextcord.Interaction) -> None:
         """This command gives you infomration about a server"""
 
-        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/serverinfo"))
+        self.client.Loggers.action_log(Get().log_message(interaction, "/serverinfo"))
 
         await interaction.response.defer(with_message=True)
 

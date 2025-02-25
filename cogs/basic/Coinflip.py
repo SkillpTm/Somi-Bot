@@ -25,7 +25,7 @@ class Coinflip(nextcord_C.Cog):
     async def coinflip(self, interaction: nextcord.Interaction) -> None:
         """This command does a coinflip with a small animation"""
 
-        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/coinflip"))
+        self.client.Loggers.action_log(Get().log_message(interaction, "/coinflip"))
 
         await interaction.response.defer(with_message=True)
 

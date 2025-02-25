@@ -43,7 +43,7 @@ class CustomAdd(nextcord_C.Cog):
     ) -> None:
         """This command adds a custom-command to the server's custom-commands"""
 
-        self.client.Loggers.action_log(Get().interaction_log_message(
+        self.client.Loggers.action_log(Get().log_message(
             interaction,
             "/custom add",
             {"commandname": commandname, "commandtext": commandtext}

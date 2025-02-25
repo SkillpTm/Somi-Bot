@@ -26,7 +26,7 @@ class ConfigInfo(nextcord_C.Cog):
     async def config_info(self, interaction: nextcord.Interaction) -> None:
         """This command outputs a server's configuration info and some explanations."""
 
-        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/config info"))
+        self.client.Loggers.action_log(Get().log_message(interaction, "/config info"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 

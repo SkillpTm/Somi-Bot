@@ -43,7 +43,7 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
         if not channel:
             channel = interaction.channel
 
-        self.client.Loggers.action_log(Get().interaction_log_message(
+        self.client.Loggers.action_log(Get().log_message(
             interaction,
             "/config audit-log-channel",
             {"action": action, "channel": str(channel.id)}

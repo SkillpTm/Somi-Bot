@@ -51,7 +51,7 @@ class Weather(nextcord_C.Cog):
 
         location = WeatherDB().get(interaction.user.id)
 
-        self.client.Loggers.action_log(Get().interaction_log_message(
+        self.client.Loggers.action_log(Get().log_message(
             interaction,
             "/weather",
             {"location": location}

@@ -46,7 +46,7 @@ class Choose(nextcord_C.Cog):
                 options[name] = value
 
 
-        self.client.Loggers.action_log(Get().interaction_log_message(
+        self.client.Loggers.action_log(Get().log_message(
             interaction,
             "/choose",
             options

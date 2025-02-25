@@ -36,7 +36,7 @@ class CustomDelete(nextcord_C.Cog):
     ) -> None:
         """This command deletes a custom-command from the server's custom-commands"""
 
-        self.client.Loggers.action_log(Get().interaction_log_message(
+        self.client.Loggers.action_log(Get().log_message(
             interaction,
             "/custom delete",
             {"commandname": commandname}

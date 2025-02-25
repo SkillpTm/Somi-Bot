@@ -34,7 +34,7 @@ class Emoji(nextcord_C.Cog):
     ) -> None:
         """This command reposts the original url of any custom emoji"""
 
-        self.client.Loggers.action_log(Get().interaction_log_message(
+        self.client.Loggers.action_log(Get().log_message(
             interaction,
             "/color",
             {"emoji": emoji}

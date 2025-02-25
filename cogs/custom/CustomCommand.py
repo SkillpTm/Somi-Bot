@@ -34,7 +34,7 @@ class CustomCommand(nextcord_C.Cog):
     ) -> None:
         """This command will post a custom-command, if given it's name"""
 
-        self.client.Loggers.action_log(Get().interaction_log_message(
+        self.client.Loggers.action_log(Get().log_message(
             interaction,
             "/custom-command",
             {"commandname": commandname}

@@ -42,7 +42,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
         if not role:
             role = interaction.guild.default_role
 
-        self.client.Loggers.action_log(Get().interaction_log_message(
+        self.client.Loggers.action_log(Get().log_message(
             interaction,
             "/config default-role",
             {"action": action, "role": str(role.id)}

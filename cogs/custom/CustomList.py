@@ -28,7 +28,7 @@ class CustomList(nextcord_C.Cog):
     async def custom_list(self, interaction: nextcord.Interaction) -> None:
         """This command provides a list of all custom-commands of a guild"""
 
-        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/custom list"))
+        self.client.Loggers.action_log(Get().log_message(interaction, "/custom list"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 

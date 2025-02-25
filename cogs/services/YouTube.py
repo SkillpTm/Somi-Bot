@@ -33,7 +33,7 @@ class YouTube(nextcord_C.Cog):
     ) -> None:
         """This command uses the given query and sends it to the YouTube Data API, then the user can flip thourgh the top 50 results"""
 
-        self.client.Loggers.action_log(Get().interaction_log_message(
+        self.client.Loggers.action_log(Get().log_message(
             interaction,
             "/youtube",
             {"query": query}

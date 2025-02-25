@@ -39,7 +39,7 @@ class Help(nextcord_C.Cog):
         if not commandname.startswith("/"):
             commandname = f"/{commandname}"
 
-        self.client.Loggers.action_log(Get().interaction_log_message(
+        self.client.Loggers.action_log(Get().log_message(
             interaction,
             "/help",
             {"commandname": commandname}

@@ -40,7 +40,7 @@ class Color(nextcord_C.Cog):
         if not hexcode.startswith("#"):
             hexcode = f"#{hexcode}"
 
-        self.client.Loggers.action_log(Get().interaction_log_message(
+        self.client.Loggers.action_log(Get().log_message(
             interaction,
             "/color",
             {"hexcode": hexcode}

@@ -23,7 +23,7 @@ class Somi(nextcord_C.Cog):
     async def somi(self,interaction: nextcord.Interaction) -> None:
         """This command tells you the truth"""
 
-        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/somi"))
+        self.client.Loggers.action_log(Get().log_message(interaction, "/somi"))
 
         await interaction.response.send_message(f"Somi best grill\n{self.client.SOMI_BEST_GRILL_IMAGE}")
 

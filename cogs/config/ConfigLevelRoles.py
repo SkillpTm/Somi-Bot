@@ -45,7 +45,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
     ) -> None:
         """This command adds/deletes a level-role to/from the server's level-roles"""
 
-        self.client.Loggers.action_log(Get().interaction_log_message(
+        self.client.Loggers.action_log(Get().log_message(
             interaction,
             "/config level-ignore-channel",
             {"action": action, "role": str(role.id), "level": str(level)}

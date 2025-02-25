@@ -23,7 +23,7 @@ class KST(nextcord_C.Cog):
     async def kst(self, interaction: nextcord.Interaction) -> None:
         """This command will display the current date and time in KST"""
 
-        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/kst"))
+        self.client.Loggers.action_log(Get().log_message(interaction, "/kst"))
 
         await interaction.response.send_message(Get().kst_timestamp(True))
 

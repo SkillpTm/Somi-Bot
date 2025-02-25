@@ -162,28 +162,32 @@ class Get():
     ####################################################################################################
 
     @staticmethod
-    def interaction_log_message(
-        interaction: nextcord.Interaction,
+    def log_message(
+        data_provider: nextcord.Interaction | nextcord.Message,
         command_name: str,
         command_args: dict[str, str] = {}
     ) -> str:
-        """makes the log message for an interaction"""
+        """makes the log message for an interaction or message event"""
 
-        # log_message = f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /help"
+        # check if the data_provider is an Interaction or a Message
+        if isinstance(data_provider, nextcord.Interaction):
+            aggregator = data_provider.user
+        else:
+            aggregator = data_provider.author
 
         ouput = ""
 
         ouput += f"{command_name} "
-        ouput += f"~ User: {interaction.user.id} "
+        ouput += f"~ User: {aggregator.id} "
 
         # check if the interaction was in a guild or dm
-        if interaction.guild:
-            ouput += f"~ Guild: {interaction.guild.id} "
-            ouput += f"~ Channel: {interaction.channel.id} "
+        if data_provider.guild:
+            ouput += f"~ Guild: {data_provider.guild.id} "
+            ouput += f"~ Channel: {data_provider.channel.id} "
         else:
             ouput += "~ Guild: DM channel "
 
-        ouput = "args: "
+        ouput = "~ args: "
         for key, value in command_args.items():
             ouput = f"[{key}: {value}]"
 

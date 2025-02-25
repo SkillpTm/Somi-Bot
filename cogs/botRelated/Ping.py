@@ -26,7 +26,7 @@ class Ping(nextcord_C.Cog):
 
         start = time.time()
 
-        self.client.Loggers.action_log(Get().interaction_log_message(interaction, "/ping"))
+        self.client.Loggers.action_log(Get().log_message(interaction, "/ping"))
 
         await interaction.response.send_message(content = f"DWSP latency (ping) = `{self.client.latency * 1000:,.0f}ms`\n" + 
                                                           f"Uptime (since) = <t:{self.client.start_time}:R>")

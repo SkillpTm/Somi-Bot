@@ -46,12 +46,12 @@ class Color(nextcord_C.Cog):
             {"hexcode": hexcode}
         ))
 
-        await interaction.response.defer(with_message=True)
-
         # check if the input is a valid hexcode
         if not re.match(r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', hexcode):
-            await interaction.followup.send(embed=EmbedFunctions().error("Please input a valid hex value for a color."))
+            await interaction.followup.send(embed=EmbedFunctions().error("Please input a valid hex value for a color."), ephemeral=True)
             return
+        
+        await interaction.response.defer(with_message=True)
 
         # we temporarily save the file to send it and then delete it again later 
         color_image = PIL.Image.new('RGB', (300, 300), PIL.ImageColor.getcolor(hexcode, "RGB"))

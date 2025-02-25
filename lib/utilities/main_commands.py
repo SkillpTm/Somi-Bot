@@ -34,6 +34,7 @@ async def custom(self, interaction: nextcord.Interaction) -> None:
 
 @client.slash_command(
     name='noti',
+    guild_ids = client.guilds,
     name_localizations = {country_tag:"keyword" for country_tag in nextcord.Locale}
 )
 async def keyword(self, interaction: nextcord.Interaction) -> None:

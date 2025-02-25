@@ -10,85 +10,88 @@ import requests
 ####################################################################################################
 
 from lib.db_modules import WeatherDB
-from lib.modules import Checks, EmbedFunctions
+from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
 
 class Weather(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
 
     @nextcord.slash_command(name = "weather", description = "find out what the weather is in any place")
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def weather(self,
-                      interaction: nextcord.Interaction,
-                      *,
-                      location: str = nextcord.SlashOption(description="the location you want to know the weather of", required=False, min_length=2, max_length=50)):
+    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    async def weather(
+        self,
+        interaction: nextcord.Interaction,
+        *,
+        location: str = nextcord.SlashOption(
+            description="the location you want to know the weather of",
+            required=False,
+            min_length=2,
+            max_length=50
+        )
+    ) -> None:
         """This command outputs various statistics about the weather of any place (that's on openweathermap)"""
 
-        if not location:
-            location = WeatherDB().get(interaction.user.id)
+        input_location = location # in case we error on the api call later we need the original input for the error message
+        location = location.lower().replace(" ", "+").replace("#", "")
 
-            #if the user hasn't saved a location yet
-            if not location:
-                location = "Seoul" # default location value
+        # if the user hasn't saved a location yet, set it to Seoul (as a default value)
+        if not location and not WeatherDB().get(interaction.user.id):
+            WeatherDB().add(interaction.user.id, "seoul")
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /weather {location}")
-
-        input_location = location
-        location = location.replace(" ", "+")
-        location = location.replace("#", "")
-
-        request_url = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={self.client.Keychain.WEATHER_API_KEY}&q={location}&units=metric")
-
-        if not request_url.status_code == 200:
-            await interaction.response.send_message(embed=EmbedFunctions().error(f"{input_location} couldn't be found."), ephemeral=True)
-            return
-        
-        inserted = WeatherDB().add(interaction.user.id, location)
-
-        if not inserted:
+        # if the user provides a new location, save it as their new default value
+        if location and location != WeatherDB().get(interaction.user.id):
             WeatherDB().delete(interaction.user.id)
-            inserted = WeatherDB().add(interaction.user.id, location)
+            WeatherDB().add(interaction.user.id, location)
+
+        location = WeatherDB().get(interaction.user.id)
+
+        self.client.Loggers.action_log(Get().interaction_log_message(
+            interaction,
+            "/weather",
+            {"location": location}
+        ))
 
         await interaction.response.defer(with_message = True)
 
-        weather_data: dict = request_url.json()
+        response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={self.client.Keychain.WEATHER_API_KEY}&q={location}&units=metric")
 
-        weather_descirption: str = weather_data["weather"][0]["description"]
-        humidity: int = weather_data["main"]["humidity"]
-        cloud_percentage: int = weather_data["clouds"]["all"]
-        location_time_utc: int = weather_data["dt"]
-        country_code: str = weather_data["sys"]["country"]
-        timezone_difference: int = weather_data["timezone"]
-        location_name: str = weather_data["name"]
+        if response.status_code != 200:
+            await interaction.followup.send(embed=EmbedFunctions().error(f"{input_location} couldn't be found."), ephemeral=True)
+            return
 
-        current_temperature_metric: float = round(weather_data["main"]["temp"], 1)
-        wind_speed_metric: float = round(weather_data["wind"]["speed"] * 3.6) #m/s * 3.6 = km/h
+        response_json: dict = response.json()
+        output_data: dict[str, str] = {}
 
-        current_temperature_imperial: float = round(current_temperature_metric * 9/5 + 32, 1) #(0°C × 9/5) + 32 = 32°F
-        wind_speed_imperial: float = round(wind_speed_metric * 1.609) #km/h * 1,609 = mph
-
-        country = pycountry.countries.get(alpha_2=country_code)
-
-        local_date_and_time: str = datetime.datetime.utcfromtimestamp(location_time_utc + timezone_difference).strftime("%Y/%m/%d %H:%M:%S")
-        local_date_and_time = local_date_and_time.split(" ")
+        # pull all the data we need from the json (and potentially format it, ready for the output)
+        output_data["cloudiness"] = str(response_json["clouds"]["all"])
+        output_data["country"] = pycountry.countries.get(alpha_2=str(response_json["sys"]["country"])).name
+        output_data["descirption"] = str(response_json["weather"][0]["description"])
+        output_data["humidity"] = str(response_json["main"]["humidity"])
+        output_data["id"] = str(response_json['id'])
+        output_data["local_time"] = datetime.datetime.fromtimestamp(response_json["dt"] + response_json["timezone"]).strftime("%H:%M:%S")
+        output_data["metric_temp"] = str(round(response_json["main"]["temp"], 1))
+        output_data["imperial_temp"] = str(round(response_json["main"]["temp"] * 9/5 + 32, 1)) #(0°C × 9/5) + 32 = 32°F
+        output_data["metric_wind_speed"] = str(round(response_json["wind"]["speed"] * 3.6)) #m/s * 3.6 = km/h
+        output_data["imperial_wind_speed"] = str(round(response_json["wind"]["speed"] * 3.6 * 1.609)) #km/h * 1,609 = mph
+        output_data["name"] = str(response_json["name"])
 
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,
-            title = f"Weather in: {location_name}, {country.name}",
-            title_url = f"https://openweathermap.org/city/{weather_data['id']}",
+            title = f"Weather in: {output_data["name"]}, {output_data["country"]}",
+            title_url = f"https://openweathermap.org/city/{output_data["id"]}",
             description = "\n".join([line.strip() for line in f"""
-            **{weather_descirption}**
-            🕒 Local measurement time: `{local_date_and_time[1]}`
-            🌡️ Temperature: **{current_temperature_metric} °C** ({current_temperature_imperial} °F)
-            💨 Wind: {wind_speed_metric} km/h ({wind_speed_imperial} mph)
-            ☁️ Cloudiness: {cloud_percentage}%
-            💧 Humidity: {humidity}%
+            **{output_data["descirption"]}**
+            🕒 Local measurement time: `{output_data["local_time"]}`
+            🌡️ Temperature: **{output_data["metric_temp"]} °C** ({output_data["imperial_temp"]} °F)
+            💨 Wind: {output_data["metric_wind_speed"]} km/h ({output_data["imperial_wind_speed"]} mph)
+            ☁️ Cloudiness: {output_data["cloudiness"]}%
+            💧 Humidity: {output_data["humidity"]}%
             """.split("\n")]),
             footer = "Weather powered by OpenWeatherMap",
             footer_icon = self.client.OPENWEATHERMAP_ICON
@@ -98,5 +101,5 @@ class Weather(nextcord_C.Cog):
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(Weather(client))

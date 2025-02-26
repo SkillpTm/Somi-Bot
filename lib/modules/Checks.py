@@ -29,10 +29,7 @@ class Checks():
     ####################################################################################################
 
     @staticmethod
-    def message_in_guild(
-        client: SomiBot,
-        message: nextcord.Message
-    ) -> bool:
+    def message_in_guild(client: SomiBot,message: nextcord.Message) -> bool:
         """This function checks, if a message was send in a guild"""
 
         return message.guild in client.guilds
@@ -52,9 +49,18 @@ class Checks():
     ####################################################################################################
 
     @staticmethod
-    def message_not_by_bot(
-        message: nextcord.Message
-    ) -> bool:
+    def message_not_by_bot(message: nextcord.Message) -> bool:
         """This function checks, if a message was send by a bot"""
 
         return not message.author.bot
+    
+    ####################################################################################################
+
+    @staticmethod
+    def interaction_by_owner() -> bool:
+        """This function checks, if an interaction was made by the owner"""
+
+        def predicate(interaction: nextcord.Interaction) -> bool:
+            return interaction.user.id == interaction.client.owner_id
+        
+        return nextcord_AC.check(predicate)

@@ -6,21 +6,19 @@ import nextcord.ext.commands as nextcord_C
 ####################################################################################################
 
 from lib.db_modules import CommandUsesDB
-from lib.modules import EmbedFunctions
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot, YesNoButtons
 
 
 
 class Modmail(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
 
-    @nextcord_C.Cog.listener()
-    async def on_message(self,
-                         message: nextcord.Message):
+    async def modmail(self, message: nextcord.Message) -> None:
         """
         This function allows anyone, who is in Somicord send a modmail via the bot pm channel, if:
         - their messageis longer than 50 characters
@@ -36,7 +34,6 @@ class Modmail(nextcord_C.Cog):
         SOMICORD = self.client.get_guild(self.client.SOMICORD_ID)
 
         if not SOMICORD.get_member(message.author.id):
-            await message.channel.send(embed=EmbedFunctions().error("You have to be in Somicord to send a modmail!"))
             return
 
         if len(message.content) < 50:
@@ -52,20 +49,23 @@ class Modmail(nextcord_C.Cog):
             await response.reply(embed=EmbedFunctions().error("Your modmail has **not** been submitted!"), mention_author=False)
             return
 
-        self.client.Loggers.action_log(f"User: {message.author.id} ~ modmail()\n{message.content}")
+        self.client.Loggers.action_log(Get().log_message(message, "modmail", {"message": message.content}))
 
         MOD_CHANNEL: nextcord.TextChannel = self.client.get_channel(self.client.SOMICORD_MOD_CHANNEL_ID)
         user_thread: nextcord.Thread = None
 
+        # check if the user already has a thread
         for thread in MOD_CHANNEL.threads:
-            if f"{message.author.name}" in f"{thread.name}" and f"{message.author.discriminator}" in f"{thread.name}":
+            if f"Modmail ({message.author.global_name})" == thread.name[9:-1]:
                 user_thread = thread
 
+        # check if the user already has an archived thread
         if not user_thread:
             async for thread in MOD_CHANNEL.archived_threads():
-                if f"{message.author.name}" in f"{thread.name}" and f"{message.author.discriminator}" in f"{thread.name}":
+                if f"Modmail ({message.author.global_name})" == thread.name[9:-1]:
                     user_thread = thread
 
+        # if the user doesn't already have a thread, make one
         if not user_thread:
             user_thread = await MOD_CHANNEL.create_thread(
                 name = f"Modmail ({message.author})",
@@ -75,7 +75,7 @@ class Modmail(nextcord_C.Cog):
             )
 
             for member in MOD_CHANNEL.members:
-                if not member.bot and member.id != 108218817531887616:
+                if not member.bot and member.id != 108218817531887616: # exclude inactive owner
                     await user_thread.add_user(member)
 
         embed = EmbedFunctions().builder(
@@ -103,7 +103,7 @@ class Modmail(nextcord_C.Cog):
 
         sent_modmail = await user_thread.send(embed=embed)
         
-        if file_urls != "":
+        if file_urls:
             await sent_modmail.reply(content=file_urls, mention_author=False)
 
         await message.reply(embed=EmbedFunctions().success("Your modmail has been submitted!"), mention_author=False)
@@ -112,5 +112,5 @@ class Modmail(nextcord_C.Cog):
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(Modmail(client))

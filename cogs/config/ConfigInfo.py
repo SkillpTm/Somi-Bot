@@ -143,6 +143,7 @@ class ConfigInfo(nextcord_C.Cog):
             if not interaction.guild.get_role(level_role[0]):
                 level_roles.pop(index)
                 ConfigDB(interaction.guild.id, "LevelRoles").delete(level_role[0])
+                LevelRoles().apply(interaction.guild)
 
         if level_roles:
             level_roles_output = LevelRoles().get_level_range_with_role(level_roles)

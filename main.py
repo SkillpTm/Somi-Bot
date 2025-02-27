@@ -30,8 +30,8 @@ def start() -> None:
 
     # if there is no internet connection indefinitly restart the bot
     try:
-        requests.get("https://www.google.com/")
-        client.run(client.Keychain.DISCORD_TOKEN)
+        if requests.get("https://www.google.com/").status_code == 200:
+            client.run(client.Keychain.DISCORD_TOKEN)
     except (requests.ConnectionError, aiohttp.client_exceptions.ClientConnectorError):
         time.sleep(10)
         client.restart()

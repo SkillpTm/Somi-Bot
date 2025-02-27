@@ -176,7 +176,7 @@ class SomiBot(nextcord_C.Bot):
     async def start_infinite_loops(self) -> None:
         """This function starts an infinite loop for the ReminderSend cog, which continues until the bot loses internet or gets shutdown"""
 
-        from cogs.reminders.ReminderSend import ReminderSend
+        from cogs.reminder.ReminderSend import ReminderSend
 
         await asyncio.gather(ReminderSend(self).infinite_reminder_loop())
 

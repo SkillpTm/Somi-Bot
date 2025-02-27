@@ -65,13 +65,14 @@ class KeywordDelete(nextcord_C.Cog):
     ####################################################################################################
 
     @keyword_delete.on_autocomplete("keyword")
-    async def autocomplete_keyword_delete(self,
-                                          interaction: nextcord.Interaction,
-                                          keyword: str) -> None:
-        all_user_keywords = KeywordDB(interaction.guild.id, interaction.user.id).get_list()
+    async def autocomplete_keyword_delete(
+        self,
+        interaction: nextcord.Interaction,
+        keyword: str
+    ) -> None:
+        """provides autocomplete suggestions to discord"""
 
-        all_user_keywords_dict = {user_keyword: user_keyword for user_keyword in all_user_keywords}
-
+        all_user_keywords_dict = {user_keyword: user_keyword for user_keyword in KeywordDB(interaction.guild.id, interaction.user.id).get_list()}
         autocomplete_dict = Get().autocomplete_dict_from_search_string(keyword, all_user_keywords_dict)
 
         await interaction.response.send_autocomplete(autocomplete_dict)

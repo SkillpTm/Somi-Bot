@@ -1,7 +1,5 @@
-####################################################################################################
-
-
 from lib.db_modules.CommonDB import CommonDB
+
 
 
 class CustomCommandsDB(CommonDB):

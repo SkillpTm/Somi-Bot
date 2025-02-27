@@ -1,9 +1,5 @@
-####################################################################################################
-
 import nextcord
 import nextcord.ext.application_checks as nextcord_AC
-
-####################################################################################################
 
 from lib.utilities.SomiBot import SomiBot
 

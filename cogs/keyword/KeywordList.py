@@ -1,10 +1,6 @@
-###package#import###############################################################################
-
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
-
-###self#imports###############################################################################
 
 from lib.db_modules import KeywordDB
 from lib.modules import Checks, EmbedFunctions, Get
@@ -19,7 +15,7 @@ class KeywordList(nextcord_C.Cog):
 
     from lib.utilities.main_commands import keyword
 
-    ###keyword#list###########################################################
+    ####################################################################################################
 
     @keyword.subcommand(name = "list", description = "a list of all your keywords")
     @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)

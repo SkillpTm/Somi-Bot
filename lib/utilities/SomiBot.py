@@ -1,5 +1,3 @@
-####################################################################################################
-
 import asyncio
 import googleapiclient.discovery
 import nextcord
@@ -12,8 +10,6 @@ import spotipy
 import sys
 import time
 import wolframalpha
-
-####################################################################################################
 
 from lib.db_modules.CommandUsesDB import CommandUsesDB
 from lib.utilities.Keychain import Keychain
@@ -190,7 +186,6 @@ class SomiBot(nextcord_C.Bot):
 
             CommandUsesDB("log_activations").update("reacted @ping")
 
-        ####################################################################################################
 
         if "somionly" in str(message.content.lower()):
             await message.add_reaction(self.SOMI_ONLY_EMOTE)
@@ -199,7 +194,6 @@ class SomiBot(nextcord_C.Bot):
 
             CommandUsesDB("log_activations").update("reacted somionly")
 
-        ####################################################################################################
 
         f_strings = [" f ", "\nf ", " f\n", self.SOMI_F_EMOTE.lower()]
 
@@ -210,7 +204,6 @@ class SomiBot(nextcord_C.Bot):
 
             CommandUsesDB("log_activations").update("reacted SomiF")
 
-        ####################################################################################################
 
         if "<:somibestgrill:924281555772403722>" in str(message.content.lower()):
             await message.add_reaction(self.SOMI_BEST_GRILL_EMOTE)

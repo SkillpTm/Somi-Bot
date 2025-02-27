@@ -1,11 +1,7 @@
-####################################################################################################
-
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 import requests
-
-####################################################################################################
 
 from lib.db_modules import LastFmDB
 from lib.modules import Checks, EmbedFunctions, Get
@@ -63,7 +59,7 @@ class LastFmTopArtists(nextcord_C.Cog):
 
         await self.lastfm_top_artists_rec(interaction, user, lastfm_username, timeframe, page_number = 1)
 
-        ####################################################################################################
+    ####################################################################################################
 
     async def lastfm_top_artists_rec(
         self,

@@ -1,10 +1,6 @@
-####################################################################################################
-
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import re
-
-####################################################################################################
 
 from lib.db_modules import ConfigDB, LevelsDB
 from lib.modules import Checks, LevelRoles

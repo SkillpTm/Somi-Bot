@@ -1,12 +1,8 @@
-####################################################################################################
-
 import asyncio
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 import random
-
-####################################################################################################
 
 from lib.modules import Checks, Get
 from lib.utilities import SomiBot

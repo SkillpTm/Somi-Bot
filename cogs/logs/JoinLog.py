@@ -1,10 +1,6 @@
-####################################################################################################
-
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import time
-
-####################################################################################################
 
 from lib.db_modules import CommandUsesDB, ConfigDB
 from lib.modules import EmbedFunctions
@@ -31,8 +27,6 @@ class JoinLog(nextcord_C.Cog):
 
         self.client.Loggers.action_log(f"Guild: {member.guild.id} ~ User: {member.id} ~ join_log()")
 
-        ####################################################################################################
-
         if member.guild.id == self.client.SOMICORD_ID:
             SOMICORD_WELCOME_CHANNEL = member.guild.get_channel(self.client.SOMICORD_WELCOME_CHANNEL_ID)
             welcome_embed = EmbedFunctions().builder(
@@ -43,14 +37,11 @@ class JoinLog(nextcord_C.Cog):
             welcome_response = await SOMICORD_WELCOME_CHANNEL.send(embed=welcome_embed)
             await welcome_response.add_reaction(self.client.SOMI_WELCOME_EMOTE)
 
-        ####################################################################################################
 
         default_role_id: int = await ConfigDB(member.guild.id, "DefaultRole").get_list(member.guild)
 
         if default_role_id:
             await member.add_roles(member.guild.get_role(default_role_id))
-
-        ####################################################################################################
 
         audit_log_id: int = await ConfigDB(member.guild.id, "AuditLogChannel").get_list(member.guild)
 

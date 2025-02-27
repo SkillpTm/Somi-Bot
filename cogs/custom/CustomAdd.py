@@ -1,11 +1,7 @@
-####################################################################################################
-
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 import re
-
-####################################################################################################
 
 from lib.db_modules import ConfigDB, CustomCommandsDB
 from lib.modules import Checks, EmbedFunctions, Get

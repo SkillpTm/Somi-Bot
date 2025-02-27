@@ -1,11 +1,7 @@
-####################################################################################################
-
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import pytz
 import re
-
-####################################################################################################
 
 from lib.db_modules import CommandUsesDB, ConfigDB
 from lib.modules import Checks, EmbedFunctions, Get

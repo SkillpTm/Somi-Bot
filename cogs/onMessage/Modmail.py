@@ -1,9 +1,5 @@
-####################################################################################################
-
 import nextcord
 import nextcord.ext.commands as nextcord_C
-
-####################################################################################################
 
 from lib.db_modules import CommandUsesDB
 from lib.modules import EmbedFunctions, Get

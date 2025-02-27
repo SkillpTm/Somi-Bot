@@ -1,10 +1,6 @@
-####################################################################################################
-
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
-
-####################################################################################################
 
 from lib.db_modules import CustomCommandsDB
 from lib.modules import Checks, EmbedFunctions, Get
@@ -49,6 +45,8 @@ class CustomCommand(nextcord_C.Cog):
             return
 
         await interaction.response.send_message(commandtext)
+
+    ####################################################################################################
 
     @customcommand.on_autocomplete("commandname")
     async def autocomplete_commandname(

@@ -1,12 +1,8 @@
-####################################################################################################
-
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 import random
 import time as unix_time
-
-####################################################################################################
 
 from lib.db_modules import ReminderDB
 from lib.modules import Checks, EmbedFunctions, Get

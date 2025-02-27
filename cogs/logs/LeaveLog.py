@@ -1,10 +1,6 @@
-###package#import###############################################################################
-
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import time
-
-###self#imports###############################################################################
 
 from lib.db_modules import KeywordDB, ReminderDB, CommandUsesDB, ConfigDB
 from lib.modules import EmbedFunctions
@@ -17,7 +13,7 @@ class LeaveLog(nextcord_C.Cog):
     def __init__(self, client):
         self.client: SomiBot = client
 
-    ###leave#log###########################################################
+    ####################################################################################################
 
     @nextcord_C.Cog.listener()
     async def on_member_remove(self,

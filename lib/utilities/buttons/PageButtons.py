@@ -1,8 +1,4 @@
-####################################################################################################
-
 import nextcord
-
-####################################################################################################
 
 from lib.modules.EmbedFunctions import EmbedFunctions
 from lib.utilities.SomiBot import SomiBot

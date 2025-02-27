@@ -1,10 +1,6 @@
-####################################################################################################
-
 import asyncio
 import nextcord.ext.commands as nextcord_C
 import requests
-
-####################################################################################################
 
 from lib.db_modules import CommandUsesDB, ReminderDB
 from lib.modules import EmbedFunctions, Get

@@ -1,10 +1,6 @@
-###package#import###############################################################################
-
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import re
-
-###self#imports###############################################################################
 
 from lib.db_modules import CommandUsesDB, ConfigDB, KeywordDB
 from lib.modules import Checks, EmbedFunctions, Get
@@ -16,9 +12,8 @@ class KeywordSend(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ###keyword#noti###########################################################
+    ####################################################################################################
 
-    @nextcord.ext.commands.Cog.listener()
     async def on_message(self, message: nextcord.Message):
         """
         This function sends keyword notis to users:

@@ -14,7 +14,7 @@ class KeywordSend(nextcord_C.Cog):
 
     ####################################################################################################
 
-    async def on_message(self, message: nextcord.Message):
+    async def keyword_send(self, message: nextcord.Message):
         """
         This function sends keyword notis to users:
         1. in the same guild as the message

@@ -16,7 +16,7 @@ from lib.utilities import PageButtons, SomiBot
 
 class LastFmRecent(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     from lib.utilities.main_commands import lastfm
@@ -24,57 +24,64 @@ class LastFmRecent(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "rc", description = "shows your recently played songs on LastFm", name_localizations = {country_tag:"recent" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def lastfm_recent(self,
-                            interaction: nextcord.Interaction,
-                            *,
-                            member: nextcord.Member = nextcord.SlashOption(description="the user you want the recent tracks of", required=False)):
+    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    async def lastfm_recent(
+        self,
+        interaction: nextcord.Interaction,
+        *,
+        user: nextcord.User = nextcord.SlashOption(
+            description="the user you want the recent tracks of",
+            required=False
+        )
+    ) -> None:
         """This command shows someone's recent tracks and what they are now playing on the first page"""
 
-        if not member:
-            member = interaction.guild.get_member(interaction.user.id)
+        if not user:
+            user = interaction.user
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /lf recent {member.id}")
+        self.client.Loggers.action_log(Get().log_message(
+            interaction,
+            "/lf recent",
+            {"user": str(user.id)}
+        ))
 
-        lastfm_username = LastFmDB().get(member.id)
+        lastfm_username = LastFmDB().get(user.id)
 
         if not lastfm_username:
-            await interaction.response.send_message(embed=EmbedFunctions().error(f"{member.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().error(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
-        await interaction.response.defer(with_message = True)
+        # send a dummy respone to be updated in the recursive function
+        await interaction.response.send_message(embed=EmbedFunctions().builder(title=" "))
 
-        await self.lastfm_recent_rec(interaction, member, lastfm_username, page_number = 1, first_message_sent = False)
+        await self.lastfm_recent_rec(interaction, user, lastfm_username, page_number = 1, first_message_sent = False)
 
     ####################################################################################################
 
-    async def lastfm_recent_rec(self,
-                                interaction: nextcord.Interaction,
-                                member: nextcord.Member,
-                                lastfm_username: str,
-                                page_number: int,
-                                first_message_sent: bool) -> None:
+    async def lastfm_recent_rec(
+        self,
+        interaction: nextcord.Interaction,
+        user: nextcord.User,
+        lastfm_username: str,
+        page_number: int
+    ) -> None:
         """This function recurses on button press and requests the data from the LastFm api to build the embed"""
 
-        request_url = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&username={lastfm_username}&limit=10&page={page_number}&api_key={self.client.lf_network.api_key}&format=json")
+        np_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&username={lastfm_username}&limit=10&page={page_number}&api_key={self.client.lf_network.api_key}&format=json")
 
-        if not request_url.status_code == 200:
-            embed = EmbedFunctions().error("LastFm didn't respond correctly, try in a few minutes again!")
-
-            if not first_message_sent:
-                await interaction.followup.send(embed=embed)
-            else:
-                await interaction.edit_original_message(embed=embed, view=None)
-                
+        if np_response.status_code != 200:
+            await interaction.edit_original_message(embed=EmbedFunctions().error("LastFm didn't respond correctly, try in a few minutes again!"), view=None) 
             return
 
-        recent_user_data = request_url.json()
-        last_page = int(recent_user_data["recenttracks"]["@attr"]["totalPages"])
+        np_data = np_response.json()
+        last_page = int(np_data["recenttracks"]["@attr"]["totalPages"])
         output = ""
-        i = 0
+        index = 0
 
-        for track in recent_user_data["recenttracks"]["track"]:
-            i += 1
+        # formats the last 10 songs as following in a string:
+        # 1. [song name](song link) by [artist](artist link) - timestamp
+        for track in np_data["recenttracks"]["track"]:
+            index += 1
             track_url = track['url']
             artist_name_for_url = urllib.parse.quote_plus(track['artist']['#text'])
 
@@ -82,19 +89,20 @@ class LastFmRecent(nextcord_C.Cog):
             artist_name = Get().markdown_safe(track['artist']['#text'])
             timestamp = ""
 
+            # set the timestamp, unless it is currently playing
             if "date" in track:
                 timestamp = f"<t:{track['date']['uts']}:R>"
             else:
-                i -= 1
+                index -= 1
                 if page_number == 1:
                     timestamp = "*now playing*"
 
             if timestamp != "":
-                output += f"{i + (page_number - 1) * 10}. **[{track_name}]({track_url})** by [{artist_name}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}\n"
+                output += f"{index + (page_number - 1) * 10}. **[{track_name}]({track_url})** by [{artist_name}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}\n"
 
         embed = EmbedFunctions().builder(
             color = self.client.LASTFM_COLOR,
-            author = f"{member.display_name} recently played:",
+            author = f"{user.display_name} recently played:",
             author_icon = self.client.LASTFM_ICON,
             description = output,
             footer = "DEFAULT_KST_FOOTER"
@@ -102,21 +110,16 @@ class LastFmRecent(nextcord_C.Cog):
 
         view = PageButtons(page = page_number, last_page = last_page, interaction = interaction)
 
-        if not first_message_sent:
-            first_message_sent = True
-            await interaction.followup.send(embed=embed, view=view)
-        else:
-            await interaction.edit_original_message(embed=embed, view=view)
-
+        await interaction.edit_original_message(embed=embed, view=view)
         await view.update_buttons()
         await view.wait()
 
         if not view.value:
             return
 
-        await self.lastfm_recent_rec(interaction, member, lastfm_username, view.page, first_message_sent)
+        await self.lastfm_recent_rec(interaction, user, lastfm_username, view.page)
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(LastFmRecent(client))

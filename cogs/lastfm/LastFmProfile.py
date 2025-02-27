@@ -16,7 +16,7 @@ from lib.utilities import SomiBot
 
 class LastFmProfile(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     from lib.utilities.main_commands import lastfm
@@ -24,34 +24,44 @@ class LastFmProfile(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "profile", description = "shows stats about someone's LastFm account")
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def lastfm_profile(self,
-                             interaction: nextcord.Interaction,
-                             *,
-                             member: nextcord.Member = nextcord.SlashOption(description="the user you want to know stats about", required=False)):
+    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    async def lastfm_profile(
+        self,
+        interaction: nextcord.Interaction,
+        *,
+        user: nextcord.User = nextcord.SlashOption(
+            description="the user you want to know stats about",
+            required=False
+        )
+    ) -> None:
         """This command outputs information about a user's lastfm account"""
 
-        if not member:
-            member = interaction.guild.get_member(interaction.user.id)
+        if not user:
+            user = interaction.user
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /lf profile {member.id}")
+        self.client.Loggers.action_log(Get().log_message(
+            interaction,
+            "/lf profile",
+            {"user": str(user.id)}
+        ))
 
-        lastfm_username = LastFmDB().get(member.id)
+        lastfm_username = LastFmDB().get(user.id)
 
         if not lastfm_username:
-            await interaction.response.send_message(embed=EmbedFunctions().error(f"{member.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().error(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message = True)
 
-        request_url = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getinfo&username={lastfm_username}&limit=1&api_key={self.client.Keychain.LAST_FM_API_KEY}&format=json")
+        profile_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getinfo&username={lastfm_username}&limit=1&api_key={self.client.Keychain.LAST_FM_API_KEY}&format=json")
 
-        if not request_url.status_code == 200:
+        if profile_response.status_code != 200:
             await interaction.followup.send(embed=EmbedFunctions().error("LastFm didn't respond correctly, try in a few minutes again!"))
             return
 
-        profile_user_data = request_url.json()
+        profile_user_data = profile_response.json()
 
+        # set a default pfp if the user doesn't have one
         if profile_user_data['user']['image'][3]['#text']:
             lastfm_user_pfp = profile_user_data['user']['image'][3]['#text']
         else:
@@ -62,7 +72,7 @@ class LastFmProfile(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = self.client.LASTFM_COLOR,
             thumbnail = lastfm_user_pfp,
-            author = f"{member.display_name} LastFm User Data",
+            author = f"{user.display_name} LastFm User Data",
             author_icon = self.client.LASTFM_ICON,
             footer = "DEFAULT_KST_FOOTER",
             fields = [
@@ -114,5 +124,5 @@ class LastFmProfile(nextcord_C.Cog):
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(LastFmProfile(client))

@@ -15,7 +15,7 @@ from lib.utilities import LASTFM_TIMEFRAMES, LASTFM_TIMEFRAMES_TEXT, PageButtons
 
 class LastFmTopArtists(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     from lib.utilities.main_commands import lastfm
@@ -23,60 +23,69 @@ class LastFmTopArtists(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "tar", description = "shows your top artists on LastFm", name_localizations = {country_tag:"topartists" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def lastfm_top_artists(self,
-                                 interaction: nextcord.Interaction,
-                                 *,
-                                 member: nextcord.Member = nextcord.SlashOption(description="the user you want the top artists of", required=False),
-                                 timeframe: str = nextcord.SlashOption(description="the timeframe you want the top artists for", required=False, choices=LASTFM_TIMEFRAMES)):
+    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    async def lastfm_top_artists(
+        self,
+        interaction: nextcord.Interaction,
+        *,
+        user: nextcord.User = nextcord.SlashOption(
+            description="the user you want the top artists of",
+            required=False
+        ),
+        timeframe: str = nextcord.SlashOption(
+            description="the timeframe you want the top artists for",
+            required=False,
+            choices=LASTFM_TIMEFRAMES
+        )
+    ) -> None:
         """This command shows someone's top artists"""
 
-        if not member:
-            member = interaction.guild.get_member(interaction.user.id)
+        if not user:
+            user = interaction.user
 
         if not timeframe:
             timeframe = "overall"
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /lf topartists {member.id} {timeframe}")
+        self.client.Loggers.action_log(Get().log_message(
+            interaction,
+            "/lf topartists",
+            {"user": str(user.id), "timeframe": timeframe}
+        ))
 
-        lastfm_username = LastFmDB().get(member.id)
+        lastfm_username = LastFmDB().get(user.id)
 
         if not lastfm_username:
-            await interaction.response.send_message(embed=EmbedFunctions().error(f"{member.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().error(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
-        await interaction.response.defer(with_message = True)
+        # send a dummy respone to be updated in the recursive function
+        await interaction.response.send_message(embed=EmbedFunctions().builder(title=" "))
 
-        await self.lastfm_top_artists_rec(interaction, member, lastfm_username, timeframe, page_number = 1, first_message_sent = False)
+        await self.lastfm_top_artists_rec(interaction, user, lastfm_username, timeframe, page_number = 1)
 
         ####################################################################################################
 
-    async def lastfm_top_artists_rec(self,
-                                     interaction: nextcord.Interaction,
-                                     member: nextcord.Member,
-                                     lastfm_username: str,
-                                     timeframe: str,
-                                     page_number: int,
-                                     first_message_sent: bool) -> None:
+    async def lastfm_top_artists_rec(
+        self,
+        interaction: nextcord.Interaction,
+        member: nextcord.Member,
+        lastfm_username: str,
+        timeframe: str,
+        page_number: int
+    ) -> None:
         """This function recurses on button press and requests the data from the LastFm api to build the embed"""
 
-        request_url = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&username={lastfm_username}&limit=10&page={page_number}&period={timeframe}&api_key={self.client.lf_network.api_key}&format=json")
+        top_artists_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&username={lastfm_username}&limit=10&page={page_number}&period={timeframe}&api_key={self.client.lf_network.api_key}&format=json")
 
-        if not request_url.status_code == 200:
-            embed = EmbedFunctions().error("LastFm didn't respond correctly, try in a few minutes again!")
-
-            if not first_message_sent:
-                await interaction.followup.send(embed=embed)
-            else:
-                await interaction.edit_original_message(embed=embed, view=None)
-                
+        if top_artists_response.status_code != 200:
+            await interaction.edit_original_message(embed=EmbedFunctions().error("LastFm didn't respond correctly, try in a few minutes again!"), view=None)
             return
 
-        top_artists_user_data = request_url.json()
-        last_page = int(top_artists_user_data["topartists"]["@attr"]["totalPages"])
+        top_artists_data = top_artists_response.json()
+        last_page = int(top_artists_data["topartists"]["@attr"]["totalPages"])
         output = ""
 
-        for artist in top_artists_user_data["topartists"]["artist"]:
+        for artist in top_artists_data["topartists"]["artist"]:
             artist_url = artist['url']
             
             artist_name = Get().markdown_safe(artist['name'])
@@ -92,21 +101,16 @@ class LastFmTopArtists(nextcord_C.Cog):
 
         view = PageButtons(page = page_number, last_page = last_page, interaction = interaction)
 
-        if not first_message_sent:
-            first_message_sent = True
-            await interaction.followup.send(embed=embed, view=view)
-        else:
-            await interaction.edit_original_message(embed=embed, view=view)
-
+        await interaction.edit_original_message(embed=embed, view=view)
         await view.update_buttons()
         await view.wait()
 
         if not view.value:
             return
 
-        await self.lastfm_top_artists_rec(interaction, member, lastfm_username, timeframe, view.page, first_message_sent)
+        await self.lastfm_top_artists_rec(interaction, member, lastfm_username, timeframe, view.page)
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(LastFmTopArtists(client))

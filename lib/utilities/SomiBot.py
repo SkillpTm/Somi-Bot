@@ -54,7 +54,6 @@ class SomiBot(nextcord_C.Bot):
     #SOMICORD Constants
     SKILLP_JOINED_SOMICORD_TIME = 1573055760
     SOMICORD_ID = Config.MODMAIL_SERVER_ID
-    SOMICORD_ROLES_CHANNEL_ID = Config.ROLES_CHANNEL_ID
     SOMICORD_MOD_CHANNEL_ID = Config.MODMAIL_CHANNEL_ID
     SOMICORD_WELCOME_CHANNEL_ID = Config.WELCOME_CHANNEL_ID
     SOMICORD_WELCOME_GIF = "https://somibot.skillp.dev/cdn/gifs/SOMICORD_WELCOME_GIF.gif"
@@ -130,11 +129,6 @@ class SomiBot(nextcord_C.Bot):
 
     async def on_ready(self) -> None:
         """This function overwrites the build in on_ready function"""
-
-        from cogs.role_selection.RoleSelection import Roles, RoleSelection
-
-        await RoleSelection(self).try_sending()
-        self.add_view(Roles(self))
 
         await self.api_logout()
 

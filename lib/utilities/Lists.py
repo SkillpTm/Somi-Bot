@@ -1,21 +1,9 @@
-####################################################################################################
-
-import nextcord
-
-####################################################################################################
-
 from storage.Config import Config
 
 
 
 class Lists():
     SOMI_ID = Config.APPLICATION_ID
-
-    SOMICORD_UPDATE_ROLES_IDS = {
-        "UPDATES_ID": Config.UPDATES_ROLE_ID,
-        "LIVE_ID": Config.LIVE_ROLE_ID,
-        "SNS_ID": Config.SNS_ROLE_ID,
-    }
 
 
 

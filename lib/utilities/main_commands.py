@@ -46,7 +46,8 @@ async def keyword(self, interaction: nextcord.Interaction) -> None:
 ####################################################################################################
 
 @client.slash_command(
-    name='levels',
+    name='xp',
+    name_localizations = {country_tag:"levels" for country_tag in nextcord.Locale},
     integration_types = [nextcord.IntegrationType.guild_install],
     contexts = [nextcord.InteractionContextType.guild]
 )

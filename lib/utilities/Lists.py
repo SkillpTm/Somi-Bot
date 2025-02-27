@@ -116,7 +116,7 @@ class Lists():
             Default: nothing
             Length requirments: 1-200 characters
 
-            (note: The command 'choose' has a search shortend as 'select'.)
+            (note: The command 'choose' has a search shorthand as 'select'.)
             """,
             "/choose [brown] [blond] [black]"
         ],
@@ -146,7 +146,7 @@ class Lists():
             Restrictions: Can only consist of letters and numbers
             Length requirments: 2-50 characters
 
-            (note: The command 'custom-command' has a search shortend as 'cc'.)
+            (note: The command 'custom-command' has a search shorthand as 'cc'.)
             """,
             "/custom-command [number1]"
         ],
@@ -155,7 +155,7 @@ class Lists():
             """
             ```/custom-list (no parameters)```
 
-            (note: The command 'custom-list' has a search shortend as 'cl'.)
+            (note: The command 'custom-list' has a search shorthand as 'cl'.)
             """,
             "/custom-list"
         ],
@@ -201,7 +201,7 @@ class Lists():
             Restrictions: Can only consist of letters and numbers
             Length requirments: 2-50 characters
 
-            (note: The command 'keyword' has a search shortend as 'noti'.)
+            (note: The command 'keyword' has a search shorthand as 'noti'.)
             """,
             "/keyword add [Somi]"
         ],
@@ -214,7 +214,7 @@ class Lists():
             Restrictions: Can only consist of letters and numbers
             Length requirments: 2-50 characters
 
-            (note: The command 'keyword' has a search shortend as 'noti'.)
+            (note: The command 'keyword' has a search shorthand as 'noti'.)
             """,
             "/keyword delete [Somi]"
         ],
@@ -223,7 +223,7 @@ class Lists():
             """
             ```/keyword list (no parameters)```
 
-            (note: The command 'keyword' has a search shortend as 'noti'.)
+            (note: The command 'keyword' has a search shorthand as 'noti'.)
             """,
             "/keyword list"
         ],
@@ -238,6 +238,8 @@ class Lists():
         "/levels info": [
             """
             ```/levels info (no parameters)```
+
+            (note: The command 'levels' has a search shorthand as 'xp'.)
             """,
             "/levels info"
         ],
@@ -246,7 +248,8 @@ class Lists():
             """
             ```/levels leaderboard (no parameters)```
 
-            (note: The subcommand 'leaderboard' has a search shortend as 'top'.)
+            (note: The subcommand 'leaderboard' has a search shorthand as 'top'.)
+            (note: The command 'levels' has a search shorthand as 'xp'.)
             """,
             "/levels leaderboard"
         ],
@@ -257,6 +260,8 @@ class Lists():
             `@USERNAME`:
             A user on this server.
             Default: you
+
+            (note: The command 'levels' has a search shorthand as 'xp'.)
             """,
             f"/levels rank [<@{SOMI_ID}>]"
         ],
@@ -311,7 +316,7 @@ class Lists():
             A user on this server, who has a LastFm account connected to Somi.
             Default: you
 
-            (note: The subcommand 'np' has a search shortend as 'nowplaying'.)
+            (note: The subcommand 'np' has a search shorthand as 'nowplaying'.)
             """,
             f"/lf np [<@{SOMI_ID}>]"
         ],
@@ -333,7 +338,7 @@ class Lists():
             A user on this server, who has a LastFm account connected to Somi.
             Default: you
 
-            (note: The subcommand 'recent' has a search shortend as 'rc'.)
+            (note: The subcommand 'recent' has a search shorthand as 'rc'.)
             """,
             f"/lf recent [<@{SOMI_ID}>]"
         ],
@@ -366,7 +371,7 @@ class Lists():
             A preset timeframe that will limit from when on to gather data.
             Default: 'All Time'
 
-            (note: The subcommand 'topalbums' has a search shortend as 'tal'.)
+            (note: The subcommand 'topalbums' has a search shorthand as 'tal'.)
             """,
             f"/lf topalbums [<@{SOMI_ID}>] [Past Month]"
         ],
@@ -382,7 +387,7 @@ class Lists():
             A preset timeframe that will limit from when on to gather data.
             Default: 'All Time'
 
-            (note: The subcommand 'topartists' has a search shortend as 'tar'.)
+            (note: The subcommand 'topartists' has a search shorthand as 'tar'.)
             """,
             f"/lf topartists [<@{SOMI_ID}>] [Past Quarter]"
         ],
@@ -398,7 +403,7 @@ class Lists():
             A preset timeframe that will limit from when on to gather data.
             Default: 'All Time'
 
-            (note: The subcommand 'toptracks' has a search shortend as 'tt'.)
+            (note: The subcommand 'toptracks' has a search shorthand as 'tt'.)
             """,
             f"/lf toptracks [<@{SOMI_ID}>] [Past Half a Year]"
         ],
@@ -440,7 +445,7 @@ class Lists():
             Default: What you are listening to on Spotify, if your Spotify is publically connected to Discord.
             Length requirments: 2-100 characters
 
-            (note: The command 'lyrics' has a search shortend as 'genius'.)
+            (note: The command 'lyrics' has a search shorthand as 'genius'.)
             """,
             "/lf lyrics [Jeon Somi] [XOXO]"
         ],
@@ -464,7 +469,7 @@ class Lists():
             The thing you want to be reminded about.
             Length requirments: 1-4096 characters
 
-            (note: The command 'reminder' has a search shortend as 'alarm'.)
+            (note: The command 'reminder' has a search shorthand as 'alarm'.)
             """,
             "/reminder add [12w 4d 6h] [Somi comeback with a full album of 20 tracks.]"
         ],
@@ -476,7 +481,7 @@ class Lists():
             The id of the reminder you wish to delete. (note: By inputing 'ALL' in caps you can get a special option to delete all of your reminders at once.)
             Length requirments: 1-10 numbers
 
-            (note: The command 'reminder' has a search shortend as 'alarm'.)
+            (note: The command 'reminder' has a search shorthand as 'alarm'.)
             """,
             "/reminder delete [2001030900]"
         ],
@@ -485,7 +490,7 @@ class Lists():
             """
             ```/reminder list (no parameters)```
 
-            (note: The command 'reminder' has a search shortend as 'alarm'.)
+            (note: The command 'reminder' has a search shorthand as 'alarm'.)
             """,
             "/reminder list"
         ],
@@ -494,7 +499,7 @@ class Lists():
             """
             ```/serverinfo (no parameters)```
 
-            (note: The command 'serverinfo' has a search shortend as 'si'.)
+            (note: The command 'serverinfo' has a search shorthand as 'si'.)
             """,
             "/serverinfo",
         ],
@@ -513,7 +518,7 @@ class Lists():
             A user on this server, who has their Spotify publically connected to Discord.
             Default: you
 
-            (note: The command 'sporify' has a search shortend as 'sf'.)
+            (note: The command 'sporify' has a search shorthand as 'sf'.)
             """,
             "/somi",
         ],
@@ -525,7 +530,7 @@ class Lists():
             A user on this server, who has their Spotify publically connected to Discord.
             Default: you
 
-            (note: The command 'userinfo' has a search shortend as 'ui'.)
+            (note: The command 'userinfo' has a search shorthand as 'ui'.)
             """,
             f"/userinfo [<@{SOMI_ID}>]",
         ],
@@ -557,7 +562,7 @@ class Lists():
             A query for what video to find on YouTube.
             Length requirments: 2-200
 
-            (note: The command 'youtube' has a search shortend as 'yt'.)
+            (note: The command 'youtube' has a search shorthand as 'yt'.)
             """,
             "/youtube [Jeon Somi XOXO MV]",
         ]
@@ -606,7 +611,7 @@ class Lists():
             A channel on this server. (A channel in this context is a: text-channel, news-channel or thread of any kind)
             Default: current channel (if the action is set)
 
-            (note: The command 'config' has a search shortend as 'manage'.)
+            (note: The command 'config' has a search shorthand as 'manage'.)
             """,
             "/config audit-log-channel [Set] [#audit-log]",
             "manage guild: ✅"
@@ -621,7 +626,7 @@ class Lists():
             `@ROLENAME`:
             A role on this server. (note: In order for Somi to apply this role, her role needs to be placed above this role.)
 
-            (note: The command 'config' has a search shortend as 'manage'.)
+            (note: The command 'config' has a search shorthand as 'manage'.)
             """,
             "/config default-role [Set] [@Member]",
             "manage guild: ✅"
@@ -637,7 +642,7 @@ class Lists():
             A channel on this server. (A channel in this context is a: text-channel, news-channel or thread of any kind)
             Default: current channel
 
-            (note: The command 'config' has a search shortend as 'manage'.)
+            (note: The command 'config' has a search shorthand as 'manage'.)
             """,
             "/config default-role [Add] [#general]",
             "manage guild: ✅"
@@ -648,7 +653,7 @@ class Lists():
             ```/config info (no parameters)```
 
             (note: In order for Somi to properly execute some config commands her role needs to be above all roles she is supposed to manage.)
-            (note: The command 'config' has a search shortend as 'manage'.)
+            (note: The command 'config' has a search shorthand as 'manage'.)
             """,
             "/config info",
             "manage guild: ✅"
@@ -664,7 +669,7 @@ class Lists():
             A channel on this server. (A channel in this context is a: text-channel, news-channel or thread of any kind)
             Default: current channel
 
-            (note: The command 'config' has a search shortend as 'manage'.)
+            (note: The command 'config' has a search shorthand as 'manage'.)
             """,
             "/config level-ignore-channels [Add] [#bot-channel]",
             "manage guild: ✅"
@@ -683,7 +688,7 @@ class Lists():
             The level you want a new level-role to be applied from.
             Length requirments: 1-1000
 
-            (note: The command 'config' has a search shortend as 'manage'.)
+            (note: The command 'config' has a search shorthand as 'manage'.)
             """,
             "/config level-roles [Add] [@active-community-member] [20]",
             "manage guild: ✅"
@@ -772,7 +777,7 @@ class Lists():
             ```/open (no parameters)```
 
             (note: For this command to work you need to set a default-role with `/config default-role`.)
-            (note: The command 'open' has a search shortend as 'unclose'.)
+            (note: The command 'open' has a search shorthand as 'unclose'.)
             """,
             "/open",
             "manage roles: ✅\nmanage guild: ✅"
@@ -785,7 +790,7 @@ class Lists():
             The amount fo messages you want to delete.
             Length requirments: 1-1000
 
-            (note: The command 'purge' has a search shortend as 'clear'.)
+            (note: The command 'purge' has a search shorthand as 'clear'.)
             """,
             "/open",
             "manage messages: ✅"
@@ -802,7 +807,7 @@ class Lists():
             A channel on this server. (A channel in this context is a: text-channel, news-channel or thread of any kind)
             Default: current channel
 
-            (note: The command 'send' has a search shortend as 'say'.)
+            (note: The command 'send' has a search shorthand as 'say'.)
             """,
             "/send [Somi is best grill.] [#general]",
             "manage messages: ✅"

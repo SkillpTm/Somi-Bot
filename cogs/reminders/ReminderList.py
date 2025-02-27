@@ -7,14 +7,14 @@ import nextcord.ext.application_checks as nextcord_AC
 ####################################################################################################
 
 from lib.db_modules import ReminderDB
-from lib.modules import Checks, EmbedFunctions
+from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
 
 class ReminderList(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     from lib.utilities.main_commands import reminder
@@ -22,12 +22,11 @@ class ReminderList(nextcord_C.Cog):
     ####################################################################################################
 
     @reminder.subcommand(name = "list", description = "a list of all your reminders")
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def reminder_list(self,
-                            interaction: nextcord.Interaction):
+    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    async def reminder_list(self, interaction: nextcord.Interaction) -> None:
         """This command will list all reminders of a user"""
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /reminder list")
+        self.client.Loggers.action_log(Get().log_message(interaction, "/reminder list"))
 
         user_reminders = ReminderDB(interaction.user.id).get_list()
 
@@ -41,16 +40,18 @@ class ReminderList(nextcord_C.Cog):
 
         #TODO add pages to this
         for reminder in user_reminders:
+            output += f"<t:{reminder[0]}:F> // ID: {reminder[2]} - [Link]({reminder[1]})\nReminder: `{reminder[3][:30]}"
+
             if len(reminder[3]) > 30:
-                output += f"<t:{reminder[0]}:F> // ID: {reminder[2]} - [Link]({reminder[1]})\nReminder: `{reminder[3][:30]}...`\n\n"
-            else:
-                output += f"<t:{reminder[0]}:F> // ID: {reminder[2]} - [Link]({reminder[1]})\nReminder: `{reminder[3][:30]}`\n\n"
+                output += "..."
+
+            output += "`\n\n"
 
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,
             author = f"Reminder List for {interaction.user.display_name}",
             author_icon = interaction.user.display_avatar,
-            description = output[:4096],
+            description = output,
             footer = "DEFAULT_KST_FOOTER"
         )
 
@@ -58,5 +59,5 @@ class ReminderList(nextcord_C.Cog):
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(ReminderList(client))

@@ -16,7 +16,7 @@ from lib.utilities import SomiBot
 
 class ReminderAdd(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     from lib.utilities.main_commands import reminder
@@ -24,15 +24,31 @@ class ReminderAdd(nextcord_C.Cog):
     ####################################################################################################
     
     @reminder.subcommand(name = "add", description = "add a reminder to your reminder list")
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def reminder_add(self,
-                           interaction: nextcord.Interaction,
-                           *,
-                           time: str = nextcord.SlashOption(description="the time to be reminded in (input: xy | xw |xd | xh | xm | xs) Example: 5d7h28s)", required=True, min_length=2, max_length=50),
-                           reminder: str = nextcord.SlashOption(description="what you want to be reminded about.", required=True, min_length=1, max_length=4096)):
+    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    async def reminder_add(
+        self,
+        interaction: nextcord.Interaction,
+        *,
+        time: str = nextcord.SlashOption(
+            description="the time to be reminded in (input: xy | xw |xd | xh | xm | xs) Example: 5d7h28s)",
+            required=True,
+            min_length=2,
+            max_length=50
+        ),
+        reminder: str = nextcord.SlashOption(
+            description="what you want to be reminded about.",
+            required=True,
+            min_length=1,
+            max_length=4096
+        )
+    ) -> None:
         """This command let's you add a reminder for anytime within the next 10 years"""
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /reminder add {time}\n{reminder}")
+        self.client.Loggers.action_log(Get().log_message(
+            interaction,
+            "/reminder add",
+            {"time": time, "reminder": reminder}
+        ))
 
         total_seconds = Get().seconds_from_time(time)
 
@@ -47,19 +63,15 @@ class ReminderAdd(nextcord_C.Cog):
         await interaction.response.defer(with_message=True)
 
         reminder_time = int(unix_time.time()) + total_seconds
-        delete_id: str = ""
+        reminder_id: str = ""
 
-        while len(delete_id) < 10:
-            delete_id += str(random.choice(range(0, 9)))
+        while not reminder_id:
+            reminder_id = str(random.randint(10**9, 10**10 - 1))
 
-            if len(delete_id) != 10:
-                continue
-
-            all_reminders = ReminderDB(interaction.user.id).get_list()
-
-            for reminder_element in all_reminders:
-                if delete_id == str(reminder_element[2]):
-                    delete_id = ""
+            # check if the reminder_id has already been used for this user
+            for reminder_element in ReminderDB(interaction.user.id).get_list():
+                if reminder_id == str(reminder_element[2]):
+                    reminder_id = ""
                     break
 
         embed = EmbedFunctions().builder(
@@ -77,7 +89,7 @@ class ReminderAdd(nextcord_C.Cog):
 
                 [
                     "Reminder ID:",
-                    f"`{int(delete_id)}`",
+                    f"`{reminder_id}`",
                     True
                 ]
             ]
@@ -87,9 +99,9 @@ class ReminderAdd(nextcord_C.Cog):
 
         bot_reply = await interaction.original_message()
 
-        ReminderDB(interaction.user.id).add(reminder_time, bot_reply.jump_url, delete_id, reminder)
+        ReminderDB(interaction.user.id).add(reminder_time, bot_reply.jump_url, reminder_id, reminder)
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(ReminderAdd(client))

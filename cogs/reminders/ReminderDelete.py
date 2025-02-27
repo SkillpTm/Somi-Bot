@@ -12,7 +12,7 @@ from lib.utilities import SomiBot, YesNoButtons
 
 class ReminderDelete(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     from lib.utilities.main_commands import reminder
@@ -20,14 +20,25 @@ class ReminderDelete(nextcord_C.Cog):
     ####################################################################################################
 
     @reminder.subcommand(name = "delete", description = "delete a reminder from your reminder list")
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def reminder_delete(self,
-                              interaction: nextcord.Interaction,
-                              *,
-                              reminder_id: str = nextcord.SlashOption(description="the ID of the remidner to be deleted or 'ALL' (to find your reminder ID use '/reminder list'", required=True, min_length=1, max_length=10)):
+    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    async def reminder_delete(
+        self,
+        interaction: nextcord.Interaction,
+        *,
+        reminder_id: str = nextcord.SlashOption(
+            description="the ID of the remidner to be deleted or 'DELETE_ALL' (to find your reminder ID use '/reminder list'",
+            required=True,
+            min_length=1,
+            max_length=10
+        )
+    ) -> None:
         """This command let's you delete a reminder with it's ID or all reminders with 'ALL'"""
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /reminder delete {reminder_id}")
+        self.client.Loggers.action_log(Get().log_message(
+            interaction,
+            "/reminder delete",
+            {"reminder_id": reminder_id}
+        ))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
@@ -36,22 +47,9 @@ class ReminderDelete(nextcord_C.Cog):
             return
 
 
-        if reminder_id == "ALL":
-            view = YesNoButtons(interaction=interaction)
-            await interaction.followup.send(embed=EmbedFunctions().info_message("Do you really want to delete **ALL** your reminders __**(they can't be recovered)?**__", self.client), view=view, ephemeral=True)
-            await view.wait()
-
-            if not view.value:
-                await interaction.followup.send(embed=EmbedFunctions().error("Your reminders have **not** been deleted!"), ephemeral=True)
-                return
-                
-            elif view.value:
-                ReminderDB(interaction.user.id).delete_all()
-
-                self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /reminder delete {reminder_id} went through")
-
-                await interaction.followup.send(embed=EmbedFunctions().success("**ALL** your reminders have been deleted!"))
-                return
+        if reminder_id == "DELETE_ALL":
+            self.delete_all(interaction)
+            return
 
 
         if not reminder_id.isdigit():
@@ -69,24 +67,52 @@ class ReminderDelete(nextcord_C.Cog):
     ####################################################################################################
 
     @reminder_delete.on_autocomplete("reminder_id")
-    async def autocomplete_reminder_delete(self,
-                                           interaction: nextcord.Interaction,
-                                           reminder_id: str):
-        user_reminders = ReminderDB(interaction.user.id).get_list()
-        delete_ids = {}
+    async def autocomplete_reminder_delete(
+        self,
+        interaction: nextcord.Interaction,
+        reminder_id: str
+    ) -> None:
+        """provides autocomplete suggestions to discord"""
 
-        for reminder in user_reminders:
+        valid_ids = {}
+
+        for reminder in ReminderDB(interaction.user.id).get_list():
+            reminder_text = f"{reminder[3][:30]}"
+            
             if len(reminder[3]) > 30:
-                reminder_text = f"{reminder[3][:30]}..."
-            else:
-                reminder_text = f"{reminder[3]}"
-            delete_ids.update({f"{reminder[2]}: {reminder_text}" : reminder[2]})
+                reminder_text += "..."
 
-        autocomplete_dict = Get().autocomplete_dict_from_search_string(reminder_id, delete_ids)
+            valid_ids.update({f"{reminder[2]}: {reminder_text}" : reminder[2]})
+
+        autocomplete_dict = Get().autocomplete_dict_from_search_string(reminder_id, valid_ids)
 
         await interaction.response.send_autocomplete(autocomplete_dict)
 
+    ####################################################################################################
+
+    async def delete_all(self, interaction: nextcord.Interaction) -> None:
+        """asks the user if they want to delete all their reminders and does as answered"""
+    
+        view = YesNoButtons(interaction=interaction)
+        await interaction.followup.send(embed=EmbedFunctions().info_message("Do you really want to delete **ALL** your reminders __**(they can't be recovered)?**__", self.client), view=view, ephemeral=True)
+        await view.wait()
+
+        if not view.value:
+            await interaction.followup.send(embed=EmbedFunctions().error("Your reminders have **not** been deleted!"), ephemeral=True)
+            return
+            
+        ReminderDB(interaction.user.id).delete_all()
+
+        self.client.Loggers.action_log(Get().log_message(
+            interaction,
+            "/reminder delete",
+            {"DELETE_ALL": "deleted"}
+        ))
+
+        await interaction.followup.send(embed=EmbedFunctions().success("**ALL** your reminders have been deleted!"))
+        return
 
 
-def setup(client: SomiBot):
+
+def setup(client: SomiBot) -> None:
     client.add_cog(ReminderDelete(client))

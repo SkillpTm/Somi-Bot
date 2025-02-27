@@ -7,14 +7,14 @@ import nextcord.ext.application_checks as nextcord_AC
 ####################################################################################################
 
 from lib.db_modules import ConfigDB
-from lib.modules import Checks, EmbedFunctions, LevelRoles
+from lib.modules import Checks, EmbedFunctions, Get, LevelRoles
 from lib.utilities import SomiBot
 
 
 
 class LevelsInfo(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     from lib.utilities.main_commands import levels
@@ -22,37 +22,22 @@ class LevelsInfo(nextcord_C.Cog):
     ####################################################################################################
 
     @levels.subcommand(name = "info", description = "displays an explanation for levels, a list of ignored channels and levelroles")
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def levels_info(self,
-                          interaction: nextcord.Interaction):
+    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    async def levels_info(self, interaction: nextcord.Interaction) -> None:
         """Displays information about levels and (if existing) shows a list of the levelroles/ignore channels"""
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /levels info")
+        self.client.Loggers.action_log(Get().log_message(interaction, "/levels info"))
 
         await interaction.response.defer(with_message=True)
 
-        level_roles: list[list[int]] = await ConfigDB(interaction.guild.id, "LevelRoles").get_list(interaction.guild)
-
-        for level_role in level_roles:
-            if interaction.guild.get_role(level_role[0]):
-                continue
-
-            deleted = ConfigDB(interaction.guild.id, "LevelRoles").delete(level_role[0])
-            await LevelRoles().remove_from_members(interaction.guild, interaction.guild.get_role(level_role[0]))
-            level_roles.remove(level_role)
-
-        output_role_list = LevelRoles().get_level_range_with_role(level_roles)
-        ignore_channel_ids: list[int] = await ConfigDB(interaction.guild.id, "LevelIgnoreChannels").get_list(interaction.guild)
-        output_ignore_channels = ""
+        output_role_list = LevelRoles().get_level_range_with_role(await ConfigDB(interaction.guild.id, "LevelRoles").get_list(interaction.guild))
+        output_ignore_channels = "".join(f"<#{channel_id}>\n" for channel_id in await ConfigDB(interaction.guild.id, "LevelIgnoreChannels").get_list(interaction.guild))
         
 
-        if output_role_list == "":
+        if not output_role_list:
             output_role_list = "`This server doesn't have any level-roles.`"
 
-        for channel_id in ignore_channel_ids:
-            output_ignore_channels += f"<#{channel_id}>\n"
-
-        if output_ignore_channels == "":
+        if not output_ignore_channels:
             output_ignore_channels = "`In this server you can earn XP in all channels`"
 
         embed = EmbedFunctions().builder(
@@ -84,5 +69,5 @@ class LevelsInfo(nextcord_C.Cog):
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(LevelsInfo(client))

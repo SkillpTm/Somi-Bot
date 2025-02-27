@@ -7,14 +7,14 @@ import nextcord.ext.application_checks as nextcord_AC
 ####################################################################################################
 
 from lib.db_modules import LevelsDB
-from lib.modules import Checks, EmbedFunctions
+from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
 
 class LevelsLeaderboard(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     from lib.utilities.main_commands import levels
@@ -22,32 +22,30 @@ class LevelsLeaderboard(nextcord_C.Cog):
     ####################################################################################################
 
     @levels.subcommand(name = "top", description = "shows the top users by level of this server", name_localizations = {country_tag:"leaderboard" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def levels_leaderboard(self,
-                                 interaction: nextcord.Interaction):
+    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    async def levels_leaderboard(self, interaction: nextcord.Interaction) -> None:
         """Displays the top 10 (or less, if there isn't 10 users in the levels table) users by XP"""
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /levels leaderboard")
+        self.client.Loggers.action_log(Get().log_message(interaction, "/levels leaderboard"))
 
         await interaction.response.defer(with_message=True)
 
         user_ids_and_levels = LevelsDB(interaction.guild.id).get_all_user_levels(10)
         output: str = ""
 
-        for index, user in enumerate(user_ids_and_levels):
-            try:
-                member = interaction.guild.get_member(user[0])
-            except:
-                member = self.client.get_user(user[0])
+        for index, user_data in enumerate(user_ids_and_levels):
+            member = interaction.guild.get_member(user_data[0])
+            user = self.client.get_user(user_data[0])
+            name = f"[Deleted User] - ({user_data[0]})" # default value for, if the user's account doesn't exit anymore
 
-            if isinstance(member, nextcord.Member):
+            # check if the user is still in the server
+            if member:
                 name = member.mention
-            elif isinstance(member, nextcord.User):
-                name = member.display_name
-            else:
-                name = "[Deleted User]"
+            # check if the user's account still exists
+            elif not member and user:
+                name = user.display_name
 
-            output += f"**{index+1}. {name}** - Level: __`{user[1]}`__\n"
+            output += f"**{index+1}. {name}** - Level: __`{user_data[1]}`__\n"
 
         if interaction.guild.icon:
             server_icon_url = interaction.guild.icon
@@ -66,5 +64,5 @@ class LevelsLeaderboard(nextcord_C.Cog):
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(LevelsLeaderboard(client))

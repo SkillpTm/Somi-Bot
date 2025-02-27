@@ -65,7 +65,7 @@ class About(nextcord_C.Cog):
 
                 [
                     "Visible Users:",
-                    f"`{Get().visible_users(self.client)}`",
+                    f"`{len(Get().visible_users(self.client))}`",
                     True
                 ],
 

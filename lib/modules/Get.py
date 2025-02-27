@@ -138,16 +138,16 @@ class Get():
     ####################################################################################################
 
     @staticmethod
-    def visible_users(client: SomiBot) -> int:
-        """Gets the number of unique users the client can see on all servers"""
-        unique_users = set()
+    def visible_users(client: SomiBot) -> set[int]:
+        """Gets all unique user ids, of the users the client can see on all servers"""
+        unique_users: set[int] = set()
 
         for guild in client.guilds:
             for member in guild.members:
                 if not member.bot:
                     unique_users.add(member.id)
 
-        return len(unique_users)
+        return unique_users
 
     ####################################################################################################
 

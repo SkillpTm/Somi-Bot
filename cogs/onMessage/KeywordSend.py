@@ -83,7 +83,7 @@ class KeywordSend(nextcord_C.Cog):
             try:
                 await self.client.fetch_user(user_id).send(embed=embed)
             except:
-                self.client.Loggers.action_warning(f"keyword() {user_id} couldn't be notified, because their pms aren't open to the client")
+                self.client.Loggers.action_warning(f"keyword send ~ User: {user_id} couldn't be notified, because their pms aren't open to the client")
 
             CommandUsesDB("command_uses").update("keyword send")
 

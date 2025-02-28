@@ -38,13 +38,13 @@ class LeaveLog(nextcord_C.Cog):
         if not audit_log_id:
             return
 
-        # check the last 2 (2 as a buffer instead of 1) audit log entries for bans, to see if this was a ban (bans get handled by on_member_ban)
-        async for entry in member.guild.audit_logs(limit=2, action=nextcord.AuditLogAction.ban):
+        # check the last audit log entry for bans, to see if this was a ban (bans get handled by BanLog)
+        async for entry in member.guild.audit_logs(limit=1, action=nextcord.AuditLogAction.ban):
             if entry.target.id == member.id:
                 return
 
-        # check the last 2 (2 as a buffer instead of 1) audit log entries for kicks, to see if this was a kick (bans get handled in the kick log)
-        async for entry in member.guild.audit_logs(limit=5, action=nextcord.AuditLogAction.kick):
+        # check the last audit log entry for kicks, to see if this was a kick (kicks get handled by KickLog)
+        async for entry in member.guild.audit_logs(limit=1, action=nextcord.AuditLogAction.kick):
             if entry.target.id == member.id:
                 return
 

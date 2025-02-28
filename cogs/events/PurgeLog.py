@@ -37,7 +37,7 @@ class PurgeLog(nextcord_C.Cog):
         ))
 
         # we create the csv first to reduce delay between the inital embed and the csv response message
-        Create().bulk_messages_csv(messages)
+        csv_name = Create().bulk_messages_csv(messages)
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.red(),
@@ -54,12 +54,8 @@ class PurgeLog(nextcord_C.Cog):
         )
 
         sent_message = await messages[0].guild.get_channel(audit_log_id).send(embed=embed)
-        await sent_message.reply(
-            file=nextcord.File(f"./storage/temp/bulk_messages_{messages[0].guild.id}_{messages[0].channel.id}_{messages[0].id}_{len(messages)}.csv"),
-            mention_author=False
-        )
-
-        os.remove(f"./storage/temp/bulk_messages_{messages[0].guild.id}_{messages[0].channel.id}_{messages[0].id}_{len(messages)}.csv")
+        await sent_message.reply(file=nextcord.File(csv_name), mention_author=False)
+        os.remove(csv_name)
 
         CommandUsesDB("log_activations").update("purge log")
 

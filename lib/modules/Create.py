@@ -11,15 +11,16 @@ class Create():
     ####################################################################################################
     
     @staticmethod
-    def bulk_messages_csv(messages: list[nextcord.Message]) -> None:
-        """This function creates a CSV file, which saves the author id/name, the time and the content of messages"""
+    def bulk_messages_csv(messages: list[nextcord.Message]) -> str:
+        """This function creates a CSV file, which saves the author id/name, the time and the content of messages. It returns the file name of this CSV."""
 
+        # discord provides the message in chronological order, we want the latest first though
         messages.reverse()
-        fieldnames = ["Author ID", "Author Name", "Send at", "Content"]
+        # the file, while temporary, is supposed to have a unique name, in case someone purges at the same time
+        file_name = f"./storage/temp/bulk_messages_{messages[0].guild.id}_{messages[0].channel.id}_{messages[0].id}_{len(messages)}.csv"
 
-        # the file, while temporary is supposed to have a unique name, in case someone purges at the same time
-        with open(f"./storage/temp/bulk_messages_{messages[0].guild.id}_{messages[0].channel.id}_{messages[0].id}_{len(messages)}.csv", "w") as file:
-            writer = csv.DictWriter(file, fieldnames=fieldnames)
+        with open(file_name, "w") as file:
+            writer = csv.DictWriter(file, fieldnames=["Author ID", "Author Name", "Send at", "Content"])
             writer.writeheader()
 
             for message in messages:
@@ -33,3 +34,5 @@ class Create():
                         "Content": message.content
                     }
                 )
+
+        return file_name

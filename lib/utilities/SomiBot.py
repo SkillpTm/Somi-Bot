@@ -73,7 +73,7 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             application_id = Config.APPLICATION_ID,
             intents = nextcord.Intents.all(),

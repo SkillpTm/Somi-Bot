@@ -17,8 +17,8 @@ class Lyrics(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name='genius',
-        description='Posts the link to the lyircs of the song you are playing',
+        name = 'genius',
+        description = 'Posts the link to the lyircs of the song you are playing',
         name_localizations = {country_tag:"lyrics" for country_tag in nextcord.Locale},
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]

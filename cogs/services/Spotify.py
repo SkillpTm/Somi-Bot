@@ -16,8 +16,8 @@ class Spotify(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name='sf',
-        description='tells you what someone is listening to on Spotify',
+        name = "sf",
+        description = "tells you what someone is listening to on Spotify",
         name_localizations = {country_tag:"spotify" for country_tag in nextcord.Locale},
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]

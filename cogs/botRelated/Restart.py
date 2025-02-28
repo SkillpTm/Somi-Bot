@@ -16,10 +16,10 @@ class Restart(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name="restart",
-        description="restarts the entire bot",
+        name = "restart",
+        description = "restarts the entire bot",
         guild_ids = [SomiBot.SUPPORT_SERVER_ID],
-        default_member_permissions=nextcord.Permissions(administrator=True),
+        default_member_permissions = nextcord.Permissions(administrator=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )

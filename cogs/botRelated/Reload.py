@@ -17,10 +17,10 @@ class Reload(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name="reload",
-        description="reload the entire bot",
+        name = "reload",
+        description = "reload the entire bot",
         guild_ids = [SomiBot.SUPPORT_SERVER_ID],
-        default_member_permissions=nextcord.Permissions(administrator=True),
+        default_member_permissions = nextcord.Permissions(administrator=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )

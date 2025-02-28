@@ -19,7 +19,7 @@ class Shutdown(nextcord_C.Cog):
         name = "shutdown",
         description = "shuts the bot down",
         guild_ids = [SomiBot.SUPPORT_SERVER_ID],
-        default_member_permissions=nextcord.Permissions(administrator=True),
+        default_member_permissions = nextcord.Permissions(administrator=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )

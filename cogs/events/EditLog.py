@@ -23,6 +23,9 @@ class EditLog(nextcord_C.Cog):
 
         if not Checks.message_in_guild(self.client, message_before):
             return
+        
+        if message_before.author.id == self.client.user.id:
+            return
 
         audit_log_id: int = await ConfigDB(message_before.guild.id, "AuditLogChannel").get_list(message_before.guild)
 

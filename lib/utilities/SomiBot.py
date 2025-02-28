@@ -75,6 +75,7 @@ class SomiBot(nextcord_C.Bot):
 
     def __init__(self) -> None:
         super().__init__(
+            max_messages = 25000, 
             application_id = Config.APPLICATION_ID,
             intents = nextcord.Intents.all(),
             status = nextcord.Status.online,

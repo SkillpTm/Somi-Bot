@@ -13,7 +13,6 @@ class Welcome(nextcord_C.Cog):
 
     ####################################################################################################
 
-    #TODO set this up with nextcord.on_member_join in client
     async def welcome(self, member: nextcord.Member) -> None:
         """"""
 

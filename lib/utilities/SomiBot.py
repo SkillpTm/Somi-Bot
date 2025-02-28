@@ -172,7 +172,25 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
-    async def on_member_join(self, member: nextcord.Member) -> nextcord.Message:
+    async def on_bulk_message_delete(self, messages: list[nextcord.Message]) -> None:
+        """This function overwrites the build in on_bulk_message_delete function"""
+
+        await asyncio.gather(
+            self.get_cog("PurgeLog").purge_log(messages)
+        )
+
+    ####################################################################################################
+
+    async def on_member_ban(self, guild: nextcord.Guild,user: nextcord.User) -> None:
+        """This function overwrites the build in on_member_ban function"""
+
+        await asyncio.gather(
+            self.get_cog("BanLog").ban_log(guild, user)
+        )
+
+    ####################################################################################################
+
+    async def on_member_join(self, member: nextcord.Member) -> None:
         """This function overwrites the build in on_member_join function"""
 
         await asyncio.gather(
@@ -182,25 +200,36 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
-    async def on_member_remove(self, member: nextcord.Member) -> nextcord.Message:
+    async def on_member_remove(self, member: nextcord.Member) -> None:
         """This function overwrites the build in on_member_remove function"""
 
         await asyncio.gather(
-            self.get_cog("LeaveLog").leave_log(member)
+            self.get_cog("LeaveLog").leave_log(member),
+            self.get_cog("KickLog").kick_log(member)
         )
 
     ####################################################################################################
 
-    async def on_member_update(self, before: nextcord.Member, after: nextcord.Member) -> nextcord.Message:
+    async def on_member_unban(self, guild: nextcord.Guild, user: nextcord.User) -> None:
+        """This function overwrites the build in on_member_unban function"""
+
+        await asyncio.gather(
+            self.get_cog("BanLog").unban_log(guild, user)
+        )
+
+    ####################################################################################################
+
+    async def on_member_update(self, before: nextcord.Member, after: nextcord.Member) -> None:
         """This function overwrites the build in on_member_update function"""
 
         await asyncio.gather(
-            self.get_cog("NameLog").name_log(before, after)
+            self.get_cog("NameLog").name_log(before, after),
+            self.get_cog("MuteLog").mute_log(before, after)
         )
 
     ####################################################################################################
 
-    async def on_message(self, message: nextcord.Message) -> nextcord.Message:
+    async def on_message(self, message: nextcord.Message) -> None:
         """This function overwrites the build in on_message function"""
 
         await asyncio.gather(
@@ -277,7 +306,7 @@ class SomiBot(nextcord_C.Bot):
             permissions = interaction.permissions.value,
         )
 
-        ERROR_MESSAGE = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions.\nIf this persits you can file a bug-report by using `/feedback`."
+        ERROR_MESSAGE = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions. (this includes her role being above others)\nIf this persits you can file a bug-report by using `/feedback`."
 
         if interaction.response.is_done():
             await interaction.followup.send(embed=EmbedFunctions().critical_error(ERROR_MESSAGE), ephemeral=True)

@@ -17,7 +17,8 @@ class Create():
         messages.reverse()
         fieldnames = ["Author ID", "Author Name", "Send at", "Content"]
 
-        with open(f"./storage/temp/bulk_messages_{messages[0].guild.id}_{messages[0].channel.id}_{len(messages)}.csv", "w") as file:
+        # the file, while temporary is supposed to have a unique name, in case someone purges at the same time
+        with open(f"./storage/temp/bulk_messages_{messages[0].guild.id}_{messages[0].channel.id}_{messages[0].id}_{len(messages)}.csv", "w") as file:
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
 

@@ -184,6 +184,15 @@ class SomiBot(nextcord_C.Bot):
         )
 
         return await super().on_message(message)
+    
+    ####################################################################################################
+
+    async def on_msessage_delete(self, message: nextcord.Message) -> None:
+        """This function overwrites the build in on_raw_message_delete function"""
+
+        await asyncio.gather(
+            self.get_cog("DeleteLog").delete_log(message)
+        )
 
     ####################################################################################################
 

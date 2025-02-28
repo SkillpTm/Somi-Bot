@@ -2,21 +2,19 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.db_modules import CommandUsesDB, ConfigDB
-from lib.modules import Checks, EmbedFunctions
+from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
 
 class DeleteLog(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
 
-    @nextcord_C.Cog.listener()
-    async def on_message_delete(self,
-                                message: nextcord.Message):
+    async def delete_log(self, message: nextcord.Message) -> None:
         """This function will create a delete-log message, if a guild has an audit-log-channel and if the message wasn't in a hidden-channel."""
 
         if not Checks.message_in_guild(self.client, message):
@@ -33,7 +31,11 @@ class DeleteLog(nextcord_C.Cog):
         if message.channel.id in await ConfigDB(message.guild.id, "HiddenChannels").get_list(message.guild):
             return
 
-        self.client.Loggers.action_log(f"Guild: {message.guild.id} ~ Channel: {message.channel.id} ~ User: {message.author.id} ~ delete_log()\nMessage: {message.content}")
+        self.client.Loggers.action_log(Get().log_message(
+            message,
+            "delete log",
+            {"message": message.content}
+        ))
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.red(),
@@ -44,16 +46,14 @@ class DeleteLog(nextcord_C.Cog):
         )
 
         embed, file_urls = EmbedFunctions().get_attachments(message.attachments, embed)
-        audit_log_channel = message.guild.get_channel(audit_log_id)
+        sent_message = await message.guild.get_channel(audit_log_id).send(embed=embed)
 
-        sent_message = await audit_log_channel.send(embed=embed)
-
-        if file_urls != "":
+        if file_urls:
             await sent_message.reply(content=file_urls, mention_author=False)
 
         CommandUsesDB("log_activations").update("delete log")
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(DeleteLog(client))

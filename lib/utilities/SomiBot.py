@@ -178,8 +178,9 @@ class SomiBot(nextcord_C.Bot):
         await asyncio.gather(
             self.get_cog("KeywordSend").keyword_send(message),
             self.get_cog("KeywordSend").levels_gain_xp(message),
-            self.get_cog("Reactions").reaction(message),
-            self.get_cog("Modmail").modmail(message)
+            self.get_cog("LinkEmbed").link_embed(message),
+            self.get_cog("Modmail").modmail(message),
+            self.get_cog("Reactions").reaction(message)
         )
 
         return await super().on_message(message)

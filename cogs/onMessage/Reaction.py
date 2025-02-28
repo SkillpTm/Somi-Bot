@@ -1,6 +1,5 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import re
 
 from lib.db_modules import CommandUsesDB
 from lib.modules import Get

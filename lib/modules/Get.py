@@ -180,7 +180,7 @@ class Get():
         if data_provider.guild:
             ouput += f"~ Guild: {data_provider.guild.id} "
 
-            if data_provider.channel:
+            if hasattr(data_provider, "channel"):
                 ouput += f"~ Channel: {data_provider.channel.id} "
         else:
             ouput += "~ Guild: DM channel "

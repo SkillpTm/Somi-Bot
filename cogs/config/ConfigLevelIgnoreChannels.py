@@ -23,14 +23,14 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
         self,
         interaction: nextcord.Interaction,
         action: str = nextcord.SlashOption(
-            description="which action do you want to take",
-            required=True,
-            choices=["Add", "Remove"]
+            description = "which action do you want to take",
+            required = True,
+            choices = ["Add", "Remove"]
         ),
         channel: nextcord.abc.GuildChannel = nextcord.SlashOption(
-            description="the channel to have (no) xp gain in",
-            required=False,
-            channel_types=TEXT_CHANNELS)
+            description = "the channel to have (no) xp gain in",
+            required = False,
+            channel_types = TEXT_CHANNELS)
         ) -> None:
         """This command will deactivate/activate XP in the given channel."""
 

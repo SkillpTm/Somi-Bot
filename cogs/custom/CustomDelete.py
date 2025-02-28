@@ -24,10 +24,10 @@ class CustomDelete(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         commandname: str = nextcord.SlashOption(
-            description="custom-command to be deleted",
-            required=True,
-            min_length=2,
-            max_length=50
+            description = "custom-command to be deleted",
+            required = True,
+            min_length = 2,
+            max_length = 50
         )
     ) -> None:
         """This command deletes a custom-command from the server's custom-commands"""

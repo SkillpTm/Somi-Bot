@@ -28,9 +28,9 @@ class Rules(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         rule: str = nextcord.SlashOption(
-            description="rule you want to post",
-            required=True,
-            choices=[
+            description = "rule you want to post",
+            required = True,
+            choices = [
                 "1 NSFW Content",
                 "2 Doxxing",
                 "3 Cursing",

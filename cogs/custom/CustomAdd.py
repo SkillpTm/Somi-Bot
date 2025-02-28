@@ -25,16 +25,16 @@ class CustomAdd(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         commandname: str = nextcord.SlashOption(
-            description="new custom-command name",
-            required=True,
-            min_length=2,
-            max_length=50
+            description = "new custom-command name",
+            required = True,
+            min_length = 2,
+            max_length = 50
         ),
         commandtext: str = nextcord.SlashOption(
-            description="the content of the new custom-command",
-            required=True,
-            min_length=2,
-            max_length=1000
+            description = "the content of the new custom-command",
+            required = True,
+            min_length = 2,
+            max_length = 1000
         )
     ) -> None:
         """This command adds a custom-command to the server's custom-commands"""

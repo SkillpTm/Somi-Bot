@@ -25,10 +25,10 @@ class LastFmSet(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         lastfmname: str = nextcord.SlashOption(
-            description="input your LastFm name",
-            required=True,
-            min_length=2,
-            max_length=100
+            description = "input your LastFm name",
+            required = True,
+            min_length = 2,
+            max_length = 100
         )
     ) -> None:
         """This command connects a discord user and a lastfm account in the db"""

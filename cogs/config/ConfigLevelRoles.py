@@ -24,19 +24,19 @@ class ConfigLevelRoles(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         action: str = nextcord.SlashOption(
-            description="which action do you want to take",
-            required=True,
-            choices=["Add", "Remove"]
+            description = "which action do you want to take",
+            required = True,
+            choices = ["Add", "Remove"]
         ),
         role: nextcord.Role = nextcord.SlashOption(
-            description="the role users should/ the role to be deleted",
-            required=True
+            description = "the role users should/ the role to be deleted",
+            required = True
         ),
         level: int = nextcord.SlashOption(
-            description="the level you're supposed to get a role",
-            required=False,
-            min_value=2,
-            max_value=1000
+            description = "the level you're supposed to get a role",
+            required = False,
+            min_value = 2,
+            max_value = 1000
         )
     ) -> None:
         """This command adds/deletes a level-role to/from the server's level-roles"""

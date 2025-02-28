@@ -25,13 +25,13 @@ class LastFmTopAlbums(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         user: nextcord.User = nextcord.SlashOption(
-            description="the user you want the top albums of",
-            required=False
+            description = "the user you want the top albums of",
+            required = False
         ),
         timeframe: str = nextcord.SlashOption(
-            description="the timeframe you want the top albums for",
-            required=False,
-            choices=LASTFM_TIMEFRAMES
+            description = "the timeframe you want the top albums for",
+            required = False,
+            choices = LASTFM_TIMEFRAMES
         )
     ) -> None:
         """This command shows someone's top albums"""

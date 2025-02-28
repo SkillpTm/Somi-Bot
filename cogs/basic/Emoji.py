@@ -22,10 +22,10 @@ class Emoji(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         emoji: str = nextcord.SlashOption(
-            description="your emoji",
-            required=True,
-            min_length=2,
-            max_length=100
+            description = "your emoji",
+            required = True,
+            min_length = 2,
+            max_length = 100
         )
     ) -> None:
         """This command reposts the original url of any custom emoji"""

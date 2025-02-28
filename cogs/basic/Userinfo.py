@@ -22,8 +22,8 @@ class Userinfo(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         user: nextcord.User = nextcord.SlashOption(
-            description="the user you want information about",
-            required=False
+            description = "the user you want information about",
+            required = False
         )
     ) -> None:
         """This command gives you infomration about a user"""

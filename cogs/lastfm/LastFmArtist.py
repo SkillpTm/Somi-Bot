@@ -27,19 +27,19 @@ class LastFmArtist(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         artist: str = nextcord.SlashOption(
-            description="the artist you want to see your stats for",
-            required=False,
-            min_length=2,
-            max_length=100
+            description = "the artist you want to see your stats for",
+            required = False,
+            min_length = 2,
+            max_length = 100
         ),
         user: nextcord.User = nextcord.SlashOption(
-            description="the user you want to be shown, what they're listening to",
-            required=False
+            description = "the user you want to be shown, what they're listening to",
+            required = False
         ),
         timeframe: str = nextcord.SlashOption(
-            description="the timeframe you want the top albums for",
-            required=False,
-            choices=LASTFM_TIMEFRAMES_WEBSCRAPING
+            description = "the timeframe you want the top albums for",
+            required = False,
+            choices = LASTFM_TIMEFRAMES_WEBSCRAPING
         )
     ) -> None:
         """This command webscrapes the data of a user from LastFm to get their top tracks and top albums for a certain artist"""

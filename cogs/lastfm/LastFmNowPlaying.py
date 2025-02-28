@@ -26,8 +26,8 @@ class LastFmNowPlaying(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         user: nextcord.User = nextcord.SlashOption(
-            description="the user you want to be shown, what they're listening to",
-            required=False
+            description = "the user you want to be shown, what they're listening to",
+            required = False
         )
     ) -> None:
         """This command displays what someone last listend to (and what they're listening to right now)"""

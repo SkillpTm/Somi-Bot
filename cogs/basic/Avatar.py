@@ -21,8 +21,8 @@ class Avatar(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         user: nextcord.User = nextcord.SlashOption(
-            description="the user you want the avatar from",
-            required=False
+            description = "the user you want the avatar from",
+            required = False
         )
     ) -> None:
         """This command reposts anyone's avatar in an embed"""

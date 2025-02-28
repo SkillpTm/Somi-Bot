@@ -26,8 +26,8 @@ class LastFmRecent(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         user: nextcord.User = nextcord.SlashOption(
-            description="the user you want the recent tracks of",
-            required=False
+            description = "the user you want the recent tracks of",
+            required = False
         )
     ) -> None:
         """This command shows someone's recent tracks and what they are now playing on the first page"""

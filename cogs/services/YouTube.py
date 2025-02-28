@@ -21,10 +21,10 @@ class YouTube(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         query: str = nextcord.SlashOption(
-            description="your YouTube Search",
-            required=True,
-            min_length=2,
-            max_length=200
+            description = "your YouTube Search",
+            required = True,
+            min_length = 2,
+            max_length = 200
         )
     ) -> None:
         """This command uses the given query and sends it to the YouTube Data API, then the user can flip thourgh the top 50 results"""

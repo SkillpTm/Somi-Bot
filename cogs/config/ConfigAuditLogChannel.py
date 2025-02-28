@@ -24,14 +24,14 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         action: str = nextcord.SlashOption(
-            description="which action do you want to take",
-            required=True,
-            choices=["Set", "Unset"]
+            description = "which action do you want to take",
+            required = True,
+            choices = ["Set", "Unset"]
         ),
         channel: nextcord.abc.GuildChannel = nextcord.SlashOption(
-            description="the channel to be set/unset",
-            required=False,
-            channel_types=TEXT_CHANNELS
+            description = "the channel to be set/unset",
+            required = False,
+            channel_types = TEXT_CHANNELS
         )
     ) -> None:
         """This command sets/unsets the audit-log-channel of the server."""

@@ -22,10 +22,10 @@ class Help(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         commandname: str = nextcord.SlashOption(
-            description="which command do you need help for",
-            required=True,
-            min_length=2,
-            max_length=50
+            description = "which command do you need help for",
+            required = True,
+            min_length = 2,
+            max_length = 50
         )
     ) -> None:
         """This command generates a select box that is corresponding to all commands of the bot.

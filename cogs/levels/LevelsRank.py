@@ -24,8 +24,8 @@ class LevelsRank(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         member: nextcord.Member = nextcord.SlashOption(
-            description="the member you want to see the rank of",
-            required=False
+            description = "the member you want to see the rank of",
+            required = False
         )
     ) -> None:
         """Displays any users level, rank and level progression, with a progession bar"""

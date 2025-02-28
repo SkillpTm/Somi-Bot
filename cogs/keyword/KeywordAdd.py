@@ -25,10 +25,10 @@ class KeywordAdd(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         keyword: str = nextcord.SlashOption(
-            description="your new keyword",
-            required=True,
-            min_length=2,
-            max_length=50
+            description = "your new keyword",
+            required = True,
+            min_length = 2,
+            max_length = 50
         )
     ) -> None:
         """This command adds a global keyword to the bot for a user"""

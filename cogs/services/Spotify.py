@@ -28,13 +28,13 @@ class Spotify(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         member: nextcord.Member = nextcord.SlashOption(
-            description="the user listening to Spotify",
-            required=False
+            description = "the user listening to Spotify",
+            required = False
         ),
         details: str = nextcord.SlashOption(
-            description="do you want to get additional information on the song and artist",
-            required=False,
-            choices=["Yes", "No"]
+            description = "do you want to get additional information on the song and artist",
+            required = False,
+            choices = ["Yes", "No"]
         )
     ) -> None:
         """

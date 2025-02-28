@@ -24,13 +24,13 @@ class ConfigDefaultRole(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         action: str = nextcord.SlashOption(
-            description="which action do you want to take",
-            required=True,
-            choices=["Set", "Unset"]
+            description = "which action do you want to take",
+            required = True,
+            choices = ["Set", "Unset"]
         ),
         role: nextcord.Role = nextcord.SlashOption(
-            description="the role to be set/unset",
-            required=False
+            description = "the role to be set/unset",
+            required = False
         )
     ) -> None:
         """This command sets/unsets a default-role to the server. Meaning that on_member_join will apply this role automatically, if set"""

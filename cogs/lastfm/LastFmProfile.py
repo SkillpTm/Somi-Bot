@@ -26,8 +26,8 @@ class LastFmProfile(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         user: nextcord.User = nextcord.SlashOption(
-            description="the user you want to know stats about",
-            required=False
+            description = "the user you want to know stats about",
+            required = False
         )
     ) -> None:
         """This command outputs information about a user's lastfm account"""

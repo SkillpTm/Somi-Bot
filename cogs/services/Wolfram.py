@@ -21,10 +21,10 @@ class Wolfram(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         query: str = nextcord.SlashOption(
-            description="for what do you want an answer",
-            required=True,
-            min_length=2,
-            max_length=200
+            description = "for what do you want an answer",
+            required = True,
+            min_length = 2,
+            max_length = 200
         )
     ) -> None:
         """This command uses the given query and sends it to the wolfram API, if a short answer can be found, it will be responded with"""

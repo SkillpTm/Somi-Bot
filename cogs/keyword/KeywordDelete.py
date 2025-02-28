@@ -24,10 +24,10 @@ class KeywordDelete(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         keyword: str = nextcord.SlashOption(
-            description="the keyword to be deleted or 'DELETE_ALL' to delete every keyword",
-            required=True,
-            min_length=2,
-            max_length=50
+            description = "the keyword to be deleted or 'DELETE_ALL' to delete every keyword",
+            required = True,
+            min_length = 2,
+            max_length = 50
         )
     ) -> None:
         """This command let's you delete a keyword by it's name or all keywords with 'ALL'"""

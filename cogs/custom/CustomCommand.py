@@ -22,10 +22,10 @@ class CustomCommand(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         commandname: str = nextcord.SlashOption(
-            description="the name of the custom-command",
-            required=True,
-            min_length=2,
-            max_length=50
+            description = "the name of the custom-command",
+            required = True,
+            min_length = 2,
+            max_length = 50
         )
     ) -> None:
         """This command will post a custom-command, if given it's name"""

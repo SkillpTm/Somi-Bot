@@ -29,16 +29,16 @@ class Lyrics(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         artist: str = nextcord.SlashOption(
-            description="the artist you want a song to get the lyrics of",
-            required=False,
-            min_length=2,
-            max_length=100
+            description = "the artist you want a song to get the lyrics of",
+            required = False,
+            min_length = 2,
+            max_length = 100
         ),
         song: str = nextcord.SlashOption(
-            description="the song of that artist you want to get the lyrics of",
-            required=False,
-            min_length=2,
-            max_length=100
+            description = "the song of that artist you want to get the lyrics of",
+            required = False,
+            min_length = 2,
+            max_length = 100
         )
     ) -> None:
         """This command will post a link to the lyrics of a song, through the slash options or by pulling it from their Spotify connection with Discord"""

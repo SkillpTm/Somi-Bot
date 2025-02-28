@@ -26,16 +26,16 @@ class ReminderAdd(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         time: str = nextcord.SlashOption(
-            description="the time to be reminded in (input: xy | xw |xd | xh | xm | xs) Example: 5d7h28s)",
-            required=True,
-            min_length=2,
-            max_length=50
+            description = "the time to be reminded in (input: xy | xw |xd | xh | xm | xs) Example: 5d7h28s)",
+            required = True,
+            min_length = 2,
+            max_length = 50
         ),
         reminder: str = nextcord.SlashOption(
-            description="what you want to be reminded about.",
-            required=True,
-            min_length=1,
-            max_length=4096
+            description = "what you want to be reminded about.",
+            required = True,
+            min_length = 1,
+            max_length = 4096
         )
     ) -> None:
         """This command let's you add a reminder for anytime within the next 10 years"""

@@ -25,10 +25,10 @@ class Weather(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         location: str = nextcord.SlashOption(
-            description="the location you want to know the weather of",
-            required=False,
-            min_length=2,
-            max_length=50
+            description = "the location you want to know the weather of",
+            required = False,
+            min_length = 2,
+            max_length = 50
         )
     ) -> None:
         """This command outputs various statistics about the weather of any place (that's on openweathermap)"""

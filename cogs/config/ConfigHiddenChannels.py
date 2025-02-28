@@ -24,14 +24,14 @@ class ConfigHiddenChannels(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         action: str = nextcord.SlashOption(
-            description="which action do you want to take",
-            required=True,
-            choices=["Add", "Remove"]
+            description = "which action do you want to take",
+            required = True,
+            choices = ["Add", "Remove"]
         ),
         channel: nextcord.abc.GuildChannel = nextcord.SlashOption(
-            channel_types=TEXT_CHANNELS,
-            description="the channel to be added/removed",
-            required=False)
+            channel_types = TEXT_CHANNELS,
+            description = "the channel to be added/removed",
+            required = False)
         ) -> None:
         """This command adds a custom command to the server's custom commands"""
 

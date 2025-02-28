@@ -2,29 +2,48 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import ConfigDB
-from lib.modules import Checks, EmbedFunctions
+from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
 
 class Kick(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
         
-    @nextcord.slash_command(name="kick", description="kicks a member", default_member_permissions = nextcord.Permissions(kick_members=True))
-    @nextcord_AC.check(Checks().interaction_in_guild())
-    async def kick(self,
-                   interaction: nextcord.Interaction,
-                   *,
-                   member: nextcord.Member = nextcord.SlashOption(description="Member to be kicked", required=True),
-                   reason: str = nextcord.SlashOption(description="Reason for the kick", required=False, min_length=2, max_length=1000)):
+    @nextcord.slash_command(
+        name = "kick",
+        description = "kicks a member",
+        default_member_permissions = nextcord.Permissions(kick_members=True),
+        integration_types = [nextcord.IntegrationType.guild_install],
+        contexts = [nextcord.InteractionContextType.guild]
+    )
+    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    async def kick(
+        self,
+        interaction: nextcord.Interaction,
+        *,
+        member: nextcord.Member = nextcord.SlashOption(
+            description = "Member to be kicked",
+            required = True
+        ),
+        reason: str = nextcord.SlashOption(
+            description = "Reason for the kick",
+            required = False,
+            min_length = 2,
+            max_length = 1000
+        )
+    ) -> None:
         """This command kicks a member with a reason."""
 
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /kick {member.id}\n{reason}")
+        self.client.Loggers.action_log(Get().log_message(
+            interaction,
+            "/ban",
+            {"member": str(member.id), "reason": reason}
+        ))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
@@ -37,47 +56,18 @@ class Kick(nextcord_C.Cog):
             return
         
         try:
-            if reason != None:
+            if reason:
                 await member.send(f"You have been __**kicked**__ from `{member.guild.name}`\nFor the reason:\n`{reason}`")
             else:
                 await member.send(f"You have been __**kicked**__ from `{member.guild.name}`\nThere was no provided reason.")
         except:
-            pass
+            self.client.Loggers.action_warning(f"/kick send ~ User: {member.id} couldn't be notified, because their pms aren't open to the client")
 
-        await member.kick(reason=reason)
+        await interaction.guild.kick(user = member, reason = reason)
 
         await interaction.followup.send(embed=EmbedFunctions().success(f"Succesfully kicked {member.mention}."), ephemeral=True)
 
 
-        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
 
-        if not audit_log_id:
-            return
-
-        embed = EmbedFunctions().builder(
-            color = nextcord.Color.orange(),
-            author = "Mod Activity",
-            author_icon = interaction.user.display_avatar,
-            footer = "DEFAULT_KST_FOOTER",
-            fields = [
-                [
-                    "/kick:",
-                    f"{interaction.user.mention} kicked: {member.mention}",
-                    False
-                ],
-
-                [
-                    "Reason:",
-                    reason,
-                    False
-                ]
-            ]
-        )
-
-        audit_log_channel = interaction.guild.get_channel(audit_log_id)
-        await audit_log_channel.send(embed=embed)
-
-
-
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(Kick(client))

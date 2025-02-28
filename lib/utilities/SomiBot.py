@@ -191,6 +191,15 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
+    async def on_member_update(self, before: nextcord.Member, after: nextcord.Member) -> nextcord.Message:
+        """This function overwrites the build in on_member_update function"""
+
+        await asyncio.gather(
+            self.get_cog("NameLog").name_log(before, after)
+        )
+
+    ####################################################################################################
+
     async def on_message(self, message: nextcord.Message) -> nextcord.Message:
         """This function overwrites the build in on_message function"""
 

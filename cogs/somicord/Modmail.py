@@ -52,13 +52,13 @@ class Modmail(nextcord_C.Cog):
 
         # check if the user already has a thread
         for thread in MOD_CHANNEL.threads:
-            if f"Modmail ({message.author.global_name})" == thread.name[9:-1]:
+            if f"Modmail ({message.author.name})" == thread.name[9:-1]:
                 user_thread = thread
 
         # check if the user already has an archived thread
         if not user_thread:
             async for thread in MOD_CHANNEL.archived_threads():
-                if f"Modmail ({message.author.global_name})" == thread.name[9:-1]:
+                if f"Modmail ({message.author.name})" == thread.name[9:-1]:
                     user_thread = thread
 
         # if the user doesn't already have a thread, make one

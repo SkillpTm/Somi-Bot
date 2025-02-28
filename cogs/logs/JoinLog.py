@@ -3,39 +3,30 @@ import nextcord.ext.commands as nextcord_C
 import time
 
 from lib.db_modules import CommandUsesDB, ConfigDB
-from lib.modules import EmbedFunctions
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
 
 class JoinLog(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
     
-    @nextcord_C.Cog.listener()
-    async def on_member_join(self,
-                             member: nextcord.Member):
+    async def join_log(self, member: nextcord.Member) -> None:
         """
         This function will:
-        - Send a welcome message to Somicord
         - give the new member a default role, if set
-        - create a join-log message, if teh guild has a join-log
+        - create a join-log message, if the guild has the audit log setup
         """
 
-        self.client.Loggers.action_log(f"Guild: {member.guild.id} ~ User: {member.id} ~ join_log()")
-
-        if member.guild.id == self.client.SOMICORD_ID:
-            SOMICORD_WELCOME_CHANNEL = member.guild.get_channel(self.client.SOMICORD_WELCOME_CHANNEL_ID)
-            welcome_embed = EmbedFunctions().builder(
-                color = self.client.BOT_COLOR,
-                description = f"Hey {member.mention}, welcome to `{member.guild.name}`!\nWhat you waiting for - start chatting.",
-                image = self.client.SOMICORD_WELCOME_GIF
-            )
-            welcome_response = await SOMICORD_WELCOME_CHANNEL.send(embed=welcome_embed)
-            await welcome_response.add_reaction(self.client.SOMI_WELCOME_EMOTE)
+        self.client.Loggers.action_log(Get().log_message(
+            member,
+            "join log",
+            {"member": str(member.id)}
+        ))
 
 
         default_role_id: int = await ConfigDB(member.guild.id, "DefaultRole").get_list(member.guild)
@@ -74,12 +65,11 @@ class JoinLog(nextcord_C.Cog):
             ]
         )
 
-        audit_log_channel = member.guild.get_channel(audit_log_id)
-        await audit_log_channel.send(embed=embed)
+        await member.guild.get_channel(audit_log_id).send(embed=embed)
 
         CommandUsesDB("log_activations").update("join log")
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(JoinLog(client))

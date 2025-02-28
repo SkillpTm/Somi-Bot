@@ -172,6 +172,16 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
+    async def on_member_join(self, member: nextcord.Member) -> nextcord.Message:
+        """This function overwrites the build in on_member_join function"""
+
+        await asyncio.gather(
+            self.get_cog("JoinLog").join_log(member),
+            self.get_cog("Welcome").welcome(member)
+        )
+
+    ####################################################################################################
+
     async def on_message(self, message: nextcord.Message) -> nextcord.Message:
         """This function overwrites the build in on_message function"""
 
@@ -188,7 +198,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def on_message_delete(self, message: nextcord.Message) -> None:
-        """This function overwrites the build in on_raw_message_delete function"""
+        """This function overwrites the build in on_message_delete function"""
 
         await asyncio.gather(
             self.get_cog("DeleteLog").delete_log(message)
@@ -197,7 +207,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def on_message_edit(self, before: nextcord.Message, after: nextcord.Message) -> None:
-        """This function overwrites the build in on_raw_message_delete function"""
+        """This function overwrites the build in on_message_edit function"""
 
         await asyncio.gather(
             self.get_cog("EditLog").edit_log(before, after)

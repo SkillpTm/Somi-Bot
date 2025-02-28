@@ -3,28 +3,30 @@ import nextcord.ext.commands as nextcord_C
 import time
 
 from lib.db_modules import KeywordDB, ReminderDB, CommandUsesDB, ConfigDB
-from lib.modules import EmbedFunctions
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
 
 class LeaveLog(nextcord_C.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
 
-    @nextcord_C.Cog.listener()
-    async def on_member_remove(self,
-                               member: nextcord.Member):
+    async def leave_log(self, member: nextcord.Member) -> None:
         """
         This function deletes someone's keywords, if they leave a server
         Also if the user just left the last server with Somi their reminders
-        And if a server has an audit-log-channel set it generates a log message
+        And if a server has an audit-log-channel set it posts a log message
         """
 
-        self.client.Loggers.action_log(f"Guild: {member.guild.id} ~ User: {member.id} ~ leave_log()")
+        self.client.Loggers.action_log(Get().log_message(
+            member,
+            "leave log",
+            {"member": str(member.id)}
+        ))
 
         KeywordDB(member.guild.id, member.id).delete_all()
 
@@ -36,11 +38,13 @@ class LeaveLog(nextcord_C.Cog):
         if not audit_log_id:
             return
 
-        async for entry in member.guild.audit_logs(limit=1, action=nextcord.AuditLogAction.ban):
+        # check the last 2 (2 as a buffer instead of 1) audit log entries for bans, to see if this was a ban (bans get handled by on_member_ban)
+        async for entry in member.guild.audit_logs(limit=2, action=nextcord.AuditLogAction.ban):
             if entry.target.id == member.id:
                 return
 
-        async for entry in member.guild.audit_logs(limit=1, action=nextcord.AuditLogAction.kick):
+        # check the last 2 (2 as a buffer instead of 1) audit log entries for kicks, to see if this was a kick (bans get handled in the kick log)
+        async for entry in member.guild.audit_logs(limit=5, action=nextcord.AuditLogAction.kick):
             if entry.target.id == member.id:
                 return
 
@@ -76,12 +80,11 @@ class LeaveLog(nextcord_C.Cog):
             ]
         )
 
-        audit_log_channel = member.guild.get_channel(audit_log_id)
-        await audit_log_channel.send(embed=embed)
+        await member.guild.get_channel(audit_log_id).send(embed=embed)
 
         CommandUsesDB("log_activations").update("leave log")
 
 
 
-def setup(client: SomiBot):
+def setup(client: SomiBot) -> None:
     client.add_cog(LeaveLog(client))

@@ -182,6 +182,15 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
+    async def on_member_remove(self, member: nextcord.Member) -> nextcord.Message:
+        """This function overwrites the build in on_member_remove function"""
+
+        await asyncio.gather(
+            self.get_cog("LeaveLog").leave_log(member)
+        )
+
+    ####################################################################################################
+
     async def on_message(self, message: nextcord.Message) -> nextcord.Message:
         """This function overwrites the build in on_message function"""
 

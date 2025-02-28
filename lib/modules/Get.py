@@ -159,32 +159,34 @@ class Get():
 
     @staticmethod
     def log_message(
-        data_provider: nextcord.Interaction | nextcord.Message,
-        command_name: str,
-        command_args: dict[str, str] = {}
+        data_provider: nextcord.Interaction | nextcord.Message | nextcord.Member,
+        action_name: str,
+        action_args: dict[str, str] = {}
     ) -> str:
-        """makes the log message for an interaction or message event"""
+        """makes the log message for an interaction, message event or a member event"""
 
         # check if the data_provider is an Interaction or a Message
-        if isinstance(data_provider, nextcord.Interaction):
-            aggregator = data_provider.user
+        if isinstance(data_provider, nextcord.Interaction) or isinstance(data_provider, nextcord.Member):
+            aggregator_id = data_provider.user.id
         else:
-            aggregator = data_provider.author
+            aggregator_id = data_provider.author.id
 
         ouput = ""
 
-        ouput += f"{command_name} "
-        ouput += f"~ User: {aggregator.id} "
+        ouput += f"{action_name} "
+        ouput += f"~ User: {aggregator_id} "
 
         # check if the interaction was in a guild or dm
         if data_provider.guild:
             ouput += f"~ Guild: {data_provider.guild.id} "
-            ouput += f"~ Channel: {data_provider.channel.id} "
+
+            if data_provider.channel:
+                ouput += f"~ Channel: {data_provider.channel.id} "
         else:
             ouput += "~ Guild: DM channel "
 
         ouput = "~ args: "
-        for key, value in command_args.items():
+        for key, value in action_args.items():
             ouput = f"[{key}: {value}]"
 
         return ouput

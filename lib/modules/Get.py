@@ -159,16 +159,18 @@ class Get():
 
     @staticmethod
     def log_message(
-        data_provider: nextcord.Interaction | nextcord.Message | nextcord.Member,
+        data_provider: nextcord.Interaction | nextcord.Member | nextcord.User | nextcord.Message,
         action_name: str,
         action_args: dict[str, str] = {}
     ) -> str:
-        """makes the log message for an interaction, message event or a member event"""
+        """makes the log message for an interaction, member event, user event or message event"""
 
-        # check if the data_provider is an Interaction or a Message
+        # check if the data_provider is an Interaction, Member, User or Message top get the user's id
         if isinstance(data_provider, nextcord.Interaction) or isinstance(data_provider, nextcord.Member):
             aggregator_id = data_provider.user.id
-        else:
+        elif isinstance(data_provider, nextcord.User):
+            aggregator_id = data_provider.id
+        elif isinstance(data_provider, nextcord.Message):
             aggregator_id = data_provider.author.id
 
         ouput = ""
@@ -177,13 +179,14 @@ class Get():
         ouput += f"~ User: {aggregator_id} "
 
         # check if the interaction was in a guild or dm
-        if data_provider.guild:
+        if hasattr(data_provider, "guild"):
             ouput += f"~ Guild: {data_provider.guild.id} "
 
             if hasattr(data_provider, "channel"):
                 ouput += f"~ Channel: {data_provider.channel.id} "
-        else:
-            ouput += "~ Guild: DM channel "
+        elif hasattr(data_provider, "channel"):
+            if data_provider.channel.type == nextcord.ChannelType.private:
+                ouput += "~ Guild: DM channel "
 
         ouput = "~ args: "
         for key, value in action_args.items():

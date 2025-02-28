@@ -40,7 +40,7 @@ class PurgeLog(nextcord_C.Cog):
         csv_name = Create().bulk_messages_csv(messages)
 
         embed = EmbedFunctions().builder(
-            color = nextcord.Color.red(),
+            color = nextcord.Color.brand_red(),
             author = "Mod Activity",
             author_icon = entry.user.display_avatar,
             footer = "DEFAULT_KST_FOOTER",

@@ -56,7 +56,7 @@ class Rules(nextcord_C.Cog):
         await interaction.response.defer(with_message=True)
 
         embed = EmbedFunctions().builder(
-            color = nextcord.Color.red(),
+            color = nextcord.Color.brand_red(),
             author = f"Rule {rule}",
             author_icon = interaction.guild.icon, 
             description = self.client.Lists.SOMICORD_RULES[rule][0],               

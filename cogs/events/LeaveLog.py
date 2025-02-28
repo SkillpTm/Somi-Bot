@@ -49,7 +49,7 @@ class LeaveLog(nextcord_C.Cog):
                 return
 
         embed = EmbedFunctions().builder(
-            color = nextcord.Color.red(),
+            color = nextcord.Color.brand_red(),
             thumbnail = member.display_avatar,
             title = f"Member Left: `{member.display_name}`",
             footer = "DEFAULT_KST_FOOTER",

@@ -3,7 +3,6 @@ import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 import os
 
-from lib.db_modules import ConfigDB
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -50,26 +49,20 @@ class Reload(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().success("The bot has been reloaded."), ephemeral=True)
 
 
-        #TODO make this support server based
-        # audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
+        embed = EmbedFunctions().builder(
+            color = self.client.MOD_COLOR,
+            author = "Dev Activity",
+            author_icon = interaction.user.display_avatar.url,
+            fields = [
+                [
+                    "/reload:",
+                    f"{interaction.user.mention} reloaded the bot!",
+                    False
+                ]
+            ]
+        )
 
-        # if not audit_log_id:
-        #     return
-
-        # embed = EmbedFunctions().builder(
-        #     color = self.client.MOD_COLOR,
-        #     author = "Mod Activity",
-        #     author_icon = interaction.user.display_avatar,
-        #     fields = [
-        #         [
-        #             "/reload:",
-        #             f"{interaction.user.mention} reloaded the bot!",
-        #             False
-        #         ]
-        #     ]
-        # )
-        
-        # await self.client.get_channel(audit_log_id).send(embed=embed)
+        await self.client.get_channel(self.client.SUPPORT_SERVER_AUDIT_LOG_ID).send(embed=embed)
 
 
 

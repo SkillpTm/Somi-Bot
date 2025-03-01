@@ -2,7 +2,6 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import ConfigDB
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -31,25 +30,21 @@ class Restart(nextcord_C.Cog):
 
         await interaction.response.send_message(embed=EmbedFunctions().success("Restarting bot..."), ephemeral=True)
 
-        #TODO make this support server based*
-        # audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
 
-        # if audit_log_id:
-        #     embed = EmbedFunctions().builder(
-        #         color = self.client.MOD_COLOR,
-        #         author = "Mod Activity",
-        #         author_icon = interaction.user.display_avatar,
-        #         fields = [
-        #             [
-        #                 "/restart:",
-        #                 f"{interaction.user.mention} restarted the bot.",
-        #                 True
-        #             ]
-        #         ]
-        #     )
+        embed = EmbedFunctions().builder(
+            color = self.client.MOD_COLOR,
+            author = "Dev Activity",
+            author_icon = interaction.user.display_avatar.url,
+            fields = [
+                [
+                    "/restart:",
+                    f"{interaction.user.mention} restarted the bot.",
+                    True
+                ]
+            ]
+        )
 
-        #     await self.client.get_channel(audit_log_id).send(embed=embed)
-        
+        await self.client.get_channel(self.client.SUPPORT_SERVER_AUDIT_LOG_ID).send(embed=embed)
         self.client.restart()
 
 

@@ -7,6 +7,7 @@ class Config():
 
     # Support server specific data
     SUPPORT_SERVER_ID = 769668499605159998
+    SUPPORT_SERVER_AUDIT_LOG_ID = 1345304743840579667
 
     # Application relevant IDs
     APPLICATION_ID = 976963476771700786

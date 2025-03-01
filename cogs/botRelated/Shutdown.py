@@ -2,7 +2,6 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import ConfigDB
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import YesNoButtons, SomiBot
 
@@ -42,26 +41,21 @@ class Shutdown(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().success("The bot is being shutdown..."), ephemeral=True)
 
 
-        #TODO make this support server based*
-        # audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
+        embed = EmbedFunctions().builder(
+            color = nextcord.Color.orange(),
+            author = "Dev Activity",
+            author_icon = interaction.user.display_avatar.url,
+            footer = "DEFAULT_KST_FOOTER",
+            fields = [
+                [
+                    "/shutdown:",
+                    f"{interaction.user.mention} shutdown the bot",
+                    False
+                ]
+            ]
+        )
 
-        # if audit_log_id:
-        #     embed = EmbedFunctions().builder(
-        #         color = nextcord.Color.orange(),
-        #         author = "Mod Activity",
-        #         author_icon = interaction.user.display_avatar,
-        #         footer = "DEFAULT_KST_FOOTER",
-        #         fields = [
-        #             [
-        #                 "/shutdown:",
-        #                 f"{interaction.user.mention} shutdown the bot",
-        #                 False
-        #             ]
-        #         ]
-        #     )
-
-        #     await  self.client.get_channel(audit_log_id).send(embed=embed)
-
+        await self.client.get_channel(self.client.SUPPORT_SERVER_AUDIT_LOG_ID).send(embed=embed)
         await self.client.close()
 
 

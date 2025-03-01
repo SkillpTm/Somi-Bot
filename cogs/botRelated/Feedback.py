@@ -30,11 +30,24 @@ class FeedbackModal(nextcord.ui.Modal):
     ) -> None:
         """Submits the feedback to the db"""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/feedback"), {"submission": self.feedback.value})
+        self.client.Loggers.action_log(Get.log_message(interaction, "/feedback", {"submission": self.feedback.value}))
 
-        #TODO send this response into the support server
-        FeedbackDB().add(interaction.guild.id, interaction.user.id, str(interaction.user), Get.kst_timestamp(), self.feedback.value)
+        if interaction.guild:
+            server_id = interaction.guild.id
+        else:
+            server_id = 0 # DMs are indecated by a 0
 
+        FeedbackDB().add(server_id, interaction.user.id, str(interaction.user), Get.kst_timestamp(), self.feedback.value)
+
+        embed = EmbedFunctions().builder(
+            color = self.client.BOT_COLOR,
+            title = f"Feedback by `{interaction.user.name}` | `({interaction.user.id})`",
+            thumbnail = interaction.user.display_avatar.url,
+            footer = "DEFAULT_KST_FOOTER",
+            description = f"Feedback from Server: `{server_id}`:\n{self.feedback.value}"
+        )
+
+        await self.client.get_channel(self.client.SUPPORT_SERVER_FEEDBACK_ID).send(embed=embed)
         await interaction.response.send_message(embed=EmbedFunctions().success("Your feedback has been submitted!"), ephemeral=True)
 
 

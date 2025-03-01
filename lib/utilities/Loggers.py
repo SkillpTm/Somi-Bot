@@ -34,20 +34,17 @@ class Loggers():
 
     ####################################################################################################
 
-    def bot_status(self,
-                   status: str) -> None:
+    def bot_status(self, status: str) -> None:
         self.action_logger.debug(status)
 
     ####################################################################################################
 
-    def action_log(self,
-                   action: str) -> None:
+    def action_log(self, action: str) -> None:
         self.action_logger.info(action)
 
     ####################################################################################################
 
-    def action_warning(self,
-                       action: str) -> None:
+    def action_warning(self, action: str) -> None:
         self.action_logger.warning(action)
 
     ####################################################################################################

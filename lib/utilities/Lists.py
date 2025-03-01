@@ -49,7 +49,7 @@ class Lists():
         "/lf topalbums",
         "/lf topartists",
         "/lf toptracks",
-        "lf track",
+        "/lf track",
         "/lyrics",
         "/mute",
         "/open",
@@ -248,8 +248,8 @@ class Lists():
             """
             ```/levels leaderboard (no parameters)```
 
-            (note: The subcommand 'leaderboard' has a search shorthand as 'top'.)
             (note: The command 'levels' has a search shorthand as 'xp'.)
+            (note: The subcommand 'leaderboard' has a search shorthand as 'top'.)
             """,
             "/levels leaderboard"
         ],
@@ -281,6 +281,8 @@ class Lists():
             `timeframe`:
             A preset timeframe that will limit from when on to gather data.
             Default: 'All Time'
+
+            (note: The command 'lf' has a search shorthand as 'lastfm'.)
             """,
             f"/lf artist [Jeon Somi] [<@{SOMI_ID}>] [Past Week]"
         ],
@@ -305,6 +307,8 @@ class Lists():
             `timeframe`:
             A preset timeframe that will limit from when on to gather data.
             Default: 'All Time'
+
+            (note: The command 'lf' has a search shorthand as 'lastfm'.)
             """,
             f"/lf album [Jeon Somi] [XOXO] [<@{SOMI_ID}>] [Past Week]"
         ],
@@ -316,6 +320,7 @@ class Lists():
             A user on this server, who has a LastFm account connected to Somi.
             Default: you
 
+            (note: The command 'lf' has a search shorthand as 'lastfm'.)
             (note: The subcommand 'np' has a search shorthand as 'nowplaying'.)
             """,
             f"/lf np [<@{SOMI_ID}>]"
@@ -327,6 +332,8 @@ class Lists():
             `@USERNAME`:
             A user on this server, who has a LastFm account connected to Somi.
             Default: you
+
+            (note: The command 'lf' has a search shorthand as 'lastfm'.)
             """,
             f"/lf profile [<@{SOMI_ID}>]"
         ],
@@ -338,6 +345,7 @@ class Lists():
             A user on this server, who has a LastFm account connected to Somi.
             Default: you
 
+            (note: The command 'lf' has a search shorthand as 'lastfm'.)
             (note: The subcommand 'recent' has a search shorthand as 'rc'.)
             """,
             f"/lf recent [<@{SOMI_ID}>]"
@@ -349,6 +357,8 @@ class Lists():
             `lastfmname`:
             Your LastFm username, this name will have to __exactly__ match your username on LastFm.
             Length requirments: 2-100 characters
+
+            (note: The command 'lf' has a search shorthand as 'lastfm'.)
             """,
             "/lf set [SomiBot]"
         ],
@@ -356,6 +366,8 @@ class Lists():
         "/lf reset": [
             """
             ```/lf reset (no parameters)```
+
+            (note: The command 'lf' has a search shorthand as 'lastfm'.)
             """,
             "/lf reset"
         ],
@@ -371,6 +383,7 @@ class Lists():
             A preset timeframe that will limit from when on to gather data.
             Default: 'All Time'
 
+            (note: The command 'lf' has a search shorthand as 'lastfm'.)
             (note: The subcommand 'topalbums' has a search shorthand as 'tal'.)
             """,
             f"/lf topalbums [<@{SOMI_ID}>] [Past Month]"
@@ -387,6 +400,7 @@ class Lists():
             A preset timeframe that will limit from when on to gather data.
             Default: 'All Time'
 
+            (note: The command 'lf' has a search shorthand as 'lastfm'.)
             (note: The subcommand 'topartists' has a search shorthand as 'tar'.)
             """,
             f"/lf topartists [<@{SOMI_ID}>] [Past Quarter]"
@@ -403,6 +417,7 @@ class Lists():
             A preset timeframe that will limit from when on to gather data.
             Default: 'All Time'
 
+            (note: The command 'lf' has a search shorthand as 'lastfm'.)
             (note: The subcommand 'toptracks' has a search shorthand as 'tt'.)
             """,
             f"/lf toptracks [<@{SOMI_ID}>] [Past Half a Year]"
@@ -428,6 +443,8 @@ class Lists():
             `timeframe`:
             A preset timeframe that will limit from when on to gather data.
             Default: 'All Time'
+
+            (note: The command 'lf' has a search shorthand as 'lastfm'.)
             """,
             f"/lf track [Jeon Somi] [XOXO] [<@{SOMI_ID}>] [Past Week]"
         ],

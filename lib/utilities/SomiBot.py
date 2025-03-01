@@ -86,7 +86,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     def api_login(self) -> None:
-        """This function adds API logins , Spotify, WolframAlpha and YouTube on the client"""
+        """This function adds API logins for Spotify, WolframAlpha and YouTube on the client"""
 
         self.spotifyOAuth = spotipy.SpotifyOAuth(
             client_id = Keychain().SPOTIPY_CLIENT_ID,
@@ -117,7 +117,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def on_ready(self) -> None:
-        """This function overwrites the build in on_ready function"""
+        """This function overwrites the build in on_ready function, to login for our APIs and to start all infinite loops"""
 
         # logout in case this was a restart and we didn't properly exit those API connections
         await self.api_logout()
@@ -129,7 +129,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def on_close(self) -> None:
-        """This function overwrites the build in on_close function"""
+        """This function overwrites the build in on_close function, to logout from our APIs"""
 
         self.Loggers.bot_status(f"{self.user}: logged out")
 
@@ -143,7 +143,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def on_disconnect(self) -> None:
-        """This function overwrites the build in on_disconnect function"""
+        """This function overwrites the build in on_disconnect function, log logout from our APIs"""
 
         self.Loggers.bot_status(f"{self.user}: connection closed")
 
@@ -159,14 +159,14 @@ class SomiBot(nextcord_C.Bot):
     async def start_infinite_loops(self) -> None:
         """This function starts an infinite loop for the ReminderSend cog, which continues until the bot loses internet or gets shutdown"""
 
-        from cogs.reminder.ReminderSend import ReminderSend
-
-        await asyncio.gather(ReminderSend(self).infinite_reminder_loop())
+        await asyncio.gather(
+            self.get_cog("ReminderSend").infinite_reminder_loop()
+        )
 
     ####################################################################################################
 
     async def on_bulk_message_delete(self, messages: list[nextcord.Message]) -> None:
-        """This function overwrites the build in on_bulk_message_delete function"""
+        """This function overwrites the build in on_bulk_message_delete function, to launch the purge_log"""
 
         await asyncio.gather(
             self.get_cog("PurgeLog").purge_log(messages)
@@ -175,7 +175,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def on_member_ban(self, guild: nextcord.Guild,user: nextcord.User) -> None:
-        """This function overwrites the build in on_member_ban function"""
+        """This function overwrites the build in on_member_ban function, to launch the ban_log"""
 
         await asyncio.gather(
             self.get_cog("BanLog").ban_log(guild, user)
@@ -184,7 +184,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def on_member_join(self, member: nextcord.Member) -> None:
-        """This function overwrites the build in on_member_join function"""
+        """This function overwrites the build in on_member_join function, to launch the join_log and welcome"""
 
         await asyncio.gather(
             self.get_cog("JoinLog").join_log(member),
@@ -194,7 +194,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def on_member_remove(self, member: nextcord.Member) -> None:
-        """This function overwrites the build in on_member_remove function"""
+        """This function overwrites the build in on_member_remove function, to launch the leave_log and the kick_log"""
 
         await asyncio.gather(
             self.get_cog("LeaveLog").leave_log(member),
@@ -204,7 +204,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def on_member_unban(self, guild: nextcord.Guild, user: nextcord.User) -> None:
-        """This function overwrites the build in on_member_unban function"""
+        """This function overwrites the build in on_member_unban function, to launch the unban_log"""
 
         await asyncio.gather(
             self.get_cog("BanLog").unban_log(guild, user)
@@ -213,7 +213,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def on_member_update(self, before: nextcord.Member, after: nextcord.Member) -> None:
-        """This function overwrites the build in on_member_update function"""
+        """This function overwrites the build in on_member_update function, to launch the name_log and the mute_log"""
 
         await asyncio.gather(
             self.get_cog("NameLog").name_log(before, after),
@@ -223,7 +223,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def on_message(self, message: nextcord.Message) -> None:
-        """This function overwrites the build in on_message function"""
+        """This function overwrites the build in on_message function, to launch keyword_send, levels_gain_xp, link_embed, modmail and reaction"""
 
         await asyncio.gather(
             self.get_cog("KeywordSend").keyword_send(message),
@@ -238,7 +238,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def on_message_delete(self, message: nextcord.Message) -> None:
-        """This function overwrites the build in on_message_delete function"""
+        """This function overwrites the build in on_message_delete function, to launch the delete_log"""
 
         await asyncio.gather(
             self.get_cog("DeleteLog").delete_log(message)
@@ -247,7 +247,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def on_message_edit(self, before: nextcord.Message, after: nextcord.Message) -> None:
-        """This function overwrites the build in on_message_edit function"""
+        """This function overwrites the build in on_message_edit function, to launch the edit_log"""
 
         await asyncio.gather(
             self.get_cog("EditLog").edit_log(before, after)
@@ -266,10 +266,10 @@ class SomiBot(nextcord_C.Bot):
             return
 
         if hasattr(interaction.application_command, "parent_cmd"):
-            commandname += f"{interaction.application_command.parent_cmd.name}"
+            commandname += f"{interaction.application_command.parent_cmd.name} "
 
         if hasattr(interaction.application_command, "name"):
-            commandname += f" {interaction.application_command.name}"
+            commandname += f"{interaction.application_command.name}"
 
         if commandname:
             CommandUsesDB("command_uses").update(f"{commandname}")
@@ -285,9 +285,6 @@ class SomiBot(nextcord_C.Bot):
 
         from lib.modules.EmbedFunctions import EmbedFunctions
         from lib.modules.Get import Get
-
-        if not hasattr(interaction, "channel"):
-            return
 
         self.Loggers.application_command_error(
             exception = exception,
@@ -312,7 +309,7 @@ class SomiBot(nextcord_C.Bot):
 
     @staticmethod
     async def on_thread_join(thread: nextcord.Thread):
-        """This function overwrites the build in on_thread_join so that the client automatically joins all new threads."""
+        """This function overwrites the build in on_thread_join, so that the client automatically joins all new threads."""
 
         try:
             await thread.join()

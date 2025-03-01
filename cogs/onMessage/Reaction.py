@@ -36,7 +36,7 @@ class Reactions(nextcord_C.Cog):
 
 
         # react to a "f" in a message
-        if any(f_string in f" {message.content.lower()} " for f_string in [" f ", "\nf ", " f\n", self.SOMI_F_EMOTE.lower()]):
+        if any(f_string in f" {message.content.lower()} " for f_string in [" f ", "\nf ", " f\n", self.client.SOMI_F_EMOTE.lower()]):
             await message.add_reaction(self.client.SOMI_F_EMOTE)
 
             self.client.Loggers.action_log(Get.log_message(message, "reaction f"))

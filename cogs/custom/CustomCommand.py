@@ -16,7 +16,7 @@ class CustomCommand(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "cc", description = "post a custom-command", name_localizations = {country_tag:"custom-command" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def customcommand(
         self,
         interaction: nextcord.Interaction,

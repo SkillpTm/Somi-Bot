@@ -22,7 +22,7 @@ class Close(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def close(self, interaction: nextcord.Interaction) -> None:
         """This command takes the send-messages permission from the default-role away, effectifly closing down the server. Additionally it sets invites_disabled = True"""
 
@@ -82,7 +82,7 @@ class Close(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def open(self, interaction: nextcord.Interaction) -> None:
         """This command gives the send-messages permission back to the default-role, effectifly opening the server back up."""
 

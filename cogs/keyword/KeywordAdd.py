@@ -19,7 +19,7 @@ class KeywordAdd(nextcord_C.Cog):
     ####################################################################################################
     
     @keyword.subcommand(name = "add", description = "add a keyword to your keyword list")
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def keyword_add(
         self,
         interaction: nextcord.Interaction,

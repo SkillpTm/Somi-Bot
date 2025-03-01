@@ -18,7 +18,7 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
     ####################################################################################################
 
     @config.subcommand(name = "audit-log-channel", description = "set/unset a channel for the bot to post logs")
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def config_audit_log_channel(
         self,
         interaction: nextcord.Interaction,

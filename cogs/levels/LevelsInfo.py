@@ -18,7 +18,7 @@ class LevelsInfo(nextcord_C.Cog):
     ####################################################################################################
 
     @levels.subcommand(name = "info", description = "displays an explanation for levels, a list of ignored channels and levelroles")
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def levels_info(self, interaction: nextcord.Interaction) -> None:
         """Displays information about levels and (if existing) shows a list of the levelroles/ignore channels"""
 

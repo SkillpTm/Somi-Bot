@@ -57,7 +57,8 @@ class ReminderSend(nextcord_C.Cog):
             )
 
             if reminder[0] in visible_users:
-                await self.client.fetch_user(reminder[0]).send(embed=embed)
+                user = await self.client.fetch_user(reminder[0])
+                await user.send(embed=embed)
             else:
                 self.client.Loggers.action_warning(f"reminder send: {reminder[0]} couldn't be reminded, because their pms aren't open to the client")
 

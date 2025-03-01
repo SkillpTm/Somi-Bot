@@ -23,11 +23,11 @@ class Shutdown(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks.interaction_by_owner and Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_by_owner() and Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def shutdown(self, interaction: nextcord.Interaction) -> None:
         """This command let's you shutdown the bot, it can only be executed from a moderator on Somicord."""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/shutdown"))
+        self.client.Loggers.action_log(Get().log_message(interaction, "/shutdown"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 

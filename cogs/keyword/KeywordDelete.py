@@ -18,7 +18,7 @@ class KeywordDelete(nextcord_C.Cog):
     ####################################################################################################
 
     @keyword.subcommand(name = "delete", description = "delete a keyword from your keyword list")
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def keyword_delete(
         self,
         interaction: nextcord.Interaction,

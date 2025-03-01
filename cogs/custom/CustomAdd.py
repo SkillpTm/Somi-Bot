@@ -19,7 +19,7 @@ class CustomAdd(nextcord_C.Cog):
     ####################################################################################################
 
     @custom.subcommand(name = "add", description = "add a custom-command to this server")
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def custom_add(
         self,
         interaction: nextcord.Interaction,

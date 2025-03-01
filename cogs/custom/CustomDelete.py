@@ -18,7 +18,7 @@ class CustomDelete(nextcord_C.Cog):
     ####################################################################################################
 
     @custom.subcommand(name = "delete", description = "delete a custom-command")
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def custom_delete(
         self,
         interaction: nextcord.Interaction,

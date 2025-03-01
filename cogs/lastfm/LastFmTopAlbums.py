@@ -71,7 +71,7 @@ class LastFmTopAlbums(nextcord_C.Cog):
     ) -> None:
         """This function recurses on button press and requests the data from the LastFm api to build the embed"""
 
-        top_albums_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&username={lastfm_username}&limit=10&page={page_number}&period={timeframe}&api_key={self.client.lf_network.api_key}&format=json")
+        top_albums_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&username={lastfm_username}&limit=10&page={page_number}&period={timeframe}&api_key={self.client.Keychain.LAST_FM_API_KEY}&format=json")
 
         if top_albums_response.status_code != 200:
             await interaction.edit_original_message(embed=EmbedFunctions().error("LastFm didn't respond correctly, try in a few minutes again!"), view=None)

@@ -36,9 +36,13 @@ class Banner(nextcord_C.Cog):
             {"user": str(user.id)}
         ))
 
-        user= await self.client.fetch_user(user.id)
+        if interaction.guild:
+            user_banner_url = (await interaction.guild.fetch_member(user.id)).display_banner.url
+        else:
+            user_banner_url = (await self.client.fetch_user(user.id)).banner.url
 
-        if not user.banner:
+
+        if not user_banner_url:
             await interaction.response.send_message(embed=EmbedFunctions().error(f"The user {user.mention} doesn't have a banner."), ephemeral=True)
             return
 
@@ -46,9 +50,9 @@ class Banner(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,
-            image = user.banner.url,
+            image = user_banner_url,
             title = f"Banner of: `{user.display_name}`",
-            title_url = user.banner.url,
+            title_url = user_banner_url,
             footer = "DEFAULT_KST_FOOTER"
         )
         

@@ -1,8 +1,8 @@
 import nextcord
+import operator
 
 from lib.db_modules.ConfigDB import ConfigDB
 from lib.db_modules.LevelsDB import LevelsDB
-
 
 
 class LevelRoles():
@@ -12,61 +12,95 @@ class LevelRoles():
 
     ####################################################################################################
 
-    async def apply(self,
-                    server: nextcord.Guild,
-                    input_users: list[list[tuple[int, int]]] = [[0, 0]]) -> None:
+    async def apply(
+        self,
+        server: nextcord.Guild,
+        members_and_levels: list[list[tuple[int, int]]] = [] # [member_id, level]
+    ) -> None:
         """This function checks for the inputed users (or all users of a guild), if they have the correct levelrole.
            If they don't, it findes out, which level role they should have and applys it."""
 
-        levelroles = await ConfigDB(server.id, "LevelRoles").get_list(server)
-        if input_users == [[0, 0]]:
-            input_users = LevelsDB(server.id).get_all_user_levels()
+        # a list of lists all level roles this server has [[role_id, level], ...], sorted by accending levels
+        roles_and_levels = sorted(await ConfigDB(server.id, "LevelRoles").get_list(server), key=operator.itemgetter(1))
 
-        if levelroles == []:
+        if not roles_and_levels:
             return
 
-        server_level_roles: list[nextcord.Role] = [server.get_role(levelrole[0]) for levelrole in levelroles]
-        users_and_level_roles = {}
+        if not members_and_levels:
+            members_and_levels = LevelsDB(server.id).get_all_user_levels()
 
-        for levelrole in levelroles:
-            for user in input_users:
-                if user[1] >= levelrole[1]:
-                    users_and_level_roles.update({user[0]: levelrole[0]})
+        # dict of ID keys and Role objects as values, for easy lookup later: {895475489754890: nextcord.Role, ...}
+        ids_and_roles: dict[int, nextcord.Role] = {}
 
-        for user_id, levelrole_id in users_and_level_roles.items():
-            member = server.get_member(user_id)
-            role = server.get_role(levelrole_id)
+        for role_and_level in roles_and_levels:
+            level_role = server.get_role(role_and_level[0])
 
-            if not role:
-                levelroles = ConfigDB(server.id, "LevelRoles").delete(levelrole_id)
-                await self.remove_from_members(server, role)
+            # valid that all level roles still exist on the server, if they don't delete them from the db and redo ALL members level roles
+            # under normal cuirmenstances this shouldn't have to happen
+            if not level_role:
+                ConfigDB(server.id, "LevelRoles").delete(role_and_level[0])
+                self.apply(server, LevelsDB(server.id).get_all_user_levels())
                 return
+            
+            ids_and_roles[role_and_level[0]] = level_role
 
-            if hasattr(member, "roles"):
-                if not role in member.roles:
-                    for server_level_role in server_level_roles:
-                        if server_level_role in member.roles:
-                            await member.remove_roles(server_level_role)
 
-                    await member.add_roles(role)
+        for member_and_level in members_and_levels:
+            member, user_level = server.get_member(member_and_level[0]), member_and_level[1]
+            new_role_id = 0
+
+            if not member:
+                continue
+
+            # loop over all level roles until we find the role the member is supposed to have
+            for role_and_level in roles_and_levels:
+                role_id, role_level = role_and_level[0], role_and_level[1]
+
+                # when the current role is over the user's level, the previous role is the correct one (saved on new_role_id)
+                if user_level < role_level:
+                    break
+
+                new_role_id = role_id
+            
+            if not new_role_id:
+                continue
+
+            # this isn't strictly necessary, but ensures there only being one correct level role on the member 
+            to_be_removed_roles: list[nextcord.Role] = []
+
+            for level_role_id, level_role in ids_and_roles.keys():
+                if level_role_id == new_role_id:
+                    await member.add_roles(level_role)
+                    continue
+
+                to_be_removed_roles.append(level_role)
+
+            await member.remove_roles(to_be_removed_roles)
 
     ####################################################################################################
 
-    async def remove_from_members(self,
-                                  server: nextcord.Guild,
-                                  role: nextcord.Role) -> None:
-        """This function removes a specific levelrole from all members of a guild"""
+    async def remove_from_members(
+        self,
+        server: nextcord.Guild,
+        role: nextcord.Role
+    ) -> None:
+        """This function removes a specific levelrole from all members of a guild and then reapplys all current roles with self.apply()"""
 
-        all_users = LevelsDB(server.id).get_all_user_levels()
+        members_without_level_role: list[list[tuple[int, int]]] = []
 
-        for user in all_users:
-            member = server.get_member(user[0])
+        for member_and_level in LevelsDB(server.id).get_all_user_levels():
+            member = server.get_member(member_and_level[0])
 
-            if hasattr(member, "roles"):
-                if role in member.roles:
-                    await member.remove_roles(role)
+            # we might none, instead of a member
+            if not member:
+                continue
 
-        await self.apply(server)
+            if role in member.roles:
+                await member.remove_roles(role)
+                members_without_level_role.append(member_and_level)
+
+        # reapply all roles for users who need them
+        await self.apply(server, members_without_level_role)
 
     ####################################################################################################
 
@@ -76,13 +110,18 @@ class LevelRoles():
 
         output_role_list = ""
 
-        for index, levelrole in enumerate(level_roles):
-            if index+1 != len(level_roles):
-                if levelrole[1] == level_roles[index+1][1]-1: # if 2 roles only have a difference of 1 level
-                    output_role_list += f"Level {levelrole[1]}: <@&{levelrole[0]}>\n"
-                else:
-                    output_role_list += f"Level {levelrole[1]}-{level_roles[index+1][1]-1}: <@&{levelrole[0]}>\n"
-            else: # last level-role
-                output_role_list += f"Level {levelrole[1]}-∞: <@&{levelrole[0]}>\n"
+        for index, level_role in enumerate(level_roles):
+            # if the this is the last level-role add an infinity symbol
+            if index+1 == len(level_roles):
+                output_role_list += f"Level {level_role[1]}-∞: <@&{level_role[0]}>\n"
+                break
+
+            # if the current and the next role only have a difference of 1 level display it as such
+            if level_role[1] == level_roles[index+1][1]-1:
+                output_role_list += f"Level {level_role[1]}: <@&{level_role[0]}>\n"
+                continue
+
+            # dispaly the range until the next level role
+            output_role_list += f"Level {level_role[1]}-{level_roles[index+1][1]-1}: <@&{level_role[0]}>\n"
 
         return output_role_list

@@ -318,7 +318,8 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
-    async def on_thread_join(self, thread: nextcord.Thread):
+    @staticmethod
+    async def on_thread_join(thread: nextcord.Thread):
         """This function overwrites the build in on_thread_join so that the client automatically joins all new threads."""
 
         try:

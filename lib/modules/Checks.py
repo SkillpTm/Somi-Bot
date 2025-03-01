@@ -40,7 +40,7 @@ class Checks():
         def predicate(interaction: nextcord.Interaction) -> bool:
             return not interaction.user.bot
         
-        return predicate
+        return nextcord_AC.check(predicate)
     
     ####################################################################################################
 

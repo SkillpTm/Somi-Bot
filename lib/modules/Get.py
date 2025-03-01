@@ -84,7 +84,7 @@ class Get():
         for key, value in autocomplete_dict.items():
             key, value = str(key), str(value)
 
-            if len(priority_dict) == 25: # discord limits autocomplete suggestions to 25
+            if sum([len(prio_dict) for prio_dict in priority_dict.values()]) == 25: # discord limits autocomplete suggestions to 25
                 break
 
             # prority 0: search_string is the beginning of value
@@ -111,7 +111,7 @@ class Get():
 
         # merge the priority dicts, with higher priority results tkaing precedence over lower priority results
         for value in priority_dict.values():
-            output = value | output
+            output |= value
 
         return output
 

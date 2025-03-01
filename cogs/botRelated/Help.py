@@ -16,7 +16,7 @@ class Help(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "help", description = "explanations for every command")
-    @nextcord_AC.check(not Checks.interaction_not_by_bot)
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def help(
         self,
         interaction: nextcord.Interaction,

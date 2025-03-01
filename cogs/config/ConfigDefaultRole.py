@@ -18,7 +18,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
     ####################################################################################################
 
     @config.subcommand(name = "default-role", description = "set/unset a role someone gets upon joining this server")
-    @nextcord_AC.check(Checks.interaction_not_by_bot and Checks.interaction_in_guild())
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def config_default_role(
         self,
         interaction: nextcord.Interaction,

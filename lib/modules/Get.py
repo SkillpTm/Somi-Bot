@@ -191,13 +191,16 @@ class Get():
 
         # check if the interaction was in a guild or dm
         if hasattr(data_provider, "guild"):
-            ouput += f"~ Guild: {data_provider.guild.id} "
+            if data_provider.guild:
+                ouput += f"~ Guild: {data_provider.guild.id} "
 
             if hasattr(data_provider, "channel"):
-                ouput += f"~ Channel: {data_provider.channel.id} "
+                if data_provider.channel:
+                    ouput += f"~ Channel: {data_provider.channel.id} "
         elif hasattr(data_provider, "channel"):
-            if data_provider.channel.type == nextcord.ChannelType.private:
-                ouput += "~ Guild: DM channel "
+            if data_provider.channel:
+                if data_provider.channel.type == nextcord.ChannelType.private:
+                    ouput += "~ Guild: DM channel "
 
         ouput = "~ args: "
         for key, value in action_args.items():

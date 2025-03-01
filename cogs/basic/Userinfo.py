@@ -61,9 +61,9 @@ class Userinfo(nextcord_C.Cog):
                 joined_time = f"<t:{self.client.SKILLP_JOINED_SOMICORD_TIME}>"
 
         embed = EmbedFunctions().builder(
-            color = member.color,
-            thumbnail = member.display_avatar.url,
-            title = f"User Information: `{member.display_name}`",
+            color = user.color,
+            thumbnail = user.display_avatar.url,
+            title = f"User Information: `{user.display_name}`",
             footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [

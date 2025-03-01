@@ -49,7 +49,6 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        # check for user perms
         if interaction.user.top_role.position < role.position and interaction.user != interaction.user.guild.owner:
             await interaction.followup.send(embed=EmbedFunctions().error("You can only add/remove a role as a level-role, if the role is below your current top role!"), ephemeral=True)
             return

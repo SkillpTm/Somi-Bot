@@ -72,7 +72,7 @@ class ConfigHiddenChannels(nextcord_C.Cog):
             footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
-                    "/config default-role:",
+                    "/config hidden-channels:",
                     mod_action,
                     False
                 ]

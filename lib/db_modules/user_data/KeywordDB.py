@@ -9,7 +9,7 @@ class KeywordDB(CommonDB):
                  user_id: int) -> None:
         self.first_part_table_name = f"server{server_id}"
 
-        super().__init__(database_path = "../../storage/db/user_data/keywords.db",
+        super().__init__(database_path = "../../storage/db/keywords.db",
                          table_name = f"server{server_id}_user{user_id}",
                          table_structure = """(keyword text)""")
 

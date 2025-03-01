@@ -8,7 +8,7 @@ class ReminderDB(CommonDB):
 
     def __init__(self,
                  user_id: int) -> None:
-        super().__init__(database_path = "../../storage/db/user_data/reminders.db",
+        super().__init__(database_path = "../../storage/db/reminders.db",
                          table_name = f"user{user_id}",
                          table_structure = """(time integer,
                                                link text,

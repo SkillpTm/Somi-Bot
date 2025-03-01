@@ -7,7 +7,7 @@ from lib.utilities.SomiBot import SomiBot
 
 class PageButtons(nextcord.ui.View):
 
-    def __init__(self, page, last_page, interaction):
+    def __init__(self, page: int, last_page: int, interaction: nextcord.Interaction) -> None:
         self.value = None
         self.page: int = page
         self.last_page: int = last_page
@@ -17,9 +17,7 @@ class PageButtons(nextcord.ui.View):
     ####################################################################################################
 
     @nextcord.ui.button(label = "start", style=nextcord.ButtonStyle.green)
-    async def start(self,
-                    button: nextcord.ui.Button,
-                    interaction: nextcord.Interaction):
+    async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
         if self.interaction.user.id != interaction.user.id:
             await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
             return
@@ -29,9 +27,7 @@ class PageButtons(nextcord.ui.View):
         self.stop()
 
     @nextcord.ui.button(label = "<<", style=nextcord.ButtonStyle.green)
-    async def left(self,
-                   button: nextcord.ui.Button,
-                   interaction: nextcord.Interaction):
+    async def left(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
         if self.interaction.user.id != interaction.user.id:
             await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
             return
@@ -43,15 +39,11 @@ class PageButtons(nextcord.ui.View):
         self.stop()
 
     @nextcord.ui.button(label = "/", style=nextcord.ButtonStyle.gray, disabled=True)
-    async def page_button(self,
-                          button: nextcord.ui.Button,
-                          interaction: nextcord.Interaction):
+    async def page_button(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
         pass
 
     @nextcord.ui.button(label = ">>", style=nextcord.ButtonStyle.red)
-    async def right(self,
-                    button: nextcord.ui.Button,
-                    interaction: nextcord.Interaction):
+    async def right(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if self.interaction.user.id != interaction.user.id:
             await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
             return
@@ -63,9 +55,7 @@ class PageButtons(nextcord.ui.View):
         self.stop()
 
     @nextcord.ui.button(label = "end", style=nextcord.ButtonStyle.red)
-    async def end(self,
-                  button: nextcord.ui.Button,
-                  interaction: nextcord.Interaction):
+    async def end(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
         if self.interaction.user.id != interaction.user.id:
             await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
             return
@@ -76,13 +66,17 @@ class PageButtons(nextcord.ui.View):
 
     ####################################################################################################
 
-    async def update_buttons(self):
-        await self.change_page_button()
-        await self.check_page_for_button_deactivation()
+    async def update_buttons(self) -> None:
+        """changes the page button numbers and checks, if the buttons should be disabled or nor"""
+
+        await self._change_page_button()
+        await self._check_page_for_button_deactivation()
 
     ####################################################################################################
 
-    async def change_page_button(self):
+    async def _change_page_button(self) -> None:
+        """changes the number on the page button"""
+
         for child in self.children:
             if "/" in child.label:
                 child.label = f"{self.page}/{self.last_page}"
@@ -90,12 +84,16 @@ class PageButtons(nextcord.ui.View):
 
     ####################################################################################################
 
-    async def check_page_for_button_deactivation(self):
+    async def _check_page_for_button_deactivation(self) -> None:
+        """disables buttons (all but the page button) in case they should be turned off"""
+
+        # on the first page turn off the buttons that make you move back
         if self.page == 1:
             for child in self.children:
                 if any(button_name in child.label for button_name in ["start", "<<"]):
                     child.disabled = True
 
+        # on the last page turn off the buttons that make you move forward
         if self.page == self.last_page:
             for child in self.children:
                 if any(button_name in child.label for button_name in [">>", "end"]):
@@ -105,5 +103,6 @@ class PageButtons(nextcord.ui.View):
 
     ####################################################################################################
 
-    async def on_timeout(self):
+    async def on_timeout(self) -> None:
+        """overwrites the internal on_timeout to disable all buttons on timeout"""
         await SomiBot.deactivate_view_children(self)

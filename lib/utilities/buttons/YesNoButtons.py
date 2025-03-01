@@ -7,10 +7,7 @@ from lib.utilities.SomiBot import SomiBot
 
 class YesNoButtons(nextcord.ui.View):
     
-    def __init__(self,
-                 *,
-                 interaction: nextcord.Interaction = None,
-                 response: nextcord.Message = None):
+    def __init__(self, *, interaction: nextcord.Interaction = None, response: nextcord.Message = None) -> None:
         super().__init__(timeout = 60)
         self.response = response
         self.interaction = interaction
@@ -19,40 +16,30 @@ class YesNoButtons(nextcord.ui.View):
     ####################################################################################################
 
     @nextcord.ui.button(label = "Yes", style=nextcord.ButtonStyle.green)
-    async def yes(self,
-                  button: nextcord.ui.Button,
-                  interaction: nextcord.Interaction):
+    async def yes(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
         if self.interaction:
-            if self.interaction.user.id != interaction.user.id:
-                if not isinstance(self.interaction.channel, nextcord.DMChannel):
-                    await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
-                    return
+            original_user = self.interaction.user
+        elif self.response:
+            original_user = self.response.author
 
-        if self.response:
-            if self.response.author.id != interaction.user.id:
-                if not isinstance(self.response.channel, nextcord.DMChannel):
-                    await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
-                    return
+        if original_user.id != interaction.user.id:
+            await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+            return
 
         self.value = True
         self.stop()
         await SomiBot.deactivate_view_children(self)
 
     @nextcord.ui.button(label = "No", style=nextcord.ButtonStyle.red)
-    async def no(self,
-                 button: nextcord.ui.Button,
-                 interaction: nextcord.Interaction):
+    async def no(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
         if self.interaction:
-            if self.interaction.user.id != interaction.user.id:
-                if not isinstance(self.interaction.channel, nextcord.DMChannel):
-                    await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
-                    return
+            original_user = self.interaction.user
+        elif self.response:
+            original_user = self.response.author
 
-        if self.response:
-            if self.response.author.id != interaction.user.id:
-                if not isinstance(self.response.channel, nextcord.DMChannel):
-                    await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
-                    return
+        if original_user.id != interaction.user.id:
+            await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+            return
 
         self.value = False
         self.stop()
@@ -60,5 +47,6 @@ class YesNoButtons(nextcord.ui.View):
 
     ####################################################################################################
 
-    async def on_timeout(self):
+    async def on_timeout(self) -> None:
+        """overwrites the internal on_timeout to disable all buttons on timeout"""
         await SomiBot.deactivate_view_children(self)

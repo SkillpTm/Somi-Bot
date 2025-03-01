@@ -3,7 +3,6 @@ import googleapiclient.discovery
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import time
-import pylast
 import os
 import requests
 import spotipy
@@ -87,14 +86,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     def api_login(self) -> None:
-        """This function adds API logins from LastFm, Spotify, WolframAlpha and YouTube on the client"""
-
-        self.lf_network = pylast.LastFMNetwork(
-            api_key = Keychain().LAST_FM_API_KEY,
-            api_secret = Keychain().LAST_FM_API_SECRET,
-            username = Keychain().LAST_FM_USERNAME,
-            password_hash = pylast.md5(Keychain().LAST_FM_PASSWORD)
-        )
+        """This function adds API logins , Spotify, WolframAlpha and YouTube on the client"""
 
         self.spotifyOAuth = spotipy.SpotifyOAuth(
             client_id = Keychain().SPOTIPY_CLIENT_ID,

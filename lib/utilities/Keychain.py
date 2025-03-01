@@ -11,10 +11,7 @@ class Keychain():
 
     DISCORD_TOKEN: str = os.getenv("DISCORD_TOKEN")
     
-    LAST_FM_USERNAME: str = os.getenv("LAST_FM_USERNAME")
-    LAST_FM_PASSWORD: str = os.getenv("LAST_FM_PASSWORD")
     LAST_FM_API_KEY: str = os.getenv("LAST_FM_API_KEY")
-    LAST_FM_API_SECRET: str = os.getenv("LAST_FM_API_SECRET")
 
     with open('env.json') as env_json:
         env_json_data = json.loads(env_json.read())

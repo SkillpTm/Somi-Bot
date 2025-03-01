@@ -1,5 +1,5 @@
-from lib.db_modules.user_data.KeywordDB import KeywordDB
-from lib.db_modules.user_data.ReminderDB import ReminderDB
+from lib.db_modules.KeywordDB import KeywordDB
+from lib.db_modules.ReminderDB import ReminderDB
 
 from lib.db_modules.CommandUsesDB import CommandUsesDB
 from lib.db_modules.CommonDB import CommonDB

@@ -56,7 +56,7 @@ class Emoji(nextcord_C.Cog):
             await interaction.response.send_message(embed=EmbedFunctions().error("Please select a custom emoji."), ephemeral=True)
             return
 
-        await interaction.response.send_message(partial_emoji_object.url)
+        await interaction.response.send_message(f"`Link:` [{partial_emoji_object.name}]({partial_emoji_object.url})")
 
 
 

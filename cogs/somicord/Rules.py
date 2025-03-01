@@ -22,7 +22,7 @@ class Rules(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks().interaction_by_owner and Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_by_owner and Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def rules(
         self,
         interaction: nextcord.Interaction,
@@ -47,7 +47,7 @@ class Rules(nextcord_C.Cog):
     ) -> None:
         """This command let's you post an embed for the specified rule."""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/rules",
             {"rule": rule}

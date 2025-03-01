@@ -30,10 +30,10 @@ class FeedbackModal(nextcord.ui.Modal):
     ) -> None:
         """Submits the feedback to the db"""
 
-        self.client.Loggers.action_log(Get().log_message(interaction, "/feedback"), {"submission": self.feedback.value})
+        self.client.Loggers.action_log(Get.log_message(interaction, "/feedback"), {"submission": self.feedback.value})
 
         #TODO send this response into the support server
-        FeedbackDB().add(interaction.guild.id, interaction.user.id, str(interaction.user), Get().kst_timestamp(), self.feedback.value)
+        FeedbackDB().add(interaction.guild.id, interaction.user.id, str(interaction.user), Get.kst_timestamp(), self.feedback.value)
 
         await interaction.response.send_message(embed=EmbedFunctions().success("Your feedback has been submitted!"), ephemeral=True)
 
@@ -47,10 +47,10 @@ class Feedback(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "feedback", description = "give feedback to the bot, with a suggestion or submit a bug-report")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def feedback(self, interaction: nextcord.Interaction) -> None:
 
-        self.client.Loggers.action_log(Get().log_message(interaction, "/feedback"))
+        self.client.Loggers.action_log(Get.log_message(interaction, "/feedback"))
 
         modal = FeedbackModal(self.client)
         await interaction.response.send_modal(modal=modal)

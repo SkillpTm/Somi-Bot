@@ -19,7 +19,7 @@ class LastFmSet(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "set", description = "set your LastFm account")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def lastfm_set(
         self,
         interaction: nextcord.Interaction,
@@ -33,7 +33,7 @@ class LastFmSet(nextcord_C.Cog):
     ) -> None:
         """This command connects a discord user and a lastfm account in the db"""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/lf set",
             {"lastfmname": lastfmname}
@@ -62,11 +62,11 @@ class LastFmSet(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "reset", description = "reset your LastFm-Discord account connection")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def lastfm_reset(self, interaction: nextcord.Interaction) -> None:
         """This command deletes the user's connection from the db"""
 
-        self.client.Loggers.action_log(Get().log_message(interaction, "/lf reset"))
+        self.client.Loggers.action_log(Get.log_message(interaction, "/lf reset"))
 
         lastfm_username = LastFmDB().get(interaction.user.id)
 

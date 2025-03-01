@@ -40,7 +40,7 @@ class ReminderSend(nextcord_C.Cog):
         """  
 
         reminders_to_be_send = ReminderDB(self.client.user.id).get_current() # the time comparison happens in here
-        visible_users = Get().visible_users(self.client)
+        visible_users = Get.visible_users(self.client)
 
         for reminder in reminders_to_be_send:
 

@@ -30,14 +30,14 @@ class PurgeLog(nextcord_C.Cog):
         async for entry in messages[0].guild.audit_logs(limit=1, action=nextcord.AuditLogAction.message_bulk_delete):
             pass
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             messages[0],
             "purge log",
             {"amount": str(len(messages))}
         ))
 
         # we create the csv first to reduce delay between the inital embed and the csv response message
-        csv_name = Create().bulk_messages_csv(messages)
+        csv_name = Create.bulk_messages_csv(messages)
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),

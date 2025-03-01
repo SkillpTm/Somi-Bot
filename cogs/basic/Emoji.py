@@ -16,7 +16,7 @@ class Emoji(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "emote", description = "make an emoji larger", name_localizations = {country_tag:"emoji" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def emoji(
         self,
         interaction: nextcord.Interaction,
@@ -30,7 +30,7 @@ class Emoji(nextcord_C.Cog):
     ) -> None:
         """This command reposts the original url of any custom emoji"""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/color",
             {"emoji": emoji}

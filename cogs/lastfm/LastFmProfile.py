@@ -20,7 +20,7 @@ class LastFmProfile(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "profile", description = "shows stats about someone's LastFm account")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def lastfm_profile(
         self,
         interaction: nextcord.Interaction,
@@ -35,7 +35,7 @@ class LastFmProfile(nextcord_C.Cog):
         if not user:
             user = interaction.user
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/lf profile",
             {"user": str(user.id)}
@@ -74,7 +74,7 @@ class LastFmProfile(nextcord_C.Cog):
             fields = [
                 [
                     "LastFm name:",
-                    f"[{Get().markdown_safe(profile_user_data['user']['name'])}]({profile_user_data['user']['url']})",
+                    f"[{Get.markdown_safe(profile_user_data['user']['name'])}]({profile_user_data['user']['url']})",
                     True
                 ],
 

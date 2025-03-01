@@ -20,7 +20,7 @@ class LastFmRecent(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "rc", description = "shows your recently played songs on LastFm", name_localizations = {country_tag:"recent" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def lastfm_recent(
         self,
         interaction: nextcord.Interaction,
@@ -35,7 +35,7 @@ class LastFmRecent(nextcord_C.Cog):
         if not user:
             user = interaction.user
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/lf recent",
             {"user": str(user.id)}
@@ -81,8 +81,8 @@ class LastFmRecent(nextcord_C.Cog):
             track_url = track['url']
             artist_name_for_url = urllib.parse.quote_plus(track['artist']['#text'])
 
-            track_name = Get().markdown_safe(track['name'])
-            artist_name = Get().markdown_safe(track['artist']['#text'])
+            track_name = Get.markdown_safe(track['name'])
+            artist_name = Get.markdown_safe(track['artist']['#text'])
             timestamp = ""
 
             # set the timestamp, unless it is currently playing

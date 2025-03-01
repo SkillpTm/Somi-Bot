@@ -16,13 +16,13 @@ class Ping(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "ping", description = "shows the bot's ping to discord")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def ping(self, interaction: nextcord.Interaction) -> None:
         """This command shows the ping and some general stats about the bot"""
 
         start = time.time()
 
-        self.client.Loggers.action_log(Get().log_message(interaction, "/ping"))
+        self.client.Loggers.action_log(Get.log_message(interaction, "/ping"))
 
         await interaction.response.send_message(content = f"DWSP latency (ping) = `{self.client.latency * 1000:,.0f}ms`\n" + 
                                                           f"Uptime (since) = <t:{self.client.start_time}:R>")

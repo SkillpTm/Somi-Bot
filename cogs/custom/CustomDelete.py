@@ -18,7 +18,7 @@ class CustomDelete(nextcord_C.Cog):
     ####################################################################################################
 
     @custom.subcommand(name = "delete", description = "delete a custom-command")
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def custom_delete(
         self,
         interaction: nextcord.Interaction,
@@ -32,7 +32,7 @@ class CustomDelete(nextcord_C.Cog):
     ) -> None:
         """This command deletes a custom-command from the server's custom-commands"""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/custom delete",
             {"commandname": commandname}
@@ -40,7 +40,7 @@ class CustomDelete(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        commandname = Get().clean_input_command(commandname)
+        commandname = Get.clean_input_command(commandname)
 
         commandtext = CustomCommandsDB(interaction.guild.id).delete(commandname)
 
@@ -90,7 +90,7 @@ class CustomDelete(nextcord_C.Cog):
         
         all_commandnames = CustomCommandsDB(interaction.guild.id).get_list()
         all_commandnames_dict = {command: command for command in all_commandnames}
-        autocomplete_dict = Get().autocomplete_dict_from_search_string(commandname, all_commandnames_dict)
+        autocomplete_dict = Get.autocomplete_dict_from_search_string(commandname, all_commandnames_dict)
 
         await interaction.response.send_autocomplete(autocomplete_dict)
 

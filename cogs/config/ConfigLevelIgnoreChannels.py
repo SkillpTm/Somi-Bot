@@ -18,7 +18,7 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
     ####################################################################################################
 
     @config.subcommand(name = "level-ignore-channels", description = "deactivate/activate xp gain in a channel")
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def config_level_ignore_channels(
         self,
         interaction: nextcord.Interaction,
@@ -37,7 +37,7 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
         if not channel:
             channel = interaction.channel
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/config level-ignore-channel",
             {"action": action, "channel": str(channel.id)}

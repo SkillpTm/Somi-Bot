@@ -23,7 +23,7 @@ class Lyrics(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def lyrics(
         self,
         interaction: nextcord.Interaction,
@@ -53,7 +53,7 @@ class Lyrics(nextcord_C.Cog):
                     song = activity.title
                     break
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/lyrics",
             {"artist": artist, "song": song}

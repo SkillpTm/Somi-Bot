@@ -15,7 +15,7 @@ class Banner(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "banner", description = "posts someone's banner")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def banner(
         self,
         interaction: nextcord.Interaction,
@@ -30,7 +30,7 @@ class Banner(nextcord_C.Cog):
         if not user:
             user = interaction.user
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/banner",
             {"user": str(user.id)}

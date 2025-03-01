@@ -30,7 +30,7 @@ class NameLog(nextcord_C.Cog):
         if not audit_log_id:
             return
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             member_before,
             "leave log",
             {

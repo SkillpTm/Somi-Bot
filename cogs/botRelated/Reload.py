@@ -24,11 +24,11 @@ class Reload(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks().interaction_by_owner and Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_by_owner and Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def reload(self, interaction: nextcord.Interaction) -> None:
         """This command reloads the bot, it can only be executed from the owner"""
 
-        self.client.Loggers.action_log(Get().log_message(interaction, "/reload"))
+        self.client.Loggers.action_log(Get.log_message(interaction, "/reload"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 

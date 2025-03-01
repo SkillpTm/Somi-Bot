@@ -18,7 +18,7 @@ class KeywordDelete(nextcord_C.Cog):
     ####################################################################################################
 
     @keyword.subcommand(name = "delete", description = "delete a keyword from your keyword list")
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def keyword_delete(
         self,
         interaction: nextcord.Interaction,
@@ -32,7 +32,7 @@ class KeywordDelete(nextcord_C.Cog):
     ) -> None:
         """This command let's you delete a keyword by it's name or all keywords with 'ALL'"""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/keyword delete",
             {"keyword": keyword}
@@ -69,7 +69,7 @@ class KeywordDelete(nextcord_C.Cog):
         """provides autocomplete suggestions to discord"""
 
         all_user_keywords_dict = {user_keyword: user_keyword for user_keyword in KeywordDB(interaction.guild.id, interaction.user.id).get_list()}
-        autocomplete_dict = Get().autocomplete_dict_from_search_string(keyword, all_user_keywords_dict)
+        autocomplete_dict = Get.autocomplete_dict_from_search_string(keyword, all_user_keywords_dict)
 
         await interaction.response.send_autocomplete(autocomplete_dict)
 
@@ -88,7 +88,7 @@ class KeywordDelete(nextcord_C.Cog):
 
         KeywordDB(interaction.guild.id, interaction.user.id).delete_all()
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/keyword delete",
             {"DELETE_ALL": "deleted"}

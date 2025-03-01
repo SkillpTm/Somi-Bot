@@ -20,7 +20,7 @@ class LastFmNowPlaying(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "nowplaying", description = "shows what someone is listening to right now", name_localizations = {country_tag:"np" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def lastfm_now_playing(
         self,
         interaction: nextcord.Interaction,
@@ -35,7 +35,7 @@ class LastFmNowPlaying(nextcord_C.Cog):
         if not user:
             user = interaction.user
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/lf np",
             {"user": str(user.id)}
@@ -83,9 +83,9 @@ class LastFmNowPlaying(nextcord_C.Cog):
             artist_name_for_url = urllib.parse.quote_plus(track['artist']['#text'])
             album_name_for_url = urllib.parse.quote_plus(track['album']['#text'])
 
-            track_name = Get().markdown_safe(track['name'])
-            album_name = Get().markdown_safe(track['album']['#text'])
-            artist_name = Get().markdown_safe(track['artist']['#text'])
+            track_name = Get.markdown_safe(track['name'])
+            album_name = Get.markdown_safe(track['album']['#text'])
+            artist_name = Get.markdown_safe(track['artist']['#text'])
 
             # check if this song is being listened to right now, or already was finished
             if "date" in track:

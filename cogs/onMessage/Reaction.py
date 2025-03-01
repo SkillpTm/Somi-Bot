@@ -21,7 +21,7 @@ class Reactions(nextcord_C.Cog):
         if self.client.user.mentioned_in(message):
             await message.add_reaction(self.client.REACTION_EMOTE)
 
-            self.client.Loggers.action_log(Get().log_message(message, "reaction ping"))
+            self.client.Loggers.action_log(Get.log_message(message, "reaction ping"))
 
             CommandUsesDB("log_activations").update("reacted @ping")
 
@@ -30,7 +30,7 @@ class Reactions(nextcord_C.Cog):
         if "somionly" in str(message.content.lower()):
             await message.add_reaction(self.client.SOMI_ONLY_EMOTE)
 
-            self.client.Loggers.action_log(Get().log_message(message, "reaction somionly"))
+            self.client.Loggers.action_log(Get.log_message(message, "reaction somionly"))
 
             CommandUsesDB("log_activations").update("reacted somionly")
 
@@ -39,7 +39,7 @@ class Reactions(nextcord_C.Cog):
         if any(f_string in f" {message.content.lower()} " for f_string in [" f ", "\nf ", " f\n", self.SOMI_F_EMOTE.lower()]):
             await message.add_reaction(self.client.SOMI_F_EMOTE)
 
-            self.client.Loggers.action_log(Get().log_message(message, "reaction f"))
+            self.client.Loggers.action_log(Get.log_message(message, "reaction f"))
 
             CommandUsesDB("log_activations").update("reacted SomiF")
 
@@ -47,7 +47,7 @@ class Reactions(nextcord_C.Cog):
         if "somibestgrill" in str(message.content.lower()):
             await message.add_reaction(self.client.SOMI_BEST_GRILL_EMOTE)
 
-            self.client.Loggers.action_log(Get().log_message(message, "reaction bestgrill"))
+            self.client.Loggers.action_log(Get.log_message(message, "reaction bestgrill"))
 
             CommandUsesDB("log_activations").update("reacted SomiBestGrill")
 

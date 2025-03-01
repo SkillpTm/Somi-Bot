@@ -19,7 +19,7 @@ class Color(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "color", description = "shows you what a color looks like")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def color(
         self,
         interaction: nextcord.Interaction,
@@ -36,7 +36,7 @@ class Color(nextcord_C.Cog):
         if not hexcode.startswith("#"):
             hexcode = f"#{hexcode}"
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/color",
             {"hexcode": hexcode}

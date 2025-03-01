@@ -16,7 +16,7 @@ class CustomCommand(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "cc", description = "post a custom-command", name_localizations = {country_tag:"custom-command" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def customcommand(
         self,
         interaction: nextcord.Interaction,
@@ -30,13 +30,13 @@ class CustomCommand(nextcord_C.Cog):
     ) -> None:
         """This command will post a custom-command, if given it's name"""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/custom-command",
             {"commandname": commandname}
         ))
 
-        commandname = Get().clean_input_command(commandname)
+        commandname = Get.clean_input_command(commandname)
 
         commandtext = CustomCommandsDB(interaction.guild.id).get_text(commandname)
 
@@ -58,7 +58,7 @@ class CustomCommand(nextcord_C.Cog):
 
         all_commandnames = CustomCommandsDB(interaction.guild.id).get_list()
         all_commandnames_dict = {command: command for command in all_commandnames}
-        autocomplete_dict = Get().autocomplete_dict_from_search_string(commandname, all_commandnames_dict)
+        autocomplete_dict = Get.autocomplete_dict_from_search_string(commandname, all_commandnames_dict)
 
         await interaction.response.send_autocomplete(autocomplete_dict)
 

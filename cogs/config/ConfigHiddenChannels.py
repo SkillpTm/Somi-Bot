@@ -18,7 +18,7 @@ class ConfigHiddenChannels(nextcord_C.Cog):
     ####################################################################################################
 
     @config.subcommand(name = "hidden-channels", description = "add/remove a hidden-channel to this server")
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def config_hidden_channels(
         self,
         interaction: nextcord.Interaction,
@@ -38,7 +38,7 @@ class ConfigHiddenChannels(nextcord_C.Cog):
         if not channel:
             channel = interaction.channel
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/config hidden-channels",
             {"action": action, "channel": str(channel.id)}

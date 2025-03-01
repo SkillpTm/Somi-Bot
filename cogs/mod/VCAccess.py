@@ -22,7 +22,7 @@ class VCAccess(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def vcaccess(
         self,
         interaction: nextcord.Interaction,
@@ -39,7 +39,7 @@ class VCAccess(nextcord_C.Cog):
     ) -> None:
         """This command can restirct or grant access to all voice-channels in a guild."""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/slowmode",
             {"action": action, "member": (member.id)}

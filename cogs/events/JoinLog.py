@@ -22,7 +22,7 @@ class JoinLog(nextcord_C.Cog):
         - create a join-log message, if the guild has the audit log setup
         """
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             member,
             "join log",
             {"member": str(member.id)}

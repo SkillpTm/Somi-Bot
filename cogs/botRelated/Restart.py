@@ -23,11 +23,11 @@ class Restart(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks().interaction_by_owner and Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_by_owner and Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def restart(self, interaction: nextcord.Interaction) -> None:
         """This command restarts the bot, it can only be executed from a moderator on Somicord"""
 
-        self.client.Loggers.action_log(Get().log_message(interaction, "/restart"))
+        self.client.Loggers.action_log(Get.log_message(interaction, "/restart"))
 
         await interaction.response.send_message(embed=EmbedFunctions().success("Restarting bot..."), ephemeral=True)
 

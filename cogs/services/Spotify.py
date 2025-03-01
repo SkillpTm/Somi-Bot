@@ -22,7 +22,7 @@ class Spotify(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def spotify(
         self,
         interaction: nextcord.Interaction,
@@ -45,7 +45,7 @@ class Spotify(nextcord_C.Cog):
         if not member:
             member = interaction.guild.get_member(interaction.user.id)
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/spotify",
             {"member": str(member.id), "details": details}

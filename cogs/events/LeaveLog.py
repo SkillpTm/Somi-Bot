@@ -22,7 +22,7 @@ class LeaveLog(nextcord_C.Cog):
         And if a server has an audit-log-channel set it posts a log message
         """
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             member,
             "leave log",
             {"member": str(member.id)}

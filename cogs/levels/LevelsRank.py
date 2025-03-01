@@ -18,7 +18,7 @@ class LevelsRank(nextcord_C.Cog):
     ####################################################################################################
 
     @levels.subcommand(name = "rank", description = "shows your rank and level on this server")
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def levels_rank(
         self,
         interaction: nextcord.Interaction,
@@ -33,7 +33,7 @@ class LevelsRank(nextcord_C.Cog):
         if not member:
             member = interaction.guild.get_member(interaction.user.id)
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/levels rank",
             {"member": str(member.id)}

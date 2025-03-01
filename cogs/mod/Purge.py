@@ -22,7 +22,7 @@ class Purge(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def purge(
         self,
         interaction: nextcord.Interaction,
@@ -36,7 +36,7 @@ class Purge(nextcord_C.Cog):
     ) -> None:
         """This command removes the given amount of last messages from a channel."""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/purge",
             {"amount": str(amount)}

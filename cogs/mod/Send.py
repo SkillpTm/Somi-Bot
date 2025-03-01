@@ -23,7 +23,7 @@ class Send(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def send(
         self,
         interaction: nextcord.Interaction,
@@ -45,7 +45,7 @@ class Send(nextcord_C.Cog):
         if not channel:
             channel = interaction.channel
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/send",
             {"message": message, "channel": (channel.id)}
@@ -88,7 +88,7 @@ class Send(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def edit(
         self,
         interaction: nextcord.Interaction,
@@ -132,7 +132,7 @@ class Send(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().error(f"`{message_id}` isn't an id of a message sent by the bot in this server."), ephemeral=True)
             return
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/edit",
             {"message_id": str(message_id), "old message": message_object.content, "new message": message}

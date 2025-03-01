@@ -21,7 +21,7 @@ class Ban(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def ban(
         self,
         interaction: nextcord.Interaction,
@@ -48,7 +48,7 @@ class Ban(nextcord_C.Cog):
         if not delete_message_hours:
             delete_message_hours = 1
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/ban",
             {"member": str(member.id), "delete_message_hours": str(delete_message_hours), "reason": reason}
@@ -85,7 +85,7 @@ class Ban(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def unban(
         self,
         interaction: nextcord.Interaction,
@@ -99,7 +99,7 @@ class Ban(nextcord_C.Cog):
     ) -> None:
         """This command unbans a user, if that user exists and was banned."""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/unban",
             {"user_id": str(user_id)}
@@ -140,7 +140,7 @@ class Ban(nextcord_C.Cog):
 
         all_bans_dict = {ban.user.id: ban.user.id for ban in bans}
 
-        autocomplete_dict = Get().autocomplete_dict_from_search_string(user_id, all_bans_dict)
+        autocomplete_dict = Get.autocomplete_dict_from_search_string(user_id, all_bans_dict)
 
         await interaction.response.send_autocomplete(autocomplete_dict)
 

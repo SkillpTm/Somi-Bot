@@ -23,7 +23,7 @@ class Mute(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def mute(
         self,
         interaction: nextcord.Interaction,
@@ -47,7 +47,7 @@ class Mute(nextcord_C.Cog):
     ) -> None:
         """This command mutes a member, with time and reason, if their current top-role is below your current top-role."""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/mute",
             {"member": str(member.id), "time": time, "reason": reason}
@@ -63,7 +63,7 @@ class Mute(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().error("You can only mute a member, if your current top-role is above their current top-role!"), ephemeral=True)
             return
 
-        total_seconds = Get().seconds_from_time(time)
+        total_seconds = Get.seconds_from_time(time)
 
         if total_seconds == 0 or total_seconds > 2419200: #28d in seconds
             await interaction.followup.send(embed=EmbedFunctions().error(f"`{time}` is not a valid time period. Make sure to use the formating in the input description and that your time period is smaller than 28 days."), ephemeral=True)
@@ -82,7 +82,7 @@ class Mute(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def unmute(
         self,
         interaction: nextcord.Interaction,
@@ -94,7 +94,7 @@ class Mute(nextcord_C.Cog):
     ) -> None:
         """This command unmutes a member, if they were muted."""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/unmute",
             {"member": str(member.id)}

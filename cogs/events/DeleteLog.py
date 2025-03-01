@@ -31,7 +31,7 @@ class DeleteLog(nextcord_C.Cog):
         if message.channel.id in await ConfigDB(message.guild.id, "HiddenChannels").get_list(message.guild):
             return
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             message,
             "delete log",
             {"message": message.content}
@@ -45,7 +45,7 @@ class DeleteLog(nextcord_C.Cog):
             footer = "DEFAULT_KST_FOOTER"
         )
 
-        embed, file_urls = EmbedFunctions().get_attachments(message.attachments, embed)
+        embed, file_urls = EmbedFunctions.get_attachments(message.attachments, embed)
         sent_message = await message.guild.get_channel(audit_log_id).send(embed=embed)
 
         if file_urls:

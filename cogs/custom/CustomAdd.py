@@ -19,7 +19,7 @@ class CustomAdd(nextcord_C.Cog):
     ####################################################################################################
 
     @custom.subcommand(name = "add", description = "add a custom-command to this server")
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def custom_add(
         self,
         interaction: nextcord.Interaction,
@@ -39,7 +39,7 @@ class CustomAdd(nextcord_C.Cog):
     ) -> None:
         """This command adds a custom-command to the server's custom-commands"""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/custom add",
             {"commandname": commandname, "commandtext": commandtext}
@@ -47,7 +47,7 @@ class CustomAdd(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        commandname = Get().clean_input_command(commandname)
+        commandname = Get.clean_input_command(commandname)
 
         # make sure commandname is only letters and numbers
         if not re.match(r"^[\da-z]+$", commandname):

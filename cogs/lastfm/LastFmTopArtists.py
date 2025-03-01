@@ -19,7 +19,7 @@ class LastFmTopArtists(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "tar", description = "shows your top artists on LastFm", name_localizations = {country_tag:"topartists" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def lastfm_top_artists(
         self,
         interaction: nextcord.Interaction,
@@ -42,7 +42,7 @@ class LastFmTopArtists(nextcord_C.Cog):
         if not timeframe:
             timeframe = "overall"
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/lf topartists",
             {"user": str(user.id), "timeframe": timeframe}
@@ -84,7 +84,7 @@ class LastFmTopArtists(nextcord_C.Cog):
         for artist in top_artists_data["topartists"]["artist"]:
             artist_url = artist['url']
             
-            artist_name = Get().markdown_safe(artist['name'])
+            artist_name = Get.markdown_safe(artist['name'])
             output += f"{artist['@attr']['rank']}. **[{artist_name}]({artist_url})** - *({artist['playcount']} plays)*\n"
 
         embed = EmbedFunctions().builder(

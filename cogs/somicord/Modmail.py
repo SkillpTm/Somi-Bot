@@ -45,7 +45,7 @@ class Modmail(nextcord_C.Cog):
             await response.reply(embed=EmbedFunctions().error("Your modmail has **not** been submitted!"), mention_author=False)
             return
 
-        self.client.Loggers.action_log(Get().log_message(message, "modmail", {"message": message.content}))
+        self.client.Loggers.action_log(Get.log_message(message, "modmail", {"message": message.content}))
 
         MOD_CHANNEL: nextcord.TextChannel = self.client.get_channel(self.client.SOMICORD_MOD_CHANNEL_ID)
         user_thread: nextcord.Thread = None
@@ -95,7 +95,7 @@ class Modmail(nextcord_C.Cog):
             ]
         )
 
-        embed, file_urls = EmbedFunctions().get_attachments(message.attachments, embed)
+        embed, file_urls = EmbedFunctions.get_attachments(message.attachments, embed)
 
         sent_modmail = await user_thread.send(embed=embed)
         

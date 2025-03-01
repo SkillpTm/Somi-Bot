@@ -52,7 +52,7 @@ class MuteLog(nextcord_C.Cog):
     ) -> None:
         """creates the embed, for if the user was muted"""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             member_after,
             "mute log",
             {
@@ -93,7 +93,7 @@ class MuteLog(nextcord_C.Cog):
     ) -> None:
         """creates the embed, for if the user was unmuted"""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             member_after,
             "unmute log",
             {"unmuted by": str(entry.user.id)}

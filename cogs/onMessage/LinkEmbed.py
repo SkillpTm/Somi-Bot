@@ -27,7 +27,7 @@ class LinkEmbed(nextcord_C.Cog):
 
         # gets the link from a message (works for both discord.com and canary.discord.com)
         link = re.search(fr'https?://(canary\.)?discord\.com/channels/{message.guild.id}\S+', message.content).group()
-        original_message = await Get().message_object_from_link(link, self.client)
+        original_message = await Get.message_object_from_link(link, self.client)
 
         if not original_message:
             return
@@ -39,7 +39,7 @@ class LinkEmbed(nextcord_C.Cog):
         if original_message.content == "" and len(original_message.attachments) == 0:
             return
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             message,
             "link embed",
             {"link": link}
@@ -67,7 +67,7 @@ class LinkEmbed(nextcord_C.Cog):
             ]
         )
 
-        embed, _ = EmbedFunctions().get_attachments(original_message.attachments, embed, limit = 1)
+        embed, _ = EmbedFunctions.get_attachments(original_message.attachments, embed, limit = 1)
         await message.reply(embed=embed, mention_author=False)
 
         CommandUsesDB("log_activations").update("auto embed")

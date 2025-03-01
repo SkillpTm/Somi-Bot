@@ -26,7 +26,7 @@ class KickLog(nextcord_C.Cog):
             if member.id != entry.target.id:
                 return
             
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             member,
             "kick log",
             {"kicked by": str(entry.user.id), "reason": entry.reason}

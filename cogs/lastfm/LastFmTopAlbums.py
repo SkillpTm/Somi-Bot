@@ -19,7 +19,7 @@ class LastFmTopAlbums(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "tal", description = "shows your top albums on LastFm", name_localizations = {country_tag:"topalbums" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def lastfm_top_albums(
         self,
         interaction: nextcord.Interaction,
@@ -42,7 +42,7 @@ class LastFmTopAlbums(nextcord_C.Cog):
         if not timeframe:
             timeframe = "overall"
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/lf topalbums",
             {"user": str(user.id), "timeframe": timeframe}
@@ -85,8 +85,8 @@ class LastFmTopAlbums(nextcord_C.Cog):
             album_url = album['url']
             artist_url = album['artist']['url']
 
-            album_name = Get().markdown_safe(album['name'])
-            artist_name = Get().markdown_safe(album['artist']['name'])
+            album_name = Get.markdown_safe(album['name'])
+            artist_name = Get.markdown_safe(album['artist']['name'])
             output += f"{album['@attr']['rank']}. **[{album_name}]({album_url})** by [{artist_name}]({artist_url}) - *({album['playcount']} plays)*\n"
 
         embed = EmbedFunctions().builder(

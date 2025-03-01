@@ -18,11 +18,11 @@ class ReminderList(nextcord_C.Cog):
     ####################################################################################################
 
     @reminder.subcommand(name = "list", description = "a list of all your reminders")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def reminder_list(self, interaction: nextcord.Interaction) -> None:
         """This command will list all reminders of a user"""
 
-        self.client.Loggers.action_log(Get().log_message(interaction, "/reminder list"))
+        self.client.Loggers.action_log(Get.log_message(interaction, "/reminder list"))
 
         user_reminders = ReminderDB(interaction.user.id).get_list()
 

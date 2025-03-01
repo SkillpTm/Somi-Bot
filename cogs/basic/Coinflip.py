@@ -17,11 +17,11 @@ class Coinflip(nextcord_C.Cog):
     ####################################################################################################
     
     @nextcord.slash_command(name = "coinflip", description = "does a coinflip")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def coinflip(self, interaction: nextcord.Interaction) -> None:
         """This command does a coinflip with a small animation"""
 
-        self.client.Loggers.action_log(Get().log_message(interaction, "/coinflip"))
+        self.client.Loggers.action_log(Get.log_message(interaction, "/coinflip"))
 
         await interaction.response.defer(with_message=True)
 

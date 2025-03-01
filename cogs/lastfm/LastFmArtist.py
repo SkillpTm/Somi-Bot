@@ -21,7 +21,7 @@ class LastFmArtist(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "artist", description = "shows you your LastFm stats for any artist")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def lastfm_artist(
         self,
         interaction: nextcord.Interaction,
@@ -68,7 +68,7 @@ class LastFmArtist(nextcord_C.Cog):
             # get the artist they're listening to/last listened to from the recent tracks
             artist =  np_response.json()["recenttracks"]["track"][0]['artist']['#text']
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/lf artist",
             {"artist": artist, "user": str(user.id), "timeframe": timeframe}

@@ -18,11 +18,11 @@ class ConfigInfo(nextcord_C.Cog):
     ####################################################################################################
 
     @config.subcommand(name = "info", description = "get information on how this server is configured")
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def config_info(self, interaction: nextcord.Interaction) -> None:
         """This command outputs a server's configuration info and some explanations."""
 
-        self.client.Loggers.action_log(Get().log_message(interaction, "/config info"))
+        self.client.Loggers.action_log(Get.log_message(interaction, "/config info"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
@@ -142,7 +142,7 @@ class ConfigInfo(nextcord_C.Cog):
                 LevelRoles().apply(interaction.guild)
 
         if level_roles:
-            level_roles_output = LevelRoles().get_level_range_with_role(level_roles)
+            level_roles_output = LevelRoles.get_level_range_with_role(level_roles)
 
         else:
             level_roles_output = "`This server doesn't have any level-roles.`"

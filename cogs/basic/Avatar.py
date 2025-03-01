@@ -15,7 +15,7 @@ class Avatar(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "avatar", description = "posts someone's avatar")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def avatar(
         self,
         interaction: nextcord.Interaction,
@@ -30,7 +30,7 @@ class Avatar(nextcord_C.Cog):
         if not user:
             user = interaction.user
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/avatar",
             {"user": str(user.id)}

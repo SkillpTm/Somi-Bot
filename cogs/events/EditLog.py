@@ -39,7 +39,7 @@ class EditLog(nextcord_C.Cog):
         if message_before.content == message_after.content:
             return
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             message_before,
             "edit log",
             {"message_before": message_before.content, "message_after": message_after.content}
@@ -96,7 +96,7 @@ class EditLog(nextcord_C.Cog):
             ]
         )
 
-        embed, file_urls = EmbedFunctions().get_attachments(message_before.attachments, embed)
+        embed, file_urls = EmbedFunctions.get_attachments(message_before.attachments, embed)
         return embed, file_urls
     
     ####################################################################################################
@@ -121,7 +121,7 @@ class EditLog(nextcord_C.Cog):
             footer = "DEFAULT_KST_FOOTER"
         )
 
-        embed_after, file_urls = EmbedFunctions().get_attachments(message_before.attachments, embed_after)
+        embed_after, file_urls = EmbedFunctions.get_attachments(message_before.attachments, embed_after)
 
         return embed_before, embed_after, file_urls
 

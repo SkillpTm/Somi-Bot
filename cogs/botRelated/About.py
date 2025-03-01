@@ -16,11 +16,11 @@ class About(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "about", description = "tells you about Somi bot")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def about(self, interaction: nextcord.Interaction) -> None:
         """This command outputs various information about the bot to the user"""
 
-        self.client.Loggers.action_log(Get().log_message(interaction, "/about"))
+        self.client.Loggers.action_log(Get.log_message(interaction, "/about"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
@@ -61,7 +61,7 @@ class About(nextcord_C.Cog):
 
                 [
                     "Visible Users:",
-                    f"`{len(Get().visible_users(self.client))}`",
+                    f"`{len(Get.visible_users(self.client))}`",
                     True
                 ],
 

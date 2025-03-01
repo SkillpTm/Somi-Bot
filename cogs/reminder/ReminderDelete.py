@@ -16,7 +16,7 @@ class ReminderDelete(nextcord_C.Cog):
     ####################################################################################################
 
     @reminder.subcommand(name = "delete", description = "delete a reminder from your reminder list")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def reminder_delete(
         self,
         interaction: nextcord.Interaction,
@@ -30,7 +30,7 @@ class ReminderDelete(nextcord_C.Cog):
     ) -> None:
         """This command let's you delete a reminder with it's ID or all reminders with 'ALL'"""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/reminder delete",
             {"reminder_id": reminder_id}
@@ -80,7 +80,7 @@ class ReminderDelete(nextcord_C.Cog):
 
             valid_ids.update({f"{reminder[2]}: {reminder_text}" : reminder[2]})
 
-        autocomplete_dict = Get().autocomplete_dict_from_search_string(reminder_id, valid_ids)
+        autocomplete_dict = Get.autocomplete_dict_from_search_string(reminder_id, valid_ids)
 
         await interaction.response.send_autocomplete(autocomplete_dict)
 
@@ -99,7 +99,7 @@ class ReminderDelete(nextcord_C.Cog):
             
         ReminderDB(interaction.user.id).delete_all()
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/reminder delete",
             {"DELETE_ALL": "deleted"}

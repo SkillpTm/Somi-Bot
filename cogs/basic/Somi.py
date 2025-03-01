@@ -15,11 +15,11 @@ class Somi(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "somi", description = "speaks facts")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def somi(self,interaction: nextcord.Interaction) -> None:
         """This command tells you the truth"""
 
-        self.client.Loggers.action_log(Get().log_message(interaction, "/somi"))
+        self.client.Loggers.action_log(Get.log_message(interaction, "/somi"))
 
         await interaction.response.send_message(f"Somi best grill\n{self.client.SOMI_BEST_GRILL_IMAGE}")
 

@@ -18,7 +18,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
     ####################################################################################################
 
     @config.subcommand(name = "level-roles", description = "set a role to be given, when a certain level is reached")
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def config_level_roles(
         self,
         interaction: nextcord.Interaction,
@@ -41,7 +41,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
     ) -> None:
         """This command adds/deletes a level-role to/from the server's level-roles"""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/config level-ignore-channel",
             {"action": action, "role": str(role.id), "level": str(level)}

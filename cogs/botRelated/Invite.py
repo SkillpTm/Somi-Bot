@@ -15,11 +15,11 @@ class Invite(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "invite", description = "posts the bot's invite link")
-    @nextcord_AC.check(Checks().interaction_in_guild())
+    @nextcord_AC.check(Checks.interaction_in_guild())
     async def invite(self, interaction: nextcord.Interaction) -> None:
         """This command posts the invite link for the bot"""
 
-        self.client.Loggers.action_log(Get().log_message(interaction, "/about"))
+        self.client.Loggers.action_log(Get.log_message(interaction, "/about"))
 
         await interaction.response.send_message(f"<{self.client.SOMI_INVITE}>")
 

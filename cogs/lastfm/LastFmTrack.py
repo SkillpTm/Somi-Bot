@@ -21,7 +21,7 @@ class LastFmTrack(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "track", description = "shows you your LastFm stats for any track")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def lastfm_track(
         self,
         interaction: nextcord.Interaction,
@@ -80,7 +80,7 @@ class LastFmTrack(nextcord_C.Cog):
             artist =  np_user_data["recenttracks"]["track"][0]['artist']['#text']
             track = np_user_data["recenttracks"]["track"][0]['name']
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/lf track",
             {"artist": artist, "track": track, "user": str(user.id), "timeframe": timeframe}

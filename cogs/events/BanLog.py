@@ -27,7 +27,7 @@ class BanLog(nextcord_C.Cog):
             if user.id != entry.target.id:
                 return
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             user,
             "ban log",
             {"guild": str(guild.id), "banned by": str(entry.user.id), "reason": entry.reason}
@@ -71,7 +71,7 @@ class BanLog(nextcord_C.Cog):
             if user.id != entry.target.id:
                 return
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             user,
             "unban log",
             {"guild": str(guild.id), "unbanned by": str(entry.user.id)}

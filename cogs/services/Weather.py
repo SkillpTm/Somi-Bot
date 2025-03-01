@@ -19,7 +19,7 @@ class Weather(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "weather", description = "find out what the weather is in any place")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def weather(
         self,
         interaction: nextcord.Interaction,
@@ -47,7 +47,7 @@ class Weather(nextcord_C.Cog):
 
         location = WeatherDB().get(interaction.user.id)
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/weather",
             {"location": location}

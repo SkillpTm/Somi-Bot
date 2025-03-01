@@ -18,11 +18,11 @@ class KeywordList(nextcord_C.Cog):
     ####################################################################################################
 
     @keyword.subcommand(name = "list", description = "a list of all your keywords")
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def keyword_list(self, interaction: nextcord.Interaction) -> None:
         """This command outputs a list of all keywords a user has"""
 
-        self.client.Loggers.action_log(Get().log_message(interaction, "/keyword list"))
+        self.client.Loggers.action_log(Get.log_message(interaction, "/keyword list"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 

@@ -16,7 +16,7 @@ class Userinfo(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "ui", description = "gives information about a user", name_localizations = {country_tag:"userinfo" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def userinfo(
         self,
         interaction: nextcord.Interaction,
@@ -31,7 +31,7 @@ class Userinfo(nextcord_C.Cog):
         if not user:
             user = interaction.user
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/userinfo",
             {"user": str(user.id)}

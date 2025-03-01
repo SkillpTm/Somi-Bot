@@ -301,7 +301,7 @@ class SomiBot(nextcord_C.Bot):
             exception = exception,
             type = interaction.type._name_,
             file = interaction.application_command.parent_cog,
-            meta_data = Get().log_message(interaction, "error"),
+            meta_data = Get.log_message(interaction, "error"),
             data = interaction.data,
             app_permissions = interaction.app_permissions.value,
             permissions = interaction.permissions.value,

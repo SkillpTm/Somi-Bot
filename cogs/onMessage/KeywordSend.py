@@ -23,7 +23,7 @@ class KeywordSend(nextcord_C.Cog):
         """
 
         # check that message is in quild
-        if not Checks().message_in_guild(self.client, message) or not Checks().message_not_by_bot(message):
+        if not Checks.message_in_guild(self.client, message) or not Checks.message_not_by_bot(message):
             return
 
         # remove messages from hidden channels
@@ -53,7 +53,7 @@ class KeywordSend(nextcord_C.Cog):
             if not user_keywords_in_content:
                 continue
 
-            self.client.Loggers.action_log(Get().log_message(
+            self.client.Loggers.action_log(Get.log_message(
                 message,
                 "/keyword send",
                 {"keywords": ", ".join(user_keywords_in_content)}
@@ -78,7 +78,7 @@ class KeywordSend(nextcord_C.Cog):
                 footer = "DEFAULT_KST_FOOTER"
             )
 
-            embed, _ = EmbedFunctions().get_attachments(message.attachments, embed, limit = 1)
+            embed, _ = EmbedFunctions.get_attachments(message.attachments, embed, limit = 1)
 
             try:
                 await self.client.fetch_user(user_id).send(embed=embed)

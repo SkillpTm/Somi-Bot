@@ -35,7 +35,7 @@ class Help(nextcord_C.Cog):
         if not commandname.startswith("/"):
             commandname = f"/{commandname}"
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/help",
             {"commandname": commandname}
@@ -101,7 +101,7 @@ class Help(nextcord_C.Cog):
         for command in all_commands:
             all_commands_dict.update({command: command[1:]})
 
-        autocomplete_dict = Get().autocomplete_dict_from_search_string(commandname, all_commands_dict)
+        autocomplete_dict = Get.autocomplete_dict_from_search_string(commandname, all_commands_dict)
 
         await interaction.response.send_autocomplete(autocomplete_dict)
 

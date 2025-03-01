@@ -20,7 +20,7 @@ class ReminderAdd(nextcord_C.Cog):
     ####################################################################################################
     
     @reminder.subcommand(name = "add", description = "add a reminder to your reminder list")
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def reminder_add(
         self,
         interaction: nextcord.Interaction,
@@ -40,13 +40,13 @@ class ReminderAdd(nextcord_C.Cog):
     ) -> None:
         """This command let's you add a reminder for anytime within the next 10 years"""
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/reminder add",
             {"time": time, "reminder": reminder}
         ))
 
-        total_seconds = Get().seconds_from_time(time)
+        total_seconds = Get.seconds_from_time(time)
 
         if total_seconds == 0:
             await interaction.response.send_message(embed=EmbedFunctions().error(f"`{time}` is not a valid time period. Make sure to use the formating in the input description."), ephemeral=True)

@@ -16,7 +16,7 @@ class Choose(nextcord_C.Cog):
     ####################################################################################################
     
     @nextcord.slash_command(name = "select", description = "let the bot choose one of the options for you!", name_localizations = {country_tag:"choose" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks().interaction_not_by_bot())
+    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def choose(
         self,
         interaction: nextcord.Interaction,
@@ -42,7 +42,7 @@ class Choose(nextcord_C.Cog):
                 options[name] = value
 
 
-        self.client.Loggers.action_log(Get().log_message(
+        self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/choose",
             options

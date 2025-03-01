@@ -16,11 +16,11 @@ class CustomList(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "cl", description = "a list of all custom-commands on this server", name_localizations = {country_tag:"custom-list" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks().interaction_not_by_bot() and Checks().interaction_in_guild)
+    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild)
     async def custom_list(self, interaction: nextcord.Interaction) -> None:
         """This command provides a list of all custom-commands of a guild"""
 
-        self.client.Loggers.action_log(Get().log_message(interaction, "/custom list"))
+        self.client.Loggers.action_log(Get.log_message(interaction, "/custom list"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 

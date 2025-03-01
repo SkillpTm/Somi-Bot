@@ -13,12 +13,14 @@ class Webscrape():
 
     ####################################################################################################
 
-    def library_subpage(self,
-                        soup: BeautifulSoup,
-                        artist_for_url: str,
-                        type_flag: str) -> tuple[str, str, str, list[str], str, str]: # type_flag can be "artist", "album" or "track"
+    def library_subpage(
+        self,
+        soup: BeautifulSoup,
+        artist_for_url: str,
+        type_flag: str # type_flag can be "artist", "album" or "track"
+    ) -> tuple[str, str, str, list[str], str, str]:
         """Manages depending on the type_flag what data to webscrape and returns the data
-           type in all contextes here means either artist, album or track, depending on the flag"""
+           type in all contextes here means either 'artist', 'album' or 'track', dpending on the flag set"""
 
         type_name = ""
         artist_name = ""
@@ -27,27 +29,27 @@ class Webscrape():
         album_output = ""
         track_output = ""
 
-        if type_flag: # artists/album/track
-            type_name = self.type_name(soup, type_flag)
+        if type_flag: # should be in artists/album/track
+            type_name = self._type_name(soup, type_flag)
 
-        if any(i == type_flag for i in ["album", "track"]): # album/track
-            artist_name = self.artist_name(soup)
+        if any(i == type_flag for i in ["album", "track"]): # should be in album/track
+            artist_name = self._artist_name(soup)
 
-        if type_flag: # artists/album/track
-            cover_image_url = self.type_image(soup, type_flag)
+        if type_flag: # should be in artists/album/track
+            cover_image_url = self._type_image(soup, type_flag)
 
-        if type_flag: # artists/album/track
-            metadata_list = self.type_metadata(soup)
+        if type_flag: # should be in artists/album/track
+            metadata_list = self._type_metadata(soup)
 
-        if any(i == type_flag for i in ["artist", "album"]): # artist/album
-            track_output, album_output = self.output_lists(soup, artist_for_url, type_flag)
+        if any(i == type_flag for i in ["artist", "album"]): # should be in artist/album
+            track_output, album_output = self._output_lists(soup, artist_for_url, type_flag)
 
         return type_name, artist_name, cover_image_url, metadata_list, track_output, album_output
 
     ####################################################################################################
 
     @staticmethod
-    def type_name(soup: BeautifulSoup, type_flag: str) -> str:
+    def _type_name(soup: BeautifulSoup, type_flag: str) -> str:
         """Webscrapes the artist/album/track name"""
 
         if not type_flag == "track":
@@ -59,22 +61,22 @@ class Webscrape():
             type_name: str = type_name[1].replace("</h2>", "")
             type_name = re.sub('\n', '', type_name.strip())
 
-        return Get().markdown_safe(type_name)
+        return Get.markdown_safe(type_name)
 
     ####################################################################################################
 
     @staticmethod
-    def artist_name(soup: BeautifulSoup) -> str:
+    def _artist_name(soup: BeautifulSoup) -> str:
         """Webscrapes the artist/album/track name"""
 
         artist_name = str(soup.find("a", class_="text-colour-link").text)
 
-        return Get().markdown_safe(artist_name)
+        return Get.markdown_safe(artist_name)
 
     ####################################################################################################
 
     @staticmethod
-    def type_image(soup: BeautifulSoup, type_flag: str) -> str:
+    def _type_image(soup: BeautifulSoup, type_flag: str) -> str:
         """Webscrapes the artist/album/track cover"""
 
         if not type_flag == "track":
@@ -89,7 +91,7 @@ class Webscrape():
     ####################################################################################################
 
     @staticmethod
-    def type_metadata(soup: BeautifulSoup) -> list[str]:
+    def _type_metadata(soup: BeautifulSoup) -> list[str]:
         """Webscrapes the total amount of scrobbles/albums/tracks"""
 
         found_metadata = soup.find_all("p", class_="metadata-display")
@@ -100,7 +102,7 @@ class Webscrape():
     ####################################################################################################
 
     @staticmethod
-    def type_element_positions(soup: BeautifulSoup) -> list[str]:
+    def _type_element_positions(soup: BeautifulSoup) -> list[str]:
         """Webscrapes the album/track positions"""
 
         found_positions = soup.find_all("td", class_="chartlist-index")
@@ -111,7 +113,7 @@ class Webscrape():
     ####################################################################################################
 
     @staticmethod
-    def type_list(soup: BeautifulSoup) -> tuple[list[str], list[str]]:
+    def _type_list(soup: BeautifulSoup) -> tuple[list[str], list[str]]:
         """Webscrapes the album/track names and scrobbles"""
 
         found_names = soup.find_all("td", class_="chartlist-name")
@@ -124,11 +126,11 @@ class Webscrape():
 
     ####################################################################################################
 
-    def output_lists(self, soup: BeautifulSoup, artist_for_url: str, type_flag: str) -> tuple[str, str]:
+    def _output_lists(self, soup: BeautifulSoup, artist_for_url: str, type_flag: str) -> tuple[str, str]:
         """Formates the positions, album/track names and scrobbles and the URLs for the output"""
 
-        positions_list = self.type_element_positions(soup)
-        names_list, scorbbles_list = self.type_list(soup)
+        positions_list = self._type_element_positions(soup)
+        names_list, scorbbles_list = self._type_list(soup)
 
         album_output = ""
         track_output = ""
@@ -140,7 +142,7 @@ class Webscrape():
 
             name = re.sub('\n', '', name) # can be both album and track
 
-            safe_name = Get().markdown_safe(name)
+            safe_name = Get.markdown_safe(name)
 
             element_name_for_url = urllib.parse.quote_plus(name)
 

@@ -36,6 +36,8 @@ class Banner(nextcord_C.Cog):
             {"user": str(user.id)}
         ))
 
+        user= await self.client.fetch_user(user.id)
+
         if not user.banner:
             await interaction.response.send_message(embed=EmbedFunctions().error(f"The user {user.mention} doesn't have a banner."), ephemeral=True)
             return

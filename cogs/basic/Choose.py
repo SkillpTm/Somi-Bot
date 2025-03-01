@@ -38,7 +38,7 @@ class Choose(nextcord_C.Cog):
 
         # get all the options that got actually filled in
         for name, value in locals().items():
-            if name.startswith('option') and value != None:
+            if name.startswith('option') and value and value != options:
                 options[name] = value
 
 
@@ -50,11 +50,11 @@ class Choose(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        chosen_option = random.choice(options)
+        chosen_key = random.choice(list(options.keys()))
 
 
         view = OptionsButton(interaction=interaction)
-        await interaction.followup.send(f"I have chosen __Option {chosen_option[0][-1]}__:\n`{chosen_option[1]}`", view=view)
+        await interaction.followup.send(f"I have chosen __Option {chosen_key[-1]}__:\n`{options[chosen_key]}`", view=view)
         await view.wait()
 
         # if the button to see all options not pressed return early
@@ -65,7 +65,7 @@ class Choose(nextcord_C.Cog):
 
         for name, value in options.items():
             # if the option is the chosen option underscore it
-            if name == chosen_option[0]:
+            if name == chosen_key:
                 AllOptionsOutput += f"__**Option {name[-1]}: {value}**__\n"
                 continue
 

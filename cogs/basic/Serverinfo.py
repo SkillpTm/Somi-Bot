@@ -33,7 +33,7 @@ class Severinfo(nextcord_C.Cog):
         guild_with_counts = await self.client.fetch_guild(interaction.guild.id, with_counts=True)
 
         if interaction.guild.icon:
-            server_icon_url = interaction.guild.icon
+            server_icon_url = interaction.guild.icon.url
         else:
             server_icon_url = self.client.DEFAULT_PFP
 
@@ -57,13 +57,13 @@ class Severinfo(nextcord_C.Cog):
 
                 [
                     "Members:",
-                    f"Total: {guild_with_counts.approximate_member_count}\nOnline: {guild_with_counts.approximate_presence_count}",
+                    f"Total: `{guild_with_counts.approximate_member_count}`\nOnline: `{guild_with_counts.approximate_presence_count}`",
                     True
                 ],
 
                 [
                     "Channels:",
-                    f"Text: {len(interaction.guild.text_channels)}\nVoice: {len(interaction.guild.voice_channels)}",
+                    f"Text: `{len(interaction.guild.text_channels)}`\nVoice: `{len(interaction.guild.voice_channels)}`",
                     True
                 ],
 
@@ -71,6 +71,18 @@ class Severinfo(nextcord_C.Cog):
                     "Created at:",
                     f"<t:{int(time.mktime(interaction.guild.created_at.timetuple()))}>",
                     True
+                ],
+
+                [
+                    "Boost Level:",
+                    f"Level: `{interaction.guild.premium_tier}`\nBoosters: `{interaction.guild.premium_subscription_count}`",
+                    True
+                ],
+
+                [
+                    "Description:",
+                    interaction.guild.description,
+                    False
                 ]
             ]
         )

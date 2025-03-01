@@ -74,7 +74,7 @@ class Userinfo(nextcord_C.Cog):
 
                 [
                     "Username:",
-                    user.global_name,
+                    user.name,
                     True
                 ],
 
@@ -85,16 +85,10 @@ class Userinfo(nextcord_C.Cog):
                 ],
 
                 [
-                    "Created at:",
-                    f"<t:{int(time.mktime(user.created_at.timetuple()))}>",
+                    "Status:",
+                    status,
                     True
                 ],
-
-                [
-                    "Public Flags:",
-                    ", ".join(user.public_flags.all()),
-                    True
-                ]
 
                 [
                     "Top role:",
@@ -103,8 +97,14 @@ class Userinfo(nextcord_C.Cog):
                 ],
 
                 [
-                    "Status:",
-                    status,
+                    "Booster:",
+                    booster,
+                    True
+                ],
+
+                [
+                    "Created at:",
+                    f"<t:{int(time.mktime(user.created_at.timetuple()))}>",
                     True
                 ],
 
@@ -115,9 +115,9 @@ class Userinfo(nextcord_C.Cog):
                 ],
 
                 [
-                    "Booster:",
-                    booster,
-                    True
+                    "Public Flags:",
+                    ", ".join(flag.name for flag in user.public_flags.all()),
+                    False
                 ]
             ]
         )

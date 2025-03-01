@@ -297,7 +297,7 @@ class SomiBot(nextcord_C.Bot):
             permissions = interaction.permissions.value,
         )
 
-        ERROR_MESSAGE = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions. (this includes her role being above others)\nIf this persits you can file a bug-report by using `/feedback`."
+        ERROR_MESSAGE = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions. (this includes her role being above others)\n```{exception}```\nIf this persits you can file a bug-report by using `/feedback`."
 
         if interaction.response.is_done():
             await interaction.followup.send(embed=EmbedFunctions().critical_error(ERROR_MESSAGE), ephemeral=True)

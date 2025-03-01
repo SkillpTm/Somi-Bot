@@ -133,8 +133,6 @@ class ConfigDB(CommonDB):
                                                           multiple_columns = multiple_columns,
                                                           multiple_columns_and_rows = multiple_columns_and_rows)
 
-        self._close(commit = False)
-
         if any(element == self.config_type for element in ["AuditLogChannel", "HiddenChannels", "LevelIgnoreChannels"]):
             ids = [int(id) for id in ids]
 
@@ -167,5 +165,7 @@ class ConfigDB(CommonDB):
                     await LevelRoles().remove_from_members(server, server.get_role(id_level[0]))
                     self.delete(id_level)
                     ids.remove(id_level)
+
+        self._close(commit = False)
 
         return ids

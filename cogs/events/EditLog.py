@@ -78,7 +78,7 @@ class EditLog(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = nextcord.Color.yellow(),
             author = "Message Edited",
-            author_icon = message_before.author.display_avatar,
+            author_icon = message_before.author.display_avatar.url,
             description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
             footer = "DEFAULT_KST_FOOTER",
             fields = [
@@ -111,7 +111,7 @@ class EditLog(nextcord_C.Cog):
         embed_before = EmbedFunctions().builder(
             color = nextcord.Color.yellow(),
             author = "Message Edited",
-            author_icon = message_before.author.display_avatar,
+            author_icon = message_before.author.display_avatar.url,
             description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})\n**Before:**\n{message_before.content}"[:4095]
         )
 

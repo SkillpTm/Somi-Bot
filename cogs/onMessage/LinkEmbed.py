@@ -54,7 +54,7 @@ class LinkEmbed(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,
             author = "Message Embed",
-            author_icon = original_message.author.display_avatar,
+            author_icon = original_message.author.display_avatar.url,
             description = f"{original_message.channel.mention} - [Link]({link})",
             footer = original_message.created_at.astimezone(pytz.timezone('Asia/Seoul')).strftime("%Y/%m/%d %H:%M:%S %Z"),
             footer_icon = self.client.LINK_EMBED_ICON,

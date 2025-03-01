@@ -42,7 +42,7 @@ class PurgeLog(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),
             author = "Mod Activity",
-            author_icon = entry.user.display_avatar,
+            author_icon = entry.user.display_avatar.url,
             footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [

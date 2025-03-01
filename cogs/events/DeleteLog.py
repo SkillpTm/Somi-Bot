@@ -40,8 +40,8 @@ class DeleteLog(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),
             author = "Message Deleted",
-            author_icon = message.author.display_avatar,
-            description = f"{message.author.mention} deleted a message in: {message.channel.mention}\n\n{message.content}"[:4095],
+            author_icon = message.author.display_avatar.url,
+            description = f"{message.author.mention} deleted a message in: {message.channel.mention}\n\n{message.content}",
             footer = "DEFAULT_KST_FOOTER"
         )
 

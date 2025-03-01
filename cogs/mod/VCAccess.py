@@ -76,7 +76,7 @@ class VCAccess(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = self.client.MOD_COLOR,
             author = "Mod Activity",
-            author_icon = interaction.user.display_avatar,
+            author_icon = interaction.user.display_avatar.url,
             footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [

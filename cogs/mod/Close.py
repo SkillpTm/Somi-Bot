@@ -59,7 +59,7 @@ class Close(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = nextcord.Color.dark_red(),
             author = "Mod Activity",
-            author_icon = interaction.user.display_avatar,
+            author_icon = interaction.user.display_avatar.url,
             footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
@@ -119,7 +119,7 @@ class Close(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = nextcord.Color.dark_red(),
             author = "Mod Activity",
-            author_icon = interaction.user.display_avatar,
+            author_icon = interaction.user.display_avatar.url,
             footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [

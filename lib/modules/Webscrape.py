@@ -126,7 +126,12 @@ class Webscrape():
 
     ####################################################################################################
 
-    def _output_lists(self, soup: BeautifulSoup, artist_for_url: str, type_flag: str) -> tuple[str, str]:
+    def _output_lists(
+        self,
+        soup: BeautifulSoup,
+        artist_for_url: str,
+        type_flag: str
+    ) -> tuple[str, str]:
         """Formates the positions, album/track names and scrobbles and the URLs for the output"""
 
         positions_list = self._type_element_positions(soup)

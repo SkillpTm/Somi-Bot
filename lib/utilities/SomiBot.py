@@ -27,6 +27,7 @@ class SomiBot(nextcord_C.Bot):
     SOMI_CONTACT_EMAIL = "somibot0309@gmail.com"
     SOMI_INVITE = "https://somibot.skillp.dev/invite/"
     SOMICORD_INVITE = "https://discord.gg/Frd7WYg"
+    SUPPORT_SERVER_ID = Config.SUPPORT_SERVER_ID
     VERSION = "3.1"
 
     # Colors

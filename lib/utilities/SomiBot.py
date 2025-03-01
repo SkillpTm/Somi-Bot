@@ -29,6 +29,7 @@ class SomiBot(nextcord_C.Bot):
     SOMICORD_INVITE = "https://discord.gg/Frd7WYg"
     SUPPORT_SERVER_ID = Config.SUPPORT_SERVER_ID
     SUPPORT_SERVER_AUDIT_LOG_ID = Config.SUPPORT_SERVER_AUDIT_LOG_ID
+    SUPPORT_SERVER_FEEDBACK_ID = Config.SUPPORT_SERVER_FEEDBACK_ID
     VERSION = "3.1"
 
     # Colors

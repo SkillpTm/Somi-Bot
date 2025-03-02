@@ -177,6 +177,24 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
+    async def on_guild_channel_delete(self, channel: nextcord.abc.GuildChannel) -> None:
+        """This function overwrites the build in on_guild_channel_delete function, to remove channels from the ConfigDB"""
+
+        await asyncio.gather(
+            self.get_cog("ConfigValidate").remove_channel(channel)
+        )
+
+    ####################################################################################################
+
+    async def on_guild_role_delete(self, role: nextcord.Role) -> None:
+        """This function overwrites the build in on_thread_delete function, to remove threads from the ConfigDB"""
+
+        await asyncio.gather(
+            self.get_cog("ConfigValidate").remove_role(role)
+        )
+
+    ####################################################################################################
+
     async def on_member_ban(self, guild: nextcord.Guild,user: nextcord.User) -> None:
         """This function overwrites the build in on_member_ban function, to launch the ban_log"""
 
@@ -256,6 +274,14 @@ class SomiBot(nextcord_C.Bot):
             self.get_cog("EditLog").edit_log(before, after)
         )
 
+    ####################################################################################################
+
+    async def on_thread_delete(self, thread: nextcord.Thread) -> None:
+        """This function overwrites the build in on_thread_delete function, to remove threads from the ConfigDB"""
+
+        await asyncio.gather(
+            self.get_cog("ConfigValidate").remove_channel(thread)
+        )
 
     ####################################################################################################
 

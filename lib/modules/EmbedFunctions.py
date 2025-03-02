@@ -81,7 +81,7 @@ class EmbedFunctions():
             embed.set_image(url=images[0].url)
 
         # if there is no limit a and we have more than 1 attachment put them into a STRING
-        if not limit and attachments_list > 1:
+        if not limit and len(attachments_list) > 1:
             for attachment in attachments_list:
                 file_urls += f"{attachment.url}\n"
 

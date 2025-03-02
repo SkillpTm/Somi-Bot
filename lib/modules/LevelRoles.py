@@ -68,14 +68,14 @@ class LevelRoles():
             # this isn't strictly necessary, but ensures there only being one correct level role on the member 
             to_be_removed_roles: list[nextcord.Role] = []
 
-            for level_role_id, level_role in ids_and_roles.keys():
+            for level_role_id, level_role in ids_and_roles.items():
                 if level_role_id == new_role_id:
                     await member.add_roles(level_role)
                     continue
 
                 to_be_removed_roles.append(level_role)
 
-            await member.remove_roles(to_be_removed_roles)
+            await member.remove_roles(*to_be_removed_roles)
 
     ####################################################################################################
 

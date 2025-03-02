@@ -59,7 +59,7 @@ class Mute(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().error("You can't mute yourself!"), ephemeral=True)
             return
 
-        if interaction.user.top_role.position < member.top_role.position and interaction.user != interaction.user.guild.owner:
+        if interaction.user.top_role.position < member.top_role.position and interaction.user != interaction.guild.owner:
             await interaction.followup.send(embed=EmbedFunctions().error("You can only mute a member, if your current top-role is above their current top-role!"), ephemeral=True)
             return
 

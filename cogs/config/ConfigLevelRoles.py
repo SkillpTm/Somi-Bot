@@ -49,13 +49,13 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        if interaction.user.top_role.position < role.position and interaction.user != interaction.user.guild.owner:
+        if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner:
             await interaction.followup.send(embed=EmbedFunctions().error("You can only add/remove a role as a level-role, if the role is below your current top role!"), ephemeral=True)
             return
 
 
         if action == "Add":
-            if not await self.addRole(interaction, role, level):
+            if not await self._addRole(interaction, role, level):
                 return
             
             mod_action = f"{interaction.user.mention} added: {role.mention} as a level-role at level `{level}`."
@@ -63,7 +63,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
             
 
         elif action == "Remove":
-            if not await self.removeRole(interaction, role):
+            if not await self._removeRole(interaction, role):
                 return
             
             mod_action = f"{interaction.user.mention} removed: {role.mention} from the level-roles."  
@@ -89,14 +89,13 @@ class ConfigLevelRoles(nextcord_C.Cog):
             ]
         )
 
-        audit_log_channel = interaction.guild.get_channel(audit_log_id)
-        await audit_log_channel.send(embed=embed)
+        await interaction.guild.get_channel(audit_log_id).send(embed=embed)
 
 
     ####################################################################################################
 
     @staticmethod
-    async def addRole(
+    async def _addRole(
         interaction: nextcord.Interaction,
         role: nextcord.Role,
         level: int
@@ -119,7 +118,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
     ####################################################################################################
 
     @staticmethod
-    async def removeRole(
+    async def _removeRole(
         interaction: nextcord.Interaction,
         role: nextcord.Role
     ) -> bool:

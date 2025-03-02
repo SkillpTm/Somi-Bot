@@ -54,8 +54,7 @@ class EditLog(nextcord_C.Cog):
         else:
             first_embed, second_embed, file_urls = self.multi_response(message_before, message_after)
 
-        audit_log_channel = message_before.guild.get_channel(audit_log_id)
-        last_sent_response = await audit_log_channel.send(embed=first_embed)
+        last_sent_response = await message_before.guild.get_channel(audit_log_id).send(embed=first_embed)
 
         # there is only a second embed for larger message edits
         if second_embed:

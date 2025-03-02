@@ -48,13 +48,13 @@ class ConfigHiddenChannels(nextcord_C.Cog):
 
 
         if action == "Add":
-            if not await self.addChannel(interaction, channel):
+            if not await self._addChannel(interaction, channel):
                 return
             
             mod_action = f"{interaction.user.mention} added: {channel.mention} as a hidden-channel."   
 
         elif action == "Remove":
-            if not await self.removeChannel(interaction, channel):
+            if not await self._removeChannel(interaction, channel):
                 return
 
             mod_action = f"{interaction.user.mention} removed: {channel.mention} from the hidden-channels."  
@@ -84,7 +84,7 @@ class ConfigHiddenChannels(nextcord_C.Cog):
     ####################################################################################################
 
     @staticmethod
-    async def addChannel(
+    async def _addChannel(
         interaction: nextcord.Interaction,
         channel: nextcord.abc.GuildChannel
     ) -> bool:
@@ -102,7 +102,7 @@ class ConfigHiddenChannels(nextcord_C.Cog):
     ####################################################################################################
 
     @staticmethod
-    async def removeChannel(
+    async def _removeChannel(
         interaction: nextcord.Interaction,
         channel: nextcord.abc.GuildChannel
     ) -> bool:

@@ -1,10 +1,10 @@
-from dataclasses import dataclass
+import dataclasses
 import json
 import os
 
 
 
-@dataclass
+@dataclasses.dataclass
 class Keychain():
     DISCORD_TOKEN: str = os.getenv("DISCORD_TOKEN")
 

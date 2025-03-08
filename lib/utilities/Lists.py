@@ -1,11 +1,11 @@
+import dataclasses
 from storage.Config import Config
 
 
 
+@dataclasses.dataclass
 class Lists():
     SOMI_ID = Config.APPLICATION_ID
-
-
 
     HELP_AUTOCOMPLETE_TUPLE = (
         "/about",
@@ -584,8 +584,6 @@ class Lists():
             "/youtube [Jeon Somi XOXO MV]",
         ]
     }
-
-
 
     HELP_PERMISSION_OUTPUT = {
         "/ban": [

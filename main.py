@@ -8,6 +8,21 @@ client = SomiBot()
 
 ####################################################################################################
 
+def load_dotenv(file_path) -> None:
+    """loades the provided env into the environment"""
+
+    with open(file_path) as file:
+        for line in file:
+            line = line.strip()
+
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+
+            key, value = line.split('=', 1)
+            os.environ[key.strip()] = value.strip().strip('"\'')
+
+####################################################################################################
+
 def load_Cogs() -> None:
     """loads all cogs onto the client"""
 
@@ -42,5 +57,6 @@ def start() -> None:
 ####################################################################################################
 
 if __name__ == "__main__":
+    load_dotenv("./.env")
     load_Cogs()
     start() # blocks until the bot is shutdown

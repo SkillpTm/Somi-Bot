@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import dotenv
 import json
 import os
 
@@ -7,8 +6,6 @@ import os
 
 @dataclass
 class Keychain():
-    dotenv.load_dotenv()
-
     DISCORD_TOKEN: str = os.getenv("DISCORD_TOKEN")
 
     SPOTIPY_CLIENT_ID: str = os.getenv("SPOTIPY_CLIENT_ID")

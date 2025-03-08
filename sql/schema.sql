@@ -1,0 +1,105 @@
+-- name: create_telemetry
+CREATE TABLE IF NOT EXISTS telemetry (
+    telemetry_id SERIAL PRIMARY KEY,
+    event_name TEXT NOT NULL,
+    amount BIGINT NOT NULL
+);
+
+
+-- name: create_user
+CREATE TABLE IF NOT EXISTS "user" (
+    user_id BIGINT PRIMARY KEY,
+    last_fm_username TEXT,
+    weather_location TEXT
+);
+
+-- name: create_reminder
+CREATE TABLE IF NOT EXISTS reminder (
+    reminder_id INT CHECK (reminder_id BETWEEN 100000000 AND 999999999) PRIMARY KEY,
+    user_id BIGINT REFERENCES "user"(user_id) NOT NULL,
+    time BIGINT NOT NULL,
+    message_link TEXT NOT NULL,
+    message TEXT NOT NULL
+);
+
+
+-- name: create_server
+CREATE TABLE IF NOT EXISTS server (
+    server_id BIGINT PRIMARY KEY,
+    audit_log_channel_id BIGINT,
+    default_role_id BIGINT
+);
+
+-- name: create_hidden_channel
+CREATE TABLE IF NOT EXISTS hidden_channel (
+    channel_id BIGINT PRIMARY KEY,
+    server_id BIGINT REFERENCES server(server_id) NOT NULL
+);
+
+-- name: create_level_ignore_channel
+CREATE TABLE IF NOT EXISTS level_ignore_channel (
+    channel_id BIGINT PRIMARY KEY,
+    server_id BIGINT REFERENCES server(server_id) NOT NULL
+);
+
+-- name: create_level_role
+CREATE TABLE IF NOT EXISTS level_role (
+    role_id BIGINT PRIMARY KEY,
+    server_id BIGINT REFERENCES server(server_id) NOT NULL,
+    level SMALLINT NOT NULL
+);
+
+-- name: create_custom_command
+CREATE TABLE IF NOT EXISTS custom_command (
+    custom_command_id SERIAL PRIMARY KEY,
+    server_id BIGINT REFERENCES server(server_id) NOT NULL,
+    command_name TEXT NOT NULL,
+    command_text TEXT NOT NULL
+);
+
+
+-- name: create_keyword
+CREATE TABLE IF NOT EXISTS keyword (
+    keyword_id SERIAL PRIMARY KEY,
+    server_id BIGINT REFERENCES server(server_id) NOT NULL,
+    user_id BIGINT REFERENCES "user"(user_id) NOT NULL,
+    keyword TEXT NOT NULL
+);
+
+-- name: create_feedback
+CREATE TABLE IF NOT EXISTS feedback (
+    feedback_id SERIAL PRIMARY KEY,
+    server_id BIGINT REFERENCES server(server_id) NOT NULL,
+    user_id BIGINT REFERENCES "user"(user_id) NOT NULL,
+    time BIGINT NOT NULL,
+    message TEXT NOT NULL
+);
+
+-- name: create_level
+CREATE TABLE IF NOT EXISTS level (
+    server_id BIGINT,
+    user_id BIGINT,
+    PRIMARY KEY (server_id, user_id),
+    FOREIGN KEY (server_id) REFERENCES server(server_id),
+    FOREIGN KEY (user_id) REFERENCES "user"(user_id),
+    xp_cooldown BIGINT NOT NULL,
+    total_xp BIGINT NOT NULL
+);
+
+-- name: create_user_statistics
+CREATE TABLE IF NOT EXISTS level (
+    server_id BIGINT,
+    user_id BIGINT,
+    PRIMARY KEY (server_id, user_id),
+    FOREIGN KEY (server_id) REFERENCES server(server_id),
+    FOREIGN KEY (user_id) REFERENCES "user"(user_id),
+    attachment_count BIGINT NOT NULL,
+    char_count BIGINT NOT NULL,
+    client_command_count BIGINT NOT NULL,
+    emote_count BIGINT NOT NULL,
+    link_count BIGINT NOT NULL,
+    message_count BIGINT NOT NULL,
+    reply_count BIGINT NOT NULL,
+    sticker_count BIGINT NOT NULL,
+    word_count BIGINT NOT NULL
+);

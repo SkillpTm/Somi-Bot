@@ -1,4 +1,3 @@
-import aiohttp.client_exceptions
 import os
 import requests
 import time
@@ -32,9 +31,13 @@ def start() -> None:
     try:
         if requests.get("https://www.google.com/").status_code == 200:
             client.run(client.Keychain.DISCORD_TOKEN)
-    except (requests.ConnectionError, aiohttp.client_exceptions.ClientConnectorError):
-        time.sleep(10)
-        client.restart()
+    except Exception as e:
+        if (
+            "ConnectionError" in str(type(e)) or # requests.ConnectionError
+            "ClientConnectorError" in str(type(e)) # aiohttp.client_exceptions.ClientConnectorError
+           ):
+            time.sleep(10)
+            client.restart()
 
 ####################################################################################################
 

@@ -77,22 +77,18 @@ CREATE TABLE IF NOT EXISTS feedback (
 
 -- name: create_level
 CREATE TABLE IF NOT EXISTS level (
-    server_id BIGINT,
-    user_id BIGINT,
+    server_id BIGINT REFERENCES server(server_id),
+    user_id BIGINT REFERENCES "user"(user_id),
     PRIMARY KEY (server_id, user_id),
-    FOREIGN KEY (server_id) REFERENCES server(server_id),
-    FOREIGN KEY (user_id) REFERENCES "user"(user_id),
     xp_cooldown BIGINT NOT NULL,
     total_xp BIGINT NOT NULL
 );
 
 -- name: create_user_statistics
 CREATE TABLE IF NOT EXISTS level (
-    server_id BIGINT,
-    user_id BIGINT,
+    server_id BIGINT REFERENCES server(server_id) NOT NULL,
+    user_id BIGINT REFERENCES "user"(user_id) NOT NULL,
     PRIMARY KEY (server_id, user_id),
-    FOREIGN KEY (server_id) REFERENCES server(server_id),
-    FOREIGN KEY (user_id) REFERENCES "user"(user_id),
     attachment_count BIGINT NOT NULL,
     char_count BIGINT NOT NULL,
     client_command_count BIGINT NOT NULL,

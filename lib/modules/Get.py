@@ -1,7 +1,7 @@
 import datetime
 import nextcord
-import pytz
 import re
+import zoneinfo
 
 from lib.utilities.SomiBot import SomiBot
 
@@ -18,7 +18,7 @@ class Get():
     def kst_timestamp(slash_kst_format: bool = False) -> str:
         """This function returns the current time in KST as a humanreadable string"""
 
-        now_korea = datetime.datetime.now(pytz.timezone('Asia/Seoul'))
+        now_korea = datetime.datetime.now(zoneinfo.ZoneInfo("Asia/Seoul"))
 
         if slash_kst_format:
             format = "Date: `%Y/%m/%d`\nTime: `%H:%M:%S %Z`"

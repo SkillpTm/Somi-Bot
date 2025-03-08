@@ -4,7 +4,6 @@ nextcord==3.0.1
 Pillow==11.1.0
 pycountry==24.06.1
 python-dotenv==1.0.1
-pytz==2025.1
 requests==2.32.3
 spotipy==2.25.0
 wolframalpha==5.1.3

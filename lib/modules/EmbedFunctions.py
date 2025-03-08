@@ -1,6 +1,6 @@
 import datetime
 import nextcord
-import pytz
+import zoneinfo
 
 from lib.modules.Get import Get
 
@@ -125,7 +125,7 @@ class EmbedFunctions():
         if footer == "DEFAULT_KST_FOOTER":
             from lib.utilities.SomiBot import SomiBot
             
-            embed.set_footer(text = datetime.datetime.now(pytz.timezone('Asia/Seoul')).strftime("%Y/%m/%d %H:%M:%S %Z"), icon_url = SomiBot.CLOCK_ICON)
+            embed.set_footer(text = datetime.datetime.now(zoneinfo.ZoneInfo("Asia/Seoul")).strftime("%Y/%m/%d %H:%M:%S %Z"), icon_url = SomiBot.CLOCK_ICON)
         else:
             embed.set_footer(text = Get.rid_of_whitespace(footer[:2048]), icon_url = footer_icon)  # 2048 is Discord's footer char limit
 

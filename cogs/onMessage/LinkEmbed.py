@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import pytz
 import re
+import zoneinfo
 
 from lib.db_modules import CommandUsesDB, ConfigDB
 from lib.modules import Checks, EmbedFunctions, Get
@@ -56,7 +56,7 @@ class LinkEmbed(nextcord_C.Cog):
             author = "Message Embed",
             author_icon = original_message.author.display_avatar.url,
             description = f"{original_message.channel.mention} - [Link]({link})",
-            footer = original_message.created_at.astimezone(pytz.timezone('Asia/Seoul')).strftime("%Y/%m/%d %H:%M:%S %Z"),
+            footer = original_message.created_at.astimezone(zoneinfo.ZoneInfo("Asia/Seoul")).strftime("%Y/%m/%d %H:%M:%S %Z"),
             footer_icon = self.client.LINK_EMBED_ICON,
             fields = [
                 [

@@ -2,7 +2,7 @@ import datetime
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
-import pytz
+import zoneinfo
 
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
@@ -69,7 +69,7 @@ class Mute(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().error(f"`{time}` is not a valid time period. Make sure to use the formating in the input description and that your time period is smaller than 28 days."), ephemeral=True)
             return
 
-        await member.edit(timeout=datetime.datetime.now(pytz.timezone('UTC'))+datetime.timedelta(seconds=total_seconds), reason=reason)
+        await member.edit(timeout=datetime.datetime.now(zoneinfo.ZoneInfo("UTC"))+datetime.timedelta(seconds=total_seconds), reason=reason)
 
         await interaction.followup.send(embed=EmbedFunctions().success(f"Succesfully muted {member.mention}."), ephemeral=True)
 

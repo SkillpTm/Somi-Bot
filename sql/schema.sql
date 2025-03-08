@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS level (
 );
 
 -- name: create_user_statistics
-CREATE TABLE IF NOT EXISTS level (
+CREATE TABLE IF NOT EXISTS user_statistics (
     server_id BIGINT REFERENCES server(server_id) NOT NULL,
     user_id BIGINT REFERENCES "user"(user_id) NOT NULL,
     PRIMARY KEY (server_id, user_id),

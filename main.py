@@ -23,7 +23,7 @@ def load_dotenv(file_path) -> None:
 
 ####################################################################################################
 
-def load_Cogs() -> None:
+def load_cogs() -> None:
     """loads all cogs onto the client"""
 
     # crawl through ./cogs/ 's subfolders to load all cogs
@@ -58,5 +58,5 @@ def start() -> None:
 
 if __name__ == "__main__":
     load_dotenv("./.env")
-    load_Cogs()
+    load_cogs()
     start() # blocks until the bot is shutdown

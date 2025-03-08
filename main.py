@@ -18,8 +18,8 @@ def load_dotenv(file_path) -> None:
             if not line or line.startswith("#") or "=" not in line:
                 continue
 
-            key, value = line.split('=', 1)
-            os.environ[key.strip()] = value.strip().strip('"\'')
+            key, value = line.split("=", 1)
+            os.environ[key.strip()] = value.strip().strip("\"'")
 
 ####################################################################################################
 

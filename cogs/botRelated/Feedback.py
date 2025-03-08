@@ -34,17 +34,19 @@ class FeedbackModal(nextcord.ui.Modal):
 
         if interaction.guild:
             server_id = interaction.guild.id
+            origin_text = f"Feedback from Server: `{interaction.guild.name}` | `({interaction.guild.id})`:"
         else:
             server_id = 0 # DMs are indecated by a 0
+            origin_text = f"Feedback from DM Channel:"
 
         FeedbackDB().add(server_id, interaction.user.id, str(interaction.user), Get.kst_timestamp(), self.feedback.value)
 
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,
-            title = f"Feedback by `{interaction.user.name}` | `({interaction.user.id})`",
+            title = f"Feedback by: `{interaction.user.name}` | `({interaction.user.id})`",
             thumbnail = interaction.user.display_avatar.url,
             footer = "DEFAULT_KST_FOOTER",
-            description = f"Feedback from Server: `{server_id}`:\n{self.feedback.value}"
+            description = f"{origin_text}\n{self.feedback.value}"
         )
 
         await self.client.get_channel(self.client.SUPPORT_SERVER_FEEDBACK_ID).send(embed=embed)

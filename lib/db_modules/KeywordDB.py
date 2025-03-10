@@ -1,102 +1,158 @@
-from lib.db_modules.CommonDB import CommonDB
+from lib.db_modules.PostgresDB import PostgresDB
 
 
 
-class KeywordDB(CommonDB):
+class KeywordDB():
+    """Abstraction layer to interact with the keyword table."""
 
-    def __init__(self,
-                 server_id: int,
-                 user_id: int) -> None:
-        self.first_part_table_name = f"server{server_id}"
-
-        super().__init__(database_path = "../../storage/db/keywords.db",
-                         table_name = f"server{server_id}_user{user_id}",
-                         table_structure = """(keyword text)""")
+    async def __init__(
+        self,
+        database: PostgresDB,
+        server_id: int,
+        user_id: int
+    ) -> None:
+        self.database = database
+        self.server_id = server_id
+        self.user_id = user_id
 
     ####################################################################################################
 
-    def add(self,
-            keyword: str) -> bool:
-        """adds the keyword to the table"""
+    async def add(self, keyword: str) -> bool:
+        """checks if this user on this server already has this keyword, if not adds it to the db"""
 
-        inserted = self._insert(select_column = "keyword",
-                                where_column = "keyword",
-                                check_value = keyword,
-                                values = [keyword])
+        # check if a keyword with that name already exists
+        if await self.database.fetch_row(
+            query_name = "select_where",
+            table_name = "keyword",
+            select_columns=["*"],
+            columns = [
+                "server_id",
+                "user_id",
+                "keyword"
+            ],
+            values = [
+                str(self.server_id),
+                str(self.user_id),
+                keyword
+            ]
+        ):
+            return False
+
+        await self.database.execute(
+            query_name = "insert_row",
+            table_name = "keyword",
+            columns = [
+                "server_id",
+                "user_id",
+                "keyword"
+            ],
+            values = [
+                str(self.server_id),
+                str(self.user_id),
+                keyword
+            ]
+        )
+
+        return True
+
+    ####################################################################################################
+
+    async def delete(self, keyword: str) -> bool:
+        """checks if this user on this server has this keyword, if so deletes it from the db"""
+
+        # check if keyword exists
+        if not await self.database.fetch_row(
+            query_name = "select_where",
+            table_name = "keyword",
+            select_columns=["*"],
+            columns = [
+                "server_id",
+                "user_id",
+                "keyword"
+            ],
+            values = [
+                str(self.server_id),
+                str(self.user_id),
+                keyword
+            ]
+        ):
+            return False
         
-        self._close(commit = inserted)
-        
-        return inserted
+        await self.database.execute(
+            query_name = "delete_rows_where",
+            table_name = "keyword",
+            columns = [
+                "server_id",
+                "user_id",
+                "keyword"
+            ],
+            values = [
+                str(self.server_id),
+                str(self.user_id),
+                keyword
+            ]
+        )
+
+        return True
 
     ####################################################################################################
 
-    def delete(self,
-               keyword: str) -> bool:
-        """deletes the keyword from the table"""
+    async def delete_all(self) -> None:
+        """deletes all the keywords of this user on this server"""
 
-        deleted = self._delete(select_column = "keyword",
-                               where_column = "keyword",
-                               check_value = keyword)
-        
-        self._close(commit = deleted)
-
-        return deleted
+        await self.database.execute(
+            query_name = "delete_rows_where",
+            table_name = "keyword",
+            columns = ["server_id", "user_id"],
+            values = [str(self.server_id), str(self.user_id)]
+        )
 
     ####################################################################################################
 
-    def delete_all(self) -> None:
-        """drops the table with the keywords"""
-
-        self._drop()
-        self._close(commit = True)
-
-    ####################################################################################################
-
-    def get_list(self) -> list[str]:
+    async def get_list(self) -> list[str]:
         """gets a list with all keywords of the user"""
 
-        keywords = self._get(select_column = "keyword",
-                             order_column = "keyword",
-                             order_type = "ASC")
-        
-        self._close(commit = False)
+        output: list[str] = []
 
-        return keywords
+        async for keyword_row in self.database.fetch_many(
+            query_name = "select_where",
+            table_name = "keyword",
+            select_columns=["keyword"],
+            columns = ["server_id", "user_id"],
+            values = [str(self.server_id), str(self.user_id)]
+        ):
+            output.append(keyword_row[0])
+
+        return sorted(output)
 
     ####################################################################################################
 
-    def get_all(self) -> dict[int, list[str]]:
+    async def get_all(self) -> dict[int, list[str]]:
         """gets all users with their keywords from this server, except for the provided user and their keywords"""
 
-        self.cur.execute(f"""SELECT name
-                             FROM sqlite_master
-                             WHERE type='table'
-                                 AND name LIKE '{self.first_part_table_name}%'
-                             EXCEPT SELECT name
-                             FROM sqlite_master
-                             WHERE name = '{self.table_name}'""")
-        
-        all_user_table_names: list[tuple[str]] = self.cur.fetchall()
-        all_users_keywords: dict[int, list[str]] = {}
+        output: dict[int, list[str]] = {}
 
-        for user in all_user_table_names:
-            user = user[0]
-            
-            self.cur.execute(f"""SELECT keyword
-                                    FROM {user}
-                                    ORDER BY keyword ASC""")
-            
-            user_keywords: list[tuple[str]] = self.cur.fetchall()
-            user_keywords = [keyword[0] for keyword in user_keywords]
+        async for keyword_row in self.database.fetch_many(
+            query_name = "select_where",
+            table_name = "keyword",
+            select_columns=["user_id", "keyword"],
+            columns = ["server_id"],
+            values = [str(self.server_id)]
+        ): 
+            user_id, keyword = int(keyword_row[0]), keyword_row[1]
 
-            if not user_keywords:
+            # if the keyword is from the message auther don't add them
+            if user_id == self.user_id:
                 continue
 
-            underscore_position = user.find("_")
-            user_id = int(user[underscore_position+5:])
+            if user_id not in output.keys():
+                output[user_id] = keyword
+                continue
 
-            all_users_keywords.update({user_id: user_keywords})
+            output[user_id].append(keyword)
 
-        self._close(commit = False)
+        # sort the keywords alphabetically
+        for user_id in output.keys():
+            output[user_id] = sorted(output[user_id])
 
-        return all_users_keywords
+        return output

@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import ConfigDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import TEXT_CHANNELS, SomiBot
 
@@ -60,7 +60,7 @@ class ConfigHiddenChannels(nextcord_C.Cog):
             mod_action = f"{interaction.user.mention} removed: {channel.mention} from the hidden-channels."  
 
 
-        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
 
         if not audit_log_id:
             return
@@ -83,14 +83,14 @@ class ConfigHiddenChannels(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @staticmethod
     async def _addChannel(
+        self,
         interaction: nextcord.Interaction,
         channel: nextcord.abc.GuildChannel
     ) -> bool:
         "adds or doesn't add the role indicated by the output bool"
 
-        added = ConfigDB(interaction.guild.id, "HiddenChannels").add(channel.id)
+        added = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).hidden_channel()).add(channel.id)
 
         if not added:
             await interaction.followup.send(embed=EmbedFunctions().error(f"{channel.mention} is already a hidden-channel.\nTo get a list of all the hidden-channels use `/config info`."), ephemeral=True)
@@ -101,14 +101,14 @@ class ConfigHiddenChannels(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @staticmethod
     async def _removeChannel(
+        self,
         interaction: nextcord.Interaction,
         channel: nextcord.abc.GuildChannel
     ) -> bool:
         "removes or doesn't remove the channel indicated by the output bool"
 
-        deleted = ConfigDB(interaction.guild.id, "HiddenChannels").delete(channel.id)
+        deleted = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).hidden_channel()).delete(channel.id)
 
         if not deleted:
             await interaction.followup.send(embed=EmbedFunctions().error(f"{channel.mention} isn't a hidden-channel.\nTo get a list of all the hidden-channels use `/config info`."), ephemeral=True)

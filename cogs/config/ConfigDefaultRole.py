@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import ConfigDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -17,7 +17,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @config.subcommand(name = "default-role", description = "set/unset a role someone gets upon joining this server")
+    @config.subcommand(name = "default-role", description = "set/reset a role someone gets upon joining this server")
     @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def config_default_role(
         self,
@@ -26,16 +26,16 @@ class ConfigDefaultRole(nextcord_C.Cog):
         action: str = nextcord.SlashOption(
             description = "which action do you want to take",
             required = True,
-            choices = ["Set", "Unset"]
+            choices = ["Set", "Reset"]
         ),
         role: nextcord.Role = nextcord.SlashOption(
-            description = "the role to be set/unset",
+            description = "the role to be set/reset",
             required = False
         )
     ) -> None:
-        """This command sets/unsets a default-role to the server. Meaning that on_member_join will apply this role automatically, if set"""
+        """This command sets/resets a default-role to the server. Meaning that on_member_join will apply this role automatically, if set"""
 
-        # just gets set so we don't error on stuff later
+        # just gets set to the default_role so we don't error on stuff later
         if not role:
             role = interaction.guild.default_role
 
@@ -54,27 +54,17 @@ class ConfigDefaultRole(nextcord_C.Cog):
             
             mod_action = f"{interaction.user.mention} set: {role.mention} as the new default-role."
 
-            #apply the role to all users
-            for member in interaction.guild.members:
-                if role not in member.roles and not member.bot:
-                    await member.add_roles(role)
+        elif action == "Reset":
+            if role.id == interaction.guild.default_role.id:
+                role = interaction.guild.get_role(await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).default_role_get())
 
-        elif action == "Unset":
-            if role == interaction.guild.default_role:
-                role = interaction.guild.get_role(await ConfigDB(interaction.guild.id, "DefaultRole").get_list(interaction.guild))
-
-            if not await self._unsetRole(interaction, role):
+            if not await self._resetRole(interaction, role):
                 return
             
-            mod_action = f"{interaction.user.mention} unset: <@&{role.id}> as the default-role."  
-
-            # remove the role from all users
-            for member in interaction.guild.members:
-                if role in member.roles:
-                    await member.remove_roles(role)
+            mod_action = f"{interaction.user.mention} reset: {role.mention} as the default-role."  
 
 
-        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
 
         if not audit_log_id:
             return
@@ -97,51 +87,59 @@ class ConfigDefaultRole(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @staticmethod
     async def _setRole(
+        self,
         interaction: nextcord.Interaction,
         role: nextcord.Role
     ) -> bool:
         "sets or doesn't set the role indicated by the output bool"
 
         # check if an actual role was provided
-        if role == interaction.guild.default_role:
+        if role.id == interaction.guild.default_role.id:
             await interaction.followup.send(embed=EmbedFunctions().error("To set a new default-role you need to provide a role in the command."), ephemeral=True)
             return False
-
+        
         if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner:
-            await interaction.followup.send(embed=EmbedFunctions().error("You can only set a role as the default-role, if the role is below your current top role!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().error("You can only make role the default-role, if the role is below your current top role!"), ephemeral=True)
             return False
         
-        added = ConfigDB(interaction.guild.id, "DefaultRole").add(role.id)
-
-        if not added:
-            await interaction.followup.send(embed=EmbedFunctions().error("This server already has a default-role.\nUnset your default-role first."), ephemeral=True)
-            return added
+        await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).default_role_set(role.id)
 
         await interaction.followup.send(embed=EmbedFunctions().success(f"{role.mention} is from now on this server's default-role.\nThe role is being applied to users now, this can take a few minutes."), ephemeral=True)
-        return added
+
+        #apply the role to all users
+        for member in interaction.guild.members:
+            if role not in member.roles and not member.bot:
+                await member.add_roles(role)
+
+        return True
 
     ####################################################################################################
 
-    @staticmethod
-    async def _unsetRole(
+    async def _resetRole(
+        self,
         interaction: nextcord.Interaction,
         role: nextcord.Role
     ) -> bool:
-        "unsets or doesn't unset the role indicated by the output bool"
+        "resets or doesn't reset the role indicated by the output bool"
 
         if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner:
-            await interaction.followup.send(embed=EmbedFunctions().error("You can only unset a role as the default-role, if the role is below your current top role!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().error("You can only make role the default-role, if the role is below your current top role!"), ephemeral=True)
             return False
 
-        deleted = ConfigDB(interaction.guild.id, "DefaultRole").delete(role.id)
+        deleted = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).default_role_reset()
 
         if not deleted:
             await interaction.followup.send(embed=EmbedFunctions().error("This server doesn't have a default-role."), ephemeral=True)
             return deleted
 
         await interaction.followup.send(embed=EmbedFunctions().success("This server now doesn't have a default-role anymore.\nThe role is being removed from all users, this may take a few minutes."), ephemeral=True)
+
+        # remove the role from all users
+        for member in interaction.guild.members:
+            if role in member.roles:
+                await member.remove_roles(role)
+
         return deleted
 
 

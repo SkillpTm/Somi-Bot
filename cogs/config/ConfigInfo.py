@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import ConfigDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get, LevelRoles
 from lib.utilities import SomiBot
 
@@ -75,39 +75,44 @@ class ConfigInfo(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @staticmethod
-    async def get_config_data(interaction: nextcord.Interaction) -> tuple[str, str, str, str, str]:
+    async def get_config_data(self, interaction: nextcord.Interaction) -> tuple[str, str, str, str, str]:
         """This function gets all the data that can be configured and if there is none, it just replaces with a default text.
            It also validates that all channels/roles still exist and if not cleans up the db"""
 
-        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
+        audit_log_output = ""
 
-        if not audit_log_id or not interaction.guild.get_channel(audit_log_id):
-            # delete the channel, if it doesn't exist anymore (if none is set, delete will return early without problems)
-            ConfigDB(interaction.guild.id, "AuditLogChannel").delete(audit_log_id)
+        if audit_log_id:
+            if interaction.guild.get_channel(audit_log_id):
+                audit_log_output = f"<#{audit_log_id}>"
+            else:
+                await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_reset()
+        
+        if not audit_log_output:
             audit_log_output = "`This server doesn't have a desginated channel for audit-Log messages.`"
-        else:
-            audit_log_output = f"<#{audit_log_id}>"
 
 
-        default_role_id: int = await ConfigDB(interaction.guild.id, "DefaultRole").get_list(interaction.guild)
+        default_role_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).default_role_get()
+        default_role_output = ""
 
-        if not default_role_id or not interaction.guild.get_role(default_role_id):
-            # delete the role, if it doesn't exist anymore (if none is set, delete will return early without problems)
-            ConfigDB(interaction.guild.id, "DefaultRole").delete(default_role_id)
+        if default_role_id:
+            if interaction.guild.get_role(default_role_id):
+                default_role_output = f"<#{default_role_id}>"
+            else:
+                await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).default_role_reset()
+        
+        if not default_role_output:
             default_role_output = "`This server doesn't have a desginated default-role.`"
-        else:
-            default_role_output = f"<@&{default_role_id}>"
 
 
-        hidden_channel_ids: list[int] = await ConfigDB(interaction.guild.id, "HiddenChannels").get_list(interaction.guild)
+        hidden_channel_ids = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).hidden_channel()).get_list()
         hidden_channels_output = ""
 
         # check if all hidden channels still exits, the ones that do, get added to the output
         for index, hidden_channel_id in enumerate(hidden_channel_ids):
             if not interaction.guild.get_channel(hidden_channel_id):
                 hidden_channel_ids.pop(index)
-                ConfigDB(interaction.guild.id, "HiddenChannels").delete(hidden_channel_id)
+                await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).hidden_channel()).delete(hidden_channel_id)
                 continue
             
             hidden_channels_output +=  f"<#{hidden_channel_id}>\n"
@@ -116,14 +121,14 @@ class ConfigInfo(nextcord_C.Cog):
             hidden_channels_output = "`This server doesn't have any hidden-channels.`"
 
 
-        level_ignore_channel_ids: list[int] = await ConfigDB(interaction.guild.id, "LevelIgnoreChannels").get_list(interaction.guild)
+        level_ignore_channel_ids = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level_ignore_channel()).get_list()
         level_ignore_channels_output = ""
 
         # check if all level ignore channels still exits, the ones that do, get added to the output
         for index, level_ignore_channel_id in enumerate(level_ignore_channel_ids):
             if not interaction.guild.get_channel(level_ignore_channel_id):
                 level_ignore_channel_ids.pop(index)
-                ConfigDB(interaction.guild.id, "LevelIgnoreChannels").delete(level_ignore_channel_id)
+                await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level_ignore_channel()).delete(level_ignore_channel_id)
                 continue
             
             level_ignore_channels_output +=  f"<#{level_ignore_channel_id}>\n"
@@ -132,13 +137,13 @@ class ConfigInfo(nextcord_C.Cog):
             level_ignore_channels_output = "`This server doesn't have any level-ignore-channels.`"
 
 
-        level_roles: list[list[int, int]] = await ConfigDB(interaction.guild.id, "LevelRoles").get_list(interaction.guild)
+        level_roles = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level_role()).get_list()
 
         # check if all level roles still exits, the ones that do, get added to the output
         for index, level_role in enumerate(level_roles):
             if not interaction.guild.get_role(level_role[0]):
                 level_roles.pop(index)
-                ConfigDB(interaction.guild.id, "LevelRoles").delete(level_role[0])
+                await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level_role()).delete(level_role[0])
                 LevelRoles().apply(interaction.guild)
 
         if level_roles:

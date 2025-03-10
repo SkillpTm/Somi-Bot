@@ -14,7 +14,7 @@ WHERE (:column_names) = (:placeholder_values);
 
 -- name: update_rows_where
 UPDATE :table_name
-SET (:set_column_names) = (:set_placeholder_values)
+SET (:set_column_names) = ROW(:set_placeholder_values)
 WHERE (:column_names) = (:placeholder_values);
 
 -- name: delete_rows_where

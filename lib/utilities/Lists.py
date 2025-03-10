@@ -620,7 +620,7 @@ class Lists():
             """
             ```/config audit-log-channel [action] optional[#CHANNELNAME]```
             `action`:
-            This defines if you want to set a new channel or unset the current channel. You don't need to unset the current channel to set a new channel.
+            This defines if you want to set a new channel or reset the current channel. You don't need to reset the current channel to set a new channel.
 
             `#CHANNELNAME`:
             A channel on this server. (A channel in this context is a: text-channel, news-channel or thread of any kind)
@@ -636,7 +636,7 @@ class Lists():
             """
             ```/config default-role [action] optional[@ROLENAME]```
             `action`:
-            This defines if you want to set a new role or unset the current role. You don't need to unset the current role to set a new role.
+            This defines if you want to set a new role or reset the current role. You don't need to reset the current role to set a new role.
 
             `@ROLENAME`:
             A role on this server. (note: In order for Somi to apply this role, her role needs to be placed above this role.)

@@ -177,8 +177,10 @@ class Get():
         """makes the log message for an interaction, member event, user event or message event"""
 
         # check if the data_provider is an Interaction, Member, User or Message top get the user's id
-        if isinstance(data_provider, nextcord.Interaction) or isinstance(data_provider, nextcord.Member):
+        if isinstance(data_provider, nextcord.Interaction):
             aggregator_id = data_provider.user.id
+        elif isinstance(data_provider, nextcord.Member):
+            aggregator_id = data_provider.id
         elif isinstance(data_provider, nextcord.User):
             aggregator_id = data_provider.id
         elif isinstance(data_provider, nextcord.Message):

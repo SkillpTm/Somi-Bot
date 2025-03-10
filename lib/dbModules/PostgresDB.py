@@ -1,3 +1,4 @@
+import asyncio
 import asyncpg
 import os
 from typing import AsyncIterator
@@ -7,9 +8,8 @@ from typing import AsyncIterator
 class PostgresDB():
 
     def __init__(self) -> None:
-        self._pool: asyncpg
+        self._pool: asyncpg.Pool
         self._queries: dict[str, str]
-        pass
 
     ####################################################################################################
 
@@ -127,7 +127,10 @@ class PostgresDB():
     async def close(self) -> None:
         """closes all pool connections to the db with a timeout of 5s"""
 
-        await self._pool.close(timeout = 5.0)
+        try:
+            await asyncio.wait_for(self._pool.close(), 5.0)
+        except asyncio.TimeoutError:
+            pass
 
     ####################################################################################################
 

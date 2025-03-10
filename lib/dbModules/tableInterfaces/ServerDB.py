@@ -25,10 +25,14 @@ class ServerDB():
 
     ####################################################################################################
 
-    async def audit_log_reset(self) -> None:
+    async def audit_log_reset(self) -> bool:
         """deletes the audit log from the server in the db"""
 
-        return await self.audit_log_set("")
+        if not await self.audit_log_get():
+            return False
+
+        await self.audit_log_set(None)
+        return True
     
     ####################################################################################################
 
@@ -59,10 +63,14 @@ class ServerDB():
 
     ####################################################################################################
 
-    async def default_role_reset(self) -> None:
+    async def default_role_reset(self) -> bool:
         """deletes the default role from the server in the db"""
 
-        return await self.default_role_set("")
+        if not await self.default_role_get():
+            return False
+
+        await self.default_role_set(None)
+        return True
     
     ####################################################################################################
 

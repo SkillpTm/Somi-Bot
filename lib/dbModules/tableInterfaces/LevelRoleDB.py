@@ -22,7 +22,7 @@ class LevelRoleDB():
             table_name = "level_role",
             select_columns=["*"],
             columns = ["role_id"],
-            values = [str(role_id)]
+            values = [role_id]
         ):
             return False
         
@@ -32,7 +32,7 @@ class LevelRoleDB():
             table_name = "level_role",
             select_columns=["*"],
             columns = ["server_id", "level"],
-            values = [str(self.server_id), str(level)]
+            values = [self.server_id, level]
         ):
             return False
 
@@ -40,7 +40,7 @@ class LevelRoleDB():
             query_name = "insert_row",
             table_name = "level_role",
             columns = ["role_id", "server_id", "level"],
-            values = [str(role_id), str(self.server_id), str(level)]
+            values = [role_id, self.server_id, level]
         )
 
         return True
@@ -56,7 +56,7 @@ class LevelRoleDB():
             table_name = "level_role",
             select_columns=["*"],
             columns = ["role_id"],
-            values = [str(role_id)]
+            values = [role_id]
         ):
             return False
 
@@ -64,7 +64,7 @@ class LevelRoleDB():
             query_name = "delete_rows_where",
             table_name = "level_role",
             columns = ["role_id"],
-            values = [str(role_id)]
+            values = [role_id]
         )
 
         return True
@@ -81,7 +81,7 @@ class LevelRoleDB():
             table_name = "level_role",
             select_columns = ["role_id", "level"],
             columns = ["server_id"],
-            values = [str(self.server_id)]
+            values = [self.server_id]
         )):
             output[index] = [int(level_role_row[0]), int(level_role_row[1])]
 

@@ -19,7 +19,7 @@ class LevelIgnoreChannelDB():
             table_name = "level_ignore_channel",
             select_columns=["*"],
             columns = ["channel_id"],
-            values = [str(channel_id)]
+            values = [channel_id]
         ):
             return False
 
@@ -27,7 +27,7 @@ class LevelIgnoreChannelDB():
             query_name = "insert_row",
             table_name = "level_ignore_channel",
             columns = ["channel_id", "server_id"],
-            values = [str(channel_id), str(self.server_id)]
+            values = [channel_id, self.server_id]
         )
 
         return True
@@ -42,7 +42,7 @@ class LevelIgnoreChannelDB():
             table_name = "level_ignore_channel",
             select_columns=["*"],
             columns = ["channel_id"],
-            values = [str(channel_id)]
+            values = [channel_id]
         ):
             return False
 
@@ -50,7 +50,7 @@ class LevelIgnoreChannelDB():
             query_name = "delete_rows_where",
             table_name = "level_ignore_channel",
             columns = ["channel_id"],
-            values = [str(channel_id)]
+            values = [channel_id]
         )
 
         return True
@@ -67,7 +67,7 @@ class LevelIgnoreChannelDB():
             table_name = "level_ignore_channel",
             select_columns = ["channel_id"],
             columns = ["server_id"],
-            values = [str(self.server_id)]
+            values = [self.server_id]
         ):
             output.append(int(channel_row[0]))
 

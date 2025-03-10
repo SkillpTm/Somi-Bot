@@ -35,8 +35,8 @@ class ReminderDB():
             ],
             values = [
                 reminder_id,
-                str(self.user_id),
-                str(time),
+                self.user_id,
+                time,
                 link,
                 text
             ]
@@ -73,7 +73,7 @@ class ReminderDB():
             query_name = "delete_rows_where",
             table_name = "remidner",
             columns = ["user_id"],
-            values = [str(self.user_id)]
+            values = [self.user_id]
         )
 
     ####################################################################################################
@@ -108,7 +108,7 @@ class ReminderDB():
                 "message"
             ],
             columns = ["user_id"],
-            values = [str(self.user_id)]
+            values = [self.user_id]
         )):
             output[index] = [int(remidner_row[0]), int(remidner_row[1]), remidner_row[2], remidner_row[3]]
 

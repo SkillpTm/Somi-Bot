@@ -18,7 +18,7 @@ class UserDB():
             query_name = "update_rows_where",
             table_name = "user",
             columns = ["user_id"],
-            values = [str(self.user_id)],
+            values = [self.user_id],
             set_columns = ["last_fm_username"],
             set_values = [last_fm_username]
         )
@@ -40,7 +40,7 @@ class UserDB():
             table_name = "user",
             select_columns=["last_fm_username"],
             columns = ["user_id"],
-            values = [str(self.user_id)]
+            values = [self.user_id]
         )
     
     ####################################################################################################
@@ -52,7 +52,7 @@ class UserDB():
             query_name = "update_rows_where",
             table_name = "user",
             columns = ["user_id"],
-            values = [str(self.user_id)],
+            values = [self.user_id],
             set_columns = ["weather_location"],
             set_values = [weather_location]
         )
@@ -67,5 +67,5 @@ class UserDB():
             table_name = "user",
             select_columns=["weather_location"],
             columns = ["user_id"],
-            values = [str(self.user_id)]
+            values = [self.user_id]
         )

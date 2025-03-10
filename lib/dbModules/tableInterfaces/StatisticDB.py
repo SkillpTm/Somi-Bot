@@ -39,7 +39,7 @@ class StatisticDB():
                 "word_count"
             ],
             columns = ["server_id", "user_id"],
-            values = [str(self.server_id), str(self.user_id)]
+            values = [self.server_id, self.user_id]
         )
 
     ####################################################################################################
@@ -87,5 +87,5 @@ class StatisticDB():
                 current_stats[8] + word_increase
             ],
             columns = ["server_id", "user_id"],
-            values = [str(self.server_id), str(self.user_id)]
+            values = [self.server_id, self.user_id]
         )

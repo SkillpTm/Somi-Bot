@@ -31,8 +31,8 @@ class KeywordDB():
                 "keyword"
             ],
             values = [
-                str(self.server_id),
-                str(self.user_id),
+                self.server_id,
+                self.user_id,
                 keyword
             ]
         ):
@@ -47,8 +47,8 @@ class KeywordDB():
                 "keyword"
             ],
             values = [
-                str(self.server_id),
-                str(self.user_id),
+                self.server_id,
+                self.user_id,
                 keyword
             ]
         )
@@ -71,8 +71,8 @@ class KeywordDB():
                 "keyword"
             ],
             values = [
-                str(self.server_id),
-                str(self.user_id),
+                self.server_id,
+                self.user_id,
                 keyword
             ]
         ):
@@ -87,8 +87,8 @@ class KeywordDB():
                 "keyword"
             ],
             values = [
-                str(self.server_id),
-                str(self.user_id),
+                self.server_id,
+                self.user_id,
                 keyword
             ]
         )
@@ -104,7 +104,7 @@ class KeywordDB():
             query_name = "delete_rows_where",
             table_name = "keyword",
             columns = ["server_id", "user_id"],
-            values = [str(self.server_id), str(self.user_id)]
+            values = [self.server_id, self.user_id]
         )
 
     ####################################################################################################
@@ -119,7 +119,7 @@ class KeywordDB():
             table_name = "keyword",
             select_columns=["keyword"],
             columns = ["server_id", "user_id"],
-            values = [str(self.server_id), str(self.user_id)]
+            values = [self.server_id, self.user_id]
         ):
             output.append(keyword_row[0])
 
@@ -137,7 +137,7 @@ class KeywordDB():
             table_name = "keyword",
             select_columns=["user_id", "keyword"],
             columns = ["server_id"],
-            values = [str(self.server_id)]
+            values = [self.server_id]
         ): 
             user_id, keyword = int(keyword_row[0]), keyword_row[1]
 

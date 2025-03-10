@@ -71,14 +71,14 @@ class LevelDB():
             table_name = "level",
             select_columns = ["xp_cooldown"],
             columns = ["server_id", "user_id"],
-            values = [str(self.server_id), str(self.user_id)]
+            values = [self.server_id, self.user_id]
         ):
             return False
 
         await self.database.execute(
             query_name = "increase_total_xp", # this also resets the cooldown
             columns = ["server_id", "user_id"],
-            values = [str(self.server_id), str(self.user_id)]
+            values = [self.server_id, self.user_id]
         )
 
         return True
@@ -93,7 +93,7 @@ class LevelDB():
             table_name = "level",
             select_columns = ["total_xp"],
             columns = ["server_id", "user_id"],
-            values = [str(self.server_id), str(self.user_id)]
+            values = [self.server_id, self.user_id]
         )
 
         level = self._calulate_level(total_xp)
@@ -109,7 +109,7 @@ class LevelDB():
             query_name = "select_user_xp_rank",
             limit = 1,
             columns = ["server_id", "user_id"],
-            values = [str(self.server_id), str(self.user_id)]
+            values = [self.server_id, self.user_id]
         )
 
         return rank
@@ -126,8 +126,8 @@ class LevelDB():
             query_name = "select_user_xp_rank",
             limit = limit,
             columns = ["server_id", "user_id"],
-            values = [str(self.server_id), str(self.user_id)]
+            values = [self.server_id, self.user_id]
         )):
-            output[index] = [str(user_rank[0]), self._calulate_level(str(user_rank[1])), str(user_rank[2])]
+            output[index] = [user_rank[0], self._calulate_level(user_rank[1]), user_rank[2]]
 
         return sorted(output, key=operator.itemgetter(2))

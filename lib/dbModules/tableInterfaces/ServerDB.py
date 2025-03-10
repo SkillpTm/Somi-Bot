@@ -18,9 +18,9 @@ class ServerDB():
             query_name = "update_rows_where",
             table_name = "server",
             columns = ["server_id"],
-            values = [str(self.server_id)],
+            values = [self.server_id],
             set_columns = ["audit_log_channel_id"],
-            set_values = [str(audit_log_channel_id)]
+            set_values = [audit_log_channel_id]
         )
 
     ####################################################################################################
@@ -40,7 +40,7 @@ class ServerDB():
             table_name = "server",
             select_columns=["audit_log_channel_id"],
             columns = ["server_id"],
-            values = [str(self.server_id)]
+            values = [self.server_id]
         )
     
     ####################################################################################################
@@ -52,9 +52,9 @@ class ServerDB():
             query_name = "update_rows_where",
             table_name = "server",
             columns = ["server_id"],
-            values = [str(self.server_id)],
+            values = [self.server_id],
             set_columns = ["default_role_id"],
-            set_values = [str(default_role_id)]
+            set_values = [default_role_id]
         )
 
     ####################################################################################################
@@ -74,5 +74,5 @@ class ServerDB():
             table_name = "server",
             select_columns=["default_role_id"],
             columns = ["server_id"],
-            values = [str(self.server_id)]
+            values = [self.server_id]
         )

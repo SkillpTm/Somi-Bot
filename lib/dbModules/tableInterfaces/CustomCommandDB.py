@@ -20,7 +20,7 @@ class CustomCommandDB():
             table_name = "custom_command",
             select_columns=["*"],
             columns = ["server_id", "command_name"],
-            values = [str(self.server_id), name]
+            values = [self.server_id, name]
         ):
             return False
 
@@ -33,7 +33,7 @@ class CustomCommandDB():
                 "command_text"
             ],
             values = [
-                str(self.server_id),
+                self.server_id,
                 name,
                 text
             ]
@@ -51,7 +51,7 @@ class CustomCommandDB():
             table_name = "custom_command",
             select_columns = ["command_text"],
             columns = ["server_id", "command_name"],
-            values = [str(self.server_id), name]
+            values = [self.server_id, name]
         )
 
         if not text:
@@ -61,7 +61,7 @@ class CustomCommandDB():
             query_name = "delete_rows_where",
             table_name = "custom_command",
             columns = ["server_id", "command_name"],
-            values = [str(self.server_id), name]
+            values = [self.server_id, name]
         )
 
         return text
@@ -76,7 +76,7 @@ class CustomCommandDB():
             table_name = "custom_command",
             select_columns = ["command_text"],
             columns = ["server_id", "command_name"],
-            values = [str(self.server_id), name]
+            values = [self.server_id, name]
         )
 
     ####################################################################################################
@@ -89,5 +89,5 @@ class CustomCommandDB():
             table_name = "custom_command",
             select_columns=["command_name"],
             columns = ["server_id"],
-            values = [str(self.server_id)]
+            values = [self.server_id]
         )

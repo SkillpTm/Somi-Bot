@@ -34,8 +34,8 @@ class FeedbackDB():
                 "message"
             ],
             values = [
-                str(self.server_id),
-                str(self.user_id),
+                self.server_id,
+                self.user_id,
                 time,
                 text,
             ]

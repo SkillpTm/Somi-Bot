@@ -63,7 +63,7 @@ class DBHandler():
     async def hidden_channel(self) -> HiddenChannelDB:
         await self.setup()
 
-        return HiddenChannelDB(self.database, self.user_id)
+        return HiddenChannelDB(self.database, self.server_id)
     
     ####################################################################################################
 
@@ -94,14 +94,14 @@ class DBHandler():
     async def level_ignore_channel(self) -> LevelIgnoreChannelDB:
         await self.setup()
 
-        return LevelIgnoreChannelDB(self.database, self.user_id)
+        return LevelIgnoreChannelDB(self.database, self.server_id)
     
     ####################################################################################################
 
     async def level_role(self) -> LevelRoleDB:
         await self.setup()
 
-        return LevelRoleDB(self.database, self.user_id)
+        return LevelRoleDB(self.database, self.server_id)
     
     ####################################################################################################
 

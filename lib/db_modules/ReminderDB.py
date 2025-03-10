@@ -1,116 +1,138 @@
+import operator
 import time
 
-from lib.db_modules.CommonDB import CommonDB
+from lib.db_modules.PostgresDB import PostgresDB
 
 
 
-class ReminderDB(CommonDB):
+class ReminderDB():
+    """Abstraction layer to interact with the reminder table."""
 
-    def __init__(self,
-                 user_id: int) -> None:
-        super().__init__(database_path = "../../storage/db/reminders.db",
-                         table_name = f"user{user_id}",
-                         table_structure = """(time integer,
-                                               link text,
-                                               id integer,
-                                               text text)""")
+    async def __init__(self, database: PostgresDB, user_id: int = 0) -> None:
+        self.database = database
+        self.user_id = user_id
 
     ####################################################################################################
 
-    def add(self,
-            time: int,
-            link: str,
-            id: str,
-            text: str) -> None:
-        """adds the reminder to the table"""
+    async def add(
+        self,
+        reminder_id: str,
+        time: int,
+        link: str,
+        text: str
+    ) -> None:
+        """adds the reminder to the db"""
 
-        inserted = self._insert(values = [time, link, id, text])
-
-        self._close(commit = inserted)
+        await self.database.execute(
+            query_name = "insert_row",
+            table_name = "reminder",
+            columns = [
+                "reminder_id",
+                "user_id",
+                "time",
+                "message_link",
+                "message"
+            ],
+            values = [
+                reminder_id,
+                str(self.user_id),
+                str(time),
+                link,
+                text
+            ]
+        )
 
     ####################################################################################################
 
-    def delete(self,
-               id: str) -> bool:
-        """deletes the reminder from the table"""
+    async def delete(self, reminder_id: str) -> bool:
+        """deletes the reminder from the db"""
 
-        deleted = self._delete(select_column = "id",
-                               where_column = "id",
-                               check_value = id)
+        # check if keyword exists
+        if not await self.database.fetch_row(
+            query_name = "select_where",
+            table_name = "reminder",
+            select_columns=["*"],
+            columns = ["reminder_id"],
+            values = [reminder_id]
+        ):
+            return False
         
-        self._close(commit = deleted)
-
-        return deleted
-
-    ####################################################################################################
-
-    def delete_all(self) -> None:
-        """drops the user's table"""
-
-        self._drop()
-        self._close(commit = True)
+        await self.database.execute(
+            query_name = "delete_rows_where",
+            table_name = "remidner",
+            columns = ["reminder_id"],
+            values = [reminder_id]
+        )
 
     ####################################################################################################
 
-    def get_reminder(self,
-                     id: int) -> tuple[int, str, int, str]:
-        """get the reminder from it's id as: time, link, id, text"""
+    async def delete_all(self) -> None:
+        """deletes all the reminder of this user"""
 
-        reminder = self._get(select_column = "*",
-                             where_column = "id",
-                             check_value = str(id),
-                             multiple_columns = True)
-
-        self._close(commit = False)
-
-        return reminder[0], reminder[1], reminder[2], reminder[3]
+        await self.database.execute(
+            query_name = "delete_rows_where",
+            table_name = "remidner",
+            columns = ["user_id"],
+            values = [str(self.user_id)]
+        )
 
     ####################################################################################################
 
-    def get_list(self) -> list[list[tuple[int, str, int, str]]]:
-        """get a list of lists with all times, links, ids and texts of the user"""
+    async def get_reminder(self, reminder_id: str) -> tuple[int, str, str]:
+        """get the reminder from reminder_id as: time, message_link, message"""
 
-        reminders = self._get(select_column = "*",
-                              order_column = "time",
-                              order_type = "ASC",
-                              multiple_columns = True,
-                              multiple_columns_and_rows = True)
-        
-        self._close(commit = False)
+        output: list[int | str] = await self.database.fetch_row(
+            query_name = "select_where",
+            table_name = "reminder",
+            select_columns=["time", "message_link", "message"],
+            columns = ["reminder_id"],
+            values = [reminder_id]
+        )
 
-        return reminders
+        return tuple(*output)
 
     ####################################################################################################
 
-    def get_current(self) -> list[list[int, int]]:
-        """get a list of lists with all user's reminders as: user id and id"""
+    async def get_list(self) -> list[list[int | str]]:
+        """get a list of lists with all reminder_id, time, message_link, message for the user"""
 
-        self.cur.execute("""SELECT name
-                            FROM sqlite_master
-                            WHERE type='table'""")
-        
-        all_table_names = self.cur.fetchall()
-        all_users_times: list[list[int, int, int]] = []
+        output: list[list[int | str]] = []
 
-        for user in all_table_names:
-            user = user[0]
+        async for index, remidner_row in enumerate(self.database.fetch_many(
+            query_name = "select_where",
+            table_name = "reminder",
+            select_columns=[
+                "reminder_id",
+                "time",
+                "message_link",
+                "message"
+            ],
+            columns = ["user_id"],
+            values = [str(self.user_id)]
+        )):
+            output[index] = [int(remidner_row[0]), int(remidner_row[1]), remidner_row[2], remidner_row[3]]
 
-            self.cur.execute(f"""SELECT time, id
-                                 FROM {user}
-                                 ORDER BY time ASC""")
+        return sorted(output, key=operator.itemgetter(1))
 
-            user_times_ids = self.cur.fetchall()
-            current_time = int(time.time())
+    ####################################################################################################
 
-            for time_and_id in user_times_ids:
-                reminder_time = time_and_id[0]
-                id = time_and_id[1]
+    async def get_upcoming(self) -> list[list[int, int]]:
+        """get a list of lists with all user's reminders, if the reminder needs to be send out as: reminder_id, user_id"""
 
-                if reminder_time > current_time:
-                    break
-                
-                all_users_times.append([int(user[4:]), id])
+        output: list[list[int | str]] = []
 
-        self._close(commit = False)
+        async for remidner_row in self.database.fetch_many(
+            query_name = "select_where",
+            table_name = "reminder",
+            select_columns=[
+                "reminder_id",
+                "user_id",
+                "time"
+            ],
+            columns = str(1),
+            values = [str(1)]
+        ):
+            if int(remidner_row[2]) <= int(time.time()):
+                output.append([int(remidner_row[0]), int(remidner_row[1])])
 
-        return all_users_times
+        return output

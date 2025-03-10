@@ -20,4 +20,9 @@ class TelemetryDB():
     async def get_total_amount(self) -> int:
         """returns the total amount of all telemetry uses (aka all command uses and events happening)"""
 
-        return int(await self.database.fetch_val(query_name="telemetry_total_amount"))
+        amount = await self.database.fetch_val(query_name="telemetry_total_amount")
+
+        if not amount:
+            return 0
+        
+        return amount

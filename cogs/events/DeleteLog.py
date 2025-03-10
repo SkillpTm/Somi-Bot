@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.db_modules import CommandUsesDB, ConfigDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -23,12 +23,12 @@ class DeleteLog(nextcord_C.Cog):
         if not message.content and len(message.attachments) < 1:
             return
 
-        audit_log_id: int = await ConfigDB(message.guild.id, "AuditLogChannel").get_list(message.guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id).server()).audit_log_get()
 
         if not audit_log_id:
             return
 
-        if message.channel.id in await ConfigDB(message.guild.id, "HiddenChannels").get_list(message.guild):
+        if message.channel.id in await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id).hidden_channel()).get_list():
             return
 
         self.client.Loggers.action_log(Get.log_message(
@@ -51,7 +51,7 @@ class DeleteLog(nextcord_C.Cog):
         if file_urls:
             await sent_message.reply(content=file_urls, mention_author=False)
 
-        CommandUsesDB("log_activations").update("delete log")
+        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("delete log")
 
 
 

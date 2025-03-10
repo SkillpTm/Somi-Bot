@@ -1,8 +1,9 @@
+import datetime
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import os
 
-from lib.db_modules import CommandUsesDB, ConfigDB
+from lib.dbModules import DBHandler
 from lib.modules import Create, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -18,17 +19,18 @@ class PurgeLog(nextcord_C.Cog):
     async def purge_log(self, messages: list[nextcord.Message]) -> None:
         """A log that activates, when someone gets purged without using the bot"""
 
-        audit_log_id: int = await ConfigDB(messages[0].guild.id, "AuditLogChannel").get_list(messages[0].guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=messages[0].guild.id).server()).audit_log_get()
 
         if not audit_log_id:
             return
 
-        if messages[0].channel.id in await ConfigDB(messages[0].guild.id, "HiddenChannels").get_list(messages[0].guild):
+        if messages[0].channel.id in await (await DBHandler(self.client.PostgresDB, server_id=messages[0].guild.id).hidden_channel()).get_list():
             return
 
         # we only do this to get "entry" and with that data on who deleted the messages
         async for entry in messages[0].guild.audit_logs(limit=1, action=nextcord.AuditLogAction.message_bulk_delete):
-            pass
+            if (datetime.datetime.now(datetime.timezone.utc) - entry.created_at).total_seconds() < 5:
+                return
 
         self.client.Loggers.action_log(Get.log_message(
             messages[0],
@@ -57,7 +59,7 @@ class PurgeLog(nextcord_C.Cog):
         await sent_message.reply(file=nextcord.File(csv_name), mention_author=False)
         os.remove(csv_name)
 
-        CommandUsesDB("log_activations").update("purge log")
+        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("purge log")
 
 
 

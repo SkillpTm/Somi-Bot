@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.db_modules import CommandUsesDB, ConfigDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -27,12 +27,12 @@ class EditLog(nextcord_C.Cog):
         if message_before.author.id == self.client.user.id:
             return
 
-        audit_log_id: int = await ConfigDB(message_before.guild.id, "AuditLogChannel").get_list(message_before.guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=message_before.guild.id).server()).audit_log_get()
 
         if not audit_log_id:
             return
 
-        if message_before.channel.id in await ConfigDB(message_before.guild.id, "HiddenChannels").get_list(message_before.guild):
+        if message_before.channel.id in await (await DBHandler(self.client.PostgresDB, server_id=message_before.guild.id).hidden_channel()).get_list():
             return
 
         # content may be the same, if an embed changed
@@ -63,12 +63,12 @@ class EditLog(nextcord_C.Cog):
         if file_urls:
             await last_sent_response.reply(content=file_urls, mention_author=False)
 
-        CommandUsesDB("log_activations").update("edit log")
+        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("edit log")
 
     ####################################################################################################
 
     @staticmethod
-    async def single_response(
+    def single_response(
         message_before: nextcord.Message,
         message_after: nextcord.Message
     ) -> tuple[nextcord.Embed, str]:
@@ -101,7 +101,7 @@ class EditLog(nextcord_C.Cog):
     ####################################################################################################
 
     @staticmethod
-    async def multi_response(
+    def multi_response(
         message_before: nextcord.Message,
         message_after: nextcord.Message
     ) -> tuple[nextcord.Embed, nextcord.Embed, str]:

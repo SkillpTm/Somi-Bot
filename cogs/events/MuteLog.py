@@ -1,8 +1,9 @@
+import datetime
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import time
 
-from lib.db_modules import CommandUsesDB, ConfigDB
+from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -25,13 +26,13 @@ class MuteLog(nextcord_C.Cog):
         if member_before.communication_disabled_until == member_after.communication_disabled_until:
             return
         
-        audit_log_id: int = await ConfigDB(member_before.guild.id, "AuditLogChannel").get_list(member_before.guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=member_before.guild.id).server()).audit_log_get()
 
         if not audit_log_id:
             return
 
         async for entry in member_before.guild.audit_logs(limit=1, action=nextcord.AuditLogAction.member_update):
-            if member_before.id != entry.target.id:
+            if member_before.id != entry.target.id or (datetime.datetime.now(datetime.timezone.utc) - entry.created_at).total_seconds() < 5:
                 return
 
         if member_after.communication_disabled_until:
@@ -41,11 +42,11 @@ class MuteLog(nextcord_C.Cog):
 
         await member_before.guild.get_channel(audit_log_id).send(embed=embed)
 
-        CommandUsesDB("log_activations").update("mute log")
+        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("mute log")
 
     ####################################################################################################
 
-    async def muted(
+    def muted(
         self,
         entry: nextcord.AuditLogEntry,
         member_after: nextcord.Member
@@ -86,7 +87,7 @@ class MuteLog(nextcord_C.Cog):
 
     ####################################################################################################
 
-    async def unmuted(
+    def unmuted(
         self,
         entry: nextcord.AuditLogEntry,
         member_after: nextcord.Member,

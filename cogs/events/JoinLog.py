@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import time
 
-from lib.db_modules import CommandUsesDB, ConfigDB
+from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -29,12 +29,12 @@ class JoinLog(nextcord_C.Cog):
         ))
 
 
-        default_role_id: int = await ConfigDB(member.guild.id, "DefaultRole").get_list(member.guild)
+        default_role_id = await (await DBHandler(self.client.PostgresDB, server_id=member.guild.id).server()).default_role_get()
 
         if default_role_id:
             await member.add_roles(member.guild.get_role(default_role_id))
 
-        audit_log_id: int = await ConfigDB(member.guild.id, "AuditLogChannel").get_list(member.guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=member.guild.id).server()).audit_log_get()
 
         if not audit_log_id:
             return
@@ -67,7 +67,7 @@ class JoinLog(nextcord_C.Cog):
 
         await member.guild.get_channel(audit_log_id).send(embed=embed)
 
-        CommandUsesDB("log_activations").update("join log")
+        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("join log")
 
 
 

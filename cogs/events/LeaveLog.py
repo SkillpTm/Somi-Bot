@@ -1,8 +1,9 @@
+import datetime
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import time
 
-from lib.db_modules import KeywordDB, ReminderDB, CommandUsesDB, ConfigDB
+from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -28,24 +29,19 @@ class LeaveLog(nextcord_C.Cog):
             {"member": str(member.id)}
         ))
 
-        KeywordDB(member.guild.id, member.id).delete_all()
-
-        if not member.mutual_guilds:
-            ReminderDB(member.id).delete_all()
-
-        audit_log_id: int = await ConfigDB(member.guild.id, "AuditLogChannel").get_list(member.guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=member.guild.id).server()).audit_log_get()
 
         if not audit_log_id:
             return
 
         # check the last audit log entry for bans, to see if this was a ban (bans get handled by BanLog)
         async for entry in member.guild.audit_logs(limit=1, action=nextcord.AuditLogAction.ban):
-            if entry.target.id == member.id:
+            if entry.target.id == member.id and (datetime.datetime.now(datetime.timezone.utc) - entry.created_at).total_seconds() < 5:
                 return
 
         # check the last audit log entry for kicks, to see if this was a kick (kicks get handled by KickLog)
         async for entry in member.guild.audit_logs(limit=1, action=nextcord.AuditLogAction.kick):
-            if entry.target.id == member.id:
+            if entry.target.id == member.id and (datetime.datetime.now(datetime.timezone.utc) - entry.created_at).total_seconds() < 5:
                 return
 
         embed = EmbedFunctions().builder(
@@ -82,7 +78,7 @@ class LeaveLog(nextcord_C.Cog):
 
         await member.guild.get_channel(audit_log_id).send(embed=embed)
 
-        CommandUsesDB("log_activations").update("leave log")
+        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("leave log")
 
 
 

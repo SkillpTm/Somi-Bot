@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.db_modules import ConfigDB
+from lib.dbModules import DBHandler
 from lib.utilities import SomiBot
 
 
@@ -19,25 +19,25 @@ class ConfigValidate(nextcord_C.Cog):
         if not isinstance(channel, nextcord.TextChannel) and not isinstance(channel, nextcord.Thread):
             return
 
-        if await channel.id == ConfigDB(channel.guild.id, "AuditLogChannel").get_list(channel.guild):
-            ConfigDB(channel.guild.id, "AuditLogChannel").delete(channel.id)
+        if channel.id == await (await DBHandler(self.client.PostgresDB, server_id=channel.guild.id).server()).audit_log_get():
+            await (await DBHandler(self.client.PostgresDB, server_id=channel.guild.id).server()).audit_log_reset()
 
-        if await channel.id in ConfigDB(channel.guild.id, "HiddenChannels").get_list(channel.guild):
-            ConfigDB(channel.guild.id, "HiddenChannels").delete(channel.id)
+        if channel.id in await (await DBHandler(self.client.PostgresDB, server_id=channel.guild.id).hidden_channel()).get_list():
+            await (await DBHandler(self.client.PostgresDB, server_id=channel.guild.id).hidden_channel()).delete(channel.id)
 
-        if await channel.id in ConfigDB(channel.guild.id, "LevelIgnoreChannels").get_list(channel.guild):
-            ConfigDB(channel.guild.id, "LevelIgnoreChannels").delete(channel.id)
+        if channel.id in await (await DBHandler(self.client.PostgresDB, server_id=channel.guild.id).level_ignore_channel()).get_list():
+            await (await DBHandler(self.client.PostgresDB, server_id=channel.guild.id).level_ignore_channel()).delete(channel.id)
 
     ####################################################################################################
 
     async def remove_role(self, role: nextcord.Role) -> None:
         """removes a role from DefaultRole and LevelRoles"""
 
-        if await role.id == ConfigDB(role.guild.id, "DefaultRole").get_list(role.guild):
-            ConfigDB(role.guild.id, "DefaultRole").delete(role.id)
+        if role.id == await (await DBHandler(self.client.PostgresDB, server_id=role.guild.id).server()).default_role_get():
+            await (await DBHandler(self.client.PostgresDB, server_id=role.guild.id).server()).default_role_reset()
 
-        if [role.id == level_role[0] for level_role in await ConfigDB(role.guild.id, "LevelRoles").get_list(role.guild)]:
-            ConfigDB(role.guild.id, "LevelRoles").delete(role.id)
+        if [role.id == level_role[0] for level_role in await (await DBHandler(self.client.PostgresDB, server_id=role.guild.id).level_role()).get_list()]:
+            (await DBHandler(self.client.PostgresDB, server_id=role.guild.id).level_role()).delete(role.id)
 
 
 

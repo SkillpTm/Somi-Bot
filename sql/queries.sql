@@ -26,7 +26,7 @@ WHERE (:column_names) = (:placeholder_values);
 INSERT INTO telemetry (event_name, amount)
 VALUES ($1, 1)
 ON CONFLICT (event_name)
-DO UPDATE SET amount += 1;
+DO UPDATE SET amount = telemetry.amount + 1;
 
 -- name: telemetry_total_amount
 SELECT SUM(amount)
@@ -36,7 +36,7 @@ FROM telemetry;
 UPDATE level
 SET
     xp_cooldown = EXTRACT(EPOCH FROM NOW()) + FLOOR(RANDOM() * (65 - 55 + 1)) + 55
-    total_xp = total_xp + (FLOOR(RANDOM() * (15 - 10 + 1)) + 10)
+    total_xp = level.total_xp + (FLOOR(RANDOM() * (15 - 10 + 1)) + 10)
 WHERE (:column_names) = (:placeholder_values);
 
 -- name: select_user_xp_rank

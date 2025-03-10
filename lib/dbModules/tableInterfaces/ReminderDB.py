@@ -98,7 +98,7 @@ class ReminderDB():
 
         output: list[list[int | str]] = []
 
-        async for index, remidner_row in enumerate(self.database.fetch_many(
+        async for index, remidner_row in self.database.fetch_many(
             query_name = "select_where",
             table_name = "reminder",
             select_columns=[
@@ -109,8 +109,8 @@ class ReminderDB():
             ],
             columns = ["user_id"],
             values = [self.user_id]
-        )):
-            output[index] = [int(remidner_row[0]), int(remidner_row[1]), remidner_row[2], remidner_row[3]]
+        ):
+            output.append([int(remidner_row[0]), int(remidner_row[1]), remidner_row[2], remidner_row[3]])
 
         return sorted(output, key=operator.itemgetter(1))
 

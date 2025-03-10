@@ -76,13 +76,13 @@ class LevelRoleDB():
 
         output: list[list[int]] = []
 
-        async for index, level_role_row in enumerate(self.database.fetch_many(
+        async for level_role_row in self.database.fetch_many(
             query_name = "select_where",
             table_name = "level_role",
             select_columns = ["role_id", "level"],
             columns = ["server_id"],
             values = [self.server_id]
-        )):
-            output[index] = [int(level_role_row[0]), int(level_role_row[1])]
+        ):
+            output.append([int(level_role_row[0]), int(level_role_row[1])])
 
         return sorted(output, key=operator.itemgetter(1))

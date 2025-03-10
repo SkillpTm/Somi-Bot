@@ -13,6 +13,7 @@ class DBHandler():
     def __init__(
         self,
         database: PostgresDB,
+        *,
         server_id: int = 0,
         user_id: int = 0
     ):

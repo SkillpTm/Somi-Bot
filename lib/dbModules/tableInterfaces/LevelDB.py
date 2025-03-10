@@ -122,12 +122,12 @@ class LevelDB():
 
         output: list[list[int]] = []
 
-        async for index, user_rank in enumerate(self.database.fetch_many(
+        async for index, user_rank in self.database.fetch_many(
             query_name = "select_user_xp_rank",
             limit = limit,
             columns = ["server_id", "user_id"],
             values = [self.server_id, self.user_id]
-        )):
-            output[index] = [user_rank[0], self._calulate_level(user_rank[1]), user_rank[2]]
+        ):
+            output.append([user_rank[0], self._calulate_level(user_rank[1]), user_rank[2]])
 
         return sorted(output, key=operator.itemgetter(2))

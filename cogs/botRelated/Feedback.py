@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import FeedbackDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -34,12 +34,12 @@ class FeedbackModal(nextcord.ui.Modal):
 
         if interaction.guild:
             server_id = interaction.guild.id
-            origin_text = f"Feedback from Server: `{interaction.guild.name}` | `({interaction.guild.id})`:"
+            origin_text = f"Feedback from server: `{interaction.guild.name}` | `({interaction.guild.id})`:"
         else:
             server_id = 0 # DMs are indecated by a 0
-            origin_text = f"Feedback from DM Channel:"
+            origin_text = f"Feedback from DM channel:"
 
-        FeedbackDB().add(server_id, interaction.user.id, str(interaction.user), Get.kst_timestamp(), self.feedback.value)
+        await (await DBHandler(self.client.PostgresDB, server_id, interaction.user.id).feedback()).submit(Get.kst_timestamp(), self.feedback.value)
 
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,

@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import CommandUsesDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -67,7 +67,7 @@ class About(nextcord_C.Cog):
 
                 [
                     "Global Command Executions:",
-                    f"`{CommandUsesDB('command_uses').get_total()}`",
+                    f"`{await (await DBHandler(self.client.PostgresDB).telemetry()).get_total_amount()}`",
                     True
                 ],
 

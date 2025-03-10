@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import CommandUsesDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -83,7 +83,7 @@ class Help(nextcord_C.Cog):
 
         await interaction.followup.send(embed=embed, ephemeral=True)
 
-        CommandUsesDB("help_selections").update(f"{commandname[1:]}")
+        await (await DBHandler(self.client.PostgresDB).telemetry()).increment(f"help selection: {commandname[1:]}")
 
     ####################################################################################################
 

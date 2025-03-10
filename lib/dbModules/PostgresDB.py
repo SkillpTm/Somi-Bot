@@ -1,18 +1,33 @@
 import asyncpg
 import os
+from typing import AsyncIterator
 
 
 
 class PostgresDB():
 
-    async def __init__(
-        self,
+    def __init__(self) -> None:
+        self._pool: asyncpg
+        self._queries: dict[str, str]
+        pass
+
+    ####################################################################################################
+
+    @classmethod
+    async def create(
+        cls,
         schema_path: str,
         queries_path: str,
         max_pool_size: int
-    ) -> None:
+    ) -> "PostgresDB":
+        """async construtor, which is the only way in which instances should be made"""
+
+        self = cls()
+
         self._pool = await self._setup(schema_path, max_pool_size)
         self._queries = self._setup_queries(queries_path)
+
+        return self
 
     ####################################################################################################
 
@@ -82,31 +97,37 @@ class PostgresDB():
     ####################################################################################################
 
     @staticmethod
-    def _sanitize(values: list[str]) -> list[str]:
+    def _sanitize(values: list[str | int]) -> list[str | int]:
         """sanitizes any input values or columns for sql"""
 
         for index, element in enumerate(values):
-            values[index] = str(element).replace('"', '＂').replace("'", "‘")
+            if type(element) != str:
+                continue
+
+            values[index] = element.replace('"', '＂').replace("'", "‘")
 
         return values
 
     ####################################################################################################
 
     @staticmethod
-    def _desanitize(values: list[str]) -> list[str]:
+    def _desanitize(values: list[str | int]) -> list[str | int]:
         """desanitizes any input values or columns from our db"""
 
         for index, element in enumerate(values):
-            values[index] = str(element).replace('＂', '"').replace("‘", "'")
+            if type(element) != str:
+                continue
+
+            values[index] = element.replace('＂', '"').replace("‘", "'")
 
         return values
 
     ####################################################################################################
 
-    def close(self) -> None:
+    async def close(self) -> None:
         """closes all pool connections to the db with a timeout of 5s"""
 
-        self._pool.close(timeout = 5.0)
+        await self._pool.close(timeout = 5.0)
 
     ####################################################################################################
 
@@ -119,39 +140,39 @@ class PostgresDB():
         conflict_columns: list[str] = [],
         limit: int = 0,
         columns: list[str] = [],
-        values: list[str] = [],
+        values: list[str | int] = [],
         set_columns: list[str] = [],
-        set_values: list[str] = []
+        set_values: list[str | int] = []
     ) -> str:
-        """"""
+        """replaces the templating strings with the proper inputs and returns the ready to be used query"""
 
         query = self._queries[query_name]
 
         if table_name:
-            query.replace(":table_name", self._sanitize([table_name])[0])
+            query = query.replace(":table_name", self._sanitize([table_name])[0])
 
         if select_columns:
-            query.replace(":select_columns", ", ".join(self._sanitize(select_columns)))
+            query = query.replace(":select_columns", ", ".join(self._sanitize(select_columns)))
 
         if conflict_columns:
-            query.replace(":conflict_columns", ", ".join(self._sanitize(conflict_columns)))
+            query = query.replace(":conflict_columns", ", ".join(self._sanitize(conflict_columns)))
 
         if limit:
-            query.replace(":limit_value", ", ".join(self._sanitize(str(limit))))
+            query = query.replace(":limit_value", ", ".join(self._sanitize(limit)))
 
         if columns:
-            query.replace(":column_names", ", ".join(self._sanitize(columns)))
+            query = query.replace(":column_names", ", ".join(self._sanitize(columns)))
 
         # if there are values add the $num placeholders for asyncpg to resolve later
         if values:
-            query.replace(":placeholder_values", ", ".join(f"${i+1}" for i in range(len(set_values), len(set_values) + len(values))))
+            query = query.replace(":placeholder_values", ", ".join(f"${i+1}" for i in range(len(set_values), len(set_values) + len(values))))
 
         if set_columns:
-            query.replace(":set_column_names", ", ".join(self._sanitize(set_columns)))
+            query = query.replace(":set_column_names", ", ".join(self._sanitize(set_columns)))
 
         # if there are values add the $num placeholders for asyncpg to resolve later
         if set_values:
-            query.replace(":placeholder_values", ", ".join(f"${i+1}" for i in range(len(set_values))))
+            query = query.replace(":set_placeholder_values", ", ".join(f"${i+1}" for i in range(len(set_values))))
 
         return query
 
@@ -164,11 +185,11 @@ class PostgresDB():
         table_name: str = "",
         conflict_columns: list[str] = [],
         columns: list[str] = [],
-        values: list[str] = [],
+        values: list[str | int] = [],
         set_columns: list[str] = [],
-        set_values: list[str] = []
+        set_values: list[str | int] = []
     ) -> None:
-        """"""
+        """executes an SQL query"""
 
         query = self._get_query(
             query_name = query_name,
@@ -192,9 +213,9 @@ class PostgresDB():
         table_name: str = "",
         select_columns: list[str] = [],
         columns: list[str] = [],
-        values: list[str] = []
+        values: list[str | int] = []
     ) -> str | int:
-        """"""
+        """fetches a singular value"""
 
         query = self._get_query(
             query_name = query_name,
@@ -226,9 +247,9 @@ class PostgresDB():
         select_columns: list[str] = [],
         limit: int = 0,
         columns: list[str] = [],
-        values: list[str] = []
+        values: list[str | int] = []
     ) -> list[str | int]:
-        """"""
+        """fetches several values from one row"""
 
         query = self._get_query(
             query_name = query_name,
@@ -269,9 +290,9 @@ class PostgresDB():
         select_columns: list[str] = [],
         limit: int = 0,
         columns: list[str] = [],
-        values: list[str] = []
-    ) -> list[list[str | int]]:
-        """"""
+        values: list[str | int] = []
+    ) -> AsyncIterator[list[str | int]]:
+        """fetches several values from several roles and returns them as an AsyncIterator iterator"""
 
         query = self._get_query(
             query_name = query_name,
@@ -283,19 +304,19 @@ class PostgresDB():
         )
 
         async with self._pool.acquire() as conn:
-            results: list[asyncpg.Record] = await conn.fetchmany(query, *self._sanitize(values))
+            async with conn.transaction():
+                async for record in conn.cursor(query, *self._sanitize(values)):
 
-        output: list[list[str | int]] = []
-
-        for index, result in enumerate(results):
-            for value in result.values():
-                if type(value) == str:
-                    value = self._desanitize([value])[0]
-
-                # ensure we never return null
-                if not value:
-                    value = ""
-
-                output[index].append(value)
-
-        return output
+                    result: list[str | int] = []
+                    
+                    for value in record.values():
+                        if type(value) == str:
+                            value = self._desanitize([value])[0]
+                        
+                        # ensure we never return null
+                        if not value:
+                            value = ""
+                        
+                        result.append(value)
+                
+                    yield result

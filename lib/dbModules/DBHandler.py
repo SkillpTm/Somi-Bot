@@ -1,16 +1,16 @@
-from lib.db_modules.CustomCommandDB import CustomCommandDB
-from lib.db_modules.FeedbackDB import FeedbackDB
-from lib.db_modules.HiddenChannelDB import HiddenChannelDB
-from lib.db_modules.KeywordDB import KeywordDB
-from lib.db_modules.LevelDB import LevelDB
-from lib.db_modules.LevelIgnoreChannelDB import LevelIgnoreChannelDB
-from lib.db_modules.LevelRoleDB import LevelRoleDB
-from lib.db_modules.PostgresDB import PostgresDB
-from lib.db_modules.ReminderDB import ReminderDB
-from lib.db_modules.ServerDB import ServerDB
-from lib.db_modules.StatisticDB import StatisticDB
-from lib.db_modules.TelemetryDB import TelemetryDB
-from lib.db_modules.UserDB import UserDB
+from lib.dbModules.tableInterfaces.CustomCommandDB import CustomCommandDB
+from lib.dbModules.tableInterfaces.FeedbackDB import FeedbackDB
+from lib.dbModules.tableInterfaces.HiddenChannelDB import HiddenChannelDB
+from lib.dbModules.tableInterfaces.KeywordDB import KeywordDB
+from lib.dbModules.tableInterfaces.LevelDB import LevelDB
+from lib.dbModules.tableInterfaces.LevelIgnoreChannelDB import LevelIgnoreChannelDB
+from lib.dbModules.tableInterfaces.LevelRoleDB import LevelRoleDB
+from lib.dbModules.PostgresDB import PostgresDB
+from lib.dbModules.tableInterfaces.ReminderDB import ReminderDB
+from lib.dbModules.tableInterfaces.ServerDB import ServerDB
+from lib.dbModules.tableInterfaces.StatisticDB import StatisticDB
+from lib.dbModules.tableInterfaces.TelemetryDB import TelemetryDB
+from lib.dbModules.tableInterfaces.UserDB import UserDB
 
 
 

@@ -1,6 +1,6 @@
 import operator
 
-from lib.db_modules.PostgresDB import PostgresDB
+from lib.dbModules.PostgresDB import PostgresDB
 
 
 

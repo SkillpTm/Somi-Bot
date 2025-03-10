@@ -1,3 +1,8 @@
+import dataclasses
+
+
+
+@dataclasses.dataclass
 class Config():
 
     # Somicord specific IDs, for single server features

@@ -116,10 +116,10 @@ class ReminderDB():
 
     ####################################################################################################
 
-    async def get_upcoming(self) -> list[list[int, int]]:
+    async def get_upcoming(self) -> list[list[int]]:
         """get a list of lists with all user's reminders, if the reminder needs to be send out as: reminder_id, user_id"""
 
-        output: list[list[int | str]] = []
+        output: list[list[int]] = []
 
         async for remidner_row in self.database.fetch_many(
             query_name = "select_where",

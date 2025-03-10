@@ -32,7 +32,7 @@ class ServerDB():
     
     ####################################################################################################
 
-    async def audit_log_get(self) -> str:
+    async def audit_log_get(self) -> int:
         """get the audit log from the db"""
 
         return await self.database.fetch_val(
@@ -66,7 +66,7 @@ class ServerDB():
     
     ####################################################################################################
 
-    async def default_role_get(self) -> str:
+    async def default_role_get(self) -> int:
         """get the default role from the db"""
 
         return await self.database.fetch_val(

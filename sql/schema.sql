@@ -1,7 +1,7 @@
 -- name: create_telemetry
 CREATE TABLE IF NOT EXISTS telemetry (
     telemetry_id SERIAL PRIMARY KEY,
-    event_name UNIQUE TEXT NOT NULL,
+    event_name TEXT UNIQUE NOT NULL,
     amount BIGINT NOT NULL DEFAULT 1
 );
 

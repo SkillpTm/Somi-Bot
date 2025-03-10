@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import KeywordDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -26,7 +26,7 @@ class KeywordList(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        user_keywords = KeywordDB(interaction.guild.id, interaction.user.id).get_list()
+        user_keywords = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).get_list()
 
         if not user_keywords:
             await interaction.followup.send(embed=EmbedFunctions().error("You don't have any keywords.\nTo add a keyword use `/keyword add`."), ephemeral=True)
@@ -40,7 +40,7 @@ class KeywordList(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,
-            author = f"Keyword List for: `{interaction.user.display_name}`",
+            author = f"Keyword List for: {interaction.user.display_name}",
             author_icon = interaction.user.display_avatar.url,
             footer = "DEFAULT_KST_FOOTER",
             fields = [

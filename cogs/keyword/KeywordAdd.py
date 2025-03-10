@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 import re
 
-from lib.db_modules import KeywordDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -48,7 +48,7 @@ class KeywordAdd(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().error(f"You can only have letters and numbers in your keywords!"), ephemeral=True)
             return
 
-        added = KeywordDB(interaction.guild.id, interaction.user.id).add(keyword)
+        added = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).add(keyword)
 
         if not added:
             await interaction.followup.send(embed=EmbedFunctions().error(f"You already have `{keyword}` as a keyword.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)

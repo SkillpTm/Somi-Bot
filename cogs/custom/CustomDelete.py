@@ -23,7 +23,7 @@ class CustomDelete(nextcord_C.Cog):
         self,
         interaction: nextcord.Interaction,
         *,
-        commandname: str = nextcord.SlashOption(
+        name: str = nextcord.SlashOption(
             description = "custom-command to be deleted",
             required = True,
             min_length = 2,
@@ -35,20 +35,20 @@ class CustomDelete(nextcord_C.Cog):
         self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/custom delete",
-            {"commandname": commandname}
+            {"name": name}
         ))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        commandname = Get.clean_input_command(commandname)
+        name = Get.clean_input_command(name)
 
-        commandtext = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).delete(commandname)
+        commandtext = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).delete(name)
 
         if not commandtext:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"There is no custom-command with the name `{commandname}`.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().error(f"There is no custom-command with the name `{name}`.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
             return
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"The custom-command `{commandname}` has been deleted."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().success(f"The custom-command `{name}` has been deleted."), ephemeral=True)
 
 
         audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
@@ -64,7 +64,7 @@ class CustomDelete(nextcord_C.Cog):
             fields = [
                 [
                     "/custom delete:",
-                    f"{interaction.user.mention} deleted: `{commandname}` from the custom-commands.",
+                    f"{interaction.user.mention} deleted: `{name}` from the custom-commands.",
                     False
                 ],
 
@@ -80,17 +80,17 @@ class CustomDelete(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @custom_delete.on_autocomplete("commandname")
-    async def autocomplete_commandname(
+    @custom_delete.on_autocomplete("name")
+    async def autocomplete_name(
         self,
         interaction: nextcord.Interaction,
-        commandname: str
+        name: str
     ) -> None:
         """provides autocomplete suggestions to discord"""
         
         await interaction.response.send_autocomplete(
             Get.autocomplete_dict_from_search_string(
-                commandname,
+                name,
                 {command: command for command in await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).get_list()}
             )
         )

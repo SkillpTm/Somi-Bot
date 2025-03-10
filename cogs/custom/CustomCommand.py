@@ -21,7 +21,7 @@ class CustomCommand(nextcord_C.Cog):
         self,
         interaction: nextcord.Interaction,
         *,
-        commandname: str = nextcord.SlashOption(
+        name: str = nextcord.SlashOption(
             description = "the name of the custom-command",
             required = True,
             min_length = 2,
@@ -33,32 +33,32 @@ class CustomCommand(nextcord_C.Cog):
         self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/custom-command",
-            {"commandname": commandname}
+            {"name": name}
         ))
 
-        commandname = Get.clean_input_command(commandname)
+        name = Get.clean_input_command(name)
 
-        commandtext = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).get_text(commandname)
+        commandtext = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).get_text(name)
 
         if not commandtext:
-            await interaction.response.send_message(embed=EmbedFunctions().error(f"There is no custom-command with the name `{commandname}`.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().error(f"There is no custom-command with the name `{name}`.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
             return
 
         await interaction.response.send_message(commandtext)
 
     ####################################################################################################
 
-    @customcommand.on_autocomplete("commandname")
-    async def autocomplete_commandname(
+    @customcommand.on_autocomplete("name")
+    async def autocomplete_name(
         self,
         interaction: nextcord.Interaction,
-        commandname: str
+        name: str
     ) -> None:
         """provides autocomplete suggestions to discord"""
 
         await interaction.response.send_autocomplete(
             Get.autocomplete_dict_from_search_string(
-                commandname,
+                name,
                 {command: command for command in await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).get_list()}
             )
         )

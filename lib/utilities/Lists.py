@@ -140,8 +140,8 @@ class Lists():
 
         "/custom-command": [
             """
-            ```/custom-command [commandname]```
-            `commandname`:
+            ```/custom-command [name]```
+            `name`:
             The name of the custom-command.
             Restrictions: Can only consist of letters and numbers
             Length requirments: 2-50 characters
@@ -166,6 +166,8 @@ class Lists():
             `:EMOJINAME:`:
             A custom server emoji from any server.
             Length requirments: 2-100 characters
+
+            (note: The command 'emoji' has a search shorthand as 'emote'.)
             """,
             "/emoji [:SomiBestGrill:]"
         ],
@@ -179,9 +181,9 @@ class Lists():
 
         "/help": [
             """
-            ```/help [commandname]```
-            `commandname`:
-            The commandname for which you require help.
+            ```/help [name]```
+            `name`:
+            The name of the command for which you require help.
             """,
             "/help [/help]"
         ],
@@ -711,13 +713,13 @@ class Lists():
 
         "/custom add": [
             """
-            ```/custom add [commandname] [commandtext]```
-            `commandname`:
+            ```/custom add [name] [text]```
+            `name`:
             The name of the custom-command.
             Restrictions: Can only consist of letters and numbers
             Length requirments: 2-50 characters
 
-            `commandtext`:
+            `text`:
             This is what will later be output by the bot when this custom-command is selected.
             Length requirments: 2-1000 characters
             """,
@@ -727,8 +729,8 @@ class Lists():
 
         "/custom delete": [
             """
-            ```/custom delete [commandname]```
-            `commandname`:
+            ```/custom delete [name]```
+            `name`:
             The name of the custom-command.
             Restrictions: Can only consist of letters and numbers
             Length requirments: 2-50 characters

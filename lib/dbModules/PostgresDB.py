@@ -152,7 +152,7 @@ class PostgresDB():
         query = self._queries[query_name]
 
         if table_name:
-            query = query.replace(":table_name", self._sanitize([table_name])[0])
+            query = query.replace(":table_name", table_name)
 
         if select_columns:
             query = query.replace(":select_columns", ", ".join(self._sanitize(select_columns)))

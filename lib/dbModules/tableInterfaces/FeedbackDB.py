@@ -30,7 +30,7 @@ class FeedbackDB():
             columns = [
                 "server_id",
                 "user_id",
-                "time",
+                "time_stamp",
                 "message"
             ],
             values = [

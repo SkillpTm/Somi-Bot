@@ -31,16 +31,16 @@ class DBHandler():
                 table_name = "server",
                 conflict_columns = ["server_id"],
                 columns = ["server_id"],
-                values = [str(self.server_id)]
+                values = [self.server_id]
             )
 
         if self.user_id:
             await self.database.execute(
                 query_name = "insert_unique_row",
-                table_name = "user",
+                table_name = '"user"',
                 conflict_columns = ["user_id"],
                 columns = ["user_id"],
-                values = [str(self.user_id)]
+                values = [self.user_id]
             )
     
     ####################################################################################################
@@ -83,7 +83,7 @@ class DBHandler():
                 table_name = "level",
                 conflict_columns = ["server_id", "user_id"],
                 columns = ["server_id", "user_id"],
-                values = [str(self.server_id), str(self.user_id)]
+                values = [self.server_id, self.user_id]
             )
 
         return LevelDB(self.database, self.server_id, self.user_id)
@@ -126,7 +126,7 @@ class DBHandler():
             table_name = "statistic",
             conflict_columns = ["server_id", "user_id"],
             columns = ["server_id", "user_id"],
-            values = [str(self.server_id), str(self.user_id)]
+            values = [self.server_id, self.user_id]
         )
 
         return StatisticDB(self.database, self.server_id, self.user_id)

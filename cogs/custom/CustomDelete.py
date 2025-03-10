@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import ConfigDB, CustomCommandsDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -42,7 +42,7 @@ class CustomDelete(nextcord_C.Cog):
 
         commandname = Get.clean_input_command(commandname)
 
-        commandtext = CustomCommandsDB(interaction.guild.id).delete(commandname)
+        commandtext = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).delete(commandname)
 
         if not commandtext:
             await interaction.followup.send(embed=EmbedFunctions().error(f"There is no custom-command with the name `{commandname}`.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
@@ -51,7 +51,7 @@ class CustomDelete(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().success(f"The custom-command `{commandname}` has been deleted."), ephemeral=True)
 
 
-        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
 
         if not audit_log_id:
             return
@@ -88,11 +88,12 @@ class CustomDelete(nextcord_C.Cog):
     ) -> None:
         """provides autocomplete suggestions to discord"""
         
-        all_commandnames = CustomCommandsDB(interaction.guild.id).get_list()
-        all_commandnames_dict = {command: command for command in all_commandnames}
-        autocomplete_dict = Get.autocomplete_dict_from_search_string(commandname, all_commandnames_dict)
-
-        await interaction.response.send_autocomplete(autocomplete_dict)
+        await interaction.response.send_autocomplete(
+            Get.autocomplete_dict_from_search_string(
+                commandname,
+                {command: command for command in await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).get_list()}
+            )
+        )
 
 
 

@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import CustomCommandsDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -24,7 +24,7 @@ class CustomList(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        all_commandnames: list[str] = CustomCommandsDB(interaction.guild.id).get_list()
+        all_commandnames = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).get_list()
 
         if not all_commandnames:
             await interaction.followup.send(embed=EmbedFunctions().error("There are no custom-commands on this server.\nTo add a custom-command use `/custom add`."), ephemeral=True)
@@ -37,7 +37,7 @@ class CustomList(nextcord_C.Cog):
             output += f"/cc `{commandname}`\n"
 
         if interaction.guild.icon:
-            server_icon_url = interaction.guild.icon
+            server_icon_url = interaction.guild.icon.url
         else:
             server_icon_url = self.client.DEFAULT_PFP
 

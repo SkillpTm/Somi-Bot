@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 import re
 
-from lib.db_modules import ConfigDB, CustomCommandsDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -24,13 +24,13 @@ class CustomAdd(nextcord_C.Cog):
         self,
         interaction: nextcord.Interaction,
         *,
-        commandname: str = nextcord.SlashOption(
+        name: str = nextcord.SlashOption(
             description = "new custom-command name",
             required = True,
             min_length = 2,
             max_length = 50
         ),
-        commandtext: str = nextcord.SlashOption(
+        text: str = nextcord.SlashOption(
             description = "the content of the new custom-command",
             required = True,
             min_length = 2,
@@ -42,28 +42,28 @@ class CustomAdd(nextcord_C.Cog):
         self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/custom add",
-            {"commandname": commandname, "commandtext": commandtext}
+            {"name": name, "text": text}
         ))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        commandname = Get.clean_input_command(commandname)
+        name = Get.clean_input_command(name)
 
-        # make sure commandname is only letters and numbers
-        if not re.match(r"^[\da-z]+$", commandname):
-            await interaction.followup.send(embed=EmbedFunctions().error("You can only have letters and numbers in your custom-commandname!"), ephemeral=True)
+        # make sure name is only letters and numbers
+        if not re.match(r"^[\da-z]+$", name):
+            await interaction.followup.send(embed=EmbedFunctions().error("You can only have letters and numbers in your custom-name!"), ephemeral=True)
             return
 
-        added = CustomCommandsDB(interaction.guild.id).add(commandname, commandtext)
+        added = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).add(name, text)
 
         if not added:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"A custom-command with the name `{commandname}` already exists.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().error(f"A custom-command with the name `{name}` already exists.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
             return
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"Your custom-command with the name `{commandname}` has been created."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().success(f"Your custom-command with the name `{name}` has been created."), ephemeral=True)
 
 
-        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
 
         if not audit_log_id:
             return
@@ -76,13 +76,13 @@ class CustomAdd(nextcord_C.Cog):
             fields = [
                 [
                     "/custom add:",
-                    f"{interaction.user.mention} added: `{commandname}` as a custom-command.",
+                    f"{interaction.user.mention} added: `{name}` as a custom-command.",
                     False
                 ],
 
                 [
                     "Command text:",
-                    f"`{commandtext}`",
+                    f"`{text}`",
                     False
                 ]
             ]

@@ -103,6 +103,13 @@ class PostgresDB():
 
     ####################################################################################################
 
+    def close(self) -> None:
+        """closes all pool connections to the db with a timeout of 5s"""
+
+        self._pool.close(timeout = 5.0)
+
+    ####################################################################################################
+
     def _get_query(
         self,
         *,

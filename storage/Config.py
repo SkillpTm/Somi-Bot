@@ -5,6 +5,9 @@ import dataclasses
 @dataclasses.dataclass
 class Config():
 
+    # Database related
+    POSTGRES_POOL_MAX_SIZE = 10
+
     # Somicord specific IDs, for single server features
     MODMAIL_SERVER_ID = 769668499605159998
     MODMAIL_CHANNEL_ID = 992121127159726227

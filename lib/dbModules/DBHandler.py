@@ -50,38 +50,38 @@ class DBHandler():
                 values = [str(self.user_id)]
             )
 
-    def custom_command(self):
-        return CustomCommandDB(self.database, self.server_id)
+    async def custom_command(self):
+        return await CustomCommandDB(self.database, self.server_id)
 
-    def feedback(self):
-        return FeedbackDB(self.database, self.server_id, self.user_id)
+    async def feedback(self):
+        return await FeedbackDB(self.database, self.server_id, self.user_id)
 
-    def hidden_channel(self):
-        return HiddenChannelDB(self.database, self.user_id)
+    async def hidden_channel(self):
+        return await HiddenChannelDB(self.database, self.user_id)
 
-    def keyword(self):
-        return KeywordDB(self.database, self.server_id, self.user_id)
+    async def keyword(self):
+        return await KeywordDB(self.database, self.server_id, self.user_id)
 
-    def level(self):
-        return LevelDB(self.database, self.server_id, self.user_id)
+    async def level(self):
+        return await LevelDB(self.database, self.server_id, self.user_id)
 
-    def level_ignore_channel(self):
-        return LevelIgnoreChannelDB(self.database, self.user_id)
+    async def level_ignore_channel(self):
+        return await LevelIgnoreChannelDB(self.database, self.user_id)
 
-    def level_role(self):
-        return LevelRoleDB(self.database, self.user_id)
+    async def level_role(self):
+        return await LevelRoleDB(self.database, self.user_id)
 
-    def reminder(self):
-        return ReminderDB(self.database, self.user_id)
+    async def reminder(self):
+        return await ReminderDB(self.database, self.user_id)
 
-    def server(self):
-        return ServerDB(self.database, self.server_id)
+    async def server(self):
+        return await ServerDB(self.database, self.server_id)
 
-    def statistic(self):
-        return StatisticDB(self.database, self.server_id, self.user_id)
+    async def statistic(self):
+        return await StatisticDB(self.database, self.server_id, self.user_id)
 
-    def telemetry(self):
-        return TelemetryDB(self.database)
+    async def telemetry(self):
+        return await TelemetryDB(self.database)
 
-    def user(self):
-        return UserDB(self.database, self.user_id)
+    async def user(self):
+        return await UserDB(self.database, self.user_id)

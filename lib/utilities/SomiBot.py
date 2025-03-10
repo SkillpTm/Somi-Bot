@@ -10,7 +10,7 @@ import sys
 import time
 import wolframalpha
 
-from lib.db_modules.CommandUsesDB import CommandUsesDB
+from lib.dbModules import DBHandler, PostgresDB
 from lib.utilities.Keychain import Keychain
 from lib.utilities.Lists import Lists
 from lib.utilities.Loggers import Loggers
@@ -20,70 +20,70 @@ from storage.Config import Config
 
 class SomiBot(nextcord_C.Bot):
 
-    # Meta
-    SOMI_GITHUB = "https://github.com/SkillpTm/Somi-Bot"
-    SOMI_TOS = "https://github.com/SkillpTm/Somi-Bot/wiki/Terms-of-Service--of-@Somi%236418"
-    SOMI_PP = "https://github.com/SkillpTm/Somi-Bot/wiki/Privacy-Policy-of-@Somi%236418"
-    SOMI_CONTACT_EMAIL = "somibot0309@gmail.com"
-    SOMI_INVITE = "https://somibot.skillp.dev/invite/"
-    SOMICORD_INVITE = "https://discord.gg/Frd7WYg"
-    SUPPORT_SERVER_ID = Config.SUPPORT_SERVER_ID
-    SUPPORT_SERVER_AUDIT_LOG_ID = Config.SUPPORT_SERVER_AUDIT_LOG_ID
-    SUPPORT_SERVER_FEEDBACK_ID = Config.SUPPORT_SERVER_FEEDBACK_ID
-    VERSION = "3.1"
-
-    # Colors
-    BOT_COLOR = 0xffa6fc
-    GENIUS_COLOR = 0xf6f069
-    LASTFM_COLOR = 0xd0232b
-    MOD_COLOR = nextcord.Color.blue()
-
-    # Assets
-    BAN_HAMMER_GIF = "https://somibot.skillp.dev/cdn/gifs/BAN_HAMMER_GIF.gif"
-    CLOCK_ICON = "https://somibot.skillp.dev/cdn/images/CLOCK_ICON.png"
-    GENIUS_ICON = "https://somibot.skillp.dev/cdn/images/GENIUS_ICON.png"
-    DEFAULT_PFP = "https://cdn.discordapp.com/embed/avatars/0.png"
-    LASTFM_ICON = "https://somibot.skillp.dev/cdn/images/LASTFM_ICON.png"
-    LINK_EMBED_ICON = "https://somibot.skillp.dev/cdn/images/LINK_EMBED_ICON.png"
-    OPENWEATHERMAP_ICON = "https://somibot.skillp.dev/cdn/images/OPENWEATHERMAP_ICON.png"
-    SOMI_BEST_GRILL_IMAGE = "https://somibot.skillp.dev/cdn/images/SOMI_BEST_GRILL_IMAGE.png"
-    SPOTIFY_ICON = "https://somibot.skillp.dev/cdn/images/SPOTIFY_ICON.png"
-
-    # SOMICORD
-    SKILLP_JOINED_SOMICORD_TIME = 1573055760
-    SOMICORD_ID = Config.MODMAIL_SERVER_ID
-    SOMICORD_MOD_CHANNEL_ID = Config.MODMAIL_CHANNEL_ID
-    SOMICORD_WELCOME_CHANNEL_ID = Config.WELCOME_CHANNEL_ID
-    SOMICORD_WELCOME_GIF = "https://somibot.skillp.dev/cdn/gifs/SOMICORD_WELCOME_GIF.gif"
-
-    # Emotes
-    HEADS_EMOTE = Config.HEADS_EMOTE
-    REACTION_EMOTE = Config.REACTION_EMOTE
-    SOMI_BEST_GRILL_EMOTE = Config.SOMI_BEST_GRILL_EMOTE
-    SOMI_F_EMOTE = Config.SOMI_F_EMOTE
-    SOMI_ONLY_EMOTE = Config.SOMI_ONLY_EMOTE
-    SOMI_WELCOME_EMOTE = Config.SOMI_WELCOME_EMOTE
-    TAILS_EMOTE = Config.TAILS_EMOTE
-
-    # Variables
-    start_time = int(time.time())
-
-    # Class imports
-    Keychain = Keychain()
-    Lists = Lists()
-    Loggers = Loggers()
-
-    ####################################################################################################
-
     def __init__(self) -> None:
+        # Class imports
+        self.Config = Config()
+        self.Keychain = Keychain()
+        self.Lists = Lists()
+        self.Loggers = Loggers()
+        self.PostgresDB = PostgresDB("./sql/schema.sql", "./sql/queries.sql", self.Config.POSTGRES_POOL_MAX_SIZE)
+
+        # Meta
+        self.SOMI_GITHUB = "https://github.com/SkillpTm/Somi-Bot"
+        self.SOMI_TOS = "https://github.com/SkillpTm/Somi-Bot/wiki/Terms-of-Service--of-@Somi%236418"
+        self.SOMI_PP = "https://github.com/SkillpTm/Somi-Bot/wiki/Privacy-Policy-of-@Somi%236418"
+        self.SOMI_CONTACT_EMAIL = "somibot0309@gmail.com"
+        self.SOMI_INVITE = "https://somibot.skillp.dev/invite/"
+        self.SOMICORD_INVITE = "https://discord.gg/Frd7WYg"
+        self.SUPPORT_SERVER_ID = self.Config.SUPPORT_SERVER_ID
+        self.SUPPORT_SERVER_AUDIT_LOG_ID = self.Config.SUPPORT_SERVER_AUDIT_LOG_ID
+        self.SUPPORT_SERVER_FEEDBACK_ID = self.Config.SUPPORT_SERVER_FEEDBACK_ID
+        self.VERSION = "3.1"
+
+        # Colors
+        self.BOT_COLOR = 0xffa6fc
+        self.GENIUS_COLOR = 0xf6f069
+        self.LASTFM_COLOR = 0xd0232b
+        self.MOD_COLOR = nextcord.Color.blue()
+
+        # Assets
+        self.BAN_HAMMER_GIF = "https://somibot.skillp.dev/cdn/gifs/BAN_HAMMER_GIF.gif"
+        self.CLOCK_ICON = "https://somibot.skillp.dev/cdn/images/CLOCK_ICON.png"
+        self.GENIUS_ICON = "https://somibot.skillp.dev/cdn/images/GENIUS_ICON.png"
+        self.DEFAULT_PFP = "https://cdn.discordapp.com/embed/avatars/0.png"
+        self.LASTFM_ICON = "https://somibot.skillp.dev/cdn/images/LASTFM_ICON.png"
+        self.LINK_EMBED_ICON = "https://somibot.skillp.dev/cdn/images/LINK_EMBED_ICON.png"
+        self.OPENWEATHERMAP_ICON = "https://somibot.skillp.dev/cdn/images/OPENWEATHERMAP_ICON.png"
+        self.SOMI_BEST_GRILL_IMAGE = "https://somibot.skillp.dev/cdn/images/SOMI_BEST_GRILL_IMAGE.png"
+        self.SPOTIFY_ICON = "https://somibot.skillp.dev/cdn/images/SPOTIFY_ICON.png"
+
+        # SOMICORD
+        self.SKILLP_JOINED_SOMICORD_TIME = 1573055760
+        self.SOMICORD_ID = self.Config.MODMAIL_SERVER_ID
+        self.SOMICORD_MOD_CHANNEL_ID = self.Config.MODMAIL_CHANNEL_ID
+        self.SOMICORD_WELCOME_CHANNEL_ID = self.Config.WELCOME_CHANNEL_ID
+        self.SOMICORD_WELCOME_GIF = "https://somibot.skillp.dev/cdn/gifs/SOMICORD_WELCOME_GIF.gif"
+
+        # Emotes
+        self.HEADS_EMOTE = self.Config.HEADS_EMOTE
+        self.REACTION_EMOTE = self.Config.REACTION_EMOTE
+        self.SOMI_BEST_GRILL_EMOTE = self.Config.SOMI_BEST_GRILL_EMOTE
+        self.SOMI_F_EMOTE = self.Config.SOMI_F_EMOTE
+        self.SOMI_ONLY_EMOTE = self.Config.SOMI_ONLY_EMOTE
+        self.SOMI_WELCOME_EMOTE = self.Config.SOMI_WELCOME_EMOTE
+        self.TAILS_EMOTE = self.Config.TAILS_EMOTE
+
+        # Variables
+        self.start_time = int(time.time())
+
         super().__init__(
             max_messages = 25000, 
-            application_id = Config.APPLICATION_ID,
+            application_id = self.Config.APPLICATION_ID,
             intents = nextcord.Intents.all(),
             status = nextcord.Status.online,
             activity = nextcord.Activity(type=nextcord.ActivityType.listening, name="Ice Cream"),
             allowed_mentions = nextcord.AllowedMentions(everyone=False),
-            owner_id = Config.OWNER_ID
+            owner_id = self.Config.OWNER_ID
         )
 
     ####################################################################################################
@@ -92,9 +92,9 @@ class SomiBot(nextcord_C.Bot):
         """This function adds API logins for Spotify, WolframAlpha and YouTube on the client"""
 
         self.spotifyOAuth = spotipy.SpotifyOAuth(
-            client_id = Keychain().SPOTIPY_CLIENT_ID,
-            client_secret = Keychain().SPOTIPY_CLIENT_SECRET,
-            redirect_uri = Keychain().SPOTIPY_REDIRECT_URI,
+            client_id = self.Keychain.SPOTIPY_CLIENT_ID,
+            client_secret = self.Keychain.SPOTIPY_CLIENT_SECRET,
+            redirect_uri = self.Keychain.SPOTIPY_REDIRECT_URI,
             scope="user-read-currently-playing"
         )
 
@@ -124,8 +124,11 @@ class SomiBot(nextcord_C.Bot):
 
         # logout in case this was a restart and we didn't properly exit those API connections
         await self.api_logout()
+
         self.Loggers.bot_status(f"{self.user}: ready and logged in")
+        
         self.api_login()
+
 
         await self.start_infinite_loops()
 
@@ -285,23 +288,22 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
-    @staticmethod
-    async def on_application_command_completion(interaction: nextcord.Interaction) -> None:
+    async def on_application_command_completion(self, interaction: nextcord.Interaction) -> None:
         """This function overwrites the build in on_application_command_completion function, to update the usage count of a command with the name of the used application command"""
 
-        commandname: str = ""
+        command_name: str = ""
 
         if not hasattr(interaction, "application_command"):
             return
 
         if hasattr(interaction.application_command, "parent_cmd"):
-            commandname += f"{interaction.application_command.parent_cmd.name} "
+            command_name += f"{interaction.application_command.parent_cmd.name} "
 
         if hasattr(interaction.application_command, "name"):
-            commandname += f"{interaction.application_command.name}"
+            command_name += f"{interaction.application_command.name}"
 
-        if commandname:
-            CommandUsesDB("command_uses").update(f"{commandname}")
+        if command_name:
+            DBHandler(self.PostgresDB).telemetry().increment(command_name)
 
     ####################################################################################################
 

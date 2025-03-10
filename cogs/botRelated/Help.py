@@ -95,15 +95,12 @@ class Help(nextcord_C.Cog):
     ) -> None:
         """provides autocomplete suggestions to discord"""
 
-        all_commands = self.client.Lists.HELP_AUTOCOMPLETE_TUPLE
-        all_commands_dict = {}
-
-        for command in all_commands:
-            all_commands_dict.update({command: command[1:]})
-
-        autocomplete_dict = Get.autocomplete_dict_from_search_string(commandname, all_commands_dict)
-
-        await interaction.response.send_autocomplete(autocomplete_dict)
+        await interaction.response.send_autocomplete(
+            Get.autocomplete_dict_from_search_string(
+                commandname,
+                {command: command[1:] for command in self.client.Lists.HELP_AUTOCOMPLETE_TUPLE}
+            )
+        )
 
 
 

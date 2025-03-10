@@ -7,7 +7,7 @@ from lib.dbModules.PostgresDB import PostgresDB
 class LevelRoleDB():
     """Abstraction layer to interact with the level_role table."""
 
-    async def __init__(self, database: PostgresDB, server_id: int) -> None:
+    def __init__(self, database: PostgresDB, server_id: int) -> None:
         self.database = database
         self.server_id = server_id
 

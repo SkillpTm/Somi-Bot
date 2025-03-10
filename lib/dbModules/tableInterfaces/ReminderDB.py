@@ -8,7 +8,7 @@ from lib.dbModules.PostgresDB import PostgresDB
 class ReminderDB():
     """Abstraction layer to interact with the reminder table."""
 
-    async def __init__(self, database: PostgresDB, user_id: int = 0) -> None:
+    def __init__(self, database: PostgresDB, user_id: int = 0) -> None:
         self.database = database
         self.user_id = user_id
 
@@ -129,8 +129,8 @@ class ReminderDB():
                 "user_id",
                 "time"
             ],
-            columns = str(1),
-            values = [str(1)]
+            columns = ["1"], # we essentaily say 1=1, so we get all rows back
+            values = [1]
         ):
             if int(remidner_row[2]) <= int(time.time()):
                 output.append([int(remidner_row[0]), int(remidner_row[1])])

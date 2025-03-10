@@ -5,7 +5,7 @@ from lib.dbModules.PostgresDB import PostgresDB
 class KeywordDB():
     """Abstraction layer to interact with the keyword table."""
 
-    async def __init__(
+    def __init__(
         self,
         database: PostgresDB,
         server_id: int,

@@ -13,7 +13,7 @@ class LevelDB():
     On init inserts the user with the server into the "level" table, if not already present.
     """
 
-    async def __init__(
+    def __init__(
         self,
         database: PostgresDB,
         server_id: int,
@@ -22,16 +22,6 @@ class LevelDB():
         self.database = database
         self.server_id = server_id
         self.user_id = user_id
-
-        # only attempt to insert the level when both server and user are provided, because not all functions need to be started by a user
-        if server_id and user_id:
-            await self.database.execute(
-                query_name = "insert_unique_row",
-                table_name = "level",
-                conflict_columns = ["server_id", "user_id"],
-                columns = ["server_id", "user_id"],
-                values = [str(self.server_id), str(self.user_id)]
-            )
 
     ####################################################################################################
 

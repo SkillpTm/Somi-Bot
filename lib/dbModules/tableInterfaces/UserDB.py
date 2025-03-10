@@ -5,7 +5,7 @@ from lib.dbModules.PostgresDB import PostgresDB
 class UserDB():
     """Abstraction layer to interact with the user table."""
 
-    async def __init__(self, database: PostgresDB, user_id: int) -> None:
+    def __init__(self, database: PostgresDB, user_id: int) -> None:
         self.database = database
         self.user_id = user_id
 

@@ -7,7 +7,6 @@ class TelemetryDB():
 
     def __init__(self, database: PostgresDB) -> None:
         self.database = database
-        pass
 
     ####################################################################################################
 

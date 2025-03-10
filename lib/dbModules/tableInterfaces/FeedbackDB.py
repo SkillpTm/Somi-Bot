@@ -5,7 +5,7 @@ from lib.dbModules.PostgresDB import PostgresDB
 class FeedbackDB():
     """Abstraction layer to interact with the feedback table."""
 
-    async def __init__(
+    def __init__(
         self,
         database: PostgresDB,
         server_id: int,

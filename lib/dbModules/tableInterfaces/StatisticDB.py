@@ -9,7 +9,7 @@ class StatisticDB():
     On init inserts the user with the server into the "statistic" table, if not already present.
     """
 
-    async def __init__(
+    def __init__(
         self,
         database: PostgresDB,
         server_id: int,
@@ -18,14 +18,6 @@ class StatisticDB():
         self.database = database
         self.server_id = server_id
         self.user_id = user_id
-
-        await self.database.execute(
-            query_name = "insert_unique_row",
-            table_name = "statistic",
-            conflict_columns = ["server_id", "user_id"],
-            columns = ["server_id", "user_id"],
-            values = [str(self.server_id), str(self.user_id)]
-        )
 
     ####################################################################################################
 

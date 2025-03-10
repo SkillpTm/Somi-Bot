@@ -11,7 +11,7 @@ class CustomCommandDB():
 
     ####################################################################################################
         
-    async def create(self, name: str, text: str) -> bool:
+    async def add(self, name: str, text: str) -> bool:
         """checks if this server already has a command by this name, if not adds it to the db"""
 
         # check if a command with that name already exists

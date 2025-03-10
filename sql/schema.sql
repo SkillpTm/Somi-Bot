@@ -1,8 +1,8 @@
 -- name: create_telemetry
 CREATE TABLE IF NOT EXISTS telemetry (
     telemetry_id SERIAL PRIMARY KEY,
-    event_name TEXT NOT NULL,
-    amount BIGINT NOT NULL
+    event_name UNIQUE TEXT NOT NULL,
+    amount BIGINT NOT NULL DEFAULT 1
 );
 
 
@@ -10,12 +10,12 @@ CREATE TABLE IF NOT EXISTS telemetry (
 CREATE TABLE IF NOT EXISTS "user" (
     user_id BIGINT PRIMARY KEY,
     last_fm_username TEXT,
-    weather_location TEXT
+    weather_location TEXT DEFAULT 'seoul'
 );
 
 -- name: create_reminder
 CREATE TABLE IF NOT EXISTS reminder (
-    reminder_id INT CHECK (reminder_id BETWEEN 100000000 AND 999999999) PRIMARY KEY,
+    reminder_id INT UNIQUE CHECK (reminder_id BETWEEN 100000000 AND 999999999) PRIMARY KEY,
     user_id BIGINT REFERENCES "user"(user_id) NOT NULL,
     time BIGINT NOT NULL,
     message_link TEXT NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS feedback (
     feedback_id SERIAL PRIMARY KEY,
     server_id BIGINT REFERENCES server(server_id) NOT NULL,
     user_id BIGINT REFERENCES "user"(user_id) NOT NULL,
-    time BIGINT NOT NULL,
+    time_stamp TEXT NOT NULL,
     message TEXT NOT NULL
 );
 
@@ -80,22 +80,22 @@ CREATE TABLE IF NOT EXISTS level (
     server_id BIGINT REFERENCES server(server_id),
     user_id BIGINT REFERENCES "user"(user_id),
     PRIMARY KEY (server_id, user_id),
-    xp_cooldown BIGINT NOT NULL,
-    total_xp BIGINT NOT NULL
+    xp_cooldown BIGINT NOT NULL DEFAULT 0,
+    total_xp BIGINT NOT NULL DEFAULT 0
 );
 
--- name: create_user_statistics
-CREATE TABLE IF NOT EXISTS user_statistics (
+-- name: create_statistic
+CREATE TABLE IF NOT EXISTS statistic (
     server_id BIGINT REFERENCES server(server_id) NOT NULL,
     user_id BIGINT REFERENCES "user"(user_id) NOT NULL,
     PRIMARY KEY (server_id, user_id),
-    attachment_count BIGINT NOT NULL,
-    char_count BIGINT NOT NULL,
-    client_command_count BIGINT NOT NULL,
-    emote_count BIGINT NOT NULL,
-    link_count BIGINT NOT NULL,
-    message_count BIGINT NOT NULL,
-    reply_count BIGINT NOT NULL,
-    sticker_count BIGINT NOT NULL,
-    word_count BIGINT NOT NULL
+    attachment_count BIGINT NOT NULL DEFAULT 0,
+    char_count BIGINT NOT NULL DEFAULT 0,
+    client_command_count BIGINT NOT NULL DEFAULT 0,
+    emote_count BIGINT NOT NULL DEFAULT 0,
+    link_count BIGINT NOT NULL DEFAULT 0,
+    message_count BIGINT NOT NULL DEFAULT 0,
+    reply_count BIGINT NOT NULL DEFAULT 0,
+    sticker_count BIGINT NOT NULL DEFAULT 0,
+    word_count BIGINT NOT NULL DEFAULT 0
 );

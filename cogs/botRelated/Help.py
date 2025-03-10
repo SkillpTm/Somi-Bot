@@ -88,7 +88,7 @@ class Help(nextcord_C.Cog):
     ####################################################################################################
 
     @help.on_autocomplete("name")
-    async def autocomplete_name(
+    async def help_autocomplete_name(
         self,
         interaction: nextcord.Interaction,
         name: str

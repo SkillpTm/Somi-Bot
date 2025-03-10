@@ -49,7 +49,7 @@ class CustomCommand(nextcord_C.Cog):
     ####################################################################################################
 
     @customcommand.on_autocomplete("name")
-    async def autocomplete_name(
+    async def customcommand_autocomplete_name(
         self,
         interaction: nextcord.Interaction,
         name: str

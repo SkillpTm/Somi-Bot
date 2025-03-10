@@ -81,7 +81,7 @@ class CustomDelete(nextcord_C.Cog):
     ####################################################################################################
 
     @custom_delete.on_autocomplete("name")
-    async def autocomplete_name(
+    async def custom_delete_autocomplete_name(
         self,
         interaction: nextcord.Interaction,
         name: str

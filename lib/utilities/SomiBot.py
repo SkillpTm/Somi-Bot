@@ -149,20 +149,6 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
-    async def on_disconnect(self) -> None:
-        """This function overwrites the build in on_disconnect function, log logout from our APIs"""
-
-        self.Loggers.bot_status(f"{self.user}: connection closed")
-
-        # attempt to logout the api connections
-        try:
-            if requests.get("https://www.google.com/").status_code == 200:
-                await self.api_logout()
-        except (requests.ConnectionError):
-            pass
-
-    ####################################################################################################
-
     async def start_infinite_loops(self) -> None:
         """This function starts an infinite loop for the ReminderSend cog, which continues until the bot loses internet or gets shutdown"""
 
@@ -185,7 +171,7 @@ class SomiBot(nextcord_C.Bot):
         """This function overwrites the build in on_guild_channel_delete function, to remove channels from the ConfigDB"""
 
         await asyncio.gather(
-            self.get_cog("ConfigValidate").remove_channel(channel)
+            self.get_cog("ConfigValidate").on_delete(channel)
         )
 
     ####################################################################################################
@@ -194,7 +180,7 @@ class SomiBot(nextcord_C.Bot):
         """This function overwrites the build in on_thread_delete function, to remove threads from the ConfigDB"""
 
         await asyncio.gather(
-            self.get_cog("ConfigValidate").remove_role(role)
+            self.get_cog("ConfigValidate").on_delete(role)
         )
 
     ####################################################################################################
@@ -284,7 +270,7 @@ class SomiBot(nextcord_C.Bot):
         """This function overwrites the build in on_thread_delete function, to remove threads from the ConfigDB"""
 
         await asyncio.gather(
-            self.get_cog("ConfigValidate").remove_channel(thread)
+            self.get_cog("ConfigValidate").on_delete(thread)
         )
 
     ####################################################################################################

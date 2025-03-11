@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 
 -- name: create_reminder
 CREATE TABLE IF NOT EXISTS reminder (
-    reminder_id INT UNIQUE CHECK (reminder_id BETWEEN 100000000 AND 999999999) PRIMARY KEY,
+    reminder_id INT CHECK (reminder_id BETWEEN 100000000 AND 999999999) PRIMARY KEY,
     user_id BIGINT REFERENCES "user"(user_id) NOT NULL,
     time BIGINT NOT NULL,
     message_link TEXT NOT NULL,

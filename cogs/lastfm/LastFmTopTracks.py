@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 import requests
 
-from lib.db_modules import LastFmDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import LASTFM_TIMEFRAMES, LASTFM_TIMEFRAMES_TEXT, PageButtons, SomiBot
 
@@ -48,7 +48,7 @@ class LastFmTopTracks(nextcord_C.Cog):
             {"user": str(user.id), "timeframe": timeframe}
         ))
 
-        lastfm_username = LastFmDB().get(user.id)
+        lastfm_username = await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).last_fm_get()
 
         if not lastfm_username:
             await interaction.response.send_message(embed=EmbedFunctions().error(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)

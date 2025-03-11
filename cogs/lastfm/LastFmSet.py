@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 import requests
 
-from lib.db_modules import LastFmDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -41,12 +41,6 @@ class LastFmSet(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message = True)
 
-        lastfm_username = LastFmDB().get(interaction.user.id)
-
-        if lastfm_username:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"You already set a LastFm account.\nTo reset your LastFm account use `/lf reset`."), ephemeral=True)
-            return
-
         info_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getinfo&username={lastfmname}&api_key={self.client.Keychain.LAST_FM_API_KEY}&format=json")
 
         if info_response.status_code != 200:
@@ -55,7 +49,7 @@ class LastFmSet(nextcord_C.Cog):
 
         username_response = info_response["user"]["name"]
 
-        LastFmDB().add(interaction.user.id, username_response)
+        await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).last_fm_get(username_response)
 
         await interaction.followup.send(embed=EmbedFunctions().success(f"You were succesfully connected with the LastFm user `{username_response}`"), ephemeral=True)
 
@@ -68,13 +62,9 @@ class LastFmSet(nextcord_C.Cog):
 
         self.client.Loggers.action_log(Get.log_message(interaction, "/lf reset"))
 
-        lastfm_username = LastFmDB().get(interaction.user.id)
-
-        if not lastfm_username:
+        if not await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).last_fm_reset():
             await interaction.response.send_message(embed=EmbedFunctions().error("You don't have a LastFm account setup."), ephemeral=True)
             return
-
-        LastFmDB().delete(interaction.user.id)
 
         await interaction.response.send_message(embed=EmbedFunctions().success("You succesfully reset your LastFm account."), ephemeral=True)
 

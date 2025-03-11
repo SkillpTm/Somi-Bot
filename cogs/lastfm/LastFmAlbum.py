@@ -5,7 +5,7 @@ import nextcord.ext.application_checks as nextcord_AC
 import requests
 import urllib.parse
 
-from lib.db_modules import LastFmDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get, Webscrape
 from lib.utilities import LASTFM_TIMEFRAMES_WEBSCRAPING, LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT, SomiBot
 
@@ -61,7 +61,7 @@ class LastFmAlbum(nextcord_C.Cog):
         if not timeframe:
             timeframe = "ALL"
 
-        lastfm_username = LastFmDB().get(user.id)
+        lastfm_username = await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).last_fm_get()
 
         if not lastfm_username:
             await interaction.response.send_message(embed=EmbedFunctions().error(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)

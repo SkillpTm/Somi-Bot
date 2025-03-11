@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS telemetry (
 -- name: create_user
 CREATE TABLE IF NOT EXISTS "user" (
     user_id BIGINT PRIMARY KEY,
-    last_fm_username TEXT,
+    last_fm_username TEXT DEFAULT '',
     weather_location TEXT DEFAULT 'seoul'
 );
 
@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS reminder (
 -- name: create_server
 CREATE TABLE IF NOT EXISTS server (
     server_id BIGINT PRIMARY KEY,
-    audit_log_channel_id BIGINT,
-    default_role_id BIGINT
+    audit_log_channel_id BIGINT DEFAULT 0,
+    default_role_id BIGINT  DEFAULT 0
 );
 
 -- name: create_hidden_channel

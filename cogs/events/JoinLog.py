@@ -47,13 +47,13 @@ class JoinLog(nextcord_C.Cog):
             fields = [
                 [
                     "ID:",
-                    member.id,
+                    f"`{member.id}`",
                     False
                 ],
 
                 [
-                    "Name:",
-                    member.mention,
+                    "Username:",
+                    member.name,
                     True
                 ],
 
@@ -61,6 +61,12 @@ class JoinLog(nextcord_C.Cog):
                     "Created at:",
                     f"<t:{int(time.mktime(member.created_at.timetuple()))}>",
                     True
+                ],
+
+                [
+                    "Public Flags:",
+                    ", ".join(flag.name for flag in member.public_flags.all()),
+                    False
                 ]
             ]
         )

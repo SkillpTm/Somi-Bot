@@ -5,7 +5,7 @@ import requests
 
 from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
-from lib.utilities import LASTFM_TIMEFRAMES, LASTFM_TIMEFRAMES_TEXT, PageButtons, SomiBot
+from lib.utilities import Lists, PageButtons, SomiBot
 
 
 
@@ -31,7 +31,7 @@ class LastFmTopArtists(nextcord_C.Cog):
         timeframe: str = nextcord.SlashOption(
             description = "the timeframe you want the top artists for",
             required = False,
-            choices = LASTFM_TIMEFRAMES
+            choices = Lists.LASTFM_TIMEFRAMES
         )
     ) -> None:
         """This command shows someone's top artists"""
@@ -89,7 +89,7 @@ class LastFmTopArtists(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = self.client.LASTFM_COLOR,
-            author = f"{member.display_name} Top Artists: {LASTFM_TIMEFRAMES_TEXT[timeframe]}",
+            author = f"{member.display_name} Top Artists: {Lists.LASTFM_TIMEFRAMES_TEXT[timeframe]}",
             author_icon = self.client.LASTFM_ICON,
             description = output,
             footer = "DEFAULT_KST_FOOTER"

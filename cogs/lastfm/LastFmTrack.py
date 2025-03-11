@@ -7,7 +7,7 @@ import urllib.parse
 
 from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get, Webscrape
-from lib.utilities import LASTFM_TIMEFRAMES_WEBSCRAPING, LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT, SomiBot
+from lib.utilities import Lists, SomiBot
 
 
 
@@ -45,7 +45,7 @@ class LastFmTrack(nextcord_C.Cog):
         timeframe: str = nextcord.SlashOption(
             description = "the timeframe you want the stats for",
             required = False,
-            choices = LASTFM_TIMEFRAMES_WEBSCRAPING
+            choices = Lists.LASTFM_TIMEFRAMES_WEBSCRAPING
         )
     ) -> None:
         """This command webscrapes the data of a user from LastFm to get their plays on a track"""
@@ -98,7 +98,7 @@ class LastFmTrack(nextcord_C.Cog):
         soup = BeautifulSoup(track_response.content, "html.parser")
 
         if "didn't scrobble this track during the selected date range. Try expanding the date range or view scrobbles for " in str(soup.text):
-            await interaction.followup.send(embed=EmbedFunctions().error(f"{user.mention} hasn't listened to the track `{artist} - {track}` in the timeframe: `{LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}`"))
+            await interaction.followup.send(embed=EmbedFunctions().error(f"{user.mention} hasn't listened to the track `{artist} - {track}` in the timeframe: `{Lists.LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}`"))
             return
 
         type_name, artist_name, cover_image_url, metadata_list, _, _ = Webscrape().library_subpage(soup, artist_for_url, "track")
@@ -106,7 +106,7 @@ class LastFmTrack(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = self.client.LASTFM_COLOR,
             thumbnail = cover_image_url,
-            author = f"{user.display_name} × {type_name}: {LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}",
+            author = f"{user.display_name} × {type_name}: {Lists.LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}",
             author_url = f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}",
             author_icon = self.client.LASTFM_ICON,
             description = f"Total plays: __**{metadata_list[0]}**__\n" +

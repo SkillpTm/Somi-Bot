@@ -76,7 +76,7 @@ class Lyrics(nextcord_C.Cog):
         
         await interaction.response.defer(with_message=True)
         
-        # use the first result's ID to find teh lyrics page
+        # use the first result's ID to find the lyrics page
         song_response = requests.get(
             f"https://api.genius.com/songs/{search_response["response"]["hits"][0]["result"]["id"]}",
             headers={"Authorization": f"Bearer {self.client.Keychain.GENIUS_ACCESS_TOKEN}"}

@@ -129,7 +129,7 @@ class Ban(nextcord_C.Cog):
     ####################################################################################################
 
     @unban.on_autocomplete("user_id")
-    async def autocomplete_unban(
+    async def unban_autocomplete_user_id(
         self,
         interaction: nextcord.Interaction,
         user_id: str

@@ -58,7 +58,7 @@ class Rules(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),
             author = f"Rule {rule}",
-            author_icon = interaction.guild.icon, 
+            author_icon = interaction.guild.icon.url, 
             description = self.client.Lists.SOMICORD_RULES[rule][0],               
             footer = self.client.Lists.SOMICORD_RULES[rule][1]
         )

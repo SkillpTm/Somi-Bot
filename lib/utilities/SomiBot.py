@@ -14,7 +14,7 @@ from lib.dbModules import DBHandler, PostgresDB
 from lib.utilities.Keychain import Keychain
 from lib.utilities.Lists import Lists
 from lib.utilities.Loggers import Loggers
-from debug.Config import Config
+from lib.utilities.Config import Config
 
 
 
@@ -28,7 +28,7 @@ class SomiBot(nextcord_C.Bot):
     SOMI_INVITE = "https://somibot.skillp.dev/invite/"
     SOMICORD_INVITE = "https://discord.gg/Frd7WYg"
     SUPPORT_SERVER_ID = Config.SUPPORT_SERVER_ID
-    SUPPORT_SERVER_AUDIT_LOG_ID = Config.SUPPORT_SERVER_AUDIT_LOG_ID
+    SUPPORT_SERVER_LOGS_ID = Config.SUPPORT_SERVER_LOGS_ID
     SUPPORT_SERVER_FEEDBACK_ID = Config.SUPPORT_SERVER_FEEDBACK_ID
     VERSION = "3.1"
 
@@ -68,7 +68,7 @@ class SomiBot(nextcord_C.Bot):
     def __init__(self) -> None:
         # Class imports
         self.Keychain = Keychain()
-        self.Lists = Lists()
+        self.Lists = Lists(Config.APPLICATION_ID)
         self.Loggers = Loggers()
 
         # Variables

@@ -4,7 +4,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
-from lib.utilities import TEXT_CHANNELS, SomiBot
+from lib.utilities import Lists, SomiBot
 
 
 
@@ -35,7 +35,7 @@ class Send(nextcord_C.Cog):
             max_length = 1000
         ),
         channel: nextcord.abc.GuildChannel = nextcord.SlashOption(
-            channel_types = TEXT_CHANNELS,
+            channel_types = Lists.TEXT_CHANNELS,
             description = "channel in which the message will be send",
             required = False
         )
@@ -118,7 +118,7 @@ class Send(nextcord_C.Cog):
 
         # check all channels for in which one the message was send
         for channel in await interaction.guild.fetch_channels():
-            if not channel.type in TEXT_CHANNELS:
+            if not channel.type in Lists.TEXT_CHANNELS:
                 continue
 
             try:

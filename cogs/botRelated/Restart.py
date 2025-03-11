@@ -44,7 +44,7 @@ class Restart(nextcord_C.Cog):
             ]
         )
 
-        await self.client.get_channel(self.client.SUPPORT_SERVER_AUDIT_LOG_ID).send(embed=embed)
+        await self.client.get_channel(self.client.SUPPORT_SERVER_LOGS_ID).send(embed=embed)
         self.client.restart()
 
 

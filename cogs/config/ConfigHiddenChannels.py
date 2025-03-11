@@ -4,7 +4,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
-from lib.utilities import TEXT_CHANNELS, SomiBot
+from lib.utilities import Lists, SomiBot
 
 
 
@@ -29,7 +29,7 @@ class ConfigHiddenChannels(nextcord_C.Cog):
             choices = ["Add", "Remove"]
         ),
         channel: nextcord.abc.GuildChannel = nextcord.SlashOption(
-            channel_types = TEXT_CHANNELS,
+            channel_types = Lists.TEXT_CHANNELS,
             description = "the channel to be added/removed",
             required = False)
         ) -> None:

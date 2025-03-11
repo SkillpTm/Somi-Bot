@@ -4,7 +4,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
-from lib.utilities import TEXT_CHANNELS, SomiBot
+from lib.utilities import Lists, SomiBot
 
 
 
@@ -30,7 +30,7 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
         channel: nextcord.abc.GuildChannel = nextcord.SlashOption(
             description = "the channel to have (no) xp gain in",
             required = False,
-            channel_types = TEXT_CHANNELS)
+            channel_types = Lists.TEXT_CHANNELS)
         ) -> None:
         """This command will deactivate/activate XP in the given channel."""
 

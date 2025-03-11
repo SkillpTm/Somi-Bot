@@ -1,0 +1,24 @@
+{
+    "APPLICATION_ID": 0,
+    "OWNER_ID": 0,
+    "POSTGRES_POOL_MAX_SIZE": 0,
+    "SUPPORT_SERVER": {
+        "ID": 0,
+        "LOGS_CHANNEL_ID": 0,
+        "FEEDBACK_CHANNEL_ID": 0
+    },
+    "SOMICORD": {
+        "MODMAIL_SERVER_ID": 0,
+        "MODMAIL_CHANNEL_ID": 0,
+        "WELCOME_CHANNEL_ID": 0
+    },
+    "EMOTES": {
+        "HEADS": "",
+        "REACTION": "",
+        "SOMI_BEST_GRILL": "",
+        "SOMI_F": "",
+        "SOMI_ONLY": "",
+        "SOMI_WELCOME": "",
+        "TAILS": ""
+    }
+}

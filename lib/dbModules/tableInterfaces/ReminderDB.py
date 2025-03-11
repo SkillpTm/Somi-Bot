@@ -101,7 +101,7 @@ class ReminderDB():
         async for index, remidner_row in self.database.fetch_many(
             query_name = "select_where",
             table_name = "reminder",
-            select_columns=[
+            select_columns = [
                 "reminder_id",
                 "time",
                 "message_link",
@@ -124,7 +124,7 @@ class ReminderDB():
         async for remidner_row in self.database.fetch_many(
             query_name = "select_where",
             table_name = "reminder",
-            select_columns=[
+            select_columns = [
                 "reminder_id",
                 "user_id",
                 "time"

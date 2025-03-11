@@ -17,7 +17,7 @@ class HiddenChannelDB():
         if await self.database.fetch_row(
             query_name = "select_where",
             table_name = "hidden_channel",
-            select_columns=["*"],
+            select_columns = ["*"],
             columns = ["channel_id"],
             values = [channel_id]
         ):
@@ -40,7 +40,7 @@ class HiddenChannelDB():
         if not await self.database.fetch_row(
             query_name = "select_where",
             table_name = "hidden_channel",
-            select_columns=["*"],
+            select_columns = ["*"],
             columns = ["channel_id"],
             values = [channel_id]
         ):

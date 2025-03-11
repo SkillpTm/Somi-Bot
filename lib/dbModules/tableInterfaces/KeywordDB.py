@@ -24,7 +24,7 @@ class KeywordDB():
         if await self.database.fetch_row(
             query_name = "select_where",
             table_name = "keyword",
-            select_columns=["*"],
+            select_columns = ["*"],
             columns = [
                 "server_id",
                 "user_id",
@@ -64,7 +64,7 @@ class KeywordDB():
         if not await self.database.fetch_row(
             query_name = "select_where",
             table_name = "keyword",
-            select_columns=["*"],
+            select_columns = ["*"],
             columns = [
                 "server_id",
                 "user_id",
@@ -117,7 +117,7 @@ class KeywordDB():
         async for keyword_row in self.database.fetch_many(
             query_name = "select_where",
             table_name = "keyword",
-            select_columns=["keyword"],
+            select_columns = ["keyword"],
             columns = ["server_id", "user_id"],
             values = [self.server_id, self.user_id]
         ):
@@ -135,7 +135,7 @@ class KeywordDB():
         async for keyword_row in self.database.fetch_many(
             query_name = "select_where",
             table_name = "keyword",
-            select_columns=["user_id", "keyword"],
+            select_columns = ["user_id", "keyword"],
             columns = ["server_id"],
             values = [self.server_id]
         ): 

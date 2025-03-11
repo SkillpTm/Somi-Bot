@@ -20,7 +20,7 @@ class LevelRoleDB():
         if await self.database.fetch_row(
             query_name = "select_where",
             table_name = "level_role",
-            select_columns=["*"],
+            select_columns = ["*"],
             columns = ["role_id"],
             values = [role_id]
         ):
@@ -30,7 +30,7 @@ class LevelRoleDB():
         if await self.database.fetch_row(
             query_name = "select_where",
             table_name = "level_role",
-            select_columns=["*"],
+            select_columns = ["*"],
             columns = ["server_id", "level"],
             values = [self.server_id, level]
         ):
@@ -54,7 +54,7 @@ class LevelRoleDB():
         if not await self.database.fetch_row(
             query_name = "select_where",
             table_name = "level_role",
-            select_columns=["*"],
+            select_columns = ["*"],
             columns = ["role_id"],
             values = [role_id]
         ):

@@ -17,7 +17,7 @@ class LevelIgnoreChannelDB():
         if await self.database.fetch_row(
             query_name = "select_where",
             table_name = "level_ignore_channel",
-            select_columns=["*"],
+            select_columns = ["*"],
             columns = ["channel_id"],
             values = [channel_id]
         ):
@@ -40,7 +40,7 @@ class LevelIgnoreChannelDB():
         if not await self.database.fetch_row(
             query_name = "select_where",
             table_name = "level_ignore_channel",
-            select_columns=["*"],
+            select_columns = ["*"],
             columns = ["channel_id"],
             values = [channel_id]
         ):

@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import re
 
-from lib.db_modules import ConfigDB, LevelsDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, LevelRoles
 from lib.utilities import SomiBot
 
@@ -31,13 +31,13 @@ class LevelsGainXp(nextcord_C.Cog):
             return
 
         # make sure message isn't in a levels ignore channel
-        if message.channel.id in await ConfigDB(message.guild.id, "LevelIgnoreChannels").get_list(message.guild):
+        if message.channel.id in await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id).level_ignore_channel()).get_list():
             return
 
-        if not LevelsDB(message.guild.id).increase_xp(message.author.id):
+        if not await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id).level()).increase_xp():
             return
 
-        user_level, _ =  LevelsDB(message.guild.id).get_level(message.author.id)
+        user_level, _ =  await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id).level()).get_level_and_xp_until_next()
 
         await LevelRoles().apply(message.guild, [[message.author.id, user_level]])
 

@@ -2,7 +2,7 @@ import asyncio
 import nextcord.ext.commands as nextcord_C
 import requests
 
-from lib.db_modules import CommandUsesDB, ReminderDB
+from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -39,14 +39,14 @@ class ReminderSend(nextcord_C.Cog):
         If the current time is larger or equal to the reminder time, then the reminder gets send to the user and deleted from the db.
         """  
 
-        reminders_to_be_send = ReminderDB(self.client.user.id).get_current() # the time comparison happens in here
-        visible_users = Get.visible_users(self.client)
+        reminders_to_be_send = await (await DBHandler(self.client.PostgresDB).reminder()).get_upcoming() # the time comparison happens in here
 
-        for reminder in reminders_to_be_send:
+        for reminder_to_be_send in reminders_to_be_send:
+            reminder_id, user_id = reminder_to_be_send[0], reminder_to_be_send[1]
 
-            _, reminder_link, reminder_id, reminder_text = ReminderDB(reminder[0]).get_reminder(reminder[1])
+            _, reminder_link, reminder_text = await (await DBHandler(self.client.PostgresDB, user_id=user_id).reminder()).get_reminder(reminder_id)
 
-            self.client.Loggers.action_log(f"reminder send ~ User: {reminder[0]} ~ Guild: DM channel ~ args: [reminder: {reminder_text}]")
+            self.client.Loggers.action_log(f"reminder send ~ User: {user_id} ~ Guild: DM channel ~ args: [reminder: {reminder_text}]")
 
             embed = EmbedFunctions().builder(
                 color = self.client.BOT_COLOR,
@@ -56,15 +56,15 @@ class ReminderSend(nextcord_C.Cog):
                 footer = "DEFAULT_KST_FOOTER"
             )
 
-            if reminder[0] in visible_users:
-                user = await self.client.fetch_user(reminder[0])
+            if user_id in Get.visible_users(self.client):
+                user = await self.client.fetch_user(user_id)
                 await user.send(embed=embed)
             else:
-                self.client.Loggers.action_warning(f"reminder send: {reminder[0]} couldn't be reminded, because their pms aren't open to the client")
+                self.client.Loggers.action_warning(f"reminder send: {user_id} couldn't be reminded, because their pms aren't open to the client")
 
-            ReminderDB(reminder[0]).delete(reminder_id)
+            await (await DBHandler(self.client.PostgresDB, user_id=user_id).reminder()).delete(reminder_id)
 
-            CommandUsesDB("command_uses").update("reminder send")
+            await (await DBHandler(self.client.PostgresDB).telemetry()).increment("reminder send")
 
 
 

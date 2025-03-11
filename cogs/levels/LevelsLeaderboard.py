@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import LevelsDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -26,7 +26,7 @@ class LevelsLeaderboard(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        user_ids_and_levels = LevelsDB(interaction.guild.id).get_all_user_levels(10)
+        user_ids_and_levels = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level()).get_all_users_ranked(limit=10)
         output: str = ""
 
         for index, user_data in enumerate(user_ids_and_levels):
@@ -44,7 +44,7 @@ class LevelsLeaderboard(nextcord_C.Cog):
             output += f"**{index+1}. {name}** - Level: __`{user_data[1]}`__\n"
 
         if interaction.guild.icon:
-            server_icon_url = interaction.guild.icon
+            server_icon_url = interaction.guild.icon.url
         else:
             server_icon_url = self.client.DEFAULT_PFP
 

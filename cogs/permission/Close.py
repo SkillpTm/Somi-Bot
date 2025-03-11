@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import ConfigDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -30,7 +30,7 @@ class Close(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        default_role_id: int = await ConfigDB(interaction.guild.id, "DefaultRole").get_list(interaction.guild)
+        default_role_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).default_role_get()
 
         # if there hasn't been a default role set in Somi, use @everyone
         if not default_role_id:
@@ -51,7 +51,7 @@ class Close(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().success("Closed the server sucessfully.\n To re-open it use `/open`"), ephemeral=True)
 
 
-        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
 
         if not audit_log_id:
             return
@@ -90,7 +90,7 @@ class Close(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        default_role_id: int = await ConfigDB(interaction.guild.id, "DefaultRole").get_list(interaction.guild)
+        default_role_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).default_role_get()
 
         # if there hasn't been a default role set in Somi, use @everyone
         if not default_role_id:
@@ -111,7 +111,7 @@ class Close(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().success("Re-opened the server sucessfully."), ephemeral=True)
 
 
-        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
 
         if not audit_log_id:
             return

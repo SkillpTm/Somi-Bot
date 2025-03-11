@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import ConfigDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import TEXT_CHANNELS, SomiBot
 
@@ -57,7 +57,7 @@ class Send(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().success(f"Message sent in: {channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
 
 
-        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
 
         if not audit_log_id:
             return
@@ -143,7 +143,7 @@ class Send(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().success(f"Message edited in: {correct_channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
 
 
-        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
 
         if not audit_log_id:
             return

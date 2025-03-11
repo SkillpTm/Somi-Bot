@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import ReminderDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -24,7 +24,7 @@ class ReminderList(nextcord_C.Cog):
 
         self.client.Loggers.action_log(Get.log_message(interaction, "/reminder list"))
 
-        user_reminders = ReminderDB(interaction.user.id).get_list()
+        user_reminders = await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).get_list()
 
         if not user_reminders:
             await interaction.response.send_message(embed=EmbedFunctions().error("You don't have any reminders.\nTo add a reminder use `/reminder add`."), ephemeral=True)
@@ -34,7 +34,6 @@ class ReminderList(nextcord_C.Cog):
 
         output = ""
 
-        #TODO add pages to this
         for reminder in user_reminders:
             output += f"<t:{reminder[0]}:F> // ID: {reminder[2]} - [Link]({reminder[1]})\nReminder: `{reminder[3][:30]}"
 

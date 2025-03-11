@@ -2,9 +2,9 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 import random
-import time as unix_time
+import time as py_time
 
-from lib.db_modules import ReminderDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -58,17 +58,14 @@ class ReminderAdd(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        reminder_time = int(unix_time.time()) + total_seconds
-        reminder_id: str = ""
+        reminder_time = int(py_time.time()) + total_seconds
 
-        while not reminder_id:
-            reminder_id = str(random.randint(10**9, 10**10 - 1))
+        while True:
+            reminder_id = random.randint(10**9, 10**10 - 1) # get a random 9 digit number
 
             # check if the reminder_id has already been used for this user
-            for reminder_element in ReminderDB(interaction.user.id).get_list():
-                if reminder_id == str(reminder_element[2]):
-                    reminder_id = ""
-                    break
+            if reminder_id not in [user_reminder[0] for user_reminder in await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).get_list()]:
+                break
 
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,
@@ -95,7 +92,7 @@ class ReminderAdd(nextcord_C.Cog):
 
         bot_reply = await interaction.original_message()
 
-        ReminderDB(interaction.user.id).add(reminder_time, bot_reply.jump_url, reminder_id, reminder)
+        await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).add(reminder_id, reminder_time, bot_reply.jump_url, reminder)
 
 
 

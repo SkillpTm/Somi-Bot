@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import ConfigDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import TEXT_CHANNELS, SomiBot
 
@@ -17,7 +17,7 @@ class Slowmode(nextcord_C.Cog):
         
     @nextcord.slash_command(
         name = "slowmode",
-        description = "sets/unsets a slowmode in a channel",
+        description = "set/resets a slowmode in a channel",
         default_member_permissions = nextcord.Permissions(manage_channels=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
@@ -64,7 +64,7 @@ class Slowmode(nextcord_C.Cog):
             mod_action = f"{interaction.user.mention} deactivated slowmode in {channel.mention}"
 
 
-        audit_log_id: int = await ConfigDB(interaction.guild.id, "AuditLogChannel").get_list(interaction.guild)
+        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
 
         if not audit_log_id:
             return

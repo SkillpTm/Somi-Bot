@@ -5,7 +5,7 @@ import nextcord.ext.application_checks as nextcord_AC
 import pycountry
 import requests
 
-from lib.db_modules import WeatherDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -33,25 +33,20 @@ class Weather(nextcord_C.Cog):
     ) -> None:
         """This command outputs various statistics about the weather of any place (that's on openweathermap)"""
 
-        input_location = location # in case we error on the api call later we need the original input for the error message
-        location = location.lower().replace(" ", "+").replace("#", "")
-
-        # if the user hasn't saved a location yet, set it to Seoul (as a default value)
-        if not location and not WeatherDB().get(interaction.user.id):
-            WeatherDB().add(interaction.user.id, "seoul")
-
-        # if the user provides a new location, save it as their new default value
-        if location and location != WeatherDB().get(interaction.user.id):
-            WeatherDB().delete(interaction.user.id)
-            WeatherDB().add(interaction.user.id, location)
-
-        location = WeatherDB().get(interaction.user.id)
-
         self.client.Loggers.action_log(Get.log_message(
             interaction,
             "/weather",
             {"location": location}
         ))
+
+        input_location = location # in case we error on the api call later we need the original input for the error message
+        location = location.lower().replace(" ", "+").replace("#", "")
+
+        if location:
+            await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).weather_set(location)
+
+        # if no location was provided we either get the last submitted one or the default value 'seoul'
+        location = await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).weather_get()
 
         await interaction.response.defer(with_message = True)
 

@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import ConfigDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get, LevelRoles
 from lib.utilities import SomiBot
 
@@ -26,8 +26,8 @@ class LevelsInfo(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        output_role_list = LevelRoles.get_level_range_with_role(await ConfigDB(interaction.guild.id, "LevelRoles").get_list(interaction.guild))
-        output_ignore_channels = "".join(f"<#{channel_id}>\n" for channel_id in await ConfigDB(interaction.guild.id, "LevelIgnoreChannels").get_list(interaction.guild))
+        output_role_list = LevelRoles.get_level_range_with_role(await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level_role()).get_list())
+        output_ignore_channels = "".join(f"<#{channel_id}>\n" for channel_id in await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level_ignore_channel()).get_list())
         
 
         if not output_role_list:

@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import re
 
-from lib.db_modules import CommandUsesDB, ConfigDB, KeywordDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -27,10 +27,10 @@ class KeywordSend(nextcord_C.Cog):
             return
 
         # remove messages from hidden channels
-        if message.channel.id in await ConfigDB(message.guild.id, "HiddenChannels").get_list(message.guild):
+        if message.channel.id in await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id).hidden_channel()).get_list():
             return
 
-        all_users_keywords = KeywordDB(message.guild.id, message.author.id).get_all()
+        all_users_keywords = await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id, user_id=message.author.id).keyword()).get_all()
 
         for user_id, user_keywords in all_users_keywords.items():
             
@@ -85,8 +85,7 @@ class KeywordSend(nextcord_C.Cog):
             except:
                 self.client.Loggers.action_warning(f"keyword send ~ User: {user_id} couldn't be notified, because their pms aren't open to the client")
 
-            CommandUsesDB("command_uses").update("keyword send")
-
+            await (await DBHandler(self.client.PostgresDB).telemetry()).increment("keyword send")
 
 
 def setup(client: SomiBot) -> None:

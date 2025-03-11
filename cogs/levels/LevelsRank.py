@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import LevelsDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -41,7 +41,7 @@ class LevelsRank(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        user_level, xp_until_next_level = LevelsDB(interaction.guild.id).get_level(member.id)
+        user_level, xp_until_next_level = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level()).get_level_and_xp_until_next()
         next_level_xp = (user_level-1) * 200 + 300
         xp_progress_to_next_level = next_level_xp - xp_until_next_level
         
@@ -71,7 +71,7 @@ class LevelsRank(nextcord_C.Cog):
 
                 [
                     "Rank:",
-                    f"`{LevelsDB(interaction.guild.id).get_rank(member.id)}`",
+                    f"`{await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level()).get_rank()}`",
                     True
                 ],
 

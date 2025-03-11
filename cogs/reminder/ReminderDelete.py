@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.db_modules import ReminderDB
+from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
 from lib.utilities import SomiBot, YesNoButtons
 
@@ -38,7 +38,7 @@ class ReminderDelete(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        if not ReminderDB(interaction.user.id).get_list():
+        if not await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).get_list():
             await interaction.followup.send(embed=EmbedFunctions().error("You don't have any reminders to be deleted!"), ephemeral=True)
             return
 
@@ -52,9 +52,7 @@ class ReminderDelete(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().error(f"`{reminder_id}` isn't a valid reminder id."), ephemeral=True)
             return
 
-        deleted = ReminderDB(interaction.user.id).delete(reminder_id)
-
-        if not deleted:
+        if not await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).delete():
             await interaction.followup.send(embed=EmbedFunctions().error(f"You don't have a reminder with the ID `{reminder_id}`.\nTo get a list of your reminders use `/reminder list`."), ephemeral=True)
             return
 
@@ -63,7 +61,7 @@ class ReminderDelete(nextcord_C.Cog):
     ####################################################################################################
 
     @reminder_delete.on_autocomplete("reminder_id")
-    async def autocomplete_reminder_delete(
+    async def reminder_delete_autocomplete_reminder_id(
         self,
         interaction: nextcord.Interaction,
         reminder_id: str
@@ -72,7 +70,7 @@ class ReminderDelete(nextcord_C.Cog):
 
         valid_ids = {}
 
-        for reminder in ReminderDB(interaction.user.id).get_list():
+        for reminder in await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).get_list():
             reminder_text = f"{reminder[3][:30]}"
             
             if len(reminder[3]) > 30:
@@ -80,9 +78,12 @@ class ReminderDelete(nextcord_C.Cog):
 
             valid_ids.update({f"{reminder[2]}: {reminder_text}" : reminder[2]})
 
-        autocomplete_dict = Get.autocomplete_dict_from_search_string(reminder_id, valid_ids)
-
-        await interaction.response.send_autocomplete(autocomplete_dict)
+        await interaction.response.send_autocomplete(
+            Get.autocomplete_dict_from_search_string(
+                reminder_id,
+                valid_ids
+            )
+        )
 
     ####################################################################################################
 
@@ -97,7 +98,7 @@ class ReminderDelete(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().error("Your reminders have **not** been deleted!"), ephemeral=True)
             return
             
-        ReminderDB(interaction.user.id).delete_all()
+        await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).delete_all()
 
         self.client.Loggers.action_log(Get.log_message(
             interaction,

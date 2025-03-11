@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.db_modules import CommandUsesDB
+from lib.dbModules import DBHandler
 from lib.modules import Get
 from lib.utilities import SomiBot
 
@@ -23,7 +23,7 @@ class Reactions(nextcord_C.Cog):
 
             self.client.Loggers.action_log(Get.log_message(message, "reaction ping"))
 
-            CommandUsesDB("log_activations").update("reacted @ping")
+            await (await DBHandler(self.client.PostgresDB).telemetry()).increment("reacted @ping")
 
 
         # react to somionly
@@ -32,7 +32,7 @@ class Reactions(nextcord_C.Cog):
 
             self.client.Loggers.action_log(Get.log_message(message, "reaction somionly"))
 
-            CommandUsesDB("log_activations").update("reacted somionly")
+            await (await DBHandler(self.client.PostgresDB).telemetry()).increment("reacted somionly")
 
 
         # react to a "f" in a message
@@ -41,7 +41,7 @@ class Reactions(nextcord_C.Cog):
 
             self.client.Loggers.action_log(Get.log_message(message, "reaction f"))
 
-            CommandUsesDB("log_activations").update("reacted SomiF")
+            await (await DBHandler(self.client.PostgresDB).telemetry()).increment("reacted SomiF")
 
         # react to the somibestgrill emote
         if "somibestgrill" in str(message.content.lower()):
@@ -49,7 +49,7 @@ class Reactions(nextcord_C.Cog):
 
             self.client.Loggers.action_log(Get.log_message(message, "reaction bestgrill"))
 
-            CommandUsesDB("log_activations").update("reacted SomiBestGrill")
+            await (await DBHandler(self.client.PostgresDB).telemetry()).increment("reacted SomiBestGrill")
 
 
 def setup(client: SomiBot) -> None:

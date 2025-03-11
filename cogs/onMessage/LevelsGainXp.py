@@ -34,12 +34,15 @@ class LevelsGainXp(nextcord_C.Cog):
         if message.channel.id in await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id).level_ignore_channel()).get_list():
             return
 
+        user_level_before, _ =  await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id).level()).get_level_and_xp_until_next()
+
         if not await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id).level()).increase_xp():
             return
 
-        user_level, _ =  await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id).level()).get_level_and_xp_until_next()
+        user_level_after, _ =  await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id).level()).get_level_and_xp_until_next()
 
-        await LevelRoles().apply(message.guild, [[message.author.id, user_level]])
+        if user_level_before < user_level_after:
+            await LevelRoles().update_users(self.client, message.guild, [[message.author.id, user_level_after]])
 
 
 

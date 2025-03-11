@@ -33,7 +33,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
             required = True
         ),
         level: int = nextcord.SlashOption(
-            description = "the level you're supposed to get a role",
+            description = "the level you're supposed to get a role at",
             required = False,
             min_value = 2,
             max_value = 1000
@@ -112,7 +112,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().success(f"{role.mention} has been added to the level-roles.\nThe role is being applied to users now, this can take a few minutes."), ephemeral=True)
 
-        await LevelRoles().apply(interaction.guild)
+        await LevelRoles().update_users(self.client, interaction.guild)
 
         return added
 
@@ -133,7 +133,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().success(f"{role.mention} has been removed from the level-roles.\nThe level-roles are being re-applied to users now, this can take a few minutes."), ephemeral=True)
 
-        await LevelRoles().remove_from_members(interaction.guild, role)
+        await LevelRoles().update_users(self.client, interaction.guild)
 
         return deleted
 

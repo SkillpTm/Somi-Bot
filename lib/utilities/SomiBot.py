@@ -250,10 +250,10 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def on_message_delete(self, message: nextcord.Message) -> None:
-        """This function overwrites the build in on_message_delete function, to launch the delete_log"""
+        """This function overwrites the build in on_message_delete function, to launch the message_delete_log"""
 
         await asyncio.gather(
-            self.get_cog("DeleteLog").delete_log(message)
+            self.get_cog("DeleteLog").message_delete_log(message)
         )
 
     ####################################################################################################

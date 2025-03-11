@@ -235,7 +235,7 @@ class PostgresDB():
             result = self._desanitize([result])[0]
 
         # ensure we never return null
-        if not result:
+        if result == None:
             return ""
 
         return result
@@ -276,7 +276,7 @@ class PostgresDB():
                 value = self._desanitize([value])[0]
 
             # ensure we never return null
-            if not value:
+            if result == None:
                 value = ""
 
             output.append(value)
@@ -317,7 +317,7 @@ class PostgresDB():
                             value = self._desanitize([value])[0]
                         
                         # ensure we never return null
-                        if not value:
+                        if result == None:
                             value = ""
                         
                         result.append(value)

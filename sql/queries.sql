@@ -35,7 +35,7 @@ FROM telemetry;
 -- name: increase_total_xp
 UPDATE level
 SET
-    xp_cooldown = EXTRACT(EPOCH FROM NOW()) + FLOOR(RANDOM() * (65 - 55 + 1)) + 55
+    xp_cooldown = EXTRACT(EPOCH FROM NOW()) + FLOOR(RANDOM() * (65 - 55 + 1)) + 55,
     total_xp = level.total_xp + (FLOOR(RANDOM() * (15 - 10 + 1)) + 10)
 WHERE (:column_names) = (:placeholder_values);
 

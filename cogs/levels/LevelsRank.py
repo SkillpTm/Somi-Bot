@@ -41,7 +41,7 @@ class LevelsRank(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        user_level, xp_until_next_level = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level()).get_level_and_xp_until_next()
+        user_level, xp_until_next_level = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).level()).get_level_and_xp_until_next()
         next_level_xp = (user_level-1) * 200 + 300
         xp_progress_to_next_level = next_level_xp - xp_until_next_level
         
@@ -71,7 +71,7 @@ class LevelsRank(nextcord_C.Cog):
 
                 [
                     "Rank:",
-                    f"`{await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level()).get_rank()}`",
+                    f"`{await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).level()).get_rank()}`",
                     True
                 ],
 

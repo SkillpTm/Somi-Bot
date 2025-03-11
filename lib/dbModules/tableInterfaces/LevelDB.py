@@ -57,9 +57,9 @@ class LevelDB():
 
     @staticmethod
     def _calulate_xp_until_next_level(total_xp: int, level: int) -> int:
-        """The formular to get how much total xp it requiers to finish a level is: f(level) = 100 * level (level + 1)"""
+        """The formular to get how much total xp it requiers to finish a level is: f(level) = 100 * level * (level + 1)"""
 
-        return (100 * level (level + 1)) - total_xp
+        return (100 * level * (level + 1)) - total_xp
 
     ####################################################################################################
 

@@ -307,12 +307,15 @@ class SomiBot(nextcord_C.Bot):
 
         self.Loggers.application_command_error(
             exception = exception,
+            context = interaction.context,
+            created_at = interaction.created_at,
+            expires_at = interaction.expires_at,
             type = interaction.type._name_,
             file = interaction.application_command.parent_cog,
             meta_data = Get.log_message(interaction, "error"),
             data = interaction.data,
             app_permissions = interaction.app_permissions.value,
-            permissions = interaction.permissions.value,
+            user_permissions = interaction.permissions.value,
         )
 
         ERROR_MESSAGE = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions. (this includes her role being above others)\n```{exception}```\nA bug-report has been send to the developer."
@@ -322,7 +325,7 @@ class SomiBot(nextcord_C.Bot):
         else:
             await interaction.response.send_message(embed=EmbedFunctions().critical_error(ERROR_MESSAGE), ephemeral=True)
 
-        await self.get_guild(self.SUPPORT_SERVER_ID).get_channel(self.SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().critical_error(f"```{exception}```"), ephemeral=True)
+        await self.get_guild(self.SUPPORT_SERVER_ID).get_channel(self.SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().critical_error(f"```{exception}```"))
 
         return await super().on_application_command_error(interaction, exception)
 

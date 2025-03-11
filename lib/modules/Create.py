@@ -17,7 +17,7 @@ class Create():
         # discord provides the message in chronological order, we want the latest first though
         messages.reverse()
         # the file, while temporary, is supposed to have a unique name, in case someone purges at the same time
-        file_name = f"./storage/temp/bulk_messages_{messages[0].guild.id}_{messages[0].channel.id}_{messages[0].id}_{len(messages)}.csv"
+        file_name = f"./debug/temp/bulk_messages_{messages[0].guild.id}_{messages[0].channel.id}_{messages[0].id}_{len(messages)}.csv"
 
         with open(file_name, "w") as file:
             writer = csv.DictWriter(file, fieldnames=["Author ID", "Author Name", "Send at", "Content"])

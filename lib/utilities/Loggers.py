@@ -7,7 +7,7 @@ class Loggers():
     action_logger = logging.getLogger("SomiBot.Action")
     action_logger.setLevel(logging.DEBUG)
 
-    action_handler = logging.FileHandler(filename="./storage/logs/action.log", encoding="utf-8", mode="a")
+    action_handler = logging.FileHandler(filename="./debug/logs/action.log", encoding="utf-8", mode="a")
     action_handler.setFormatter(logging.Formatter("%(asctime)s: %(name)s - %(levelname)s:\n%(message)s"))
     action_logger.addHandler(action_handler)
 
@@ -15,7 +15,7 @@ class Loggers():
     error_logger = logging.getLogger("SomiBot.Error")
     error_logger.setLevel(logging.ERROR)
 
-    error_handler = logging.FileHandler(filename="./storage/logs/error.log", encoding="utf-8", mode="a")
+    error_handler = logging.FileHandler(filename="./debug/logs/error.log", encoding="utf-8", mode="a")
     error_handler.setFormatter(logging.Formatter("%(asctime)s: %(name)s - %(levelname)s:\n%(message)s"))
     error_logger.addHandler(error_handler)
 
@@ -23,7 +23,7 @@ class Loggers():
     nextcord_logger = logging.getLogger('nextcord')
     nextcord_logger.setLevel(logging.ERROR)
 
-    nextcord_handler = logging.FileHandler(filename='./storage/logs/nextcord.log', encoding='utf-8', mode='a')
+    nextcord_handler = logging.FileHandler(filename='./debug/logs/nextcord.log', encoding='utf-8', mode='a')
     nextcord_handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
     nextcord_logger.addHandler(nextcord_handler)
 

@@ -14,7 +14,7 @@ from lib.dbModules import DBHandler, PostgresDB
 from lib.utilities.Keychain import Keychain
 from lib.utilities.Lists import Lists
 from lib.utilities.Loggers import Loggers
-from storage.Config import Config
+from debug.Config import Config
 
 
 

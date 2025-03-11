@@ -1,5 +1,5 @@
 import dataclasses
-from storage.Config import Config
+from debug.Config import Config
 
 
 

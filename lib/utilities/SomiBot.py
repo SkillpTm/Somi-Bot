@@ -28,8 +28,9 @@ class SomiBot(nextcord_C.Bot):
     SOMI_INVITE = "https://somibot.skillp.dev/invite/"
     SOMICORD_INVITE = "https://discord.gg/Frd7WYg"
     SUPPORT_SERVER_ID = Config.SUPPORT_SERVER_ID
-    SUPPORT_SERVER_LOGS_ID = Config.SUPPORT_SERVER_LOGS_ID
+    SUPPORT_SERVER_ERRORS_ID = Config.SUPPORT_SERVER_ERRORS_ID
     SUPPORT_SERVER_FEEDBACK_ID = Config.SUPPORT_SERVER_FEEDBACK_ID
+    SUPPORT_SERVER_LOGS_ID = Config.SUPPORT_SERVER_LOGS_ID
     VERSION = "3.1"
 
     # Colors
@@ -314,12 +315,14 @@ class SomiBot(nextcord_C.Bot):
             permissions = interaction.permissions.value,
         )
 
-        ERROR_MESSAGE = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions. (this includes her role being above others)\n```{exception}```\nIf this persits you can file a bug-report by using `/feedback`."
+        ERROR_MESSAGE = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions. (this includes her role being above others)\n```{exception}```\nA bug-report has been send to the developer."
 
         if interaction.response.is_done():
             await interaction.followup.send(embed=EmbedFunctions().critical_error(ERROR_MESSAGE), ephemeral=True)
         else:
             await interaction.response.send_message(embed=EmbedFunctions().critical_error(ERROR_MESSAGE), ephemeral=True)
+
+        await self.get_guild(self.SUPPORT_SERVER_ID).get_channel(self.SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().critical_error(f"```{exception}```"), ephemeral=True)
 
         return await super().on_application_command_error(interaction, exception)
 

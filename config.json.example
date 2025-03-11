@@ -4,8 +4,9 @@
     "POSTGRES_POOL_MAX_SIZE": 0,
     "SUPPORT_SERVER": {
         "ID": 0,
-        "LOGS_CHANNEL_ID": 0,
-        "FEEDBACK_CHANNEL_ID": 0
+        "ERRORS_CHANNEL_ID": 0,
+        "FEEDBACK_CHANNEL_ID": 0,
+        "LOGS_CHANNEL_ID": 0
     },
     "SOMICORD": {
         "MODMAIL_SERVER_ID": 0,

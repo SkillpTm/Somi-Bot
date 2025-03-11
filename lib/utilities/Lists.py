@@ -670,7 +670,7 @@ class Lists():
                 """
                 ```/close (no parameters)```
 
-                (note: For this command to work you need to set a default-role with `/config default-role`.)
+                (note: For this command it's recommended to set a default-role with `/config default-role` and let it control, if people can send messages or not.)
                 """,
                 "/close",
                 "manage roles: ✅\nmanage guild: ✅"
@@ -851,7 +851,7 @@ class Lists():
                 """
                 ```/open (no parameters)```
 
-                (note: For this command to work you need to set a default-role with `/config default-role`.)
+                (note: For this command it's recommended to set a default-role with `/config default-role` and let it control, if people can send messages or not.)
                 (note: The command 'open' has a search shorthand as 'unclose'.)
                 """,
                 "/open",

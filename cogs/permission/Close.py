@@ -4,7 +4,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 from lib.dbModules import DBHandler
 from lib.modules import Checks, EmbedFunctions, Get
-from lib.utilities import SomiBot
+from lib.utilities import Lists, SomiBot
 
 
 
@@ -17,7 +17,7 @@ class Close(nextcord_C.Cog):
 
     @nextcord.slash_command(
         name = "close",
-        description = "takes all users through the default-role the send-messages permission away",
+        description = "removes send message perms from @everyone and the default role, on the roles, also pauses invites",
         default_member_permissions = nextcord.Permissions(manage_roles=True, manage_guild=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
@@ -32,13 +32,15 @@ class Close(nextcord_C.Cog):
 
         default_role_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).default_role_get()
 
-        # if there hasn't been a default role set in Somi, use @everyone
-        if not default_role_id:
-            default_role_id = interaction.guild.default_role.id
+        roles_to_modify = [interaction.guild.default_role]
 
-        default_role = interaction.guild.get_role(default_role_id)
+        if default_role_id:
+            roles_to_modify.append(interaction.guild.get_role(default_role_id))
 
-        permissions_to_check = (default_role.permissions.send_messages, default_role.permissions.send_messages_in_threads, default_role.permissions.add_reactions)
+        permissions_to_check: list[bool] = []
+
+        for role in roles_to_modify:
+            permissions_to_check = (role.permissions.send_messages, role.permissions.send_messages_in_threads, role.permissions.add_reactions)
 
         # if all relevant permissions are already turned off, the server is already closed
         if all(not permission for permission in permissions_to_check):
@@ -46,7 +48,16 @@ class Close(nextcord_C.Cog):
             return
 
         await interaction.guild.edit(invites_disabled = True)
-        await default_role.edit(permissions=nextcord.Permissions(permissions = default_role.permissions.value, send_messages = False, send_messages_in_threads = False, add_reactions = False))
+
+        for role in roles_to_modify:
+            await role.edit(
+                permissions = nextcord.Permissions(
+                    permissions = role.permissions.value,
+                    send_messages = False,
+                    send_messages_in_threads = False,
+                    add_reactions = False
+                )
+            )
 
         await interaction.followup.send(embed=EmbedFunctions().success("Closed the server sucessfully.\n To re-open it use `/open`"), ephemeral=True)
 
@@ -76,7 +87,7 @@ class Close(nextcord_C.Cog):
 
     @nextcord.slash_command(
         name = "unclose",
-        description = "gives users through the default-role the send-messages permission back",
+        description = "gives back send message perms for @everyone and the default role, on the roles, also pauses invites",
         default_member_permissions = nextcord.Permissions(manage_roles=True, manage_guild=True),
         name_localizations = {country_tag:"open" for country_tag in nextcord.Locale},
         integration_types = [nextcord.IntegrationType.guild_install],
@@ -92,13 +103,15 @@ class Close(nextcord_C.Cog):
 
         default_role_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).default_role_get()
 
-        # if there hasn't been a default role set in Somi, use @everyone
-        if not default_role_id:
-            default_role_id = interaction.guild.default_role.id
+        roles_to_modify = [interaction.guild.default_role]
 
-        default_role = interaction.guild.get_role(default_role_id)
+        if default_role_id:
+            roles_to_modify.append(interaction.guild.get_role(default_role_id))
 
-        permissions_to_check = (default_role.permissions.send_messages, default_role.permissions.send_messages_in_threads, default_role.permissions.add_reactions)
+        permissions_to_check: list[bool] = []
+
+        for role in roles_to_modify:
+            permissions_to_check = (role.permissions.send_messages, role.permissions.send_messages_in_threads, role.permissions.add_reactions)
 
         # if all relevant permissions are already turned on, the server is already open
         if all(permission for permission in permissions_to_check):
@@ -106,7 +119,30 @@ class Close(nextcord_C.Cog):
             return
 
         await interaction.guild.edit(invites_disabled = False)
-        await default_role.edit(permissions=nextcord.Permissions(permissions = default_role.permissions.value, send_messages = True, send_messages_in_threads = True, add_reactions = True))
+
+        for role in roles_to_modify:
+            await role.edit(
+                permissions = nextcord.Permissions(
+                    permissions = role.permissions.value,
+                    send_messages = True,
+                    send_messages_in_threads = True,
+                    add_reactions = True
+                )
+            )
+
+            for channel in interaction.guild.channels:
+                if not channel.type in Lists.TEXT_CHANNELS:
+                    continue
+
+                if not channel.permissions_for(interaction.guild.get_member(self.client.user.id)).manage_channels:
+                    continue
+
+                overwrites = channel.overwrites_for(role)
+                overwrites.send_messages = True
+                overwrites.send_messages_in_threads = True
+                overwrites.add_reactions = True
+
+                await channel.set_permissions(target=role, overwrite=overwrites)
 
         await interaction.followup.send(embed=EmbedFunctions().success("Re-opened the server sucessfully."), ephemeral=True)
 

@@ -97,7 +97,7 @@ class KeywordDB():
 
     ####################################################################################################
 
-    async def delete_all(self) -> None:
+    async def delete_all_user(self) -> None:
         """deletes all the keywords of this user on this server"""
 
         await self.database.execute(
@@ -105,6 +105,18 @@ class KeywordDB():
             table_name = "keyword",
             columns = ["server_id", "user_id"],
             values = [self.server_id, self.user_id]
+        )
+
+    ####################################################################################################
+
+    async def delete_all_server(self) -> None:
+        """deletes all keywords of this server from the table"""
+
+        await self.database.execute(
+            query_name = "delete_rows_where",
+            table_name = "keyword",
+            columns = ["server_id"],
+            values = [self.server_id]
         )
 
     ####################################################################################################

@@ -68,6 +68,19 @@ class CustomCommandDB():
 
     ####################################################################################################
         
+    async def delete_all(self) -> None:
+        """deletes all commands of this server from the table"""
+
+        await self.database.execute(
+            query_name = "delete_rows_where",
+            table_name = "custom_command",
+            columns = ["server_id"],
+            values = [self.server_id]
+        )
+
+
+    ####################################################################################################
+        
     async def get_text(self, name: str) -> str:
         """get the output text for a command"""
 

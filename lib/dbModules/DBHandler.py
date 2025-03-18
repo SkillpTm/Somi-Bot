@@ -67,6 +67,22 @@ class DBHandler():
 
     ####################################################################################################
 
+    async def clear_data(self) -> None:
+        """wrapper to delete all server and/or user data, depening on which was provided"""
+
+        if self.server_id:
+            await (await self.server()).audit_log_reset()
+            await (await self.hidden_channel()).delete_all()
+            await (await self.level_ignore_channel()).delete_all()
+            await (await self.level_role()).delete_all()
+            await (await self.custom_command()).delete_all()
+            await (await self.keyword()).delete_all_server()
+
+        if self.user_id:
+            await (await self.keyword()).delete_all_server()
+
+    ####################################################################################################
+
     async def custom_command(self) -> CustomCommandDB:
         await self._setup()
 

@@ -71,6 +71,18 @@ class LevelRoleDB():
 
     ####################################################################################################
         
+    async def delete_all(self) -> None:
+        """deletes all roles of this server from the table"""
+
+        await self.database.execute(
+            query_name = "delete_rows_where",
+            table_name = "level_role",
+            columns = ["server_id"],
+            values = [self.server_id]
+        )
+
+    ####################################################################################################
+        
     async def get_list(self) -> list[list[int]]:
         """get a list of lists of all level role ids and levels in this server, sorted by level, lowest to highest"""
 

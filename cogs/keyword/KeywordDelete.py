@@ -88,7 +88,7 @@ class KeywordDelete(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().error("Your keywords have **not** been deleted!"), ephemeral=True)
             return
 
-        await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).delete_all()
+        await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).delete_all_user()
 
         self.client.Loggers.action_log(Get.log_message(
             interaction,

@@ -57,6 +57,18 @@ class LevelIgnoreChannelDB():
 
     ####################################################################################################
         
+    async def delete_all(self) -> None:
+        """deletes all channels of this server from the table"""
+
+        await self.database.execute(
+            query_name = "delete_rows_where",
+            table_name = "level_ignore_channel",
+            columns = ["server_id"],
+            values = [self.server_id]
+        )
+
+    ####################################################################################################
+        
     async def get_list(self) -> list[int]:
         """get a list of all level ignore channel ids in this server"""
 

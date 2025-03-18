@@ -177,8 +177,15 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
+    async def on_guild_join(self, guild: nextcord.Guild) -> None:
+        """This function overwrites the build in on_guild_join function, to validate we don't have previous server data in the db"""
+
+        await DBHandler(self.PostgresDB, server_id=guild.id).clear_data()
+
+    ####################################################################################################
+
     async def on_guild_role_delete(self, role: nextcord.Role) -> None:
-        """This function overwrites the build in on_thread_delete function, to remove threads from the ConfigDB"""
+        """This function overwrites the build in on_guild_role_delete function, to remove threads from the ConfigDB"""
 
         await asyncio.gather(
             self.get_cog("ConfigValidate").on_delete(role)
@@ -190,7 +197,7 @@ class SomiBot(nextcord_C.Bot):
         """This function overwrites the build in on_member_ban function, to launch the ban_log"""
 
         await asyncio.gather(
-            self.get_cog("BanLog").ban_log(guild, user)
+            self.get_cog("BanLog").ban_log(guild, user),
         )
 
     ####################################################################################################
@@ -200,7 +207,8 @@ class SomiBot(nextcord_C.Bot):
 
         await asyncio.gather(
             self.get_cog("JoinLog").join_log(member),
-            self.get_cog("Welcome").welcome(member)
+            self.get_cog("Welcome").welcome(member),
+            DBHandler(self.PostgresDB, user_id=member.id).clear_data() # we clear out potentially old user data
         )
 
     ####################################################################################################

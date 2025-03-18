@@ -16,8 +16,8 @@ class Rules(nextcord_C.Cog):
     @nextcord.slash_command(
         name = "rules",
         description = "posts a rule for you",
-        guild_ids = [SomiBot.SOMICORD_ID],
-        default_member_permissions=nextcord.Permissions(manage_guild=True),
+        guild_ids = [SomiBot.SOMICORD_ID, SomiBot.SUPPORT_SERVER_ID],
+        default_member_permissions = nextcord.Permissions(manage_guild=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )

@@ -107,7 +107,7 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
-    async def api_logout(self) -> None:
+    def api_logout(self) -> None:
         """Logs the client from the Spotify and YouTube API out"""
 
         if hasattr(self, "spotifyOAuth"):
@@ -122,7 +122,7 @@ class SomiBot(nextcord_C.Bot):
         """This function overwrites the build in on_ready function, to login for our APIs and to start all infinite loops"""
 
         # logout in case this was a restart and we didn't properly exit those API connections
-        await self.api_logout()
+        self.api_logout()
 
         self.Loggers.bot_status(f"{self.user}: ready and logged in")
         
@@ -144,7 +144,7 @@ class SomiBot(nextcord_C.Bot):
         # attempt to logout the api connections
         try:
             if requests.get("https://www.google.com/").status_code == 200:
-                await self.api_logout()
+                self.api_logout()
         except (requests.ConnectionError):
             pass
 

@@ -84,10 +84,9 @@ class Close(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "unclose",
+        name = "open",
         description = "gives back send message perms for @everyone and the default role, on the roles, also pauses invites",
         default_member_permissions = nextcord.Permissions(manage_roles=True, manage_guild=True),
-        name_localizations = {country_tag:"open" for country_tag in nextcord.Locale},
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )

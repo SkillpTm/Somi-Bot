@@ -19,9 +19,9 @@ class LastFmNowPlaying(nextcord_C.Cog):
     ####################################################################################################
 
     @ParentCommand.lastfm.subcommand(
-        name = "nowplaying",
+        name = "np",
         description = "shows what someone is listening to right now",
-        name_localizations = {country_tag:"np" for country_tag in nextcord.Locale}
+        name_localizations = {country_tag:"now-playing" for country_tag in nextcord.Locale}
     )
     async def lastfm_now_playing(
         self,

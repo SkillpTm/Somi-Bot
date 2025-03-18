@@ -381,7 +381,7 @@ class Lists():
                 Default: you
 
                 (note: The command 'lf' has a search shorthand as 'lastfm'.)
-                (note: The subcommand 'np' has a search shorthand as 'nowplaying'.)
+                (note: The subcommand 'now-playing' has a search shorthand as 'np'.)
                 """,
                 f"/lf np [<@{APPLICATION_ID}>]"
             ],
@@ -852,7 +852,6 @@ class Lists():
                 ```/open (no parameters)```
 
                 (note: For this command it's recommended to set a default-role with `/config default-role` and let it control, if people can send messages or not.)
-                (note: The command 'open' has a search shorthand as 'unclose'.)
                 """,
                 "/open",
                 "manage roles: ✅\nmanage guild: ✅"

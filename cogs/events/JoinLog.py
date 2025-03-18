@@ -31,7 +31,7 @@ class JoinLog(nextcord_C.Cog):
 
         default_role_id = await (await DBHandler(self.client.PostgresDB, server_id=member.guild.id).server()).default_role_get()
 
-        if default_role_id:
+        if default_role_id and not member.bot:
             await member.add_roles(member.guild.get_role(default_role_id))
 
         audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=member.guild.id).server()).audit_log_get()

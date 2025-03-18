@@ -87,7 +87,7 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
-    def api_login(self) -> None:
+    def _api_login(self) -> None:
         """This function adds API logins for Spotify, WolframAlpha and YouTube on the client"""
 
         self.spotifyOAuth = spotipy.SpotifyOAuth(
@@ -107,7 +107,7 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
-    def api_logout(self) -> None:
+    def _api_logout(self) -> None:
         """Logs the client from the Spotify and YouTube API out"""
 
         if hasattr(self, "spotifyOAuth"):
@@ -118,19 +118,58 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
+    async def _apply_missing_default_roles(self) -> None:
+        """Checks on all guilds if all users have the default role. This should never be the case, unless someone joined a server during downtime."""
+
+        for guild in self.guilds:
+            default_role_id = await (await DBHandler(self.PostgresDB, server_id=guild.id).server()).default_role_get()
+
+            if not default_role_id:
+                continue
+
+            default_role = guild.get_role(default_role_id)
+
+            if not default_role:
+                continue
+
+            difference = len(guild.humans) == len(default_role.members)
+
+            if difference:
+                continue
+
+            for member in guild.humans:
+                if not difference:
+                    break
+
+                if member not in default_role.members:
+                    await member.add_roles(default_role)
+                    difference -= 1
+
+    ####################################################################################################
+
+    async def _start_infinite_loops(self) -> None:
+        """This function starts an infinite loop for the ReminderSend cog, which continues until the bot loses internet or gets shutdown"""
+
+        await asyncio.gather(
+            self.get_cog("ReminderSend").infinite_reminder_loop()
+        )
+
+    ####################################################################################################
+
     async def on_ready(self) -> None:
         """This function overwrites the build in on_ready function, to login for our APIs and to start all infinite loops"""
 
         # logout in case this was a restart and we didn't properly exit those API connections
-        self.api_logout()
+        self._api_logout()
 
         self.Loggers.bot_status(f"{self.user}: ready and logged in")
         
-        self.api_login()
+        self._api_login()
 
         self.PostgresDB = await PostgresDB.create("./sql/schema.sql", "./sql/queries.sql", Config.POSTGRES_POOL_MAX_SIZE)
 
-        await self.start_infinite_loops()
+        await self._apply_missing_default_roles()
+        await self._start_infinite_loops()
 
     ####################################################################################################
 
@@ -139,23 +178,69 @@ class SomiBot(nextcord_C.Bot):
 
         self.Loggers.bot_status(f"{self.user}: logged out")
 
-        await self.PostgresDB.close()
-
         # attempt to logout the api connections
         try:
             if requests.get("https://www.google.com/").status_code == 200:
-                self.api_logout()
+                self._api_logout()
         except (requests.ConnectionError):
             pass
 
+        await self.PostgresDB.close()
+
     ####################################################################################################
 
-    async def start_infinite_loops(self) -> None:
-        """This function starts an infinite loop for the ReminderSend cog, which continues until the bot loses internet or gets shutdown"""
+    async def on_application_command_completion(self, interaction: nextcord.Interaction) -> None:
+        """This function overwrites the build in on_application_command_completion function, to update the usage count of a command with the name of the used application command"""
 
-        await asyncio.gather(
-            self.get_cog("ReminderSend").infinite_reminder_loop()
+        command_name: str = ""
+
+        if not hasattr(interaction, "application_command"):
+            return
+
+        if hasattr(interaction.application_command, "parent_cmd"):
+            command_name += f"{interaction.application_command.parent_cmd.name} "
+
+        if hasattr(interaction.application_command, "name"):
+            command_name += f"{interaction.application_command.name}"
+
+        if command_name:
+            await (await DBHandler(self.PostgresDB).telemetry()).increment(command_name)
+
+    ####################################################################################################
+
+    async def on_application_command_error(
+        self,
+        interaction: nextcord.Interaction,
+        exception: nextcord.ApplicationError
+    ) -> tuple[nextcord.Interaction, nextcord.ApplicationError]:
+        """This function overwrites the build in on_application_command_error function, to create a global error log and exception handler."""
+
+        from lib.modules.EmbedFunctions import EmbedFunctions
+        from lib.modules.Get import Get
+
+        self.Loggers.application_command_error(
+            exception = exception,
+            context = interaction.context,
+            created_at = interaction.created_at,
+            expires_at = interaction.expires_at,
+            type = interaction.type._name_,
+            file = interaction.application_command.parent_cog,
+            meta_data = Get.log_message(interaction, "error"),
+            data = interaction.data,
+            app_permissions = interaction.app_permissions.value,
+            user_permissions = interaction.permissions.value,
         )
+
+        ERROR_MESSAGE = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions. (this includes her role being above others)\n```{exception}```\nA bug-report has been send to the developer."
+
+        if interaction.response.is_done():
+            await interaction.followup.send(embed=EmbedFunctions().critical_error(ERROR_MESSAGE), ephemeral=True)
+        else:
+            await interaction.response.send_message(embed=EmbedFunctions().critical_error(ERROR_MESSAGE), ephemeral=True)
+
+        await self.get_guild(self.SUPPORT_SERVER_ID).get_channel(self.SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().critical_error(f"```{exception}```"))
+
+        return await super().on_application_command_error(interaction, exception)
 
     ####################################################################################################
 
@@ -284,61 +369,6 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
-    async def on_application_command_completion(self, interaction: nextcord.Interaction) -> None:
-        """This function overwrites the build in on_application_command_completion function, to update the usage count of a command with the name of the used application command"""
-
-        command_name: str = ""
-
-        if not hasattr(interaction, "application_command"):
-            return
-
-        if hasattr(interaction.application_command, "parent_cmd"):
-            command_name += f"{interaction.application_command.parent_cmd.name} "
-
-        if hasattr(interaction.application_command, "name"):
-            command_name += f"{interaction.application_command.name}"
-
-        if command_name:
-            await (await DBHandler(self.PostgresDB).telemetry()).increment(command_name)
-
-    ####################################################################################################
-
-    async def on_application_command_error(
-        self,
-        interaction: nextcord.Interaction,
-        exception: nextcord.ApplicationError
-    ) -> tuple[nextcord.Interaction, nextcord.ApplicationError]:
-        """This function overwrites the build in on_application_command_error function, to create a global error log and exception handler."""
-
-        from lib.modules.EmbedFunctions import EmbedFunctions
-        from lib.modules.Get import Get
-
-        self.Loggers.application_command_error(
-            exception = exception,
-            context = interaction.context,
-            created_at = interaction.created_at,
-            expires_at = interaction.expires_at,
-            type = interaction.type._name_,
-            file = interaction.application_command.parent_cog,
-            meta_data = Get.log_message(interaction, "error"),
-            data = interaction.data,
-            app_permissions = interaction.app_permissions.value,
-            user_permissions = interaction.permissions.value,
-        )
-
-        ERROR_MESSAGE = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions. (this includes her role being above others)\n```{exception}```\nA bug-report has been send to the developer."
-
-        if interaction.response.is_done():
-            await interaction.followup.send(embed=EmbedFunctions().critical_error(ERROR_MESSAGE), ephemeral=True)
-        else:
-            await interaction.response.send_message(embed=EmbedFunctions().critical_error(ERROR_MESSAGE), ephemeral=True)
-
-        await self.get_guild(self.SUPPORT_SERVER_ID).get_channel(self.SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().critical_error(f"```{exception}```"))
-
-        return await super().on_application_command_error(interaction, exception)
-
-    ####################################################################################################
-
     @staticmethod
     async def on_thread_join(thread: nextcord.Thread):
         """This function overwrites the build in on_thread_join, so that the client automatically joins all new threads."""
@@ -347,14 +377,6 @@ class SomiBot(nextcord_C.Bot):
             await thread.join()
         except:
             pass
-
-    ####################################################################################################
-
-    @staticmethod
-    def restart() -> None:
-        """This function will restart the bot, by closing and reopening the main file"""
-
-        os.execv(sys.executable, ['python'] + sys.argv)
 
     ####################################################################################################
 
@@ -374,3 +396,11 @@ class SomiBot(nextcord_C.Bot):
             await response.edit(view=ButtonClass)
         elif interaction:
             await interaction.edit_original_message(view=ButtonClass)
+
+    ####################################################################################################
+
+    @staticmethod
+    def restart() -> None:
+        """This function will restart the bot, by closing and reopening the main file"""
+
+        os.execv(sys.executable, ['python'] + sys.argv)

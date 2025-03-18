@@ -37,12 +37,12 @@ class Ping(nextcord_C.Cog):
         followup_end = time.time()
 
         cpu_usage = round(float(subprocess.run("top -bn1 | grep 'Cpu(s)' | awk '{print 100 - $8}'", shell=True, capture_output=True, text=True).stdout.strip()), 1)
-        mem_usage = round(float(subprocess.run("top -bn1 | grep 'MiB Mem' | awk '{print ($8/$4) * 100}'", shell=True, capture_output=True, text=True).stdout.strip()), 1)
+        mem_usage = round(float(subprocess.run("top -bn1 | grep 'MiB Mem' | awk '{print 100 - ((($6 + $10)/$4) * 100)}'", shell=True, capture_output=True, text=True).stdout.strip()), 1)
 
         await interaction.followup.edit_message(
             message_id = (await interaction.original_message()).id,
             content =
-                f"Pong 🏓!\n" +
+                f"Pong!🏓\n" +
                 f"Up since: <t:{self.client.start_time}:R>\n" +
                 f"Discord latency: `{round(self.client.latency * 1000)}ms`\n" +
                 f"Response time: `{round((defer_end-defer_start) * 1000)}ms`\n" +

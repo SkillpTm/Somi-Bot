@@ -48,7 +48,7 @@ class Choose(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        chosen_key = random.choice(list(options.keys()))
+        chosen_key = random.choice(list(options))
 
 
         view = OptionsButton(interaction=interaction)

@@ -157,14 +157,14 @@ class KeywordDB():
             if user_id == self.user_id:
                 continue
 
-            if user_id not in output.keys():
+            if user_id not in output:
                 output[user_id] = keyword
                 continue
 
             output[user_id].append(keyword)
 
         # sort the keywords alphabetically
-        for user_id in output.keys():
+        for user_id in output:
             output[user_id] = sorted(output[user_id])
 
         return output

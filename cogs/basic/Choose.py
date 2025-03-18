@@ -40,7 +40,7 @@ class Choose(nextcord_C.Cog):
 
         # get all the options that got actually filled in
         for name, value in locals().items():
-            if name.startswith('option') and value and value != options:
+            if name.startswith("option") and value and value != options:
                 options[name] = value
 
 

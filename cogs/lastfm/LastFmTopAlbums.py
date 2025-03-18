@@ -84,11 +84,11 @@ class LastFmTopAlbums(nextcord_C.Cog):
         output = ""
 
         for album in top_albums_data["topalbums"]["album"]:
-            album_url = album['url']
-            artist_url = album['artist']['url']
+            album_url = album["url"]
+            artist_url = album["artist"]["url"]
 
-            album_name = Get.markdown_safe(album['name'])
-            artist_name = Get.markdown_safe(album['artist']['name'])
+            album_name = Get.markdown_safe(album["name"])
+            artist_name = Get.markdown_safe(album["artist"]["name"])
             output += f"{album['@attr']['rank']}. **[{album_name}]({album_url})** by [{artist_name}]({artist_url}) - *({album['playcount']} plays)*\n"
 
         embed = EmbedFunctions().builder(

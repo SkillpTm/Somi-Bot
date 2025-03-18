@@ -26,11 +26,11 @@ class LinkEmbed(nextcord_C.Cog):
             return
         
         # if the message link is surrounded by <> it won't embed
-        if re.search(fr'<https?://(canary\.)?discord\.com/channels/{message.guild.id}\S+>', message.content).group():
+        if re.search(fr"<https?://(canary\.)?discord\.com/channels/{message.guild.id}\S+>", message.content).group():
             return
 
         # gets the link from a message (works for both discord.com and canary.discord.com)
-        link = re.search(fr'https?://(canary\.)?discord\.com/channels/{message.guild.id}\S+', message.content).group()
+        link = re.search(fr"https?://(canary\.)?discord\.com/channels/{message.guild.id}\S+", message.content).group()
         original_message = await Get.message_object_from_link(link, self.client)
 
         if not original_message:

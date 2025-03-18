@@ -101,8 +101,8 @@ class SomiBot(nextcord_C.Bot):
         self.wolfram_client = wolframalpha.Client(self.Keychain.WOLFRAM_APP_ID)
 
         self.youtube = googleapiclient.discovery.build(
-            'youtube',
-            'v3',
+            "youtube",
+            "v3",
             developerKey = self.Keychain.YOUTUBE_API_KEY
         )
 
@@ -399,4 +399,4 @@ class SomiBot(nextcord_C.Bot):
     def restart() -> None:
         """This function will restart the bot, by closing and reopening the main file"""
 
-        os.execv(sys.executable, ['python'] + sys.argv)
+        os.execv(sys.executable, ["python"] + sys.argv)

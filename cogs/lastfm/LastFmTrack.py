@@ -75,8 +75,8 @@ class LastFmTrack(nextcord_C.Cog):
                 return
 
             np_user_data = np_response.json()
-            artist =  np_user_data["recenttracks"]["track"][0]['artist']['#text']
-            track = np_user_data["recenttracks"]["track"][0]['name']
+            artist =  np_user_data["recenttracks"]["track"][0]["artist"]["#text"]
+            track = np_user_data["recenttracks"]["track"][0]["name"]
 
         self.client.Loggers.action_log(Get.log_message(
             interaction,

@@ -76,8 +76,8 @@ class LastFmAlbum(nextcord_C.Cog):
 
             # get the artist and album they're listening to/last listened to from the recent tracks
             np_user_data = np_response.json()
-            artist =  np_user_data["recenttracks"]["track"][0]['artist']['#text']
-            album = np_user_data["recenttracks"]["track"][0]['album']['#text']
+            artist =  np_user_data["recenttracks"]["track"][0]["artist"]["#text"]
+            album = np_user_data["recenttracks"]["track"][0]["album"]["#text"]
 
         self.client.Loggers.action_log(Get.log_message(
             interaction,

@@ -24,7 +24,7 @@ class Webscrape():
             found_type_name_list = found_type_name.split("<span class=")
             type_name: list[str] = found_type_name_list[0].split('<h2 class="library-header-title">')
             type_name: str = type_name[1].replace("</h2>", "")
-            type_name = re.sub('\n', '', type_name.strip())
+            type_name = re.sub("\n", "", type_name.strip())
 
         return Get.markdown_safe(type_name)
 
@@ -110,7 +110,7 @@ class Webscrape():
             if int(position) == 1 and type_flag == "artist":
                 current_element_album += 1
 
-            name = re.sub('\n', '', name) # can be both album and track
+            name = re.sub("\n", "", name) # can be both album and track
 
             safe_name = Get.markdown_safe(name)
 

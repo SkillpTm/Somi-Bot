@@ -41,7 +41,7 @@ class YouTube(nextcord_C.Cog):
 
         search = self.client.youtube.search().list(q=query, part="snippet", type="video", maxResults=50)
         search_result = search.execute()
-        results = [f"https://www.youtube.com/watch?v={item['id']['videoId']}" for item in search_result['items']]
+        results = [f"https://www.youtube.com/watch?v={item['id']['videoId']}" for item in search_result["items"]]
 
         if results == []:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"YouTube couldn't find a video for your query:\n`{query}`"))

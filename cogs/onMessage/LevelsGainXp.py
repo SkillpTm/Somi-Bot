@@ -27,7 +27,7 @@ class LevelsGainXp(nextcord_C.Cog):
             return
 
         # re removes emotes, make sure messages are above 10 chars
-        if not len(re.sub('<[^ ]+?>', "",message.content)) > 10:
+        if not len(re.sub("<[^ ]+?>", "",message.content)) > 10:
             return
 
         # make sure message isn't in a levels ignore channel

@@ -80,11 +80,11 @@ class LastFmRecent(nextcord_C.Cog):
         # 1. [song name](song link) by [artist](artist link) - timestamp
         for track in np_data["recenttracks"]["track"]:
             index += 1
-            track_url = track['url']
-            artist_name_for_url = urllib.parse.quote_plus(track['artist']['#text'])
+            track_url = track["url"]
+            artist_name_for_url = urllib.parse.quote_plus(track["artist"]["#text"])
 
-            track_name = Get.markdown_safe(track['name'])
-            artist_name = Get.markdown_safe(track['artist']['#text'])
+            track_name = Get.markdown_safe(track["name"])
+            artist_name = Get.markdown_safe(track["artist"]["#text"])
             timestamp = ""
 
             # set the timestamp, unless it is currently playing

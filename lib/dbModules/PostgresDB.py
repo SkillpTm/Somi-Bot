@@ -66,7 +66,7 @@ class PostgresDB():
             max_size=max_pool_size
         )
 
-        with open(schema_path, 'r') as f:
+        with open(schema_path, "r") as f:
             schema = f.read()
 
         # always execute the schema, if a table already exists, this won't create a new one
@@ -84,12 +84,12 @@ class PostgresDB():
 
         queries: dict[str, str] = {}
 
-        with open(queries_path, 'r') as f:
+        with open(queries_path, "r") as f:
             # split the queries by their names
-            query_parts = f.read().split('-- name:')[1:]
+            query_parts = f.read().split("-- name:")[1:]
         
         for part in query_parts:
-            lines = part.strip().split('\n', 1)
+            lines = part.strip().split("\n", 1)
             queries[lines[0].strip()] = lines[1].strip()
 
         return queries

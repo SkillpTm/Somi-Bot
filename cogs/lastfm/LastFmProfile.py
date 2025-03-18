@@ -56,12 +56,12 @@ class LastFmProfile(nextcord_C.Cog):
         profile_user_data = profile_response.json()
 
         # set a default pfp if the user doesn't have one
-        if profile_user_data['user']['image'][3]['#text']:
-            lastfm_user_pfp = profile_user_data['user']['image'][3]['#text']
+        if profile_user_data["user"]["image"][3]["#text"]:
+            lastfm_user_pfp = profile_user_data["user"]["image"][3]["#text"]
         else:
             lastfm_user_pfp = self.client.DEFAULT_PFP
             
-        days_plays_ratio: float = round(int(profile_user_data['user']['playcount']) / (int((int(time.time()) - int(profile_user_data['user']['registered']['unixtime'])) / 60 / 60 / 24)), 2)
+        days_plays_ratio = round(int(profile_user_data["user"]["playcount"]) / (int((int(time.time()) - int(profile_user_data["user"]["registered"]["unixtime"])) / 60 / 60 / 24)), 2)
 
         embed = EmbedFunctions().builder(
             color = self.client.LASTFM_COLOR,
@@ -96,19 +96,19 @@ class LastFmProfile(nextcord_C.Cog):
 
                 [
                     "Unique Artists:",
-                    profile_user_data['user']['artist_count'],
+                    profile_user_data["user"]["artist_count"],
                     True
                 ],
 
                 [
                     "Unique Albums:",
-                    profile_user_data['user']['album_count'],
+                    profile_user_data["user"]["album_count"],
                     True
                 ],
 
                 [
                     "Unique Tracks:",
-                    profile_user_data['user']['track_count'],
+                    profile_user_data["user"]["track_count"],
                     True
                 ]
             ]

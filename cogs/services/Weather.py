@@ -62,7 +62,7 @@ class Weather(nextcord_C.Cog):
         output_data["country"] = pycountry.countries.get(alpha_2=str(response_json["sys"]["country"])).name
         output_data["descirption"] = str(response_json["weather"][0]["description"])
         output_data["humidity"] = str(response_json["main"]["humidity"])
-        output_data["id"] = str(response_json['id'])
+        output_data["id"] = str(response_json["id"])
         output_data["local_time"] = datetime.datetime.fromtimestamp(response_json["dt"] + response_json["timezone"]).strftime("%H:%M:%S")
         output_data["metric_temp"] = str(round(response_json["main"]["temp"], 1))
         output_data["imperial_temp"] = str(round(response_json["main"]["temp"] * 9/5 + 32, 1)) #(0°C × 9/5) + 32 = 32°F

@@ -4,7 +4,7 @@ import json
 
 class Config():
 
-    with open('config.json', 'r') as file:
+    with open("config.json", "r") as file:
         configData = json.load(file)
 
     APPLICATION_ID = configData["APPLICATION_ID"]

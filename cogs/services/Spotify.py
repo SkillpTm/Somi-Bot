@@ -122,22 +122,22 @@ class Spotify(nextcord_C.Cog):
     ) -> dict[str, str]:
         """uses the Spotify API to get the output data (potentially with details, if specified)"""
 
-        spotify_object = spotipy.Spotify(auth=self.client.spotifyOAuth.get_cached_token()['access_token'])
+        spotify_object = spotipy.Spotify(auth=self.client.spotifyOAuth.get_cached_token()["access_token"])
         track_data = spotify_object.track(f"spotify:track:{member_activity.track_id}")
         artist_data = spotify_object.artist(f"spotify:artist:{track_data['artists'][0]['id']}")
         output_data: dict[str, str] = {}
 
         # the artists are seperated by commas and have a markdown link to their SF page on them: [name](link), [name2](link2)...
-        output_data["artists"] = ", ".join([f"[{artist['name']}]({artist['external_urls']['spotify']})" for artist in track_data['artists']])
-        output_data["album_name"] = track_data['album']['name']
-        output_data["album_url"] = track_data['album']['external_urls']['spotify']
-        output_data["cover_url"] = track_data['album']['images'][0]['url']
-        output_data["track_name"] = track_data['name']
-        output_data["track_url"] = track_data['external_urls']['spotify']
+        output_data["artists"] = ", ".join([f"[{artist['name']}]({artist['external_urls']['spotify']})" for artist in track_data["artists"]])
+        output_data["album_name"] = track_data["album"]["name"]
+        output_data["album_url"] = track_data["album"]["external_urls"]["spotify"]
+        output_data["cover_url"] = track_data["album"]["images"][0]["url"]
+        output_data["track_name"] = track_data["name"]
+        output_data["track_url"] = track_data["external_urls"]["spotify"]
 
         if details == "Yes":
-            output_data["artist_genres"] = ", ".join(artist_data['genres'])
-            output_data["artist_followers"] = "{:,}".format(int(artist_data['followers']['total']))
+            output_data["artist_genres"] = ", ".join(artist_data["genres"])
+            output_data["artist_followers"] = str(int(artist_data["followers"]["total"]))
             output_data["artist_popularity"] = f"`{int(artist_data['popularity'])}/100`"
             output_data["track_duration"] = f"`{int(round(track_data['duration_ms'] / 1000) / 60)}:{round(track_data['duration_ms'] / 1000) % 60}`"
             output_data["track_popularity"] = f"`{int(track_data['popularity'])}/100`"

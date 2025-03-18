@@ -84,9 +84,9 @@ class LastFmTopArtists(nextcord_C.Cog):
         output = ""
 
         for artist in top_artists_data["topartists"]["artist"]:
-            artist_url = artist['url']
+            artist_url = artist["url"]
             
-            artist_name = Get.markdown_safe(artist['name'])
+            artist_name = Get.markdown_safe(artist["name"])
             output += f"{artist['@attr']['rank']}. **[{artist_name}]({artist_url})** - *({artist['playcount']} plays)*\n"
 
         embed = EmbedFunctions().builder(

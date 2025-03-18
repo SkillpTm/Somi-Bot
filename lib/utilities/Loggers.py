@@ -20,11 +20,11 @@ class Loggers():
     error_logger.addHandler(error_handler)
 
 
-    nextcord_logger = logging.getLogger('nextcord')
+    nextcord_logger = logging.getLogger("nextcord")
     nextcord_logger.setLevel(logging.ERROR)
 
-    nextcord_handler = logging.FileHandler(filename='./debug/logs/nextcord.log', encoding='utf-8', mode='a')
-    nextcord_handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+    nextcord_handler = logging.FileHandler(filename="./debug/logs/nextcord.log", encoding="utf-8", mode="a")
+    nextcord_handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
     nextcord_logger.addHandler(nextcord_handler)
 
     ####################################################################################################

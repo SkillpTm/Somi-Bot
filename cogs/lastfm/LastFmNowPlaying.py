@@ -81,24 +81,24 @@ class LastFmNowPlaying(nextcord_C.Cog):
 
         # formats the last 2 songs for the output (also denotes if something is being listened to right now)
         for track in np_response.json()["recenttracks"]["track"]:
-            track_url = track['url']
-            artist_name_for_url = urllib.parse.quote_plus(track['artist']['#text'])
-            album_name_for_url = urllib.parse.quote_plus(track['album']['#text'])
+            track_url = track["url"]
+            artist_name_for_url = urllib.parse.quote_plus(track["artist"]["#text"])
+            album_name_for_url = urllib.parse.quote_plus(track["album"]["#text"])
 
-            track_name = Get.markdown_safe(track['name'])
-            album_name = Get.markdown_safe(track['album']['#text'])
-            artist_name = Get.markdown_safe(track['artist']['#text'])
+            track_name = Get.markdown_safe(track["name"])
+            album_name = Get.markdown_safe(track["album"]["#text"])
+            artist_name = Get.markdown_safe(track["artist"]["#text"])
 
             # check if this song is being listened to right now, or already was finished
             if "date" in track:
                 timestamp = f"<t:{track['date']['uts']}:R>"
                 output += f"**[{track_name}]({track_url})** on [{album_name}](https://www.last.fm/music/{artist_name_for_url}/{album_name_for_url}/)\nby [{artist_name}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}"
                 if not cover_image:
-                    cover_image = track['image'][3]['#text']
+                    cover_image = track["image"][3]["#text"]
 
             else:
                 output += f"`Now Playing:`\n**[{track_name}]({track_url})** on [{album_name}](https://www.last.fm/music/{artist_name_for_url}/{album_name_for_url}/)\nby [{artist_name}](https://www.last.fm/music/{artist_name_for_url}/)\n\n`Previous:\n`"
-                cover_image = track['image'][3]['#text']
+                cover_image = track["image"][3]["#text"]
 
         return output, cover_image
 

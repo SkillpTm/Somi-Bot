@@ -39,7 +39,7 @@ class KeywordSend(nextcord_C.Cog):
                 continue
 
             user_keywords_in_content: list[str] = []
-            message_content = re.sub('<[^ ]+?>', "", message.content.lower()) # regex -> message without emotes
+            message_content = re.sub("<[^ ]+?>", "", message.content.lower()) # regex -> message without emotes
 
             for keyword in user_keywords:
                 # we don't want keywords within other words so we check here against all cases except that.

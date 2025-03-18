@@ -83,11 +83,11 @@ class LastFmTopTracks(nextcord_C.Cog):
         output = ""
 
         for track in top_tracks_data["toptracks"]["track"]:
-            track_url = track['url']
-            artist_url = track['artist']['url']
+            track_url = track["url"]
+            artist_url = track["artist"]["url"]
 
-            track_name = Get.markdown_safe(track['name'])
-            artist_name = Get.markdown_safe(track['artist']['name'])
+            track_name = Get.markdown_safe(track["name"])
+            artist_name = Get.markdown_safe(track["artist"]["name"])
             output += f"{track['@attr']['rank']}. **[{track_name}]({track_url})** by [{artist_name}]({artist_url}) - *({track['playcount']} plays)*\n"
 
         embed = EmbedFunctions().builder(

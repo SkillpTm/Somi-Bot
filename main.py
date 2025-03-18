@@ -46,6 +46,10 @@ def start() -> None:
     try:
         if requests.get("https://www.google.com/").status_code == 200:
             client.run(client.Keychain.DISCORD_TOKEN)
+
+    except KeyboardInterrupt:
+        return
+    
     except Exception as e:
         if (
             "ConnectionError" in str(type(e)) or # requests.ConnectionError

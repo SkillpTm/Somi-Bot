@@ -147,22 +147,23 @@ class Get():
         """Replaces markdown relevant characters with similar unicode chars to avoid issues, in places like embeds"""
 
         CHAR_AND_REPLACMENT = {
-            "*": "＊",
-            "_": "＿",
-            "|": "｜",
+            "*": " ⃰ ",
+            "_": "⎽",
+            "|": "│",
             "#": "＃",
-            "`": "｀",
-            "[": "［",
-            "]": "］",
-            "(": "（",
-            ")": "）",
-            "<": "＜",
-            ">": "＞",
-            "-": "﹣",
+            "`": "ˋ",
+            "[": "⦋",
+            "]": "⦌",
+            "(": "⦗",
+            ")": "⦘",
+            "<": "≤",
+            ">": "≥",
+            "-": "−",
         }
 
-        for char, replacment in CHAR_AND_REPLACMENT.items():
-            input_string = input_string.replace(char, replacment)
+        for index, char in enumerate(input_string):
+            if char in CHAR_AND_REPLACMENT:
+                input_string[index] = CHAR_AND_REPLACMENT[char]
 
         return input_string
 

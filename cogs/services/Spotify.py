@@ -63,7 +63,7 @@ class Spotify(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        output_data = self.get_output_data(member_activity, details)
+        output_data = await self.get_output_data(member_activity, details)
 
         embed = EmbedFunctions().builder(
             description = f"[{output_data['track_name']}]({output_data['track_url']})\non [{output_data['album_name']}]({output_data['album_url']})\nby {output_data['artists']}",
@@ -137,7 +137,7 @@ class Spotify(nextcord_C.Cog):
 
         if details == "Yes":
             output_data["artist_genres"] = ", ".join(artist_data["genres"])
-            output_data["artist_followers"] = str(int(artist_data["followers"]["total"]))
+            output_data["artist_followers"] = "{:,}".format(int(artist_data["followers"]["total"]))
             output_data["artist_popularity"] = f"`{int(artist_data['popularity'])}/100`"
             output_data["track_duration"] = f"`{int(round(track_data['duration_ms'] / 1000) / 60)}:{round(track_data['duration_ms'] / 1000) % 60}`"
             output_data["track_popularity"] = f"`{int(track_data['popularity'])}/100`"

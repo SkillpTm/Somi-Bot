@@ -2,7 +2,7 @@ import datetime
 import nextcord
 import zoneinfo
 
-from lib.modules import Get
+from lib.modules.Get import Get
 
 
 

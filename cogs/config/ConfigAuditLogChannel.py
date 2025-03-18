@@ -48,16 +48,16 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
 
         if action == "Set":
             await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_set(channel.id)
-            await interaction.followup.send(embed=EmbedFunctions().success(f"{channel.mention} is from now on this server's audit-log-channel."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{channel.mention} is from now on this server's audit-log-channel."), ephemeral=True)
 
             mod_action = f"{interaction.user.mention} set: {channel.mention} as the new audit-log-channel."
 
         elif action == "Reset":
             if not await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_reset():
-                await interaction.followup.send(embed=EmbedFunctions().error("This server doesn't have an audit-log-channel."), ephemeral=True)
+                await interaction.followup.send(embed=EmbedFunctions().get_error_message("This server doesn't have an audit-log-channel."), ephemeral=True)
                 return
             
-            await interaction.followup.send(embed=EmbedFunctions().success("You successfully reset this server's audit-log-channel."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_success_message("You successfully reset this server's audit-log-channel."), ephemeral=True)
 
             mod_action = f"{interaction.user.mention} reset: {channel.mention} as the audit-log-channel."
 

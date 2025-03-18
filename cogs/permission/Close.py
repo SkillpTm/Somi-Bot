@@ -42,7 +42,7 @@ class Close(nextcord_C.Cog):
 
         # if all relevant permissions are already turned off, the server is already closed
         if all(not permission for permission in permissions_to_check):
-            await interaction.followup.send(embed=EmbedFunctions().error("The server is already closed.\n To re-open it use `/open`"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("The server is already closed.\n To re-open it use `/open`"), ephemeral=True)
             return
 
         await interaction.guild.edit(invites_disabled = True)
@@ -57,7 +57,7 @@ class Close(nextcord_C.Cog):
                 )
             )
 
-        await interaction.followup.send(embed=EmbedFunctions().success("Closed the server sucessfully.\n To re-open it use `/open`"), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message("Closed the server sucessfully.\n To re-open it use `/open`"), ephemeral=True)
 
 
         audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
@@ -112,7 +112,7 @@ class Close(nextcord_C.Cog):
 
         # if all relevant permissions are already turned on, the server is already open
         if all(permission for permission in permissions_to_check):
-            await interaction.followup.send(embed=EmbedFunctions().error("The server is already open.\n To close it use `/close`"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("The server is already open.\n To close it use `/close`"), ephemeral=True)
             return
 
         await interaction.guild.edit(invites_disabled = False)
@@ -141,7 +141,7 @@ class Close(nextcord_C.Cog):
 
                 await channel.set_permissions(target=role, overwrite=overwrites)
 
-        await interaction.followup.send(embed=EmbedFunctions().success("Re-opened the server sucessfully."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message("Re-opened the server sucessfully."), ephemeral=True)
 
 
         audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()

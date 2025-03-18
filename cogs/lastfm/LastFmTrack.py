@@ -50,7 +50,7 @@ class LastFmTrack(nextcord_C.Cog):
 
         # if only one of artist and track was provided error
         if (not artist and track) or (artist and not track):
-            await interaction.response.send_message(embed=EmbedFunctions().error(f"Please name both an artist and a track."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"Please name both an artist and a track."), ephemeral=True)
             return
 
         if not user:
@@ -62,7 +62,7 @@ class LastFmTrack(nextcord_C.Cog):
         lastfm_username = await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).last_fm_get()
 
         if not lastfm_username:
-            await interaction.response.send_message(embed=EmbedFunctions().error(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message = True)
@@ -71,7 +71,7 @@ class LastFmTrack(nextcord_C.Cog):
             np_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&username={lastfm_username}&limit=1&api_key={self.client.Keychain.LAST_FM_API_KEY}&format=json")
 
             if np_response.status_code != 200:
-                await interaction.followup.send(embed=EmbedFunctions().error("LastFm didn't respond correctly, try in a few minutes again!"))
+                await interaction.followup.send(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
                 return
 
             np_user_data = np_response.json()
@@ -90,13 +90,13 @@ class LastFmTrack(nextcord_C.Cog):
         track_response = requests.get(f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}", cookies=self.client.Keychain.LAST_FM_COOKIES, headers=self.client.Keychain.LAST_FM_HEADERS)
 
         if track_response.status_code != 200:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"The track `{artist} - {track}` couldn't be found on LastFm."))
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"The track `{artist} - {track}` couldn't be found on LastFm."))
             return
 
         soup = BeautifulSoup(track_response.content, "html.parser")
 
         if "didn't scrobble this track during the selected date range. Try expanding the date range or view scrobbles for " in str(soup.text):
-            await interaction.followup.send(embed=EmbedFunctions().error(f"{user.mention} hasn't listened to the track `{artist} - {track}` in the timeframe: `{Lists.LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}`"))
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{user.mention} hasn't listened to the track `{artist} - {track}` in the timeframe: `{Lists.LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}`"))
             return
 
         type_name, artist_name, cover_image_url, metadata_list, _, _ = Webscrape().library_subpage(soup, artist_for_url, "track")

@@ -8,62 +8,8 @@ import zoneinfo
 
 class Get():
 
-    from lib.utilities import SomiBot
-
     def __init__(self) -> None:
         pass
-
-    ####################################################################################################
-
-    @staticmethod
-    def kst_timestamp(slash_kst_format: bool = False) -> str:
-        """This function returns the current time in KST as a humanreadable string"""
-
-        now_korea = datetime.datetime.now(zoneinfo.ZoneInfo("Asia/Seoul"))
-
-        if slash_kst_format:
-            format = "Date: `%Y/%m/%d`\nTime: `%H:%M:%S %Z`"
-        else:
-            format = "%Y/%m/%d %H:%M:%S %Z"
-
-        return now_korea.strftime(format)
-
-    ####################################################################################################
-
-    @staticmethod
-    def seconds_from_time(time: str) -> int:
-        """Converts a humanreadable time input into seconds:
-            4h4s = 14404"""
-
-        clean_time = time.replace(" ", "").lower()
-        timeframes = re.findall(r"\d+[smhdwy]", clean_time)
-        time_in_seconds = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800, "y": 31536000}
-
-        return sum([int(timeframe[:-1]) * time_in_seconds[timeframe[-1]] for timeframe in timeframes])
-
-    ####################################################################################################
-
-    @staticmethod
-    async def message_object_from_link(link: str, client: SomiBot) -> nextcord.Message | None:
-        """Generates a message object from a discord message link input"""
-
-        _, channel_id, message_id = re.search(r"/channels/(\d+)/(\d+)/(\d+)", link).groups()
-
-        channel = await client.fetch_channel(channel_id)
-        try:
-            message: nextcord.Message = await channel.fetch_message(message_id)
-        except:
-            message = None
-
-        return message
-
-    ####################################################################################################
-
-    @staticmethod
-    def clean_input_command(commandname: str) -> str:
-        """Makes a commandname small, removes spaces and slahes"""
-
-        return commandname.replace(" ", "").replace("/", "").lower()
 
     ####################################################################################################
 
@@ -117,56 +63,39 @@ class Get():
         return output
 
     ####################################################################################################
-    
+
     @staticmethod
-    def markdown_safe(input_string: str) -> str:
-        """Replaces markdown relevant characters with similar unicode chars to avoid issues, in places like embeds"""
+    def clean_input_command(commandname: str) -> str:
+        """Makes a commandname small, removes spaces and slahes"""
 
-        CHAR_AND_REPLACMENT = {
-            "*": "＊",
-            "_": "＿",
-            "|": "｜",
-            "#": "＃",
-            "`": "｀",
-            "[": "［",
-            "]": "］",
-            "(": "（",
-            ")": "）",
-            "<": "＜",
-            ">": "＞",
-            "-": "﹣",
-        }
-
-        for char, replacment in CHAR_AND_REPLACMENT.items():
-            input_string = input_string.replace(char, replacment)
-
-        return input_string
+        return commandname.replace(" ", "").replace("/", "").lower()
 
     ####################################################################################################
 
     @staticmethod
-    def visible_users(client: SomiBot) -> set[int]:
-        """Gets a set of all unique user ids, the client can see"""
+    def interaction_by_owner() -> bool:
+        """This function checks, if an interaction was made by the owner"""
+
+        def predicate(interaction: nextcord.Interaction) -> bool:
+            return interaction.user.id == interaction.client.owner_id
         
-        unique_users: set[int] = set()
-
-        for guild in client.guilds:
-            for member in guild.members:
-                if not member.bot:
-                    unique_users.add(member.id)
-
-        return unique_users
+        return nextcord_AC.check(predicate)
 
     ####################################################################################################
 
     @staticmethod
-    def rid_of_whitespace(string: str) -> str:
-        """Removes leading whitesspace on all lines of a multi-line string"""
+    def kst_timestamp(slash_kst_format: bool = False) -> str:
+        """This function returns the current time in KST as a humanreadable string"""
 
-        string = "\n".join([line.strip() for line in string.split("\n")])
+        now_korea = datetime.datetime.now(zoneinfo.ZoneInfo("Asia/Seoul"))
 
-        return string
-    
+        if slash_kst_format:
+            format = "Date: `%Y/%m/%d`\nTime: `%H:%M:%S %Z`"
+        else:
+            format = "%Y/%m/%d %H:%M:%S %Z"
+
+        return now_korea.strftime(format)
+
     ####################################################################################################
 
     @staticmethod
@@ -212,12 +141,81 @@ class Get():
         return ouput
 
     ####################################################################################################
+    
+    @staticmethod
+    def markdown_safe(input_string: str) -> str:
+        """Replaces markdown relevant characters with similar unicode chars to avoid issues, in places like embeds"""
+
+        CHAR_AND_REPLACMENT = {
+            "*": "＊",
+            "_": "＿",
+            "|": "｜",
+            "#": "＃",
+            "`": "｀",
+            "[": "［",
+            "]": "］",
+            "(": "（",
+            ")": "）",
+            "<": "＜",
+            ">": "＞",
+            "-": "﹣",
+        }
+
+        for char, replacment in CHAR_AND_REPLACMENT.items():
+            input_string = input_string.replace(char, replacment)
+
+        return input_string
+
+    ####################################################################################################
 
     @staticmethod
-    def interaction_by_owner() -> bool:
-        """This function checks, if an interaction was made by the owner"""
+    async def message_object_from_link(link: str, client) -> nextcord.Message | None:
+        """Generates a message object from a discord message link input"""
 
-        def predicate(interaction: nextcord.Interaction) -> bool:
-            return interaction.user.id == interaction.client.owner_id
+        _, channel_id, message_id = re.search(r"/channels/(\d+)/(\d+)/(\d+)", link).groups()
+
+        channel = await client.fetch_channel(channel_id)
+        try:
+            message: nextcord.Message = await channel.fetch_message(message_id)
+        except:
+            message = None
+
+        return message
+
+    ####################################################################################################
+
+    @staticmethod
+    def rid_of_whitespace(string: str) -> str:
+        """Removes leading whitesspace on all lines of a multi-line string"""
+
+        string = "\n".join([line.strip() for line in string.split("\n")])
+
+        return string
+
+    ####################################################################################################
+
+    @staticmethod
+    def seconds_from_time(time: str) -> int:
+        """Converts a humanreadable time input into seconds:
+            4h4s = 14404"""
+
+        clean_time = time.replace(" ", "").lower()
+        timeframes = re.findall(r"\d+[smhdwy]", clean_time)
+        time_in_seconds = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800, "y": 31536000}
+
+        return sum([int(timeframe[:-1]) * time_in_seconds[timeframe[-1]] for timeframe in timeframes])
+
+    ####################################################################################################
+
+    @staticmethod
+    def visible_users(client) -> set[int]:
+        """Gets a set of all unique user ids, the client can see"""
         
-        return nextcord_AC.check(predicate)
+        unique_users: set[int] = set()
+
+        for guild in client.guilds:
+            for member in guild.members:
+                if not member.bot:
+                    unique_users.add(member.id)
+
+        return unique_users

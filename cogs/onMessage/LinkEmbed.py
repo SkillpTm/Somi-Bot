@@ -71,7 +71,7 @@ class LinkEmbed(nextcord_C.Cog):
             ]
         )
 
-        embed, _ = EmbedFunctions.get_attachments(original_message.attachments, embed, limit = 1)
+        embed, _ = EmbedFunctions.get_or_add_attachments(original_message.attachments, embed, limit = 1)
         await message.reply(embed=embed, mention_author=False)
 
         await (await DBHandler(self.client.PostgresDB).telemetry()).increment("link embed")

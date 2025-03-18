@@ -51,7 +51,7 @@ class Weather(nextcord_C.Cog):
         response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={self.client.Keychain.WEATHER_API_KEY}&q={location}&units=metric")
 
         if response.status_code != 200:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"{input_location} couldn't be found."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{input_location} couldn't be found."), ephemeral=True)
             return
 
         response_json: dict = response.json()

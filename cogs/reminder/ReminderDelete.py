@@ -37,7 +37,7 @@ class ReminderDelete(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if not await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).get_list():
-            await interaction.followup.send(embed=EmbedFunctions().error("You don't have any reminders to be deleted!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You don't have any reminders to be deleted!"), ephemeral=True)
             return
 
 
@@ -47,14 +47,14 @@ class ReminderDelete(nextcord_C.Cog):
 
 
         if not reminder_id.isdigit():
-            await interaction.followup.send(embed=EmbedFunctions().error(f"`{reminder_id}` isn't a valid reminder id."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{reminder_id}` isn't a valid reminder id."), ephemeral=True)
             return
 
         if not await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).delete():
-            await interaction.followup.send(embed=EmbedFunctions().error(f"You don't have a reminder with the ID `{reminder_id}`.\nTo get a list of your reminders use `/reminder list`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"You don't have a reminder with the ID `{reminder_id}`.\nTo get a list of your reminders use `/reminder list`."), ephemeral=True)
             return
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"Your reminder `{reminder_id}` has been deleted."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Your reminder `{reminder_id}` has been deleted."), ephemeral=True)
 
     ####################################################################################################
 
@@ -89,11 +89,11 @@ class ReminderDelete(nextcord_C.Cog):
         """asks the user if they want to delete all their reminders and does as answered"""
     
         view = YesNoButtons(interaction=interaction)
-        await interaction.followup.send(embed=EmbedFunctions().info_message("Do you really want to delete **ALL** your reminders __**(they can't be recovered)?**__", self.client), view=view, ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_info_message("Do you really want to delete **ALL** your reminders __**(they can't be recovered)?**__", self.client), view=view, ephemeral=True)
         await view.wait()
 
         if not view.value:
-            await interaction.followup.send(embed=EmbedFunctions().error("Your reminders have **not** been deleted!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("Your reminders have **not** been deleted!"), ephemeral=True)
             return
             
         await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).delete_all()
@@ -104,7 +104,7 @@ class ReminderDelete(nextcord_C.Cog):
             {"DELETE_ALL": "deleted"}
         ))
 
-        await interaction.followup.send(embed=EmbedFunctions().success("**ALL** your reminders have been deleted!"))
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message("**ALL** your reminders have been deleted!"))
         return
 
 

@@ -28,7 +28,7 @@ class Restart(nextcord_C.Cog):
 
         self.client.Loggers.action_log(Get.log_message(interaction, "/restart"))
 
-        await interaction.response.send_message(embed=EmbedFunctions().success("Restarting bot..."), ephemeral=True)
+        await interaction.response.send_message(embed=EmbedFunctions().get_success_message("Restarting bot..."), ephemeral=True)
 
 
         embed = EmbedFunctions().builder(

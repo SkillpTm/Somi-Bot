@@ -53,11 +53,11 @@ class Slowmode(nextcord_C.Cog):
         await channel.edit(slowmode_delay=delay)
 
         if delay:
-            await interaction.followup.send(embed=EmbedFunctions().success(f"Activated slowmode in {channel.mention} with a delay of `{delay}` seconds."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Activated slowmode in {channel.mention} with a delay of `{delay}` seconds."), ephemeral=True)
             # used in the audit log embed later
             mod_action = f"{interaction.user.mention} activated slowmode in {channel.mention} with a delay of `{delay} seconds`"
         else:
-            await interaction.followup.send(embed=EmbedFunctions().success(f"Deactivated slowmode in {channel.mention}."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Deactivated slowmode in {channel.mention}."), ephemeral=True)
             # used in the audit log embed later
             mod_action = f"{interaction.user.mention} deactivated slowmode in {channel.mention}"
 

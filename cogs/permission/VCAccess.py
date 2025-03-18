@@ -46,14 +46,14 @@ class VCAccess(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if not interaction.guild.voice_channels:
-            await interaction.followup.send(embed=EmbedFunctions().error("This server doesn't have any voice-channels."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("This server doesn't have any voice-channels."), ephemeral=True)
             return
 
         if action == "Allow":
             for channel in interaction.guild.voice_channels:
                 await channel.set_permissions(member, connect = True, speak = True, stream = True, use_voice_activation = True)
 
-            await interaction.followup.send(embed=EmbedFunctions().success(f"{member.mention} now has access to all voice-channels."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{member.mention} now has access to all voice-channels."), ephemeral=True)
             # used in the audit log embed later
             mod_action = f"{interaction.user.mention} gave {member.mention} access to all voice-channels."
 
@@ -61,7 +61,7 @@ class VCAccess(nextcord_C.Cog):
             for channel in interaction.guild.voice_channels:
                 await channel.set_permissions(member, connect = False, speak = False, stream = False, use_voice_activation = False)
 
-            await interaction.followup.send(embed=EmbedFunctions().success(f"{member.mention} now has lost access to all voice-channels"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{member.mention} now has lost access to all voice-channels"), ephemeral=True)
             # used in the audit log embed later
             mod_action = f"{interaction.user.mention} took access to all voice-channels from {member.mention} away."
 

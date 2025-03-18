@@ -40,7 +40,7 @@ class YouTube(nextcord_C.Cog):
         results = [f"https://www.youtube.com/watch?v={item['id']['videoId']}" for item in search_result['items']]
 
         if results == []:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"YouTube couldn't find a video for your query:\n`{query}`"))
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"YouTube couldn't find a video for your query:\n`{query}`"))
             return
         
         await interaction.followup.send(content=results[0])

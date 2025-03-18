@@ -49,7 +49,7 @@ class FeedbackModal(nextcord.ui.Modal):
         )
 
         await self.client.get_channel(self.client.SUPPORT_SERVER_FEEDBACK_ID).send(embed=embed)
-        await interaction.response.send_message(embed=EmbedFunctions().success("Your feedback has been submitted!"), ephemeral=True)
+        await interaction.response.send_message(embed=EmbedFunctions().get_success_message("Your feedback has been submitted!"), ephemeral=True)
 
 
 

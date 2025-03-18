@@ -4,7 +4,7 @@ import nextcord.ext.commands as nextcord_C
 import os
 
 from lib.dbModules import DBHandler
-from lib.modules import Create, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get, Misc
 from lib.utilities import SomiBot
 
 
@@ -39,7 +39,7 @@ class PurgeLog(nextcord_C.Cog):
         ))
 
         # we create the csv first to reduce delay between the inital embed and the csv response message
-        csv_name = Create.bulk_messages_csv(messages)
+        csv_name = Misc.make_bulk_messages_csv(messages)
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),

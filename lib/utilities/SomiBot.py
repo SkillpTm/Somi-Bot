@@ -11,11 +11,8 @@ import time
 import wolframalpha
 
 from lib.dbModules import DBHandler, PostgresDB
-from lib.modules.EmbedFunctions import EmbedFunctions
-from lib.utilities.Keychain import Keychain
-from lib.utilities.Lists import Lists
-from lib.utilities.Loggers import Loggers
-from lib.utilities.Config import Config
+from lib.modules import EmbedFunctions
+from lib.utilities import Keychain, Lists, Loggers, Config
 
 
 
@@ -155,7 +152,7 @@ class SomiBot(nextcord_C.Bot):
         """"""
 
         if not self.is_setup:
-            await interaction.response.send_message(embed=EmbedFunctions().error("The bot is still setting up, please try in a few minutes again!"), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("The bot is still setting up, please try in a few minutes again!"), ephemeral=True)
             return False
         
         if interaction.user.bot:
@@ -252,11 +249,11 @@ class SomiBot(nextcord_C.Bot):
         ERROR_MESSAGE = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions. (this includes her role being above others)\n```{exception}```\nA bug-report has been send to the developer."
 
         if interaction.response.is_done():
-            await interaction.followup.send(embed=EmbedFunctions().critical_error(ERROR_MESSAGE), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_critical_error_message(ERROR_MESSAGE), ephemeral=True)
         else:
-            await interaction.response.send_message(embed=EmbedFunctions().critical_error(ERROR_MESSAGE), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_critical_error_message(ERROR_MESSAGE), ephemeral=True)
 
-        await self.get_guild(self.SUPPORT_SERVER_ID).get_channel(self.SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().critical_error(f"```{exception}```"))
+        await self.get_guild(self.SUPPORT_SERVER_ID).get_channel(self.SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().get_critical_error_message(f"```{exception}```"))
 
         return await super().on_application_command_error(interaction, exception)
 
@@ -395,25 +392,6 @@ class SomiBot(nextcord_C.Bot):
             await thread.join()
         except:
             pass
-
-    ####################################################################################################
-
-    @staticmethod
-    async def deactivate_view_children(ButtonClass: nextcord.ui.View) -> None:
-        """This function deactivates all children from a view (buttons/select boxes)"""
-
-        # disable all buttons from this view
-        for child in ButtonClass.children:
-            child.disabled = True
-            
-        response: nextcord.Message = getattr(ButtonClass, "response", None)
-        interaction: nextcord.Interaction = getattr(ButtonClass, "interaction", None)
-        
-        # edit the original class to have its buttons deactivated
-        if response:
-            await response.edit(view=ButtonClass)
-        elif interaction:
-            await interaction.edit_original_message(view=ButtonClass)
 
     ####################################################################################################
 

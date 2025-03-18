@@ -2,6 +2,8 @@ import datetime
 import nextcord
 import zoneinfo
 
+from lib.modules import Get
+
 
 
 class EmbedFunctions():
@@ -11,7 +13,7 @@ class EmbedFunctions():
 
     ####################################################################################################
 
-    def critical_error(self, response: str) -> nextcord.Embed:
+    def get_critical_error_message(self, response: str) -> nextcord.Embed:
         """Makes an Embed for a critial error message"""
 
         embed = self.builder(
@@ -23,19 +25,7 @@ class EmbedFunctions():
 
     ####################################################################################################
 
-    def info_message(self, repsonse: str, client) -> nextcord.Embed:
-        """Makes an Embed for a succes message"""
-
-        embed = self.builder(
-            color = client.BOT_COLOR,
-            description = repsonse
-        )
-
-        return embed
-
-    ####################################################################################################
-
-    def error(self, response: str) -> nextcord.Embed:
+    def get_error_message(self, response: str) -> nextcord.Embed:
         """Makes an Embed for a error message"""
 
         embed = self.builder(
@@ -47,7 +37,19 @@ class EmbedFunctions():
 
     ####################################################################################################
 
-    def success(self, repsonse: str) -> nextcord.Embed:
+    def get_info_message(self, repsonse: str, client) -> nextcord.Embed:
+        """Makes an Embed for a succes message"""
+
+        embed = self.builder(
+            color = client.BOT_COLOR,
+            description = repsonse
+        )
+
+        return embed
+
+    ####################################################################################################
+
+    def get_success_message(self, repsonse: str) -> nextcord.Embed:
         """Makes an Embed for a succes message"""
 
         embed = self.builder(
@@ -57,34 +59,6 @@ class EmbedFunctions():
 
         return embed
 
-    ####################################################################################################
-
-    @staticmethod
-    def get_attachments(
-        attachments_list: list[nextcord.Attachment],
-        embed: nextcord.Embed,
-        limit: int = 0
-    ) -> tuple[nextcord.Embed, str]:
-        """This function adds an image to the embed, if it's only 1 image or the limit is 1, otherwise it writes the file urls into a string. On 0 images the embed doesn't change"""
-
-        file_urls: str = ""
-        images: list[nextcord.Attachment] = []
-
-        for attachment in attachments_list:
-            if "image" in attachments_list[0].content_type:
-                images.append(attachment)
-
-        # if we only have 1 image or a limit of 1 embed the first image
-        if len(images) == 1 or (len(images) and limit == 1):
-            embed.set_image(url=images[0].url)
-
-        # if there is no limit a and we have more than 1 attachment put them into a STRING
-        if not limit and len(attachments_list) > 1:
-            for attachment in attachments_list:
-                file_urls += f"{attachment.url}\n"
-
-        return embed, file_urls
-    
     ####################################################################################################
 
     @staticmethod
@@ -108,8 +82,6 @@ class EmbedFunctions():
         fields: list[list[tuple[str, str, bool]]] = []
     ) -> nextcord.Embed:
         """This function builds an embed and adds a default timestamp, if specified with 'DEFAULT_KST_FOOTER'"""
-
-        from lib.modules.Get import Get
 
         embed = nextcord.Embed(
             title = Get.rid_of_whitespace(title[:256]), # 256 is Discord's title char limit
@@ -147,3 +119,31 @@ class EmbedFunctions():
             )
 
         return embed
+
+    ####################################################################################################
+
+    @staticmethod
+    def get_or_add_attachments(
+        attachments_list: list[nextcord.Attachment],
+        embed: nextcord.Embed,
+        limit: int = 0
+    ) -> tuple[nextcord.Embed, str]:
+        """This function adds an image to the embed, if it's only 1 image or the limit is 1, otherwise it writes the file urls into a string. On 0 images the embed doesn't change"""
+
+        file_urls: str = ""
+        images: list[nextcord.Attachment] = []
+
+        for attachment in attachments_list:
+            if "image" in attachments_list[0].content_type:
+                images.append(attachment)
+
+        # if we only have 1 image or a limit of 1 embed the first image
+        if len(images) == 1 or (len(images) and limit == 1):
+            embed.set_image(url=images[0].url)
+
+        # if there is no limit a and we have more than 1 attachment put them into a STRING
+        if not limit and len(attachments_list) > 1:
+            for attachment in attachments_list:
+                file_urls += f"{attachment.url}\n"
+
+        return embed, file_urls

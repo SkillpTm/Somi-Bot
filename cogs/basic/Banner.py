@@ -41,7 +41,7 @@ class Banner(nextcord_C.Cog):
 
 
         if not user_banner_url:
-            await interaction.response.send_message(embed=EmbedFunctions().error(f"The user {user.mention} doesn't have a banner."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"The user {user.mention} doesn't have a banner."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)

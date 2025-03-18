@@ -36,7 +36,7 @@ class Emoji(nextcord_C.Cog):
 
         # check if basic syntax for an emoji is met
         if not emoji.startswith("<") and not emoji.endswith(">"):
-            await interaction.response.send_message(embed=EmbedFunctions().error("Please select a custom emoji."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("Please select a custom emoji."), ephemeral=True)
             return
 
         # check if the emoji is animated or not
@@ -51,7 +51,7 @@ class Emoji(nextcord_C.Cog):
 
         # check via the cdn if what we got was actually a valid emote
         if not requests.get(partial_emoji_object.url).status_code == 200:
-            await interaction.response.send_message(embed=EmbedFunctions().error("Please select a custom emoji."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("Please select a custom emoji."), ephemeral=True)
             return
 
         await interaction.response.send_message(f"`Link:` [{partial_emoji_object.name}]({partial_emoji_object.url})")

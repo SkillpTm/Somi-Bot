@@ -49,16 +49,16 @@ class CustomAdd(nextcord_C.Cog):
 
         # make sure name is only letters and numbers
         if not re.match(r"^[\da-z]+$", name):
-            await interaction.followup.send(embed=EmbedFunctions().error("You can only have letters and numbers in your custom-name!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only have letters and numbers in your custom-name!"), ephemeral=True)
             return
 
         added = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).add(name, text)
 
         if not added:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"A custom-command with the name `{name}` already exists.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"A custom-command with the name `{name}` already exists.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
             return
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"Your custom-command with the name `{name}` has been created."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Your custom-command with the name `{name}` has been created."), ephemeral=True)
 
 
         audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()

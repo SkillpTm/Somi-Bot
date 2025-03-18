@@ -40,7 +40,7 @@ class Wolfram(nextcord_C.Cog):
         try:
             await interaction.followup.send(f"Query: `{query}`\n```{next(query_result.results).text}```")
         except:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"Wolfram couldn't find a result for your query:\n`{query}`"))
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"Wolfram couldn't find a result for your query:\n`{query}`"))
 
 
 

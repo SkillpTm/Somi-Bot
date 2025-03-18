@@ -78,7 +78,7 @@ class KeywordSend(nextcord_C.Cog):
                 footer = "DEFAULT_KST_FOOTER"
             )
 
-            embed, _ = EmbedFunctions.get_attachments(message.attachments, embed, limit = 1)
+            embed, _ = EmbedFunctions.get_or_add_attachments(message.attachments, embed, limit = 1)
 
             try:
                 await self.client.fetch_user(user_id).send(embed=embed)

@@ -33,16 +33,16 @@ class Modmail(nextcord_C.Cog):
             return
 
         if len(message.content) < 50:
-            await message.channel.send(embed=EmbedFunctions().error("Your modmail must be longer than 50 characters! Please describe your problem precisely!"))
+            await message.channel.send(embed=EmbedFunctions().get_error_message("Your modmail must be longer than 50 characters! Please describe your problem precisely!"))
             return
         
-        response = await message.reply(embed=EmbedFunctions().info_message("Do you really want to submit this as a modmail?", self.client), mention_author=False)
+        response = await message.reply(embed=EmbedFunctions().get_info_message("Do you really want to submit this as a modmail?", self.client), mention_author=False)
         view = YesNoButtons(response=response)
         await response.edit(embed=response.embeds[0], view=view, delete_after=70)
         await view.wait()
 
         if not view.value:
-            await response.reply(embed=EmbedFunctions().error("Your modmail has **not** been submitted!"), mention_author=False)
+            await response.reply(embed=EmbedFunctions().get_error_message("Your modmail has **not** been submitted!"), mention_author=False)
             return
 
         self.client.Loggers.action_log(Get.log_message(message, "modmail", {"message": message.content}))
@@ -95,14 +95,14 @@ class Modmail(nextcord_C.Cog):
             ]
         )
 
-        embed, file_urls = EmbedFunctions.get_attachments(message.attachments, embed)
+        embed, file_urls = EmbedFunctions.get_or_add_attachments(message.attachments, embed)
 
         sent_modmail = await user_thread.send(embed=embed)
         
         if file_urls:
             await sent_modmail.reply(content=file_urls, mention_author=False)
 
-        await message.reply(embed=EmbedFunctions().success("Your modmail has been submitted!"), mention_author=False)
+        await message.reply(embed=EmbedFunctions().get_success_message("Your modmail has been submitted!"), mention_author=False)
 
         await (await DBHandler(self.client.PostgresDB).telemetry()).increment("modmail send")
 

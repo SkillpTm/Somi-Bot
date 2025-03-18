@@ -95,7 +95,7 @@ class EditLog(nextcord_C.Cog):
             ]
         )
 
-        embed, file_urls = EmbedFunctions.get_attachments(message_before.attachments, embed)
+        embed, file_urls = EmbedFunctions.get_or_add_attachments(message_before.attachments, embed)
         return embed, file_urls
     
     ####################################################################################################
@@ -120,7 +120,7 @@ class EditLog(nextcord_C.Cog):
             footer = "DEFAULT_KST_FOOTER"
         )
 
-        embed_after, file_urls = EmbedFunctions.get_attachments(message_before.attachments, embed_after)
+        embed_after, file_urls = EmbedFunctions.get_or_add_attachments(message_before.attachments, embed_after)
 
         return embed_before, embed_after, file_urls
 

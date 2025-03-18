@@ -31,7 +31,7 @@ class CustomList(nextcord_C.Cog):
         all_commandnames = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).get_list()
 
         if not all_commandnames:
-            await interaction.followup.send(embed=EmbedFunctions().error("There are no custom-commands on this server.\nTo add a custom-command use `/custom add`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("There are no custom-commands on this server.\nTo add a custom-command use `/custom add`."), ephemeral=True)
             return
 
         output = ""

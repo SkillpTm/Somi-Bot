@@ -1,7 +1,6 @@
 import nextcord
 
 from lib.dbModules import DBHandler
-from lib.utilities import SomiBot
 
 
 class LevelRoles():
@@ -13,7 +12,7 @@ class LevelRoles():
 
     async def update_users(
         self,
-        client: SomiBot,
+        client,
         server: nextcord.Guild,
         members_and_levels: list[list[int]] = [] # [[member_id, level], ...]
     ) -> None:

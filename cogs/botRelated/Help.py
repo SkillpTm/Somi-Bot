@@ -43,7 +43,7 @@ class Help(nextcord_C.Cog):
 
         # if not a command name return early
         if name not in self.client.Lists.HELP_AUTOCOMPLETE_TUPLE:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"`{name}` isn't a valid command name."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{name}` isn't a valid command name."), ephemeral=True)
             return
 
         HELP_OUTPUT = {**self.client.Lists.HELP_PERMISSION_OUTPUT, **self.client.Lists.HELP_NORMAL_OUTPUT}

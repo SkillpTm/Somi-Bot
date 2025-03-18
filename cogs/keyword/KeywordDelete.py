@@ -39,7 +39,7 @@ class KeywordDelete(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if not await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).get_list():
-            await interaction.followup.send(embed=EmbedFunctions().error("You don't have any keywords.\nTo add a keyword use `/keyword add`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You don't have any keywords.\nTo add a keyword use `/keyword add`."), ephemeral=True)
             return
 
         if keyword == "DELETE_ALL":
@@ -51,10 +51,10 @@ class KeywordDelete(nextcord_C.Cog):
         deleted = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).delete(keyword)
 
         if not deleted:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"You don't have a keyword called `{keyword}`.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"You don't have a keyword called `{keyword}`.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)
             return
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"`{keyword}` has been deleted from your keywords."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"`{keyword}` has been deleted from your keywords."), ephemeral=True)
 
     ####################################################################################################
 
@@ -79,11 +79,11 @@ class KeywordDelete(nextcord_C.Cog):
         """asks the user if they want to delete all their keywords and does as answered"""
 
         view = YesNoButtons(interaction=interaction)
-        await interaction.followup.send(embed=EmbedFunctions().info_message("Do you really want to delete **ALL** your keywords __**(they can't be recovered)**__?", self.client), view=view, ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_info_message("Do you really want to delete **ALL** your keywords __**(they can't be recovered)**__?", self.client), view=view, ephemeral=True)
         await view.wait()
 
         if not view.value:
-            await interaction.followup.send(embed=EmbedFunctions().error("Your keywords have **not** been deleted!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("Your keywords have **not** been deleted!"), ephemeral=True)
             return
 
         await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).delete_all_user()
@@ -94,7 +94,7 @@ class KeywordDelete(nextcord_C.Cog):
             {"DELETE_ALL": "deleted"}
         ))
 
-        await interaction.followup.send(embed=EmbedFunctions().success("**ALL** your keywords have been deleted!"), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message("**ALL** your keywords have been deleted!"), ephemeral=True)
         return
 
 

@@ -51,7 +51,7 @@ class LastFmArtist(nextcord_C.Cog):
         lastfm_username = await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).last_fm_get()
 
         if not lastfm_username:
-            await interaction.response.send_message(embed=EmbedFunctions().error(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message = True)
@@ -60,7 +60,7 @@ class LastFmArtist(nextcord_C.Cog):
             np_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&username={lastfm_username}&limit=1&api_key={self.client.Keychain.LAST_FM_API_KEY}&format=json")
 
             if np_response.status_code != 200:
-                await interaction.followup.send(embed=EmbedFunctions().error("LastFm didn't respond correctly, try in a few minutes again!"))
+                await interaction.followup.send(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
                 return
 
             # get the artist they're listening to/last listened to from the recent tracks
@@ -77,13 +77,13 @@ class LastFmArtist(nextcord_C.Cog):
         artist_response = requests.get(f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}?date_preset={timeframe}", cookies=self.client.Keychain.LAST_FM_COOKIES, headers=self.client.Keychain.LAST_FM_HEADERS)
 
         if artist_response.status_code != 200:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"The artist `{artist}` couldn't be found on LastFm."))
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"The artist `{artist}` couldn't be found on LastFm."))
             return
 
         soup = BeautifulSoup(artist_response.content, "html.parser")
 
         if "didn't scrobble any albums by this artist during the selected date range. Try expanding the date range or view scrobbles for " in str(soup.text):
-            await interaction.followup.send(embed=EmbedFunctions().error(f"{user.mention} hasn't listened to the artist `{artist}` in the timeframe: `{Lists.LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}`"))
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{user.mention} hasn't listened to the artist `{artist}` in the timeframe: `{Lists.LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}`"))
             return
 
         type_name, _, cover_image_url, metadata_list, track_output, album_output = Webscrape().library_subpage(soup, artist_for_url, "artist")

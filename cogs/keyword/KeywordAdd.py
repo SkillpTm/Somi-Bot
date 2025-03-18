@@ -43,16 +43,16 @@ class KeywordAdd(nextcord_C.Cog):
 
         # make sure keywords are only letters and numbers
         if not re.match(r"^[\da-z]+$", keyword):
-            await interaction.followup.send(embed=EmbedFunctions().error(f"You can only have letters and numbers in your keywords!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"You can only have letters and numbers in your keywords!"), ephemeral=True)
             return
 
         added = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).add(keyword)
 
         if not added:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"You already have `{keyword}` as a keyword.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"You already have `{keyword}` as a keyword.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)
             return
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"`{keyword}` has been added to your keywords."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"`{keyword}` has been added to your keywords."), ephemeral=True)
 
 
 

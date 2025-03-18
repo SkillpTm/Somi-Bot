@@ -54,22 +54,22 @@ class Mute(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if interaction.user.id == member.id:
-            await interaction.followup.send(embed=EmbedFunctions().error("You can't mute yourself!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can't mute yourself!"), ephemeral=True)
             return
 
         if interaction.user.top_role.position < member.top_role.position and interaction.user != interaction.guild.owner:
-            await interaction.followup.send(embed=EmbedFunctions().error("You can only mute a member, if your current top-role is above their current top-role!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only mute a member, if your current top-role is above their current top-role!"), ephemeral=True)
             return
 
         total_seconds = Get.seconds_from_time(time)
 
         if total_seconds == 0 or total_seconds > 2419200: #28d in seconds
-            await interaction.followup.send(embed=EmbedFunctions().error(f"`{time}` is not a valid time period. Make sure to use the formating in the input description and that your time period is smaller than 28 days."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{time}` is not a valid time period. Make sure to use the formating in the input description and that your time period is smaller than 28 days."), ephemeral=True)
             return
 
         await member.edit(timeout=datetime.datetime.now(zoneinfo.ZoneInfo("UTC"))+datetime.timedelta(seconds=total_seconds), reason=reason)
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"Succesfully muted {member.mention}."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Succesfully muted {member.mention}."), ephemeral=True)
 
     ####################################################################################################
 
@@ -100,12 +100,12 @@ class Mute(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if not member.communication_disabled_until:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"{member.mention} wasn't muted."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{member.mention} wasn't muted."), ephemeral=True)
             return
 
         await member.edit(timeout=None)
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"{member.mention} has been unmuted"), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{member.mention} has been unmuted"), ephemeral=True)
 
 
 

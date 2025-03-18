@@ -34,11 +34,6 @@ class Loggers():
 
     ####################################################################################################
 
-    def bot_status(self, status: str) -> None:
-        self.action_logger.debug(status)
-
-    ####################################################################################################
-
     def action_log(self, action: str) -> None:
         self.action_logger.info(action)
 
@@ -56,3 +51,8 @@ class Loggers():
             error += f"{key}: {value}\n"
 
         self.error_logger.error(error)
+
+    ####################################################################################################
+
+    def bot_status(self, status: str) -> None:
+        self.action_logger.debug(status)

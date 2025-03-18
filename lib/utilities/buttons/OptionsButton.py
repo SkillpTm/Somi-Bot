@@ -1,6 +1,6 @@
 import nextcord
 
-from lib.utilities.SomiBot import SomiBot
+from lib.modules import Misc
 
 
 
@@ -17,10 +17,10 @@ class OptionsButton(nextcord.ui.View):
     async def all_options(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
         self.value = True
         self.stop()
-        await SomiBot.deactivate_view_children(self)
+        await Misc.deactivate_view_children(self)
 
     ####################################################################################################
 
     async def on_timeout(self) -> None:
         """overwrites the internal on_timeout to disable all buttons on timeout"""
-        await SomiBot.deactivate_view_children(self)
+        await Misc.deactivate_view_children(self)

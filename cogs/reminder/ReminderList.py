@@ -25,7 +25,7 @@ class ReminderList(nextcord_C.Cog):
         user_reminders = await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).get_list()
 
         if not user_reminders:
-            await interaction.response.send_message(embed=EmbedFunctions().error("You don't have any reminders.\nTo add a reminder use `/reminder add`."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You don't have any reminders.\nTo add a reminder use `/reminder add`."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)

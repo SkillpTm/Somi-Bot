@@ -1,7 +1,6 @@
 import nextcord
 
-from lib.modules.EmbedFunctions import EmbedFunctions
-from lib.utilities.SomiBot import SomiBot
+from lib.modules import EmbedFunctions, Misc
 
 
 
@@ -19,7 +18,7 @@ class PageButtons(nextcord.ui.View):
     @nextcord.ui.button(label = "start", style=nextcord.ButtonStyle.green)
     async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
         if self.interaction.user.id != interaction.user.id:
-            await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return
 
         self.page = 1
@@ -29,7 +28,7 @@ class PageButtons(nextcord.ui.View):
     @nextcord.ui.button(label = "<<", style=nextcord.ButtonStyle.green)
     async def left(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
         if self.interaction.user.id != interaction.user.id:
-            await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return
 
         self.page -= 1
@@ -45,7 +44,7 @@ class PageButtons(nextcord.ui.View):
     @nextcord.ui.button(label = ">>", style=nextcord.ButtonStyle.red)
     async def right(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if self.interaction.user.id != interaction.user.id:
-            await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return
 
         self.page += 1
@@ -57,7 +56,7 @@ class PageButtons(nextcord.ui.View):
     @nextcord.ui.button(label = "end", style=nextcord.ButtonStyle.red)
     async def end(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
         if self.interaction.user.id != interaction.user.id:
-            await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return
 
         self.page = self.last_page
@@ -105,4 +104,4 @@ class PageButtons(nextcord.ui.View):
 
     async def on_timeout(self) -> None:
         """overwrites the internal on_timeout to disable all buttons on timeout"""
-        await SomiBot.deactivate_view_children(self)
+        await Misc.deactivate_view_children(self)

@@ -94,16 +94,16 @@ class ConfigDefaultRole(nextcord_C.Cog):
 
         # check if an actual role was provided
         if role.id == interaction.guild.default_role.id:
-            await interaction.followup.send(embed=EmbedFunctions().error("To set a new default-role you need to provide a role in the command."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("To set a new default-role you need to provide a role in the command."), ephemeral=True)
             return False
         
         if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner:
-            await interaction.followup.send(embed=EmbedFunctions().error("You can only make role the default-role, if the role is below your current top role!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only make role the default-role, if the role is below your current top role!"), ephemeral=True)
             return False
         
         await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).default_role_set(role.id)
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"{role.mention} is from now on this server's default-role.\nThe role is being applied to users now, this can take a few minutes."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{role.mention} is from now on this server's default-role.\nThe role is being applied to users now, this can take a few minutes."), ephemeral=True)
 
         #apply the role to all users
         for member in interaction.guild.members:
@@ -122,16 +122,16 @@ class ConfigDefaultRole(nextcord_C.Cog):
         "resets or doesn't reset the role indicated by the output bool"
 
         if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner:
-            await interaction.followup.send(embed=EmbedFunctions().error("You can only make role the default-role, if the role is below your current top role!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only make role the default-role, if the role is below your current top role!"), ephemeral=True)
             return False
 
         deleted = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).default_role_reset()
 
         if not deleted:
-            await interaction.followup.send(embed=EmbedFunctions().error("This server doesn't have a default-role."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("This server doesn't have a default-role."), ephemeral=True)
             return deleted
 
-        await interaction.followup.send(embed=EmbedFunctions().success("This server now doesn't have a default-role anymore.\nThe role is being removed from all users, this may take a few minutes."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message("This server now doesn't have a default-role anymore.\nThe role is being removed from all users, this may take a few minutes."), ephemeral=True)
 
         # remove the role from all users
         for member in interaction.guild.members:

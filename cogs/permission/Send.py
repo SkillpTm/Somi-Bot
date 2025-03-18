@@ -52,7 +52,7 @@ class Send(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         message_object: nextcord.Message = await channel.send(message)
-        await interaction.followup.send(embed=EmbedFunctions().success(f"Message sent in: {channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Message sent in: {channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
 
 
         audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
@@ -110,7 +110,7 @@ class Send(nextcord_C.Cog):
         message_object: nextcord.Message = None
 
         if not message_id.isdigit():
-            await interaction.followup.send(embed=EmbedFunctions().error(f"`{message_id}` isn't a valid message ID."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{message_id}` isn't a valid message ID."), ephemeral=True)
             return
 
         # check all channels for in which one the message was send
@@ -126,7 +126,7 @@ class Send(nextcord_C.Cog):
                 pass
 
         if not message_object or message_object.author.id != self.client.user.id:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"`{message_id}` isn't an id of a message sent by the bot in this server."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{message_id}` isn't an id of a message sent by the bot in this server."), ephemeral=True)
             return
 
         self.client.Loggers.action_log(Get.log_message(
@@ -137,7 +137,7 @@ class Send(nextcord_C.Cog):
 
         await message_object.edit(content=message)
         
-        await interaction.followup.send(embed=EmbedFunctions().success(f"Message edited in: {correct_channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Message edited in: {correct_channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
 
 
         audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()

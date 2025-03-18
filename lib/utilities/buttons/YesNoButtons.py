@@ -1,7 +1,6 @@
 import nextcord
 
-from lib.modules.EmbedFunctions import EmbedFunctions
-from lib.utilities.SomiBot import SomiBot
+from lib.modules import EmbedFunctions, Misc
 
 
 
@@ -23,12 +22,12 @@ class YesNoButtons(nextcord.ui.View):
             original_user = self.response.author
 
         if original_user.id != interaction.user.id:
-            await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return
 
         self.value = True
         self.stop()
-        await SomiBot.deactivate_view_children(self)
+        await Misc.deactivate_view_children(self)
 
     @nextcord.ui.button(label = "No", style=nextcord.ButtonStyle.red)
     async def no(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
@@ -38,15 +37,15 @@ class YesNoButtons(nextcord.ui.View):
             original_user = self.response.author
 
         if original_user.id != interaction.user.id:
-            await interaction.response.send_message(embed=EmbedFunctions().error("You can only use buttons on your own commands."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return
 
         self.value = False
         self.stop()
-        await SomiBot.deactivate_view_children(self)
+        await Misc.deactivate_view_children(self)
 
     ####################################################################################################
 
     async def on_timeout(self) -> None:
         """overwrites the internal on_timeout to disable all buttons on timeout"""
-        await SomiBot.deactivate_view_children(self)
+        await Misc.deactivate_view_children(self)

@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import re
 import urllib.parse
 
-from lib.modules.Get import Get
+from lib.modules import Get
 
 
 
@@ -10,41 +10,6 @@ class Webscrape():
 
     def __init__(self) -> None:
         pass
-
-    ####################################################################################################
-
-    def library_subpage(
-        self,
-        soup: BeautifulSoup,
-        artist_for_url: str,
-        type_flag: str # type_flag can be "artist", "album" or "track"
-    ) -> tuple[str, str, str, list[str], str, str]:
-        """Manages depending on the type_flag what data to webscrape and returns the data
-           type in all contextes here means either 'artist', 'album' or 'track', dpending on the flag set"""
-
-        type_name = ""
-        artist_name = ""
-        cover_image_url = ""
-        metadata_list = [""]
-        album_output = ""
-        track_output = ""
-
-        if type_flag: # should be in artists/album/track
-            type_name = self._type_name(soup, type_flag)
-
-        if any(i == type_flag for i in ["album", "track"]): # should be in album/track
-            artist_name = self._artist_name(soup)
-
-        if type_flag: # should be in artists/album/track
-            cover_image_url = self._type_image(soup, type_flag)
-
-        if type_flag: # should be in artists/album/track
-            metadata_list = self._type_metadata(soup)
-
-        if any(i == type_flag for i in ["artist", "album"]): # should be in artist/album
-            track_output, album_output = self._output_lists(soup, artist_for_url, type_flag)
-
-        return type_name, artist_name, cover_image_url, metadata_list, track_output, album_output
 
     ####################################################################################################
 
@@ -168,3 +133,38 @@ class Webscrape():
                 album_output += f"- *({scrobbles})*\n"
         
         return track_output, album_output
+
+    ####################################################################################################
+
+    def library_subpage(
+        self,
+        soup: BeautifulSoup,
+        artist_for_url: str,
+        type_flag: str # type_flag can be "artist", "album" or "track"
+    ) -> tuple[str, str, str, list[str], str, str]:
+        """Manages depending on the type_flag what data to webscrape and returns the data
+           type in all contextes here means either 'artist', 'album' or 'track', dpending on the flag set"""
+
+        type_name = ""
+        artist_name = ""
+        cover_image_url = ""
+        metadata_list = [""]
+        album_output = ""
+        track_output = ""
+
+        if type_flag: # should be in artists/album/track
+            type_name = self._type_name(soup, type_flag)
+
+        if any(i == type_flag for i in ["album", "track"]): # should be in album/track
+            artist_name = self._artist_name(soup)
+
+        if type_flag: # should be in artists/album/track
+            cover_image_url = self._type_image(soup, type_flag)
+
+        if type_flag: # should be in artists/album/track
+            metadata_list = self._type_metadata(soup)
+
+        if any(i == type_flag for i in ["artist", "album"]): # should be in artist/album
+            track_output, album_output = self._output_lists(soup, artist_for_url, type_flag)
+
+        return type_name, artist_name, cover_image_url, metadata_list, track_output, album_output

@@ -39,7 +39,7 @@ class CustomCommand(nextcord_C.Cog):
         commandtext = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).get_text(name)
 
         if not commandtext:
-            await interaction.response.send_message(embed=EmbedFunctions().error(f"There is no custom-command with the name `{name}`.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"There is no custom-command with the name `{name}`.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
             return
 
         await interaction.response.send_message(commandtext)

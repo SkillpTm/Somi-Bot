@@ -69,7 +69,7 @@ class Choose(nextcord_C.Cog):
 
             AllOptionsOutput += f"Option {name[-1]}: {value}\n"
 
-        await interaction.followup.send(embed=EmbedFunctions().info_message(AllOptionsOutput, self.client)) 
+        await interaction.followup.send(embed=EmbedFunctions().get_info_message(AllOptionsOutput, self.client)) 
 
 
 

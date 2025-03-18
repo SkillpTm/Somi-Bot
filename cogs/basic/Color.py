@@ -41,7 +41,7 @@ class Color(nextcord_C.Cog):
 
         # check if the input is a valid hexcode
         if not re.match(r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', hexcode):
-            await interaction.response.send_message(embed=EmbedFunctions().error("Please input a valid hex value for a color."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("Please input a valid hex value for a color."), ephemeral=True)
             return
         
         await interaction.response.defer(with_message=True)

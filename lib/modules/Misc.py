@@ -3,15 +3,34 @@ import nextcord
 
 
 
-class Create():
+class Misc():
 
     def __init__(self) -> None:
         pass
 
     ####################################################################################################
+
+    @staticmethod
+    async def deactivate_view_children(ButtonClass: nextcord.ui.View) -> None:
+        """This function deactivates all children from a view (buttons/select boxes)"""
+
+        # disable all buttons from this view
+        for child in ButtonClass.children:
+            child.disabled = True
+            
+        response: nextcord.Message = getattr(ButtonClass, "response", None)
+        interaction: nextcord.Interaction = getattr(ButtonClass, "interaction", None)
+        
+        # edit the original class to have its buttons deactivated
+        if response:
+            await response.edit(view=ButtonClass)
+        elif interaction:
+            await interaction.edit_original_message(view=ButtonClass)
+
+    ####################################################################################################
     
     @staticmethod
-    def bulk_messages_csv(messages: list[nextcord.Message]) -> str:
+    def make_bulk_messages_csv(messages: list[nextcord.Message]) -> str:
         """This function creates a CSV file, which saves the author id/name, the time and the content of messages. It returns the file name of this CSV."""
 
         # discord provides the message in chronological order, we want the latest first though

@@ -48,7 +48,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner:
-            await interaction.followup.send(embed=EmbedFunctions().error("You can only add/remove a role as a level-role, if the role is below your current top role!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only add/remove a role as a level-role, if the role is below your current top role!"), ephemeral=True)
             return
 
 
@@ -99,16 +99,16 @@ class ConfigLevelRoles(nextcord_C.Cog):
         "adds or doesn't add the role indicated by the output bool"
 
         if not level:
-            await interaction.followup.send(embed=EmbedFunctions().error("You need to define a role **and** a level to add a new level-role."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You need to define a role **and** a level to add a new level-role."), ephemeral=True)
             return False
 
         added = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level_role()).add(role.id, level)
 
         if not added:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"{role.mention} already has a level assigned or the level `{level}` already has a role assigned!\nTo get a list of all the level-roles use `/config info`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{role.mention} already has a level assigned or the level `{level}` already has a role assigned!\nTo get a list of all the level-roles use `/config info`."), ephemeral=True)
             return added
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"{role.mention} has been added to the level-roles.\nThe role is being applied to users now, this can take a few minutes."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{role.mention} has been added to the level-roles.\nThe role is being applied to users now, this can take a few minutes."), ephemeral=True)
 
         await LevelRoles().update_users(self.client, interaction.guild)
 
@@ -126,10 +126,10 @@ class ConfigLevelRoles(nextcord_C.Cog):
         deleted = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level_role()).delete(role.id)
 
         if not deleted:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"{role.mention} isn't a level-role.\nTo get a list of all the level-roles use `/config info`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{role.mention} isn't a level-role.\nTo get a list of all the level-roles use `/config info`."), ephemeral=True)
             return deleted
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"{role.mention} has been removed from the level-roles.\nThe level-roles are being re-applied to users now, this can take a few minutes."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{role.mention} has been removed from the level-roles.\nThe level-roles are being re-applied to users now, this can take a few minutes."), ephemeral=True)
 
         await LevelRoles().update_users(self.client, interaction.guild)
 

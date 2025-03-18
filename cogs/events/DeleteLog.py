@@ -62,7 +62,7 @@ class DeleteLog(nextcord_C.Cog):
             footer = "DEFAULT_KST_FOOTER"
         )
 
-        embed, file_urls = EmbedFunctions.get_attachments(message.attachments, embed)
+        embed, file_urls = EmbedFunctions.get_or_add_attachments(message.attachments, embed)
         sent_message = await message.guild.get_channel(audit_log_id).send(embed=embed)
 
         if file_urls:
@@ -94,7 +94,7 @@ class DeleteLog(nextcord_C.Cog):
             footer = "DEFAULT_KST_FOOTER"
         )
 
-        embed, file_urls = EmbedFunctions.get_attachments(message.attachments, embed)
+        embed, file_urls = EmbedFunctions.get_or_add_attachments(message.attachments, embed)
         sent_message = await message.guild.get_channel(audit_log_id).send(embed=embed)
 
         if file_urls:

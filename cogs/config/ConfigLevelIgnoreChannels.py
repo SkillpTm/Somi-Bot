@@ -90,10 +90,10 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
         added = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level_ignore_channel()).add(channel.id)
 
         if not added:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"{channel.mention} is already a level-ignore-channel.\nTo get a list of all the level-ignore-channels use `/config info`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{channel.mention} is already a level-ignore-channel.\nTo get a list of all the level-ignore-channels use `/config info`."), ephemeral=True)
             return added
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"{channel.mention} has been added to the level-ignore-channels.\nThere won't be any XP gain in there anymore."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{channel.mention} has been added to the level-ignore-channels.\nThere won't be any XP gain in there anymore."), ephemeral=True)
         return added
 
     ####################################################################################################
@@ -108,10 +108,10 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
         deleted = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).hidden_channel()).delete(channel.id)
 
         if not deleted:
-            await interaction.followup.send(embed=EmbedFunctions().error(f"{channel.mention} isn't a level-ignore-channel.\nTo get a list of all the level-ignore-channels use `/config info`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{channel.mention} isn't a level-ignore-channel.\nTo get a list of all the level-ignore-channels use `/config info`."), ephemeral=True)
             return deleted
 
-        await interaction.followup.send(embed=EmbedFunctions().success(f"{channel.mention} has been removed from the level-ignore-channels.\n You can now earn XP there again."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{channel.mention} has been removed from the level-ignore-channels.\n You can now earn XP there again."), ephemeral=True)
         return deleted
 
 

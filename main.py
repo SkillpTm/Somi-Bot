@@ -2,7 +2,7 @@ import os
 import requests
 import time
 
-from lib.utilities import SomiBot
+from lib.utilities.SomiBot import SomiBot
 
 client = SomiBot()
 

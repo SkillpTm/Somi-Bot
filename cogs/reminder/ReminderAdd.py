@@ -11,14 +11,14 @@ from lib.utilities import SomiBot
 
 class ReminderAdd(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import reminder
-
     ####################################################################################################
     
-    @reminder.subcommand(name = "add", description = "add a reminder to your reminder list")
+    @ParentCommand.reminder.subcommand(name = "add", description = "add a reminder to your reminder list")
     async def reminder_add(
         self,
         interaction: nextcord.Interaction,

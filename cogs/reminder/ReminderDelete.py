@@ -7,14 +7,14 @@ from lib.utilities import SomiBot, YesNoButtons
 
 class ReminderDelete(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import reminder
-
     ####################################################################################################
 
-    @reminder.subcommand(name = "delete", description = "delete a reminder from your reminder list")
+    @ParentCommand.reminder.subcommand(name = "delete", description = "delete a reminder from your reminder list")
     async def reminder_delete(
         self,
         interaction: nextcord.Interaction,

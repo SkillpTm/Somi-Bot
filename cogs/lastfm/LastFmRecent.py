@@ -11,14 +11,14 @@ from lib.utilities import PageButtons, SomiBot
 
 class LastFmRecent(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import lastfm
-
     ####################################################################################################
 
-    @lastfm.subcommand(name = "rc", description = "shows your recently played songs on LastFm", name_localizations = {country_tag:"recent" for country_tag in nextcord.Locale})
+    @ParentCommand.lastfm.subcommand(name = "rc", description = "shows your recently played songs on LastFm", name_localizations = {country_tag:"recent" for country_tag in nextcord.Locale})
     async def lastfm_recent(
         self,
         interaction: nextcord.Interaction,

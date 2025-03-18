@@ -10,14 +10,14 @@ from lib.utilities import SomiBot
 
 class KeywordAdd(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import keyword
-
     ####################################################################################################
     
-    @keyword.subcommand(name = "add", description = "add a keyword to your keyword list")
+    @ParentCommand.keyword.subcommand(name = "add", description = "add a keyword to your keyword list")
     async def keyword_add(
         self,
         interaction: nextcord.Interaction,

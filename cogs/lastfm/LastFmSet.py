@@ -10,14 +10,14 @@ from lib.utilities import SomiBot
 
 class LastFmSet(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import lastfm
-
     ####################################################################################################
 
-    @lastfm.subcommand(name = "set", description = "set your LastFm account")
+    @ParentCommand.lastfm.subcommand(name = "set", description = "set your LastFm account")
     async def lastfm_set(
         self,
         interaction: nextcord.Interaction,

@@ -9,14 +9,14 @@ from lib.utilities import SomiBot
 
 class LevelsInfo(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import levels
-
     ####################################################################################################
 
-    @levels.subcommand(name = "info", description = "displays an explanation for levels, a list of ignored channels and levelroles")
+    @ParentCommand.levels.subcommand(name = "info", description = "displays an explanation for levels, a list of ignored channels and levelroles")
     async def levels_info(self, interaction: nextcord.Interaction) -> None:
         """Displays information about levels and (if existing) shows a list of the levelroles/ignore channels"""
 

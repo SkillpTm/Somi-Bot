@@ -9,14 +9,14 @@ from lib.utilities import SomiBot
 
 class ReminderList(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import reminder
-
     ####################################################################################################
 
-    @reminder.subcommand(name = "list", description = "a list of all your reminders")
+    @ParentCommand.reminder.subcommand(name = "list", description = "a list of all your reminders")
     async def reminder_list(self, interaction: nextcord.Interaction) -> None:
         """This command will list all reminders of a user"""
 

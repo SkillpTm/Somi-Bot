@@ -9,14 +9,14 @@ from lib.utilities import SomiBot
 
 class LevelsRank(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import levels
-
     ####################################################################################################
 
-    @levels.subcommand(name = "rank", description = "shows your rank and level on this server")
+    @ParentCommand.levels.subcommand(name = "rank", description = "shows your rank and level on this server")
     async def levels_rank(
         self,
         interaction: nextcord.Interaction,

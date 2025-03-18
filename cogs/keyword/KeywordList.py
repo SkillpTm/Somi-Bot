@@ -9,14 +9,14 @@ from lib.utilities import SomiBot
 
 class KeywordList(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import keyword
-
     ####################################################################################################
 
-    @keyword.subcommand(name = "list", description = "a list of all your keywords")
+    @ParentCommand.keyword.subcommand(name = "list", description = "a list of all your keywords")
     async def keyword_list(self, interaction: nextcord.Interaction) -> None:
         """This command outputs a list of all keywords a user has"""
 

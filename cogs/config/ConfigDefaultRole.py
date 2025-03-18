@@ -9,14 +9,14 @@ from lib.utilities import SomiBot
 
 class ConfigDefaultRole(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) ->  None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import config
-
     ####################################################################################################
 
-    @config.subcommand(name = "default-role", description = "set/reset a role someone gets upon joining this server")
+    @ParentCommand.config.subcommand(name = "default-role", description = "set/reset a role someone gets upon joining this server")
     async def config_default_role(
         self,
         interaction: nextcord.Interaction,

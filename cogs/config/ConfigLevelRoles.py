@@ -9,14 +9,14 @@ from lib.utilities import SomiBot
 
 class ConfigLevelRoles(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import config
-
     ####################################################################################################
 
-    @config.subcommand(name = "level-roles", description = "set a role to be given, when a certain level is reached")
+    @ParentCommand.config.subcommand(name = "level-roles", description = "set a role to be given, when a certain level is reached")
     async def config_level_roles(
         self,
         interaction: nextcord.Interaction,

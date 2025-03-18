@@ -9,14 +9,14 @@ from lib.utilities import Lists, SomiBot
 
 class ConfigAuditLogChannel(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import config
-
     ####################################################################################################
 
-    @config.subcommand(name = "audit-log-channel", description = "set/reset a channel for the bot to post logs")
+    @ParentCommand.config.subcommand(name = "audit-log-channel", description = "set/reset a channel for the bot to post logs")
     async def config_audit_log_channel(
         self,
         interaction: nextcord.Interaction,

@@ -10,14 +10,14 @@ from lib.utilities import SomiBot
 
 class CustomAdd(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import custom
-
     ####################################################################################################
 
-    @custom.subcommand(name = "add", description = "add a custom-command to this server")
+    @ParentCommand.custom.subcommand(name = "add", description = "add a custom-command to this server")
     async def custom_add(
         self,
         interaction: nextcord.Interaction,

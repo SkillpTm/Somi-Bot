@@ -9,14 +9,14 @@ from lib.utilities import SomiBot, YesNoButtons
 
 class KeywordDelete(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import keyword
-
     ####################################################################################################
 
-    @keyword.subcommand(name = "delete", description = "delete a keyword from your keyword list")
+    @ParentCommand.keyword.subcommand(name = "delete", description = "delete a keyword from your keyword list")
     async def keyword_delete(
         self,
         interaction: nextcord.Interaction,

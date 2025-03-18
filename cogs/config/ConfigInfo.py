@@ -9,14 +9,14 @@ from lib.utilities import SomiBot
 
 class ConfigInfo(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import config
-
     ####################################################################################################
 
-    @config.subcommand(name = "info", description = "get information on how this server is configured")
+    @ParentCommand.config.subcommand(name = "info", description = "get information on how this server is configured")
     async def config_info(self, interaction: nextcord.Interaction) -> None:
         """This command outputs a server's configuration info and some explanations."""
 

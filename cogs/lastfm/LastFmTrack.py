@@ -12,14 +12,14 @@ from lib.utilities import Lists, SomiBot
 
 class LastFmTrack(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import lastfm
-
     ####################################################################################################
 
-    @lastfm.subcommand(name = "track", description = "shows you your LastFm stats for any track")
+    @ParentCommand.lastfm.subcommand(name = "track", description = "shows you your LastFm stats for any track")
     async def lastfm_track(
         self,
         interaction: nextcord.Interaction,

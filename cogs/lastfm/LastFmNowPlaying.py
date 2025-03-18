@@ -11,14 +11,14 @@ from lib.utilities import SomiBot
 
 class LastFmNowPlaying(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import lastfm
-
     ####################################################################################################
 
-    @lastfm.subcommand(name = "nowplaying", description = "shows what someone is listening to right now", name_localizations = {country_tag:"np" for country_tag in nextcord.Locale})
+    @ParentCommand.lastfm.subcommand(name = "nowplaying", description = "shows what someone is listening to right now", name_localizations = {country_tag:"np" for country_tag in nextcord.Locale})
     async def lastfm_now_playing(
         self,
         interaction: nextcord.Interaction,

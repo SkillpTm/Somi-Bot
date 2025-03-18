@@ -9,14 +9,14 @@ from lib.utilities import Lists, SomiBot
 
 class ConfigHiddenChannels(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import config
-
     ####################################################################################################
 
-    @config.subcommand(name = "hidden-channels", description = "add/remove a hidden-channel to this server")
+    @ParentCommand.config.subcommand(name = "hidden-channels", description = "add/remove a hidden-channel to this server")
     async def config_hidden_channels(
         self,
         interaction: nextcord.Interaction,

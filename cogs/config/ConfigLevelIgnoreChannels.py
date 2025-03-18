@@ -9,14 +9,14 @@ from lib.utilities import Lists, SomiBot
 
 class ConfigLevelIgnoreChannels(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import config
-
     ####################################################################################################
 
-    @config.subcommand(name = "level-ignore-channels", description = "deactivate/activate xp gain in a channel")
+    @ParentCommand.config.subcommand(name = "level-ignore-channels", description = "deactivate/activate xp gain in a channel")
     async def config_level_ignore_channels(
         self,
         interaction: nextcord.Interaction,

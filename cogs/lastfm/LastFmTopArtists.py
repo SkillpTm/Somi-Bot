@@ -10,14 +10,14 @@ from lib.utilities import Lists, PageButtons, SomiBot
 
 class LastFmTopArtists(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import lastfm
-
     ####################################################################################################
 
-    @lastfm.subcommand(name = "tar", description = "shows your top artists on LastFm", name_localizations = {country_tag:"topartists" for country_tag in nextcord.Locale})
+    @ParentCommand.lastfm.subcommand(name = "tar", description = "shows your top artists on LastFm", name_localizations = {country_tag:"topartists" for country_tag in nextcord.Locale})
     async def lastfm_top_artists(
         self,
         interaction: nextcord.Interaction,

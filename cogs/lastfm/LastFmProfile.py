@@ -11,14 +11,14 @@ from lib.utilities import SomiBot
 
 class LastFmProfile(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import lastfm
-
     ####################################################################################################
 
-    @lastfm.subcommand(name = "profile", description = "shows stats about someone's LastFm account")
+    @ParentCommand.lastfm.subcommand(name = "profile", description = "shows stats about someone's LastFm account")
     async def lastfm_profile(
         self,
         interaction: nextcord.Interaction,

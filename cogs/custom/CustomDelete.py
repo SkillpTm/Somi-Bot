@@ -9,14 +9,14 @@ from lib.utilities import SomiBot
 
 class CustomDelete(nextcord_C.Cog):
 
+    from cogs.basic.ParentCommand import ParentCommand
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    from lib.utilities.main_commands import custom
-
     ####################################################################################################
 
-    @custom.subcommand(name = "delete", description = "delete a custom-command")
+    @ParentCommand.custom.subcommand(name = "delete", description = "delete a custom-command")
     async def custom_delete(
         self,
         interaction: nextcord.Interaction,

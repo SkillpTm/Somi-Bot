@@ -1,3 +1,5 @@
+import time
+
 from lib.dbModules.tableInterfaces import CustomCommandDB, FeedbackDB, HiddenChannelDB, KeywordDB, LevelDB, LevelIgnoreChannelDB, LevelRoleDB, ReminderDB, ServerDB, StatisticDB, TelemetryDB, UserDB
 from lib.dbModules.PostgresDB import PostgresDB
 
@@ -23,7 +25,7 @@ class DBHandler():
 
     ####################################################################################################
 
-    async def setup(self) -> None:
+    async def _setup(self) -> None:
         """makes sure the user/server always exists in the db"""
 
         if self.server_id:
@@ -43,39 +45,58 @@ class DBHandler():
                 columns = ["user_id"],
                 values = [self.user_id]
             )
-    
+
+    ####################################################################################################
+
+    async def get_latency(self) -> int:
+        """returns in ms how long a simple select takes on the db"""
+
+        start = time.time()
+
+        _ = await self.database.fetch_row(
+            query_name = "select_where",
+            table_name = "server",
+            select_columns = ["*"],
+            columns = ["1"], # we essentaily say 1=1, so we get anything back
+            values = [1]
+        )
+
+        end = time.time()
+
+        return int(round((end-start) * 1000))
+
     ####################################################################################################
 
     async def custom_command(self) -> CustomCommandDB:
-        await self.setup()
+        await self._setup()
 
         return CustomCommandDB(self.database, self.server_id)
 
     ####################################################################################################
 
     async def feedback(self) -> FeedbackDB:
-        await self.setup()
+        await self._setup()
 
         return FeedbackDB(self.database, self.server_id, self.user_id)
     
     ####################################################################################################
 
     async def hidden_channel(self) -> HiddenChannelDB:
-        await self.setup()
+        await self._setup()
 
         return HiddenChannelDB(self.database, self.server_id)
     
     ####################################################################################################
 
     async def keyword(self) -> KeywordDB:
-        await self.setup()
+        await self._setup()
 
         return KeywordDB(self.database, self.server_id, self.user_id)
     
     ####################################################################################################
 
     async def level(self) -> LevelDB:
-        await self.setup()
+        await self._setup()
 
         # only attempt to insert the level when both server and user are provided, because not all functions need to be started by a user
         if self.server_id and self.user_id:
@@ -92,35 +113,35 @@ class DBHandler():
     ####################################################################################################
 
     async def level_ignore_channel(self) -> LevelIgnoreChannelDB:
-        await self.setup()
+        await self._setup()
 
         return LevelIgnoreChannelDB(self.database, self.server_id)
     
     ####################################################################################################
 
     async def level_role(self) -> LevelRoleDB:
-        await self.setup()
+        await self._setup()
 
         return LevelRoleDB(self.database, self.server_id)
     
     ####################################################################################################
 
     async def reminder(self) -> ReminderDB:
-        await self.setup()
+        await self._setup()
 
         return ReminderDB(self.database, self.user_id)
     
     ####################################################################################################
 
     async def server(self) -> ServerDB:
-        await self.setup()
+        await self._setup()
 
         return ServerDB(self.database, self.server_id)
     
     ####################################################################################################
 
     async def statistic(self) -> StatisticDB:
-        await self.setup()
+        await self._setup()
 
         await self.database.execute(
             query_name = "insert_unique_row",
@@ -135,13 +156,13 @@ class DBHandler():
     ####################################################################################################
 
     async def telemetry(self) -> TelemetryDB:
-        await self.setup()
+        await self._setup()
 
         return TelemetryDB(self.database)
     
     ####################################################################################################
 
     async def user(self) -> UserDB:
-        await self.setup()
+        await self._setup()
 
         return UserDB(self.database, self.user_id)

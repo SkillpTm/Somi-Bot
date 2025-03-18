@@ -141,7 +141,7 @@ class PostgresDB():
         table_name: str = "",
         select_columns: list[str] = [],
         conflict_columns: list[str] = [],
-        limit: int = 0,
+        limit: list[int] = [],
         columns: list[str] = [],
         values: list[str | int] = [],
         set_columns: list[str] = [],
@@ -160,8 +160,9 @@ class PostgresDB():
         if conflict_columns:
             query = query.replace(":conflict_columns", ", ".join(self._sanitize(conflict_columns)))
 
+        # if there are values add the $num placeholders for asyncpg to resolve later
         if limit:
-            query = query.replace(":limit_value", ", ".join(self._sanitize(limit)))
+            query = query.replace(":limit_value", f"${len(values)+1}")
 
         if columns:
             query = query.replace(":column_names", ", ".join(self._sanitize(columns)))
@@ -248,7 +249,6 @@ class PostgresDB():
         query_name: str,
         table_name: str = "",
         select_columns: list[str] = [],
-        limit: int = 0,
         columns: list[str] = [],
         values: list[str | int] = []
     ) -> list[str | int]:
@@ -258,7 +258,6 @@ class PostgresDB():
             query_name = query_name,
             table_name = table_name,
             select_columns = select_columns,
-            limit = limit,
             columns = columns,
             values = values
         )
@@ -291,7 +290,7 @@ class PostgresDB():
         query_name: str,
         table_name: str = "",
         select_columns: list[str] = [],
-        limit: int = 0,
+        limit: list[int] = [],
         columns: list[str] = [],
         values: list[str | int] = []
     ) -> AsyncIterator[list[str | int]]:
@@ -301,14 +300,14 @@ class PostgresDB():
             query_name = query_name,
             table_name = table_name,
             select_columns = select_columns,
-            limit=limit,
+            limit = limit,
             columns = columns,
             values = values
         )
 
         async with self._pool.acquire() as conn:
             async with conn.transaction():
-                async for record in conn.cursor(query, *self._sanitize(values)):
+                async for record in conn.cursor(query, *self._sanitize(values), *self._sanitize(limit)):
 
                     result: list[str | int] = []
                     

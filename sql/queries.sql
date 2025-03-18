@@ -42,7 +42,7 @@ WHERE (:column_names) = (:placeholder_values);
 -- name: select_user_xp_rank
 SELECT user_id, total_xp, ROW_NUMBER() OVER (
     ORDER BY total_xp DESC
-    WHERE (:column_names) = (:placeholder_values)
-    LIMIT :limit_value
 )
-FROM level;
+FROM level
+WHERE (:column_names) = (:placeholder_values)
+LIMIT :limit_value;

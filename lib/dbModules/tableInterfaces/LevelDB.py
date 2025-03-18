@@ -46,7 +46,7 @@ class LevelDB():
 
         The formular to get how much xp a level requires is: f(level) = level * 200
 
-        The formular to get how much total xp it requiers to finish a level is: f(level) = 100 * level (level + 1)
+        The formular to get how much total xp it requiers to finish a level is: f(level) = 100 * (level + 1) * (level + 2)
 
         Finally the formular to get from your total xp to your current level: level = math.floor((-1 + √(1 + total_xp/25))/2)
         """
@@ -59,7 +59,7 @@ class LevelDB():
     def _calulate_xp_until_next_level(total_xp: int, level: int) -> int:
         """The formular to get how much total xp it requiers to finish a level is: f(level) = 100 * level * (level + 1)"""
 
-        return (100 * level * (level + 1)) - total_xp
+        return (100 * (level + 1) * (level + 2)) - total_xp
 
     ####################################################################################################
 
@@ -105,15 +105,26 @@ class LevelDB():
     async def get_rank(self) -> int:
         """get the leaderboard position of the user in this server"""
 
-        _, _, rank = await self.database.fetch_row(
+        async for _, _, rank in self.database.fetch_many(
             query_name = "select_user_xp_rank",
-            limit = 1,
+            limit = [1],
+            columns = ["server_id", "user_id"],
+            values = [self.server_id, self.user_id]
+        ):
+            return rank
+
+    ####################################################################################################
+
+    async def get_total_xp(self) -> int:
+        """get total_xp from a user"""
+
+        return await self.database.fetch_val(
+            query_name = "select_where",
+            table_name = "level",
+            select_columns = ["total_xp"],
             columns = ["server_id", "user_id"],
             values = [self.server_id, self.user_id]
         )
-
-        return rank
-
 
     ####################################################################################################
 
@@ -124,7 +135,7 @@ class LevelDB():
 
         async for index, user_rank in self.database.fetch_many(
             query_name = "select_user_xp_rank",
-            limit = limit,
+            limit = [limit],
             columns = ["server_id", "user_id"],
             values = [self.server_id, self.user_id]
         ):

@@ -40,20 +40,13 @@ class LevelsRank(nextcord_C.Cog):
         await interaction.response.defer(with_message=True)
 
         user_level, xp_until_next_level = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).level()).get_level_and_xp_until_next()
-        next_level_xp = (user_level-1) * 200 + 300
+        next_level_xp = (user_level+1) * 200
         xp_progress_to_next_level = next_level_xp - xp_until_next_level
+        output_percentage = int((float(xp_progress_to_next_level) / float(next_level_xp)) * 100)
         
         # calculate a 20 segment progress bar with the percentage of xp to the next level
         percent = 20 * (float(xp_progress_to_next_level) / float(next_level_xp))
         percent_bar = "[" + "█" * int(percent) + " -" * (20 - int(percent)) + "]"
-
-        output_percentage = int((float(xp_progress_to_next_level) / float(next_level_xp)) * 100)
-
-        # a user with level 0 hasn't send a message yet, so we set some values manually
-        if user_level == 0:
-            xp_progress_to_next_level = 0
-            next_level_xp = 0
-            output_percentage = 100
 
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,
@@ -69,13 +62,19 @@ class LevelsRank(nextcord_C.Cog):
 
                 [
                     "Rank:",
-                    f"`{await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).level()).get_rank()}`",
+                    f"`{'{:,}'.format(await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).level()).get_rank())}`",
+                    True
+                ],
+
+                [
+                    "Total XP:",
+                    f"`{'{:,}'.format(await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).level()).get_total_xp())}`",
                     True
                 ],
 
                 [
                     "Level Progress:",
-                    f"{percent_bar}\n{xp_progress_to_next_level}/{next_level_xp} ({output_percentage}%)",
+                    f"{percent_bar}\n{'{:,}'.format(xp_progress_to_next_level)}/{'{:,}'.format(next_level_xp)} ({output_percentage}%)",
                     False
                 ]
             ]

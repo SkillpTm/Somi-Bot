@@ -16,7 +16,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.config.subcommand(name = "default-role", description = "set/reset a role someone gets upon joining this server")
+    @ParentCommand.config.subcommand(name="default-role", description="set/reset a role someone gets upon joining this server")
     async def config_default_role(
         self,
         interaction: nextcord.Interaction,

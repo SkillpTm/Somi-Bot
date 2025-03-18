@@ -17,7 +17,11 @@ class LastFmTopAlbums(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.lastfm.subcommand(name = "tal", description = "shows your top albums on LastFm", name_localizations = {country_tag:"topalbums" for country_tag in nextcord.Locale})
+    @ParentCommand.lastfm.subcommand(
+        name = "tal",
+        description = "shows your top albums on LastFm",
+        name_localizations = {country_tag:"topalbums" for country_tag in nextcord.Locale}
+    )
     async def lastfm_top_albums(
         self,
         interaction: nextcord.Interaction,

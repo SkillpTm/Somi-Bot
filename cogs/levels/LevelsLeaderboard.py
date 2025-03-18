@@ -16,7 +16,11 @@ class LevelsLeaderboard(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.levels.subcommand(name = "top", description = "shows the top users by level of this server", name_localizations = {country_tag:"leaderboard" for country_tag in nextcord.Locale})
+    @ParentCommand.levels.subcommand(
+        name = "top",
+        description = "shows the top users by level of this server",
+        name_localizations = {country_tag:"leaderboard" for country_tag in nextcord.Locale}
+    )
     async def levels_leaderboard(self, interaction: nextcord.Interaction) -> None:
         """Displays the top 10 (or less, if there isn't 10 users in the levels table) users by XP"""
 

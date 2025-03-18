@@ -17,7 +17,7 @@ class KeywordAdd(nextcord_C.Cog):
 
     ####################################################################################################
     
-    @ParentCommand.keyword.subcommand(name = "add", description = "add a keyword to your keyword list")
+    @ParentCommand.keyword.subcommand(name="add", description="add a keyword to your keyword list")
     async def keyword_add(
         self,
         interaction: nextcord.Interaction,

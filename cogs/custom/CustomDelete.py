@@ -16,7 +16,7 @@ class CustomDelete(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.custom.subcommand(name = "delete", description = "delete a custom-command")
+    @ParentCommand.custom.subcommand(name="delete", description="delete a custom-command")
     async def custom_delete(
         self,
         interaction: nextcord.Interaction,

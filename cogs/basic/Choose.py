@@ -14,7 +14,11 @@ class Choose(nextcord_C.Cog):
 
     ####################################################################################################
     
-    @nextcord.slash_command(name = "select", description = "let the bot choose one of the options for you!", name_localizations = {country_tag:"choose" for country_tag in nextcord.Locale})
+    @nextcord.slash_command(
+        name = "select",
+        description = "let the bot choose one of the options for you!",
+        name_localizations = {country_tag:"choose" for country_tag in nextcord.Locale}
+    )
     async def choose(
         self,
         interaction: nextcord.Interaction,

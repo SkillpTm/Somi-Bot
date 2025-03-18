@@ -16,7 +16,7 @@ class ConfigInfo(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.config.subcommand(name = "info", description = "get information on how this server is configured")
+    @ParentCommand.config.subcommand(name="info", description="get information on how this server is configured")
     async def config_info(self, interaction: nextcord.Interaction) -> None:
         """This command outputs a server's configuration info and some explanations."""
 

@@ -18,7 +18,7 @@ class LastFmProfile(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.lastfm.subcommand(name = "profile", description = "shows stats about someone's LastFm account")
+    @ParentCommand.lastfm.subcommand(name="profile", description="shows stats about someone's LastFm account")
     async def lastfm_profile(
         self,
         interaction: nextcord.Interaction,

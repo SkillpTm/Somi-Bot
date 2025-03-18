@@ -14,7 +14,7 @@ class ReminderDelete(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.reminder.subcommand(name = "delete", description = "delete a reminder from your reminder list")
+    @ParentCommand.reminder.subcommand(name="delete", description="delete a reminder from your reminder list")
     async def reminder_delete(
         self,
         interaction: nextcord.Interaction,

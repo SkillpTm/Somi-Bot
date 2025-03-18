@@ -16,7 +16,7 @@ class ConfigHiddenChannels(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.config.subcommand(name = "hidden-channels", description = "add/remove a hidden-channel to this server")
+    @ParentCommand.config.subcommand(name="hidden-channels", description="add/remove a hidden-channel to this server")
     async def config_hidden_channels(
         self,
         interaction: nextcord.Interaction,

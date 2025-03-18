@@ -16,7 +16,7 @@ class LevelsRank(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.levels.subcommand(name = "rank", description = "shows your rank and level on this server")
+    @ParentCommand.levels.subcommand(name="rank", description="shows your rank and level on this server")
     async def levels_rank(
         self,
         interaction: nextcord.Interaction,

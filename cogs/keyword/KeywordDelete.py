@@ -16,7 +16,7 @@ class KeywordDelete(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.keyword.subcommand(name = "delete", description = "delete a keyword from your keyword list")
+    @ParentCommand.keyword.subcommand(name="delete", description="delete a keyword from your keyword list")
     async def keyword_delete(
         self,
         interaction: nextcord.Interaction,

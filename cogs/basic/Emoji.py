@@ -14,7 +14,11 @@ class Emoji(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "emote", description = "make an emoji larger", name_localizations = {country_tag:"emoji" for country_tag in nextcord.Locale})
+    @nextcord.slash_command(
+        name = "emote",
+        description = "make an emoji larger",
+        name_localizations = {country_tag:"emoji" for country_tag in nextcord.Locale}
+    )
     async def emoji(
         self,
         interaction: nextcord.Interaction,

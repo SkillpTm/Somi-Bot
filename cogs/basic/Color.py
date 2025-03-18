@@ -16,7 +16,7 @@ class Color(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "color", description = "shows you what a color looks like")
+    @nextcord.slash_command(name="color", description="shows you what a color looks like")
     async def color(
         self,
         interaction: nextcord.Interaction,

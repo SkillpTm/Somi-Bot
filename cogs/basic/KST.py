@@ -13,7 +13,7 @@ class KST(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "kst", description = "shows the current time in KST")
+    @nextcord.slash_command(name="kst", description="shows the current time in KST")
     async def kst(self, interaction: nextcord.Interaction) -> None:
         """This command will display the current date and time in KST"""
 

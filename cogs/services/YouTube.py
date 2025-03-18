@@ -13,7 +13,11 @@ class YouTube(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "yt", description = "find a video on YouTube", name_localizations = {country_tag:"youtube" for country_tag in nextcord.Locale})
+    @nextcord.slash_command(
+        name = "yt",
+        description = "find a video on YouTube",
+        name_localizations = {country_tag:"youtube" for country_tag in nextcord.Locale}
+    )
     async def youtube(
         self,
         interaction: nextcord.Interaction,

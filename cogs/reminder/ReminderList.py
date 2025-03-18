@@ -16,7 +16,7 @@ class ReminderList(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.reminder.subcommand(name = "list", description = "a list of all your reminders")
+    @ParentCommand.reminder.subcommand(name="list", description="a list of all your reminders")
     async def reminder_list(self, interaction: nextcord.Interaction) -> None:
         """This command will list all reminders of a user"""
 

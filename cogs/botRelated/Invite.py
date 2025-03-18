@@ -13,7 +13,7 @@ class Invite(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "invite", description = "posts the bot's invite link")
+    @nextcord.slash_command(name="invite", description="posts the bot's invite link")
     async def invite(self, interaction: nextcord.Interaction) -> None:
         """This command posts the invite link for the bot"""
 

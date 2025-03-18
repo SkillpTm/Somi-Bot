@@ -15,7 +15,7 @@ class Coinflip(nextcord_C.Cog):
 
     ####################################################################################################
     
-    @nextcord.slash_command(name = "coinflip", description = "does a coinflip")
+    @nextcord.slash_command(name="coinflip", description="does a coinflip")
     async def coinflip(self, interaction: nextcord.Interaction) -> None:
         """This command does a coinflip with a small animation"""
 

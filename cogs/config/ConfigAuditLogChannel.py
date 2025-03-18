@@ -16,7 +16,7 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.config.subcommand(name = "audit-log-channel", description = "set/reset a channel for the bot to post logs")
+    @ParentCommand.config.subcommand(name="audit-log-channel", description="set/reset a channel for the bot to post logs")
     async def config_audit_log_channel(
         self,
         interaction: nextcord.Interaction,

@@ -14,7 +14,11 @@ class CustomCommand(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "cc", description = "post a custom-command", name_localizations = {country_tag:"custom-command" for country_tag in nextcord.Locale})
+    @nextcord.slash_command(
+        name = "cc",
+        description = "post a custom-command",
+        name_localizations = {country_tag:"custom-command" for country_tag in nextcord.Locale}
+    )
     async def customcommand(
         self,
         interaction: nextcord.Interaction,

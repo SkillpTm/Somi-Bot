@@ -16,7 +16,7 @@ class LevelsInfo(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.levels.subcommand(name = "info", description = "displays an explanation for levels, a list of ignored channels and levelroles")
+    @ParentCommand.levels.subcommand(name="info", description="displays an explanation for levels, a list of ignored channels and levelroles")
     async def levels_info(self, interaction: nextcord.Interaction) -> None:
         """Displays information about levels and (if existing) shows a list of the levelroles/ignore channels"""
 

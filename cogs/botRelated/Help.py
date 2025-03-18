@@ -14,7 +14,7 @@ class Help(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "help", description = "explanations for every command")
+    @nextcord.slash_command(name="help", description="explanations for every command")
     async def help(
         self,
         interaction: nextcord.Interaction,

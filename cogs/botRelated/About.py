@@ -14,7 +14,7 @@ class About(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "about", description = "tells you about Somi bot")
+    @nextcord.slash_command(name="about", description="tells you about Somi bot")
     async def about(self, interaction: nextcord.Interaction) -> None:
         """This command outputs various information about the bot to the user"""
 

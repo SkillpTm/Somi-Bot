@@ -14,7 +14,11 @@ class Userinfo(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "ui", description = "gives information about a user", name_localizations = {country_tag:"userinfo" for country_tag in nextcord.Locale})
+    @nextcord.slash_command(
+        name = "ui",
+        description = "gives information about a user",
+        name_localizations = {country_tag:"userinfo" for country_tag in nextcord.Locale}
+    )
     async def userinfo(
         self,
         interaction: nextcord.Interaction,

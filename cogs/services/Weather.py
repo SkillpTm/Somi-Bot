@@ -17,7 +17,7 @@ class Weather(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "weather", description = "find out what the weather is in any place")
+    @nextcord.slash_command(name="weather", description="find out what the weather is in any place")
     async def weather(
         self,
         interaction: nextcord.Interaction,

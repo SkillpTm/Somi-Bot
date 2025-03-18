@@ -60,7 +60,7 @@ class Feedback(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "feedback", description = "give feedback to the bot, with a suggestion or submit a bug-report")
+    @nextcord.slash_command(name="feedback", description="give feedback to the bot, with a suggestion or submit a bug-report")
     async def feedback(self, interaction: nextcord.Interaction) -> None:
 
         self.client.Loggers.action_log(Get.log_message(interaction, "/feedback"))

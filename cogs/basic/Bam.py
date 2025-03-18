@@ -13,7 +13,7 @@ class Bam(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "bam", description = "bams a member")
+    @nextcord.slash_command(name="bam", description="bams a member")
     async def bam(self, interaction: nextcord.Interaction) -> None:
         """This command fake bans someone"""
 

@@ -18,7 +18,7 @@ class ReminderAdd(nextcord_C.Cog):
 
     ####################################################################################################
     
-    @ParentCommand.reminder.subcommand(name = "add", description = "add a reminder to your reminder list")
+    @ParentCommand.reminder.subcommand(name="add", description="add a reminder to your reminder list")
     async def reminder_add(
         self,
         interaction: nextcord.Interaction,

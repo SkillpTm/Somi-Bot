@@ -17,7 +17,7 @@ class LastFmSet(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.lastfm.subcommand(name = "set", description = "set your LastFm account")
+    @ParentCommand.lastfm.subcommand(name="set", description="set your LastFm account")
     async def lastfm_set(
         self,
         interaction: nextcord.Interaction,
@@ -53,7 +53,7 @@ class LastFmSet(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.lastfm.subcommand(name = "reset", description = "reset your LastFm-Discord account connection")
+    @ParentCommand.lastfm.subcommand(name="reset", description="reset your LastFm-Discord account connection")
     async def lastfm_reset(self, interaction: nextcord.Interaction) -> None:
         """This command deletes the user's connection from the db"""
 

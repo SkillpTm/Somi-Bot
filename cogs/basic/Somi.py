@@ -13,7 +13,7 @@ class Somi(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "somi", description = "speaks facts")
+    @nextcord.slash_command(name="somi", description="speaks facts")
     async def somi(self,interaction: nextcord.Interaction) -> None:
         """This command tells you the truth"""
 

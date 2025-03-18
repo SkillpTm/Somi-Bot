@@ -13,7 +13,7 @@ class Wolfram(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "wolfram", description = "find an answer to a query")
+    @nextcord.slash_command(name="wolfram", description="find an answer to a query")
     async def wolfram(
         self,
         interaction: nextcord.Interaction,

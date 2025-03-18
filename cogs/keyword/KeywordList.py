@@ -16,7 +16,7 @@ class KeywordList(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.keyword.subcommand(name = "list", description = "a list of all your keywords")
+    @ParentCommand.keyword.subcommand(name="list", description="a list of all your keywords")
     async def keyword_list(self, interaction: nextcord.Interaction) -> None:
         """This command outputs a list of all keywords a user has"""
 

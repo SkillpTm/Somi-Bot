@@ -16,7 +16,7 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.config.subcommand(name = "level-ignore-channels", description = "deactivate/activate xp gain in a channel")
+    @ParentCommand.config.subcommand(name="level-ignore-channels", description="deactivate/activate xp gain in a channel")
     async def config_level_ignore_channels(
         self,
         interaction: nextcord.Interaction,

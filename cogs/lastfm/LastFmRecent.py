@@ -18,7 +18,11 @@ class LastFmRecent(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.lastfm.subcommand(name = "rc", description = "shows your recently played songs on LastFm", name_localizations = {country_tag:"recent" for country_tag in nextcord.Locale})
+    @ParentCommand.lastfm.subcommand(
+        name = "rc",
+        description = "shows your recently played songs on LastFm",
+        name_localizations = {country_tag:"recent" for country_tag in nextcord.Locale}
+    )
     async def lastfm_recent(
         self,
         interaction: nextcord.Interaction,

@@ -19,7 +19,7 @@ class LastFmArtist(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.lastfm.subcommand(name = "artist", description = "shows you your LastFm stats for any artist")
+    @ParentCommand.lastfm.subcommand(name="artist", description="shows you your LastFm stats for any artist")
     async def lastfm_artist(
         self,
         interaction: nextcord.Interaction,

@@ -17,7 +17,7 @@ class CustomAdd(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.custom.subcommand(name = "add", description = "add a custom-command to this server")
+    @ParentCommand.custom.subcommand(name="add", description="add a custom-command to this server")
     async def custom_add(
         self,
         interaction: nextcord.Interaction,

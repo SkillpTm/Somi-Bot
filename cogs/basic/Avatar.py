@@ -13,7 +13,7 @@ class Avatar(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "avatar", description = "posts someone's avatar")
+    @nextcord.slash_command(name="avatar", description="posts someone's avatar")
     async def avatar(
         self,
         interaction: nextcord.Interaction,

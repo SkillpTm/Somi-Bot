@@ -16,7 +16,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.config.subcommand(name = "level-roles", description = "set a role to be given, when a certain level is reached")
+    @ParentCommand.config.subcommand(name="level-roles", description="set a role to be given, when a certain level is reached")
     async def config_level_roles(
         self,
         interaction: nextcord.Interaction,

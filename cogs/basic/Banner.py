@@ -13,7 +13,7 @@ class Banner(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name = "banner", description = "posts someone's banner")
+    @nextcord.slash_command(name="banner", description="posts someone's banner")
     async def banner(
         self,
         interaction: nextcord.Interaction,

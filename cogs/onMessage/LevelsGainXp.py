@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 import re
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, LevelRoles
+from lib.modules import LevelRoles
 from lib.utilities import SomiBot
 
 
@@ -23,7 +23,7 @@ class LevelsGainXp(nextcord_C.Cog):
             
             afterwards the command will try to apply levelroles"""                 
 
-        if not Checks.message_in_guild(self.client, message):
+        if not message.guild:
             return
 
         # re removes emotes, make sure messages are above 10 chars

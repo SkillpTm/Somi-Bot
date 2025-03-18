@@ -1,9 +1,8 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 import random
 
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import OptionsButton, SomiBot
 
 
@@ -16,7 +15,6 @@ class Choose(nextcord_C.Cog):
     ####################################################################################################
     
     @nextcord.slash_command(name = "select", description = "let the bot choose one of the options for you!", name_localizations = {country_tag:"choose" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def choose(
         self,
         interaction: nextcord.Interaction,

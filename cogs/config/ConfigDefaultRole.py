@@ -1,9 +1,8 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
@@ -18,7 +17,6 @@ class ConfigDefaultRole(nextcord_C.Cog):
     ####################################################################################################
 
     @config.subcommand(name = "default-role", description = "set/reset a role someone gets upon joining this server")
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def config_default_role(
         self,
         interaction: nextcord.Interaction,

@@ -1,11 +1,10 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 import subprocess
 import time
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, Get
+from lib.modules import Get
 from lib.utilities import SomiBot
 
 
@@ -18,7 +17,6 @@ class Ping(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "ping", description = "shows the bot's ping to discord")
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def ping(self, interaction: nextcord.Interaction) -> None:
         """This command shows the ping and some general stats about the bot"""
 

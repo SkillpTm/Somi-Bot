@@ -1,8 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 
-from lib.modules import Checks, Get
+from lib.modules import Get
 from lib.utilities import SomiBot
 
 
@@ -15,7 +14,6 @@ class Invite(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "invite", description = "posts the bot's invite link")
-    @nextcord_AC.check(Checks.interaction_in_guild())
     async def invite(self, interaction: nextcord.Interaction) -> None:
         """This command posts the invite link for the bot"""
 

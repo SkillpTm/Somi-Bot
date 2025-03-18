@@ -1,11 +1,10 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 import requests
 import time
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
@@ -20,7 +19,6 @@ class LastFmProfile(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "profile", description = "shows stats about someone's LastFm account")
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def lastfm_profile(
         self,
         interaction: nextcord.Interaction,

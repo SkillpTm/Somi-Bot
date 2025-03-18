@@ -1,9 +1,8 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 import time
 
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
@@ -16,7 +15,6 @@ class Userinfo(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "ui", description = "gives information about a user", name_localizations = {country_tag:"userinfo" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def userinfo(
         self,
         interaction: nextcord.Interaction,

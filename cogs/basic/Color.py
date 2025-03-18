@@ -1,12 +1,10 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 import os
-import PIL.Image
-import PIL.ImageColor
+import PIL.Image, PIL.ImageColor
 import re
 
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
@@ -19,7 +17,6 @@ class Color(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "color", description = "shows you what a color looks like")
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def color(
         self,
         interaction: nextcord.Interaction,

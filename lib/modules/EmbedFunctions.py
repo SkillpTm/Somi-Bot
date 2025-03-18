@@ -2,8 +2,6 @@ import datetime
 import nextcord
 import zoneinfo
 
-from lib.modules.Get import Get
-
 
 
 class EmbedFunctions():
@@ -110,6 +108,8 @@ class EmbedFunctions():
         fields: list[list[tuple[str, str, bool]]] = []
     ) -> nextcord.Embed:
         """This function builds an embed and adds a default timestamp, if specified with 'DEFAULT_KST_FOOTER'"""
+
+        from lib.modules.Get import Get
 
         embed = nextcord.Embed(
             title = Get.rid_of_whitespace(title[:256]), # 256 is Discord's title char limit

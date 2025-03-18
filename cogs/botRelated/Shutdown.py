@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import YesNoButtons, SomiBot
 
 
@@ -22,7 +22,7 @@ class Shutdown(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Checks.interaction_by_owner() and Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
+    @nextcord_AC.check(Get.interaction_by_owner())
     async def shutdown(self, interaction: nextcord.Interaction) -> None:
         """This command let's you shutdown the bot, it can only be executed from a moderator on Somicord."""
 

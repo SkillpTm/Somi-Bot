@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 import re
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
@@ -23,7 +23,7 @@ class KeywordSend(nextcord_C.Cog):
         """
 
         # check that message is in quild
-        if not Checks.message_in_guild(self.client, message) or not Checks.message_not_by_bot(message):
+        if not message.guild or message.author.bot:
             return
 
         # remove messages from hidden channels

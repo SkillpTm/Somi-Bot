@@ -1,8 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
@@ -15,7 +14,6 @@ class Banner(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "banner", description = "posts someone's banner")
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def banner(
         self,
         interaction: nextcord.Interaction,

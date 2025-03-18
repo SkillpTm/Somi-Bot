@@ -1,9 +1,8 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot, YesNoButtons
 
 
@@ -18,7 +17,6 @@ class KeywordDelete(nextcord_C.Cog):
     ####################################################################################################
 
     @keyword.subcommand(name = "delete", description = "delete a keyword from your keyword list")
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def keyword_delete(
         self,
         interaction: nextcord.Interaction,

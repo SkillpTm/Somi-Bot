@@ -1,11 +1,10 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 import requests
 import urllib.parse
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import PageButtons, SomiBot
 
 
@@ -20,7 +19,6 @@ class LastFmRecent(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "rc", description = "shows your recently played songs on LastFm", name_localizations = {country_tag:"recent" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def lastfm_recent(
         self,
         interaction: nextcord.Interaction,

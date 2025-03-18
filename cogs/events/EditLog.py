@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
@@ -21,7 +21,7 @@ class EditLog(nextcord_C.Cog):
     ) -> None:
         """This function will create an edit-log message, if a guild has an audit-log-channel and if the message wasn't in a hidden-channel."""
 
-        if not Checks.message_in_guild(self.client, message_before):
+        if not message_before.guild:
             return
         
         if message_before.author.id == self.client.user.id:

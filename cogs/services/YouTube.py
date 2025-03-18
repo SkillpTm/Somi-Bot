@@ -1,8 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import PageButtons, SomiBot
 
 
@@ -15,7 +14,6 @@ class YouTube(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "yt", description = "find a video on YouTube", name_localizations = {country_tag:"youtube" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def youtube(
         self,
         interaction: nextcord.Interaction,

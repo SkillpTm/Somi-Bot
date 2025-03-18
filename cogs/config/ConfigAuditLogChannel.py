@@ -1,9 +1,8 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import Lists, SomiBot
 
 
@@ -18,7 +17,6 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
     ####################################################################################################
 
     @config.subcommand(name = "audit-log-channel", description = "set/reset a channel for the bot to post logs")
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def config_audit_log_channel(
         self,
         interaction: nextcord.Interaction,

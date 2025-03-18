@@ -3,7 +3,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
@@ -18,7 +18,7 @@ class DeleteLog(nextcord_C.Cog):
     async def message_delete_log(self, message: nextcord.Message) -> None:
         """This function will create a delete-log message, if a guild has an audit-log-channel and if the message wasn't in a hidden-channel."""
 
-        if not Checks.message_in_guild(self.client, message):
+        if not message.guild:
             return
 
         if not message.content and len(message.attachments) < 1:

@@ -4,7 +4,7 @@ import re
 import zoneinfo
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
@@ -19,7 +19,7 @@ class LinkEmbed(nextcord_C.Cog):
     async def link_embed(self, message: nextcord.Message) -> None:
         """This function will automatically create an embed for a message form a link, in the same server, if the message doesn't originate form a hidden-channel."""
 
-        if not Checks.message_in_guild(self.client, message):
+        if not message.guild:
             return
 
         if not f"discord.com/channels/{message.guild.id}" in str(message.content):

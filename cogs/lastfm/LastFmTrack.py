@@ -1,12 +1,11 @@
 from bs4 import BeautifulSoup
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 import requests
 import urllib.parse
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get, Webscrape
+from lib.modules import EmbedFunctions, Get, Webscrape
 from lib.utilities import Lists, SomiBot
 
 
@@ -21,7 +20,6 @@ class LastFmTrack(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "track", description = "shows you your LastFm stats for any track")
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def lastfm_track(
         self,
         interaction: nextcord.Interaction,

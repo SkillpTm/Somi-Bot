@@ -1,13 +1,14 @@
 import datetime
 import nextcord
+import nextcord.ext.application_checks as nextcord_AC
 import re
 import zoneinfo
-
-from lib.utilities.SomiBot import SomiBot
 
 
 
 class Get():
+
+    from lib.utilities import SomiBot
 
     def __init__(self) -> None:
         pass
@@ -209,3 +210,14 @@ class Get():
             ouput = f"[{key}: {value}]"
 
         return ouput
+
+    ####################################################################################################
+
+    @staticmethod
+    def interaction_by_owner() -> bool:
+        """This function checks, if an interaction was made by the owner"""
+
+        def predicate(interaction: nextcord.Interaction) -> bool:
+            return interaction.user.id == interaction.client.owner_id
+        
+        return nextcord_AC.check(predicate)

@@ -1,9 +1,8 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
@@ -18,7 +17,6 @@ class ReminderList(nextcord_C.Cog):
     ####################################################################################################
 
     @reminder.subcommand(name = "list", description = "a list of all your reminders")
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def reminder_list(self, interaction: nextcord.Interaction) -> None:
         """This command will list all reminders of a user"""
 

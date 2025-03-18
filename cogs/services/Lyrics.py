@@ -1,10 +1,9 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 import requests
 import urllib.parse
 
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
@@ -19,11 +18,8 @@ class Lyrics(nextcord_C.Cog):
     @nextcord.slash_command(
         name = 'genius',
         description = 'Posts the link to the lyircs of the song you are playing',
-        name_localizations = {country_tag:"lyrics" for country_tag in nextcord.Locale},
-        integration_types = [nextcord.IntegrationType.guild_install],
-        contexts = [nextcord.InteractionContextType.guild]
+        name_localizations = {country_tag:"lyrics" for country_tag in nextcord.Locale}
     )
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def lyrics(
         self,
         interaction: nextcord.Interaction,
@@ -45,9 +41,11 @@ class Lyrics(nextcord_C.Cog):
 
         # if the user didn't provide an artist and song pull what they're listening to from Spotify
         if not artist and not song:
-            member: nextcord.Member = interaction.guild.get_member(interaction.user.id)
+            if not interaction.guild:
+                await interaction.response.send_message(embed=EmbedFunctions().error("Please select a valid artist **and** a valid song!"), ephemeral=True)
+                return
 
-            for activity in member.activities:
+            for activity in interaction.guild.get_member(interaction.user.id).activities:
                 if isinstance(activity, nextcord.Spotify):
                     artist = activity.artist
                     song = activity.title

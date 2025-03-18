@@ -1,10 +1,9 @@
 import asyncio
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 import random
 
-from lib.modules import Checks, Get
+from lib.modules import Get
 from lib.utilities import SomiBot
 
 
@@ -17,7 +16,6 @@ class Coinflip(nextcord_C.Cog):
     ####################################################################################################
     
     @nextcord.slash_command(name = "coinflip", description = "does a coinflip")
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def coinflip(self, interaction: nextcord.Interaction) -> None:
         """This command does a coinflip with a small animation"""
 

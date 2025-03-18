@@ -11,6 +11,7 @@ import time
 import wolframalpha
 
 from lib.dbModules import DBHandler, PostgresDB
+from lib.modules.EmbedFunctions import EmbedFunctions
 from lib.utilities.Keychain import Keychain
 from lib.utilities.Lists import Lists
 from lib.utilities.Loggers import Loggers
@@ -73,6 +74,7 @@ class SomiBot(nextcord_C.Bot):
         self.Loggers = Loggers()
 
         # Variables
+        self.is_setup = False
         self.start_time = int(time.time())
 
         super().__init__(
@@ -84,6 +86,8 @@ class SomiBot(nextcord_C.Bot):
             allowed_mentions = nextcord.AllowedMentions(everyone=False),
             owner_id = Config.OWNER_ID
         )
+
+        self.add_check(self._global_command_checks)
 
     ####################################################################################################
 
@@ -147,6 +151,20 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
+    async def _global_command_checks(self, interaction: nextcord.Interaction) -> bool:
+        """"""
+
+        if not self.is_setup:
+            await interaction.response.send_message(embed=EmbedFunctions().error("The bot is still setting up, please try in a few minutes again!"), ephemeral=True)
+            return False
+        
+        if interaction.user.bot:
+            return False
+        
+        return True
+
+    ####################################################################################################
+
     async def _start_infinite_loops(self) -> None:
         """This function starts an infinite loop for the ReminderSend cog, which continues until the bot loses internet or gets shutdown"""
 
@@ -161,14 +179,15 @@ class SomiBot(nextcord_C.Bot):
 
         # logout in case this was a restart and we didn't properly exit those API connections
         self._api_logout()
-
         self.Loggers.bot_status(f"{self.user}: ready and logged in")
-        
         self._api_login()
 
         self.PostgresDB = await PostgresDB.create("./sql/schema.sql", "./sql/queries.sql", Config.POSTGRES_POOL_MAX_SIZE)
 
         await self._apply_missing_default_roles()
+
+        self.is_setup = True
+
         await self._start_infinite_loops()
 
     ####################################################################################################
@@ -215,7 +234,6 @@ class SomiBot(nextcord_C.Bot):
     ) -> tuple[nextcord.Interaction, nextcord.ApplicationError]:
         """This function overwrites the build in on_application_command_error function, to create a global error log and exception handler."""
 
-        from lib.modules.EmbedFunctions import EmbedFunctions
         from lib.modules.Get import Get
 
         self.Loggers.application_command_error(

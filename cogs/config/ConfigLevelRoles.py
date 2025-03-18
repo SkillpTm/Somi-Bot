@@ -1,9 +1,8 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get, LevelRoles
+from lib.modules import EmbedFunctions, Get, LevelRoles
 from lib.utilities import SomiBot
 
 
@@ -18,7 +17,6 @@ class ConfigLevelRoles(nextcord_C.Cog):
     ####################################################################################################
 
     @config.subcommand(name = "level-roles", description = "set a role to be given, when a certain level is reached")
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def config_level_roles(
         self,
         interaction: nextcord.Interaction,

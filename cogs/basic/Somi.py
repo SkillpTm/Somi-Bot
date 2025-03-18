@@ -1,8 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 
-from lib.modules import Checks, Get
+from lib.modules import Get
 from lib.utilities import SomiBot
 
 
@@ -15,7 +14,6 @@ class Somi(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(name = "somi", description = "speaks facts")
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def somi(self,interaction: nextcord.Interaction) -> None:
         """This command tells you the truth"""
 

@@ -1,10 +1,9 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 import requests
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
@@ -19,7 +18,6 @@ class LastFmSet(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "set", description = "set your LastFm account")
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def lastfm_set(
         self,
         interaction: nextcord.Interaction,
@@ -56,7 +54,6 @@ class LastFmSet(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "reset", description = "reset your LastFm-Discord account connection")
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def lastfm_reset(self, interaction: nextcord.Interaction) -> None:
         """This command deletes the user's connection from the db"""
 

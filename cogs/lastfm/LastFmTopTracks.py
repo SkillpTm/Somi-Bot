@@ -1,10 +1,9 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 import requests
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import Lists, PageButtons, SomiBot
 
 
@@ -19,7 +18,6 @@ class LastFmTopTracks(nextcord_C.Cog):
     ####################################################################################################
 
     @lastfm.subcommand(name = "tt", description = "shows your top tracks on LastFm", name_localizations = {country_tag:"toptracks" for country_tag in nextcord.Locale})
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def lastfm_top_tracks(
         self,
         interaction: nextcord.Interaction,

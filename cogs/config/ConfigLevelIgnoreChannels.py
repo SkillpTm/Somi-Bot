@@ -1,9 +1,8 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import Lists, SomiBot
 
 
@@ -18,7 +17,6 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
     ####################################################################################################
 
     @config.subcommand(name = "level-ignore-channels", description = "deactivate/activate xp gain in a channel")
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def config_level_ignore_channels(
         self,
         interaction: nextcord.Interaction,

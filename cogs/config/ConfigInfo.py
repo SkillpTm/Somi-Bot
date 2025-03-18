@@ -1,9 +1,8 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get, LevelRoles
+from lib.modules import EmbedFunctions, Get, LevelRoles
 from lib.utilities import SomiBot
 
 
@@ -18,7 +17,6 @@ class ConfigInfo(nextcord_C.Cog):
     ####################################################################################################
 
     @config.subcommand(name = "info", description = "get information on how this server is configured")
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def config_info(self, interaction: nextcord.Interaction) -> None:
         """This command outputs a server's configuration info and some explanations."""
 

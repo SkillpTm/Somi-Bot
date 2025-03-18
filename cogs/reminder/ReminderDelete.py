@@ -1,9 +1,8 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot, YesNoButtons
 
 class ReminderDelete(nextcord_C.Cog):
@@ -16,7 +15,6 @@ class ReminderDelete(nextcord_C.Cog):
     ####################################################################################################
 
     @reminder.subcommand(name = "delete", description = "delete a reminder from your reminder list")
-    @nextcord_AC.check(Checks.interaction_not_by_bot())
     async def reminder_delete(
         self,
         interaction: nextcord.Interaction,

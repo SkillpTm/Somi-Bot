@@ -1,9 +1,8 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import nextcord.ext.application_checks as nextcord_AC
 
 from lib.dbModules import DBHandler
-from lib.modules import Checks, EmbedFunctions, Get
+from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 
@@ -18,7 +17,6 @@ class CustomDelete(nextcord_C.Cog):
     ####################################################################################################
 
     @custom.subcommand(name = "delete", description = "delete a custom-command")
-    @nextcord_AC.check(Checks.interaction_not_by_bot() and Checks.interaction_in_guild())
     async def custom_delete(
         self,
         interaction: nextcord.Interaction,

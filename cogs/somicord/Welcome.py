@@ -14,7 +14,7 @@ class Welcome(nextcord_C.Cog):
     ####################################################################################################
 
     async def welcome(self, member: nextcord.Member) -> None:
-        """"""
+        """welcomes a user on the server"""
 
         if member.guild.id != self.client.SOMICORD_ID:
             return

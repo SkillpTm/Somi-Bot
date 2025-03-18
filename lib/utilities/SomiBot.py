@@ -149,7 +149,7 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def _global_command_checks(self, interaction: nextcord.Interaction) -> bool:
-        """"""
+        """checks on all commands for: if the bot is properly setup and if the interaction wasn't cased by a bot"""
 
         if not self.is_setup:
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("The bot is still setting up, please try in a few minutes again!"), ephemeral=True)

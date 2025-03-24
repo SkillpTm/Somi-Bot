@@ -4,8 +4,6 @@ import time
 
 from lib.utilities.SomiBot import SomiBot
 
-client = SomiBot()
-
 ####################################################################################################
 
 def load_dotenv(file_path) -> None:
@@ -23,7 +21,7 @@ def load_dotenv(file_path) -> None:
 
 ####################################################################################################
 
-def load_cogs() -> None:
+def load_cogs(client: SomiBot) -> None:
     """loads all cogs onto the client"""
 
     # crawl through ./cogs/ 's subfolders to load all cogs
@@ -39,7 +37,7 @@ def load_cogs() -> None:
 
 ####################################################################################################
 
-def start() -> None:
+def start(client: SomiBot) -> None:
     """starts the bot indefinitly"""
 
     # if there is no internet connection indefinitly restart the bot
@@ -61,6 +59,8 @@ def start() -> None:
 ####################################################################################################
 
 if __name__ == "__main__":
+    client = SomiBot()
+
     load_dotenv("./.env")
-    load_cogs()
-    start() # blocks until the bot is shutdown
+    load_cogs(client)
+    start(client) # blocks until the bot is shutdown

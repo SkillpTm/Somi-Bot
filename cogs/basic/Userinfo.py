@@ -58,10 +58,6 @@ class Userinfo(nextcord_C.Cog):
 
             joined_time = f"<t:{int(time.mktime(member.joined_at.timetuple()))}>"
 
-            # special case due to there not having been a fail save on /kick while testing, simply sets the correct join time
-            if member.id == self.client.owner_id and member.guild.id == self.client.SOMICORD_ID:
-                joined_time = f"<t:{self.client.SKILLP_JOINED_SOMICORD_TIME}>"
-
         embed = EmbedFunctions().builder(
             color = user.color,
             thumbnail = user.display_avatar.url,

@@ -6,4 +6,3 @@ __pycache__/
 *.json
 *.code-workspace
 *.log
-*.db

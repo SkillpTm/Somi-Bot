@@ -61,7 +61,7 @@ class Send(nextcord_C.Cog):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.MOD_COLOR,
+            color = self.client.PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             description = f"{interaction.user.mention} sent a bot message in: {channel.mention} - [Link]({message_object.jump_url})",
@@ -146,7 +146,7 @@ class Send(nextcord_C.Cog):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.MOD_COLOR,
+            color = self.client.PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             description = f"{interaction.user.mention} edited a bot message in: {correct_channel.mention} - [Link]({message_object.jump_url})",

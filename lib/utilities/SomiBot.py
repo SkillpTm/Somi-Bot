@@ -19,41 +19,40 @@ from lib.utilities import Keychain, Lists, Loggers, Config
 class SomiBot(nextcord_C.Bot):
 
     # Meta
-    SOMI_GITHUB = "https://github.com/SkillpTm/Somi-Bot"
-    SOMI_TOS = "https://github.com/SkillpTm/Somi-Bot/wiki/Terms-of-Service--of-@Somi%236418"
-    SOMI_PP = "https://github.com/SkillpTm/Somi-Bot/wiki/Privacy-Policy-of-@Somi%236418"
-    SOMI_CONTACT_EMAIL = "somibot0309@gmail.com"
-    SOMI_INVITE = "https://somibot.skillp.dev/invite/"
-    SOMICORD_INVITE = "https://discord.gg/Frd7WYg"
+    BOT_GITHUB = Config.BOT_GITHUB
+    BOT_INVITE = Config.BOT_INVITE
+    BOT_PP = Config.BOT_PP
+    BOT_TOS = Config.BOT_TOS
+    SOMICORD_INVITE = Config.SOMICORD_INVITE
     SUPPORT_SERVER_ID = Config.SUPPORT_SERVER_ID
     SUPPORT_SERVER_ERRORS_ID = Config.SUPPORT_SERVER_ERRORS_ID
     SUPPORT_SERVER_FEEDBACK_ID = Config.SUPPORT_SERVER_FEEDBACK_ID
     SUPPORT_SERVER_LOGS_ID = Config.SUPPORT_SERVER_LOGS_ID
-    VERSION = "3.1"
+    VERSION = Config.VERSION
 
     # Colors
-    BOT_COLOR = 0xffa6fc
-    GENIUS_COLOR = 0xf6f069
-    LASTFM_COLOR = 0xd0232b
-    MOD_COLOR = nextcord.Color.blue()
+    BOT_COLOR = Config.BOT_COLOR
+    GENIUS_COLOR = Config.GENIUS_COLOR
+    LASTFM_COLOR = Config.LASTFM_COLOR
+    PERMISSION_COLOR = Config.PERMISSION_COLOR
 
     # Assets
-    BAN_HAMMER_GIF = "https://somibot.skillp.dev/cdn/gifs/BAN_HAMMER_GIF.gif"
-    CLOCK_ICON = "https://somibot.skillp.dev/cdn/images/CLOCK_ICON.png"
-    GENIUS_ICON = "https://somibot.skillp.dev/cdn/images/GENIUS_ICON.png"
-    DEFAULT_PFP = "https://cdn.discordapp.com/embed/avatars/0.png"
-    LASTFM_ICON = "https://somibot.skillp.dev/cdn/images/LASTFM_ICON.png"
-    LINK_EMBED_ICON = "https://somibot.skillp.dev/cdn/images/LINK_EMBED_ICON.png"
-    OPENWEATHERMAP_ICON = "https://somibot.skillp.dev/cdn/images/OPENWEATHERMAP_ICON.png"
-    SOMI_BEST_GRILL_IMAGE = "https://somibot.skillp.dev/cdn/images/SOMI_BEST_GRILL_IMAGE.png"
-    SPOTIFY_ICON = "https://somibot.skillp.dev/cdn/images/SPOTIFY_ICON.png"
+    BAN_HAMMER_GIF = Config.BAN_HAMMER_GIF
+    CLOCK_ICON = Config.CLOCK_ICON
+    GENIUS_ICON = Config.GENIUS_ICON
+    DEFAULT_PFP = Config.DEFAULT_PFP
+    LASTFM_ICON = Config.LASTFM_ICON
+    LINK_EMBED_ICON = Config.LINK_EMBED_ICON
+    OPENWEATHERMAP_ICON = Config.OPENWEATHERMAP_ICON
+    SOMI_BEST_GRILL_IMAGE = Config.SOMI_BEST_GRILL_IMAGE
+    SPOTIFY_ICON = Config.SPOTIFY_ICON
 
     # SOMICORD
     SKILLP_JOINED_SOMICORD_TIME = 1573055760
     SOMICORD_ID = Config.MODMAIL_SERVER_ID
     SOMICORD_MOD_CHANNEL_ID = Config.MODMAIL_CHANNEL_ID
     SOMICORD_WELCOME_CHANNEL_ID = Config.WELCOME_CHANNEL_ID
-    SOMICORD_WELCOME_GIF = "https://somibot.skillp.dev/cdn/gifs/SOMICORD_WELCOME_GIF.gif"
+    SOMICORD_WELCOME_GIF = Config.SOMICORD_WELCOME_GIF
 
     # Emotes
     HEADS_EMOTE = Config.HEADS_EMOTE
@@ -75,11 +74,11 @@ class SomiBot(nextcord_C.Bot):
         self.start_time = int(time.time())
 
         super().__init__(
-            max_messages = 25000, 
+            max_messages = Config.MAX_MESSAGES_CACHE, 
             application_id = Config.APPLICATION_ID,
             intents = nextcord.Intents.all(),
             status = nextcord.Status.online,
-            activity = nextcord.Activity(type=nextcord.ActivityType.listening, name="Ice Cream"),
+            activity = nextcord.Activity(type=nextcord.ActivityType.listening, name=Config.ACTIVITY_NAME),
             allowed_mentions = nextcord.AllowedMentions(everyone=False),
             owner_id = Config.OWNER_ID
         )
@@ -95,7 +94,7 @@ class SomiBot(nextcord_C.Bot):
             client_id = self.Keychain.SPOTIPY_CLIENT_ID,
             client_secret = self.Keychain.SPOTIPY_CLIENT_SECRET,
             redirect_uri = self.Keychain.SPOTIPY_REDIRECT_URI,
-            scope="user-read-currently-playing"
+            scope = "user-read-currently-playing"
         )
 
         self.wolfram_client = wolframalpha.Client(self.Keychain.WOLFRAM_APP_ID)

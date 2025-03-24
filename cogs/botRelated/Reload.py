@@ -50,7 +50,7 @@ class Reload(nextcord_C.Cog):
 
 
         embed = EmbedFunctions().builder(
-            color = self.client.MOD_COLOR,
+            color = self.client.PERMISSION_COLOR,
             author = "Dev Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [

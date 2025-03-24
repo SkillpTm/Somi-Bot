@@ -33,7 +33,7 @@ class ConfigInfo(nextcord_C.Cog):
         LEVEL_ROLES_INFO = "A level-role is a role a user will get as soon as they reach a certain level. Their previous level-role will get removed from them.\n\n"
 
         embed = EmbedFunctions().builder(
-            color = self.client.MOD_COLOR,
+            color = self.client.PERMISSION_COLOR,
             title = f"Configuration of: `{interaction.guild.name}`",
             footer = "DEFAULT_KST_FOOTER",
             fields = [

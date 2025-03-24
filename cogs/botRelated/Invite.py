@@ -19,7 +19,7 @@ class Invite(nextcord_C.Cog):
 
         self.client.Loggers.action_log(Get.log_message(interaction, "/about"))
 
-        await interaction.response.send_message(f"<{self.client.SOMI_INVITE}>")
+        await interaction.response.send_message(f"<{self.client.BOT_INVITE}>")
 
 
 

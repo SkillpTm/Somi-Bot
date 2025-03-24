@@ -1,17 +1,15 @@
 {
+    "ACTIVITY_NAME": "",
     "APPLICATION_ID": 0,
-    "OWNER_ID": 0,
+    "MAX_MESSAGES_CACHE": 0,
     "POSTGRES_POOL_MAX_SIZE": 0,
-    "SUPPORT_SERVER": {
-        "ID": 0,
-        "ERRORS_CHANNEL_ID": 0,
-        "FEEDBACK_CHANNEL_ID": 0,
-        "LOGS_CHANNEL_ID": 0
-    },
-    "SOMICORD": {
-        "MODMAIL_SERVER_ID": 0,
-        "MODMAIL_CHANNEL_ID": 0,
-        "WELCOME_CHANNEL_ID": 0
+    "OWNER_ID": 0,
+    "VERSION": "",
+    "COLORS": {
+        "BOT": "0x000000",
+        "GENIUS": "0x000000",
+        "LASTFM": "0x000000",
+        "PERMISSION": "0x000000"
     },
     "EMOTES": {
         "HEADS": "",
@@ -21,5 +19,33 @@
         "SOMI_ONLY": "",
         "SOMI_WELCOME": "",
         "TAILS": ""
+    },
+    "LINKS": {
+        "BAN_HAMMER_GIF": "",
+        "BOT_GITHUB": "",
+        "BOT_INVITE": "",
+        "BOT_PP": "",
+        "BOT_TOS": "",
+        "CLOCK_ICON": "",
+        "DEFAULT_PFP": "",
+        "GENIUS_ICON": "",
+        "LASTFM_ICON": "",
+        "LINK_EMBED_ICON": "",
+        "OPENWEATHERMAP_ICON": "",
+        "SOMI_BEST_GRILL_IMAGE": "",
+        "SOMICORD_INVITE": "",
+        "SOMICORD_WELCOME_GIF": "",
+        "SPOTIFY_ICON": ""
+    },
+    "SOMICORD": {
+        "MODMAIL_SERVER_ID": 0,
+        "MODMAIL_CHANNEL_ID": 0,
+        "WELCOME_CHANNEL_ID": 0
+    },
+    "SUPPORT_SERVER": {
+        "ID": 0,
+        "ERRORS_CHANNEL_ID": 0,
+        "FEEDBACK_CHANNEL_ID": 0,
+        "LOGS_CHANNEL_ID": 0
     }
 }

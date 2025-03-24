@@ -63,7 +63,7 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.MOD_COLOR,
+            color = self.client.PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             footer = "DEFAULT_KST_FOOTER",

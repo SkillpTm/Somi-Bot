@@ -71,7 +71,7 @@ class About(nextcord_C.Cog):
 
                 [
                     "Invites:",
-                    f"You can invite Somi using this [link]({self.client.SOMI_INVITE}). Additionally you can checkout Somi's source code on [GitHub]({self.client.SOMI_GITHUB}).",
+                    f"You can invite Somi using this [link]({self.client.BOT_INVITE}). Additionally you can checkout Somi's source code on [GitHub]({self.client.BOT_GITHUB}).",
                     False
                 ],
 
@@ -83,7 +83,7 @@ class About(nextcord_C.Cog):
 
                 [
                     "Data and Usage:",
-                    f"Here you can find our [Terms of Service]({self.client.SOMI_TOS}) and [Privacy Policy]({self.client.SOMI_PP}). Additionally you're able to make inquiries at {self.client.SOMI_CONTACT_EMAIL}.",
+                    f"Here you can find our [Terms of Service]({self.client.BOT_TOS}) and [Privacy Policy]({self.client.BOT_PP}).",
                     False
                 ]
             ]

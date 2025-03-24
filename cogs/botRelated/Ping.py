@@ -30,7 +30,7 @@ class Ping(nextcord_C.Cog):
 
         followup_start = time.time()
 
-        await interaction.followup.send(content="🏓 Pong!")
+        await interaction.followup.send(content="Pong! 🏓")
 
         followup_end = time.time()
 
@@ -40,7 +40,7 @@ class Ping(nextcord_C.Cog):
         await interaction.followup.edit_message(
             message_id = (await interaction.original_message()).id,
             content =
-                f"Pong!🏓\n" +
+                f"Pong! 🏓\n" +
                 f"Up since: <t:{self.client.start_time}:R>\n" +
                 f"Discord latency: `{round(self.client.latency * 1000)}ms`\n" +
                 f"Response time: `{round((defer_end-defer_start) * 1000)}ms`\n" +

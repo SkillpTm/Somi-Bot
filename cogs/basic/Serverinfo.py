@@ -35,6 +35,11 @@ class Severinfo(nextcord_C.Cog):
         else:
             server_icon_url = self.client.DEFAULT_PFP
 
+        if await interaction.guild.vanity_invite():
+            vanity_url = (await interaction.guild.vanity_invite()).url
+        else:
+            vanity_url = ""
+
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,
             thumbnail = server_icon_url,
@@ -74,6 +79,12 @@ class Severinfo(nextcord_C.Cog):
                 [
                     "Boost Level:",
                     f"Level: `{interaction.guild.premium_tier}`\nBoosters: `{interaction.guild.premium_subscription_count}`",
+                    True
+                ],
+
+                [
+                    "Vanity Invite:",
+                    vanity_url,
                     True
                 ],
 

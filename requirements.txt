@@ -1,9 +1,9 @@
 asyncpg==0.30.0
-beautifulsoup4==4.13.3
-google-api-python-client==2.160.0
-nextcord==3.0.1
-Pillow==11.1.0
-pycountry==24.06.1
-requests==2.32.3
-spotipy==2.25.0
+beautifulsoup4==4.13.4
+google-api-python-client==2.177.0
+nextcord==3.1.0
+Pillow==11.3.0
+pycountry==24.6.1
+requests==2.32.4
+spotipy==2.25.1
 wolframalpha==5.1.3

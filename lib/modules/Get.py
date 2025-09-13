@@ -134,9 +134,9 @@ class Get():
                 if data_provider.channel.type == nextcord.ChannelType.private:
                     ouput += "~ Guild: DM channel "
 
-        ouput = "~ args: "
+        ouput += "~ args: "
         for key, value in action_args.items():
-            ouput = f"[{key}: {value}]"
+            ouput += f"[{key}: {value}]"
 
         return ouput
 

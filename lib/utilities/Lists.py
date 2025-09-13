@@ -99,7 +99,7 @@ class Lists():
             "/levels rank",
             "/lf album",
             "/lf artist",
-            "/lf np",
+            "/lf now-playing",
             "/lf profile",
             "/lf recent",
             "/lf reset",
@@ -373,9 +373,9 @@ class Lists():
                 f"/lf album [Jeon Somi] [XOXO] [<@{APPLICATION_ID}>] [Past Week]"
             ],
 
-            "/lf np": [
+            "/lf now-playing": [
                 """
-                ```/lf np optional[@USERNAME]```
+                ```/lf now-playing optional[@USERNAME]```
                 `@USERNAME`:
                 A user on this server, who has a LastFm account connected to Somi.
                 Default: you
@@ -383,7 +383,7 @@ class Lists():
                 (note: The command 'lf' has a search shorthand as 'lastfm'.)
                 (note: The subcommand 'now-playing' has a search shorthand as 'np'.)
                 """,
-                f"/lf np [<@{APPLICATION_ID}>]"
+                f"/lf now-playing [<@{APPLICATION_ID}>]"
             ],
 
             "/lf profile": [

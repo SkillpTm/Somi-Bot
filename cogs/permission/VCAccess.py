@@ -75,7 +75,6 @@ class VCAccess(nextcord_C.Cog):
             color = self.client.PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "/vc-access:",

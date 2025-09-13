@@ -69,7 +69,6 @@ class Close(nextcord_C.Cog):
             color = nextcord.Color.dark_red(),
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "/close:",
@@ -152,7 +151,6 @@ class Close(nextcord_C.Cog):
             color = nextcord.Color.dark_red(),
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "/open:",

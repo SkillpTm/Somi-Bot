@@ -57,7 +57,6 @@ class NameLog(nextcord_C.Cog):
             color = nextcord.Color.yellow(),
             thumbnail = member_before.display_avatar.url,
             title = f"`{member_before.name}` Changed Their Name",
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "Name Before:",

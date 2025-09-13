@@ -35,6 +35,7 @@ class Config():
     CLOCK_ICON: str = configData["LINKS"]["CLOCK_ICON"]
     DEFAULT_PFP: str = configData["LINKS"]["DEFAULT_PFP"]
     GENIUS_ICON: str = configData["LINKS"]["GENIUS_ICON"]
+    HEADPHONES_ICON: str = configData["LINKS"]["HEADPHONES_ICON"]
     LASTFM_ICON: str = configData["LINKS"]["LASTFM_ICON"]
     LINK_EMBED_ICON: str = configData["LINKS"]["LINK_EMBED_ICON"]
     OPENWEATHERMAP_ICON: str = configData["LINKS"]["OPENWEATHERMAP_ICON"]

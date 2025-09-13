@@ -64,8 +64,7 @@ class LastFmNowPlaying(nextcord_C.Cog):
             thumbnail = cover_image,
             author = f"{user.display_name} is listening to:",
             author_icon = self.client.LASTFM_ICON,
-            description = output,
-            footer = "DEFAULT_KST_FOOTER"
+            description = output
         )
 
         await interaction.followup.send(embed=embed)

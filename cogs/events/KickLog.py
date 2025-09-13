@@ -37,7 +37,6 @@ class KickLog(nextcord_C.Cog):
             color = nextcord.Color.brand_red(),
             author = "Mod Activity",
             author_icon = entry.user.display_avatar.url,
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "Kick Log:",

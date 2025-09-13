@@ -49,7 +49,6 @@ class CustomList(nextcord_C.Cog):
             color = self.client.BOT_COLOR,
             author = f"custom-command list for {interaction.guild.name}",
             author_icon = server_icon_url,
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "custom-commands:",

@@ -43,7 +43,6 @@ class JoinLog(nextcord_C.Cog):
             color = nextcord.Color.green(),
             thumbnail = member.display_avatar.url,
             title = f"New Member Joined: `{member.display_name}`",
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "ID:",

@@ -67,7 +67,6 @@ class MuteLog(nextcord_C.Cog):
             color = nextcord.Color.yellow(),
             author = "Mod Activity",
             author_icon = entry.user.display_avatar.url,
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "Mute Log:",
@@ -104,7 +103,6 @@ class MuteLog(nextcord_C.Cog):
             color = nextcord.Color.green(),
             author = "Mod Activity",
             author_icon = entry.user.display_avatar.url,
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "Unmute Log:",

@@ -79,7 +79,6 @@ class EditLog(nextcord_C.Cog):
             author = "Message Edited",
             author_icon = message_before.author.display_avatar.url,
             description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "Before:",
@@ -117,7 +116,6 @@ class EditLog(nextcord_C.Cog):
         embed_after = EmbedFunctions().builder(
             color = nextcord.Color.yellow(),
             description = f"**After:**\n{message_after.content}",
-            footer = "DEFAULT_KST_FOOTER"
         )
 
         embed_after, file_urls = EmbedFunctions.get_or_add_attachments(message_before.attachments, embed_after)

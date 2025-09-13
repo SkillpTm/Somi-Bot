@@ -65,7 +65,6 @@ class Send(nextcord_C.Cog):
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             description = f"{interaction.user.mention} sent a bot message in: {channel.mention} - [Link]({message_object.jump_url})",
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "Message:",
@@ -150,7 +149,6 @@ class Send(nextcord_C.Cog):
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             description = f"{interaction.user.mention} edited a bot message in: {correct_channel.mention} - [Link]({message_object.jump_url})",
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "Before:",

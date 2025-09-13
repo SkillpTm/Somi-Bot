@@ -74,8 +74,7 @@ class KeywordSend(nextcord_C.Cog):
                 color = self.client.BOT_COLOR,
                 title = f"Keyword Notification: {output_keywords}",
                 title_url = message.jump_url,
-                description = f"{keywords_info}\n\n__**Message:**__\n{message.content}",
-                footer = "DEFAULT_KST_FOOTER"
+                description = f"{keywords_info}\n\n__**Message:**__\n{message.content}"
             )
 
             embed, _ = EmbedFunctions.get_or_add_attachments(message.attachments, embed, limit = 1)

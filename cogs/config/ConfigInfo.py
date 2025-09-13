@@ -35,7 +35,6 @@ class ConfigInfo(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = self.client.PERMISSION_COLOR,
             title = f"Configuration of: `{interaction.guild.name}`",
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "Audit Log:",

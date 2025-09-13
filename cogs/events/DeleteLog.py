@@ -59,7 +59,6 @@ class DeleteLog(nextcord_C.Cog):
             author = "Message Deleted",
             author_icon = message.author.display_avatar.url,
             description = f"{message.author.mention} deleted a message in: {message.channel.mention}\n\n{message.content}",
-            footer = "DEFAULT_KST_FOOTER"
         )
 
         embed, file_urls = EmbedFunctions.get_or_add_attachments(message.attachments, embed)
@@ -90,8 +89,7 @@ class DeleteLog(nextcord_C.Cog):
             color = nextcord.Color.brand_red(),
             author = "Message Removed",
             author_icon = entry.user.display_avatar.url,
-            description = f"{entry.user.mention} removed a message from {message.author.mention} in: {message.channel.mention}\n\n{message.content}",
-            footer = "DEFAULT_KST_FOOTER"
+            description = f"{entry.user.mention} removed a message from {message.author.mention} in: {message.channel.mention}\n\n{message.content}"
         )
 
         embed, file_urls = EmbedFunctions.get_or_add_attachments(message.attachments, embed)

@@ -93,8 +93,7 @@ class LastFmTopArtists(nextcord_C.Cog):
             color = self.client.LASTFM_COLOR,
             author = f"{member.display_name} Top Artists: {Lists.LASTFM_TIMEFRAMES_TEXT[timeframe]}",
             author_icon = self.client.LASTFM_ICON,
-            description = output,
-            footer = "DEFAULT_KST_FOOTER"
+            description = output
         )
 
         view = PageButtons(page = page_number, last_page = last_page, interaction = interaction)

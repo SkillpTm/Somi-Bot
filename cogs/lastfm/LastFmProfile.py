@@ -68,7 +68,6 @@ class LastFmProfile(nextcord_C.Cog):
             thumbnail = lastfm_user_pfp,
             author = f"{user.display_name} LastFm User Data",
             author_icon = self.client.LASTFM_ICON,
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "LastFm name:",

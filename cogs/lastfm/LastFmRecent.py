@@ -102,8 +102,7 @@ class LastFmRecent(nextcord_C.Cog):
             color = self.client.LASTFM_COLOR,
             author = f"{user.display_name} recently played:",
             author_icon = self.client.LASTFM_ICON,
-            description = output,
-            footer = "DEFAULT_KST_FOOTER"
+            description = output
         )
 
         view = PageButtons(page = page_number, last_page = last_page, interaction = interaction)

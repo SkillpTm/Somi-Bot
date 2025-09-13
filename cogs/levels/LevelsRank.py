@@ -52,7 +52,6 @@ class LevelsRank(nextcord_C.Cog):
             color = self.client.BOT_COLOR,
             thumbnail = member.display_avatar.url,
             title = f"Rank for `{member.display_name}` on `{interaction.guild.name}`",
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "Level:",

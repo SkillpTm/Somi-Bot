@@ -50,8 +50,7 @@ class Banner(nextcord_C.Cog):
             color = self.client.BOT_COLOR,
             image = user_banner_url,
             title = f"Banner of: `{user.display_name}`",
-            title_url = user_banner_url,
-            footer = "DEFAULT_KST_FOOTER"
+            title_url = user_banner_url
         )
         
         await interaction.followup.send(embed=embed)

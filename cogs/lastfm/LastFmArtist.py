@@ -99,8 +99,7 @@ class LastFmArtist(nextcord_C.Cog):
                           f"**Top Albums**\n" +
                           f"{album_output}\n" +
                           f"**Top Tracks**\n" +
-                          f"{track_output}\n",
-            footer = "DEFAULT_KST_FOOTER"
+                          f"{track_output}\n"
         )
 
         await interaction.followup.send(embed=embed)

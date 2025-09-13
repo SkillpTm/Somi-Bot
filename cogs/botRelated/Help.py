@@ -57,7 +57,6 @@ class Help(nextcord_C.Cog):
         embed = EmbedFunctions.builder(
             color = self.client.BOT_COLOR,
             title = f"Help for `{name}`",
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "Syntax:",

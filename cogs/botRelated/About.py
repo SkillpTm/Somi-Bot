@@ -31,7 +31,6 @@ class About(nextcord_C.Cog):
                           {self.client.user.mention} is a themed bot after the kpop soloist Jeon Somi written in Python using the [Nextcord API wrapper](https://docs.nextcord.dev/en/stable/).
                           Originally it was created to fullfil all needs of [Somicord]({self.client.SOMICORD_INVITE}).
                           """,
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "Created by:",

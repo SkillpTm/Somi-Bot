@@ -71,7 +71,8 @@ class Spotify(nextcord_C.Cog):
             thumbnail = output_data["cover_url"],
             author = f"{member.display_name} is listening to:",
             author_icon = self.client.SPOTIFY_ICON,
-            footer = "DEFAULT_KST_FOOTER",
+            footer = "Now Playing",
+            footer_icon = self.client.HEADPHONES_ICON,
             fields = [
                 [
                     "Track Duration:",

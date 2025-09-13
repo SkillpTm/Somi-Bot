@@ -40,7 +40,6 @@ class KeywordList(nextcord_C.Cog):
             color = self.client.BOT_COLOR,
             author = f"Keyword List for: {interaction.user.display_name}",
             author_icon = interaction.user.display_avatar.url,
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "Keywords:",

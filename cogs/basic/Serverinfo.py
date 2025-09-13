@@ -44,7 +44,6 @@ class Severinfo(nextcord_C.Cog):
             color = self.client.BOT_COLOR,
             thumbnail = server_icon_url,
             title = f"Server Information: `{interaction.guild.name}`",
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "ID:",

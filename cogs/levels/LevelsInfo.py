@@ -37,7 +37,6 @@ class LevelsInfo(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = self.client.BOT_COLOR,
             title = "Level Information",
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "What are levels?",

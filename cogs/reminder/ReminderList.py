@@ -44,8 +44,7 @@ class ReminderList(nextcord_C.Cog):
             color = self.client.BOT_COLOR,
             author = f"Reminder List for {interaction.user.display_name}",
             author_icon = interaction.user.display_avatar.url,
-            description = output,
-            footer = "DEFAULT_KST_FOOTER"
+            description = output
         )
 
         await interaction.followup.send(embed=embed)

@@ -40,8 +40,7 @@ class Avatar(nextcord_C.Cog):
             color = self.client.BOT_COLOR,
             image = user.display_avatar.url,
             title = f"Avatar of: `{user.display_name}`",
-            title_url = user.display_avatar.url,
-            footer = "DEFAULT_KST_FOOTER"
+            title_url = user.display_avatar.url
         )
 
         await interaction.followup.send(embed=embed)

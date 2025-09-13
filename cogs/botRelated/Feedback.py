@@ -44,7 +44,6 @@ class FeedbackModal(nextcord.ui.Modal):
             color = self.client.BOT_COLOR,
             title = f"Feedback by: `{interaction.user.name}` | `({interaction.user.id})`",
             thumbnail = interaction.user.display_avatar.url,
-            footer = "DEFAULT_KST_FOOTER",
             description = f"{origin_text}\n{self.feedback.value}"
         )
 

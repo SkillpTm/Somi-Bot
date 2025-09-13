@@ -62,7 +62,6 @@ class Userinfo(nextcord_C.Cog):
             color = user.color,
             thumbnail = user.display_avatar.url,
             title = f"User Information: `{user.display_name}`",
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "ID:",

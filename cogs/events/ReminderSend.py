@@ -52,8 +52,7 @@ class ReminderSend(nextcord_C.Cog):
                 color = self.client.BOT_COLOR,
                 title = "Reminder Notification",
                 title_url = reminder_link,
-                description = reminder_text,
-                footer = "DEFAULT_KST_FOOTER"
+                description = reminder_text
             )
 
             if user_id in Get.visible_users(self.client):

@@ -54,8 +54,7 @@ class LevelsLeaderboard(nextcord_C.Cog):
             color = self.client.BOT_COLOR,
             thumbnail = server_icon_url,
             title = f"`{interaction.guild.name}`: Top users by level",
-            description = output,
-            footer = "DEFAULT_KST_FOOTER"
+            description = output
         )
 
         await interaction.followup.send(embed=embed)

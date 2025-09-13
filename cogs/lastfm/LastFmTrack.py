@@ -108,8 +108,7 @@ class LastFmTrack(nextcord_C.Cog):
             author_url = f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}",
             author_icon = self.client.LASTFM_ICON,
             description = f"Total plays: __**{metadata_list[0]}**__\n" +
-                          f"[{type_name}](https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}) by [{artist_name}](https://www.last.fm/music/{artist_for_url})",
-            footer = "DEFAULT_KST_FOOTER"
+                          f"[{type_name}](https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}) by [{artist_name}](https://www.last.fm/music/{artist_for_url})"
         )
 
         await interaction.followup.send(embed=embed)

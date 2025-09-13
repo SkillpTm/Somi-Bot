@@ -115,8 +115,7 @@ class LastFmAlbum(nextcord_C.Cog):
             description = f"Total plays: __**{metadata_list[0]}**__\n" +
                           f"by [{artist_name}](https://www.last.fm/music/{artist_for_url})\n\n" +
                           f"**Top Tracks**\n" +
-                          f"{track_output}\n",
-            footer = "DEFAULT_KST_FOOTER"
+                          f"{track_output}\n"
         )
 
         await interaction.followup.send(embed=embed)

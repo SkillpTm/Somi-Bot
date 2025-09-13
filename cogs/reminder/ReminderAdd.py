@@ -70,7 +70,6 @@ class ReminderAdd(nextcord_C.Cog):
             author = f"Reminder Set for {interaction.user.display_name}",
             author_icon = interaction.user.display_avatar.url,
             description = reminder,
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "Time:",

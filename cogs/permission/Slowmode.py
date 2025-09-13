@@ -72,7 +72,6 @@ class Slowmode(nextcord_C.Cog):
             color = nextcord.Color.orange(),
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
-            footer = "DEFAULT_KST_FOOTER",
             fields = [
                 [
                     "/slowmode:",

@@ -7,7 +7,7 @@ from lib.modules import Misc
 class OptionsButton(nextcord.ui.View):
     
     def __init__(self, interaction: nextcord.Interaction = None) -> None:
-        super().__init__(timeout = 60)
+        super().__init__(timeout = 300)
         self.interaction = interaction
         self.value: bool = None
 

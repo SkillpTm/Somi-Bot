@@ -66,10 +66,11 @@ class Spotify(nextcord_C.Cog):
         output_data = await self.get_output_data(member_activity, details)
 
         embed = EmbedFunctions().builder(
-            description = f"[{output_data['track_name']}]({output_data['track_url']})\non [{output_data['album_name']}]({output_data['album_url']})\nby {output_data['artists']}",
+            description = f"on `{output_data['album_name']}`",
             color = member_activity.color,
-            thumbnail = output_data["cover_url"],
-            author = f"{member.display_name} is listening to:",
+            image = output_data["cover_url"],
+            author = f"{output_data['track_name']} - {output_data['artists']}",
+            author_url = output_data['track_url'],
             author_icon = self.client.SPOTIFY_ICON,
             footer = "Now Playing",
             footer_icon = self.client.HEADPHONES_ICON,
@@ -129,7 +130,7 @@ class Spotify(nextcord_C.Cog):
         output_data: dict[str, str] = {}
 
         # the artists are seperated by commas and have a markdown link to their SF page on them: [name](link), [name2](link2)...
-        output_data["artists"] = ", ".join([f"[{artist['name']}]({artist['external_urls']['spotify']})" for artist in track_data["artists"]])
+        output_data["artists"] = ", ".join([artist['name'] for artist in track_data["artists"]])
         output_data["album_name"] = track_data["album"]["name"]
         output_data["album_url"] = track_data["album"]["external_urls"]["spotify"]
         output_data["cover_url"] = track_data["album"]["images"][0]["url"]

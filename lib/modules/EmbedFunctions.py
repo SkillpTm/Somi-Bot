@@ -1,7 +1,5 @@
 import datetime
 import nextcord
-import zoneinfo
-import time
 
 from lib.modules.Get import Get
 
@@ -102,7 +100,7 @@ class EmbedFunctions():
 
             if not footer_icon:
                 from lib.utilities.SomiBot import SomiBot
-                embed.set_footer(icon_url = SomiBot.CLOCK_ICON)
+                embed.set_footer(text = Get.rid_of_whitespace(footer[:2048]), icon_url = SomiBot.CLOCK_ICON)
 
         for field in fields[:25]:  # 25 is Discord's field limit
             if not field[0]:

@@ -6,7 +6,7 @@ from lib.utilities.SomiBot import SomiBot
 
 ####################################################################################################
 
-def load_dotenv(file_path) -> None:
+def load_dotenv(file_path: str) -> None:
     """loades the provided env into the environment"""
 
     with open(file_path) as file:
@@ -25,7 +25,7 @@ def load_cogs(client: SomiBot) -> None:
     """loads all cogs onto the client"""
 
     # crawl through ./cogs/ 's subfolders to load all cogs
-    for folder in os.listdir(f"./cogs/"):
+    for folder in sorted(os.listdir(f"./cogs/")):
         if not os.path.isdir(f"./cogs/{folder}/"):
             continue
         
@@ -59,8 +59,9 @@ def start(client: SomiBot) -> None:
 ####################################################################################################
 
 if __name__ == "__main__":
+    load_dotenv("./.env")
+
     client = SomiBot()
 
-    load_dotenv("./.env")
     load_cogs(client)
     start(client) # blocks until the bot is shutdown

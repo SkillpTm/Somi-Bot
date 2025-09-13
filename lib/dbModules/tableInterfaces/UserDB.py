@@ -16,7 +16,7 @@ class UserDB():
 
         return await self.database.fetch_val(
             query_name = "select_where",
-            table_name = "user",
+            table_name = '"user"',
             select_columns = select_columns,
             columns = ["user_id"],
             values = [self.user_id]
@@ -29,7 +29,7 @@ class UserDB():
 
         await self.database.execute(
             query_name = "update_rows_where",
-            table_name = "user",
+            table_name = '"user"',
             columns = ["user_id"],
             values = [self.user_id],
             set_columns = set_columns,

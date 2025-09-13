@@ -73,4 +73,4 @@ class UserDB():
     async def weather_set(self, weather_location: str) -> None:
         """adds the weather location to the user in the db"""
 
-        self._set(["weather_location"], [weather_location])
+        await self._set(["weather_location"], [weather_location])

@@ -46,7 +46,7 @@ class About(nextcord_C.Cog):
 
                 [
                     "Up Since:",
-                    f"<t:{self.client.start_time}:R>",
+                    f"<t:{self.client.start_time}:f>",
                     True
                 ],
 

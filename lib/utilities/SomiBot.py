@@ -1,5 +1,6 @@
 import asyncio
 import googleapiclient.discovery
+import json
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import time
@@ -72,6 +73,9 @@ class SomiBot(nextcord_C.Bot):
         # Variables
         self.is_setup = False
         self.start_time = int(time.time())
+
+        with open("./assets/res/ISOCountryTags.json", "r") as file:
+            self.ISOCountryTagDict: dict[str, str] = json.load(file)
 
         super().__init__(
             max_messages = Config.MAX_MESSAGES_CACHE, 

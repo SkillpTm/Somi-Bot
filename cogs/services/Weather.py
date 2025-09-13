@@ -38,9 +38,9 @@ class Weather(nextcord_C.Cog):
         ))
 
         input_location = location # in case we error on the api call later we need the original input for the error message
-        location = location.lower().replace(" ", "+").replace("#", "")
 
         if location:
+            location = location.lower().replace(" ", "+").replace("#", "")
             await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).weather_set(location)
 
         # if no location was provided we either get the last submitted one or the default value 'seoul'
@@ -59,7 +59,7 @@ class Weather(nextcord_C.Cog):
 
         # pull all the data we need from the json (and potentially format it, ready for the output)
         output_data["cloudiness"] = str(response_json["clouds"]["all"])
-        output_data["country"] = pycountry.countries.get(alpha_2=str(response_json["sys"]["country"])).name
+        output_data["country"] = self.client.ISOCountryTagDict[str(response_json["sys"]["country"])]
         output_data["descirption"] = str(response_json["weather"][0]["description"])
         output_data["humidity"] = str(response_json["main"]["humidity"])
         output_data["id"] = str(response_json["id"])

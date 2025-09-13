@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
-import urllib.parse
+import datetime
 
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
@@ -57,49 +57,42 @@ class LastFmNowPlaying(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
             return
 
-        output, cover_image = self.get_and_format_output(np_response)
+        # lastfm will respond with 2 tracks, if the user is listening to a song right now, otherwise just one
+        for track in np_response.json()["recenttracks"]["track"]:
+            album_name = Get.markdown_safe(track["album"]["#text"])
+            artist_name = Get.markdown_safe(track["artist"]["#text"])
+            cover_url = track["image"][3]["#text"]
+            track_name = Get.markdown_safe(track["name"])
+            track_url = track["url"]
+
+            # check if this song is being listened to right now, or already was finished
+            if "@attr" in track.keys() and "nowplaying" in track["@attr"].keys():
+                timestamp = None
+            else:
+                timestamp = datetime.datetime.fromtimestamp(float(track['date']['uts']))
+
+            break
+
+        if not timestamp:
+            footer = "Now Playing"
+            footer_icon = self.client.HEADPHONES_ICON
+        else:
+            footer = "Listened:"
+            footer_icon = ""
 
         embed = EmbedFunctions().builder(
             color = self.client.LASTFM_COLOR,
-            thumbnail = cover_image,
-            author = f"{user.display_name} is listening to:",
+            image = cover_url,
+            author = f"{track_name} - {artist_name}",
+            author_url = track_url,
             author_icon = self.client.LASTFM_ICON,
-            description = output
+            description = f"on `{album_name}`",
+            footer = footer,
+            footer_icon = footer_icon,
+            footer_timestamp = timestamp
         )
 
         await interaction.followup.send(embed=embed)
-
-    ####################################################################################################
-
-    @staticmethod
-    async def get_and_format_output(np_response: requests.Response) -> tuple[str, str]:
-        """gets the data from the response and formats it to simply be output"""
-
-        cover_image = ""
-        output = ""
-
-        # formats the last 2 songs for the output (also denotes if something is being listened to right now)
-        for track in np_response.json()["recenttracks"]["track"]:
-            track_url = track["url"]
-            artist_name_for_url = urllib.parse.quote_plus(track["artist"]["#text"])
-            album_name_for_url = urllib.parse.quote_plus(track["album"]["#text"])
-
-            track_name = Get.markdown_safe(track["name"])
-            album_name = Get.markdown_safe(track["album"]["#text"])
-            artist_name = Get.markdown_safe(track["artist"]["#text"])
-
-            # check if this song is being listened to right now, or already was finished
-            if "date" in track:
-                timestamp = f"<t:{track['date']['uts']}:R>"
-                output += f"**[{track_name}]({track_url})** on [{album_name}](https://www.last.fm/music/{artist_name_for_url}/{album_name_for_url}/)\nby [{artist_name}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}"
-                if not cover_image:
-                    cover_image = track["image"][3]["#text"]
-
-            else:
-                output += f"`Now Playing:`\n**[{track_name}]({track_url})** on [{album_name}](https://www.last.fm/music/{artist_name_for_url}/{album_name_for_url}/)\nby [{artist_name}](https://www.last.fm/music/{artist_name_for_url}/)\n\n`Previous:\n`"
-                cover_image = track["image"][3]["#text"]
-
-        return output, cover_image
 
 
 

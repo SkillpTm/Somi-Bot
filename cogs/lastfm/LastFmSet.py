@@ -45,9 +45,9 @@ class LastFmSet(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"The user `{lastfmname}` couldn't be found on LastFm."), ephemeral=True)
             return
 
-        username_response = info_response["user"]["name"]
+        username_response = info_response.json()["user"]["name"]
 
-        await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).last_fm_get(username_response)
+        await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).last_fm_set(username_response)
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"You were succesfully connected with the LastFm user `{username_response}`"), ephemeral=True)
 

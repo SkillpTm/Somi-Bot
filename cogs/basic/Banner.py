@@ -19,8 +19,8 @@ class Banner(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         user: nextcord.User = nextcord.SlashOption(
-            description="the user you want the banner from",
-            required=False
+            description = "the user you want the banner from",
+            required = False
         )
     ) -> None:
         """This command reposts anyone's banner in an embed"""

@@ -22,10 +22,10 @@ class Color(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         hexcode: str = nextcord.SlashOption(
-            description="input a color hexcode here",
-            required=True,
-            min_length=6,
-            max_length=7
+            description = "input a color hexcode here",
+            required = True,
+            min_length = 6,
+            max_length = 7
         )
     ) -> None:
         """This command converts a hexcode to an image of that color."""

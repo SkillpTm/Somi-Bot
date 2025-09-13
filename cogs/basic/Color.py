@@ -47,8 +47,7 @@ class Color(nextcord_C.Cog):
         await interaction.response.defer(with_message=True)
 
         # we temporarily save the file to send it and then delete it again later 
-        color_image = PIL.Image.new("RGB", (300, 300), PIL.ImageColor.getcolor(hexcode, "RGB"))
-        color_image.save(f"./debug/temp/{hexcode}.png")
+        PIL.Image.new("RGB", (300, 300), PIL.ImageColor.getcolor(hexcode, "RGB")).save(f"./debug/temp/{hexcode}.png")
 
         await interaction.followup.send(file = nextcord.File(f"./debug/temp/{hexcode}.png", f"{hexcode}.png"))
 

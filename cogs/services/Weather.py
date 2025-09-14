@@ -1,8 +1,8 @@
 import datetime
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import pycountry
 import requests
+import urllib.parse
 
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
@@ -37,22 +37,19 @@ class Weather(nextcord_C.Cog):
             {"location": location}
         ))
 
-        input_location = location # in case we error on the api call later we need the original input for the error message
-
-        if location:
-            location = location.lower().replace(" ", "+").replace("#", "")
-            await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).weather_set(location)
-
-        # if no location was provided we either get the last submitted one or the default value 'seoul'
-        location = await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).weather_get()
-
         await interaction.response.defer(with_message = True)
 
-        response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={self.client.Keychain.WEATHER_API_KEY}&q={location}&units=metric")
+        if not location:
+            location = await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).weather_get()
+
+        response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={self.client.Keychain.WEATHER_API_KEY}&q={urllib.parse.quote_plus(location)}&units=metric")
 
         if response.status_code != 200:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{input_location} couldn't be found."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{location} couldn't be found."), ephemeral=True)
             return
+
+        if location != await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).weather_get():
+            await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).weather_set(location)
 
         response_json: dict = response.json()
         output_data: dict[str, str] = {}

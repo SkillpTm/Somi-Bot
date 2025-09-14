@@ -1,6 +1,6 @@
 -- name: create_telemetry
 CREATE TABLE IF NOT EXISTS telemetry (
-    telemetry_id SERIAL PRIMARY KEY,
+    telemetry_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     event_name TEXT UNIQUE NOT NULL,
     amount BIGINT NOT NULL DEFAULT 1
 );
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS level_role (
 
 -- name: create_custom_command
 CREATE TABLE IF NOT EXISTS custom_command (
-    custom_command_id SERIAL PRIMARY KEY,
+    custom_command_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     server_id BIGINT REFERENCES server(server_id) NOT NULL,
     command_name TEXT NOT NULL,
     command_text TEXT NOT NULL
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS custom_command (
 
 -- name: create_keyword
 CREATE TABLE IF NOT EXISTS keyword (
-    keyword_id SERIAL PRIMARY KEY,
+    keyword_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     server_id BIGINT REFERENCES server(server_id) NOT NULL,
     user_id BIGINT REFERENCES "user"(user_id) NOT NULL,
     keyword TEXT NOT NULL
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS keyword (
 
 -- name: create_feedback
 CREATE TABLE IF NOT EXISTS feedback (
-    feedback_id SERIAL PRIMARY KEY,
+    feedback_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     server_id BIGINT REFERENCES server(server_id) NOT NULL,
     user_id BIGINT REFERENCES "user"(user_id) NOT NULL,
     time_stamp TEXT NOT NULL,

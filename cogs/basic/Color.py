@@ -1,8 +1,8 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import os
-import PIL.Image, PIL.ImageColor
 import re
+import zlib
 
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
@@ -30,8 +30,7 @@ class Color(nextcord_C.Cog):
     ) -> None:
         """This command converts a hexcode to an image of that color."""
 
-        if not hexcode.startswith("#"):
-            hexcode = f"#{hexcode}"
+        hexcode = hexcode.strip("#")
 
         self.client.Loggers.action_log(Get.log_message(
             interaction,
@@ -40,14 +39,43 @@ class Color(nextcord_C.Cog):
         ))
 
         # check if the input is a valid hexcode
-        if not re.match(r"^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", hexcode):
+        if not re.match(r"^[0-9A-Fa-f]{6}$", hexcode):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("Please input a valid hex value for a color."), ephemeral=True)
             return
         
         await interaction.response.defer(with_message=True)
 
+
+        output_image = bytearray(b"\x89PNG\r\n\x1a\n")
+        WIDTH = 300
+        HEIGHT = 300
+
+        def chunk(chunk_type: bytes, data: bytes) -> bytes:
+            return len(data).to_bytes(4, "big") + chunk_type + data + zlib.crc32(chunk_type + data).to_bytes(4, "big")
+
+        output_image += chunk(
+            b"IHDR",
+            WIDTH.to_bytes(4, "big") +
+            HEIGHT.to_bytes(4, "big") +
+            b"\x08" +        # Bit depth
+            b"\x02" +        # Color type: Truecolor RGB
+            b"\x00" +        # Compression method
+            b"\x00" +        # Filter method
+            b"\x00"          # Interlace method
+        )
+
+        rgb_vals: list[int] = [int(hexcode[i:i+2], 16) for i in range(0, len(hexcode), 2)]
+        raw_image_data = bytearray(
+            b"".join(
+                bytes([0]) + bytes(rgb_vals * WIDTH) for _ in range(HEIGHT)
+            )
+        )
+        output_image += chunk(b"IDAT", zlib.compress(raw_image_data))
+        output_image += chunk(b"IEND", b"")
+
         # we temporarily save the file to send it and then delete it again later 
-        PIL.Image.new("RGB", (300, 300), PIL.ImageColor.getcolor(hexcode, "RGB")).save(f"./debug/temp/{hexcode}.png")
+        with open(f"./debug/temp/{hexcode}.png", "wb") as file:
+            file.write(output_image)
 
         await interaction.followup.send(file = nextcord.File(f"./debug/temp/{hexcode}.png", f"{hexcode}.png"))
 

@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS telemetry (
 CREATE TABLE IF NOT EXISTS "user" (
     user_id BIGINT PRIMARY KEY,
     last_fm_username TEXT NOT NULL DEFAULT '',
-    weather_location TEXT NOT NULL DEFAULT 'seoul'
+    weather_location TEXT NOT NULL DEFAULT 'seoul',
+	timezone TEXT NOT NULL DEFAULT 'Asia/Seoul'
 );
 
 -- name: create_reminder

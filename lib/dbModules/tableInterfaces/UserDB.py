@@ -74,3 +74,17 @@ class UserDB():
         """adds the weather location to the user in the db"""
 
         await self._set(["weather_location"], [weather_location])
+
+    ####################################################################################################
+
+    async def timezone_get(self) -> str:
+        """get the user's timezone from the db"""
+
+        return await self._get(["timezone"])
+
+    ####################################################################################################
+
+    async def timezone_set(self, timezone: str) -> None:
+        """adds the timezone to the user in the db"""
+
+        await self._set(["timezone"], [timezone])

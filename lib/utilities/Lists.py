@@ -93,7 +93,6 @@ class Lists():
             "/keyword add",
             "/keyword delete",
             "/keyword list",
-            "/kst",
             "/levels info",
             "/levels leaderboard",
             "/levels rank",
@@ -119,8 +118,9 @@ class Lists():
             "/send",
             "/serverinfo",
             "/slowmode",
-            "/spotify",
             "/somi",
+            "/spotify",
+            "/time",
             "/unban",
             "/unmute",
             "/userinfo",
@@ -286,13 +286,6 @@ class Lists():
                 (note: The command 'keyword' has a search shorthand as 'noti'.)
                 """,
                 "/keyword list"
-            ],
-
-            "/kst": [
-                """
-                ```/kst (no parameters)```
-                """,
-                "/kst"
             ],
 
             "/levels info": [
@@ -598,6 +591,16 @@ class Lists():
                 (note: The command 'sporify' has a search shorthand as 'sf'.)
                 """,
                 "/somi",
+            ],
+
+            "/time": [
+                """
+                ```/time optional[timezone]```
+                `timezone`:
+                An IANA timezone code.
+
+                """,
+                f"/time [Asia/Seoul]"
             ],
 
             "/userinfo": [

@@ -35,7 +35,7 @@ class Severinfo(nextcord_C.Cog):
         else:
             server_icon_url = self.client.DEFAULT_PFP
 
-        if await interaction.guild.vanity_invite():
+        if "VANITY_URL" in interaction.guild.features:
             vanity_url = (await interaction.guild.vanity_invite()).url
         else:
             vanity_url = ""

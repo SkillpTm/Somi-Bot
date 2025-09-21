@@ -100,13 +100,13 @@ class Userinfo(nextcord_C.Cog):
                 ],
 
                 [
-                    "Created at:",
+                    "Joined Discord:",
                     f"<t:{int(time.mktime(user.created_at.timetuple()))}>",
                     True
                 ],
 
                 [
-                    "Joined at:",
+                    "Joined Server:",
                     joined_time,
                     True
                 ],

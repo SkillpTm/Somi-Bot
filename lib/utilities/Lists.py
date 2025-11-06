@@ -124,7 +124,6 @@ class Lists():
             "/unban",
             "/unmute",
             "/userinfo",
-            "/vc-access",
             "/weather",
             "/wolfram",
             "/youtube",
@@ -924,18 +923,5 @@ class Lists():
                 """,
                 f"/unmute [<@{APPLICATION_ID}>]",
                 "mute members: ✅"
-            ],
-
-            "/vc-access": [
-                """
-                ```/vc-access [action] [@USERNAME]```
-                `action`:
-                This defines if you want to allows or forbid access to the user.
-
-                `@USERNAME`:
-                A user on this server.
-                """,
-                f"/vc-access [Forbid] [<@{APPLICATION_ID}>]",
-                "manage channels: ✅"
-            ],
+            ]
         }

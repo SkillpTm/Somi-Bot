@@ -1,7 +1,8 @@
+import time
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
-import time
 
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
@@ -30,24 +31,21 @@ class LastFmProfile(nextcord_C.Cog):
     ) -> None:
         """This command outputs information about a user's lastfm account"""
 
-        if not user:
-            user = interaction.user
+        user = user or interaction.user
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/lf profile",
             {"user": str(user.id)}
         ))
 
-        lastfm_username = await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).last_fm_get()
-
-        if not lastfm_username:
+        if not (lastfm_username := await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).last_fm_get()):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
-        await interaction.response.defer(with_message = True)
+        await interaction.response.defer(with_message=True)
 
-        profile_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getinfo&username={lastfm_username}&limit=1&api_key={self.client.Keychain.LAST_FM_API_KEY}&format=json")
+        profile_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getinfo&username={lastfm_username}&limit=1&api_key={self.client.keychain.LAST_FM_API_KEY}&format=json", timeout=10)
 
         if profile_response.status_code != 200:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
@@ -59,12 +57,12 @@ class LastFmProfile(nextcord_C.Cog):
         if profile_user_data["user"]["image"][3]["#text"]:
             lastfm_user_pfp = profile_user_data["user"]["image"][3]["#text"]
         else:
-            lastfm_user_pfp = self.client.DEFAULT_PFP
-            
+            lastfm_user_pfp = self.client.config.DEFAULT_PFP
+
         days_plays_ratio = round(int(profile_user_data["user"]["playcount"]) / (int((int(time.time()) - int(profile_user_data["user"]["registered"]["unixtime"])) / 60 / 60 / 24)), 2)
 
         embed = EmbedFunctions().builder(
-            color = self.client.LASTFM_COLOR,
+            color = self.client.config.LASTFM_COLOR,
             thumbnail = lastfm_user_pfp,
             author = f"{user.display_name} LastFm User Data",
             author_icon = self.client.LASTFM_ICON,

@@ -5,16 +5,18 @@ from lib.modules import Misc
 
 
 class OptionsButton(nextcord.ui.View):
-    
+    """A button to meant to be used to show all options"""
+
     def __init__(self, interaction: nextcord.Interaction = None) -> None:
-        super().__init__(timeout = 300)
         self.interaction = interaction
         self.value: bool = None
+        super().__init__(timeout=300)
 
     ####################################################################################################
 
-    @nextcord.ui.button(label = "All Options", style=nextcord.ButtonStyle.gray)
-    async def all_options(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
+    @nextcord.ui.button(label="All Options", style=nextcord.ButtonStyle.gray)
+    async def all_options(self, _button: nextcord.ui.Button, _interaction: nextcord.Interaction) -> None:
+        """turns off the button and sets the value to true"""
         self.value = True
         self.stop()
         await Misc.deactivate_view_children(self)

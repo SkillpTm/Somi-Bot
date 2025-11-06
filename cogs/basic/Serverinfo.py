@@ -1,6 +1,7 @@
+import time
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import time
 
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
@@ -13,7 +14,7 @@ class Severinfo(nextcord_C.Cog):
         self.client: SomiBot = client
 
     ####################################################################################################
-        
+
     @nextcord.slash_command(
         name = "si",
         description = "gives information about this server",
@@ -24,25 +25,15 @@ class Severinfo(nextcord_C.Cog):
     async def serverinfo(self, interaction: nextcord.Interaction) -> None:
         """This command gives you infomration about a server"""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/serverinfo"))
+        self.client.logger.action_log(Get.log_message(interaction, "/serverinfo"))
 
         await interaction.response.defer(with_message=True)
 
         guild_with_counts = await self.client.fetch_guild(interaction.guild.id, with_counts=True)
 
-        if interaction.guild.icon:
-            server_icon_url = interaction.guild.icon.url
-        else:
-            server_icon_url = self.client.DEFAULT_PFP
-
-        if "VANITY_URL" in interaction.guild.features:
-            vanity_url = (await interaction.guild.vanity_invite()).url
-        else:
-            vanity_url = ""
-
         embed = EmbedFunctions().builder(
-            color = self.client.BOT_COLOR,
-            thumbnail = server_icon_url,
+            color = self.client.config.BOT_COLOR,
+            thumbnail = interaction.guild.icon.url if interaction.guild.icon else self.client.config.DEFAULT_PFP,
             title = f"Server Information: `{interaction.guild.name}`",
             fields = [
                 [
@@ -50,7 +41,7 @@ class Severinfo(nextcord_C.Cog):
                     interaction.guild.id,
                     False
                 ],
-                
+
                 [
                     "Owner:",
                     interaction.guild.owner.mention,
@@ -83,7 +74,7 @@ class Severinfo(nextcord_C.Cog):
 
                 [
                     "Vanity Invite:",
-                    vanity_url,
+                    (await interaction.guild.vanity_invite()).url if "VANITY_URL" in interaction.guild.features else "",
                     True
                 ],
 

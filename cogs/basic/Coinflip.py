@@ -1,7 +1,8 @@
 import asyncio
+import random
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import random
 
 from lib.modules import Get
 from lib.utilities import SomiBot
@@ -14,30 +15,21 @@ class Coinflip(nextcord_C.Cog):
         self.client: SomiBot = client
 
     ####################################################################################################
-    
+
     @nextcord.slash_command(name="coinflip", description="does a coinflip")
     async def coinflip(self, interaction: nextcord.Interaction) -> None:
         """This command does a coinflip with a small animation"""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/coinflip"))
+        self.client.logger.action_log(Get.log_message(interaction, "/coinflip"))
 
         await interaction.response.defer(with_message=True)
 
-        # make start icon random (for animation)
-        if random.randint(0, 1):
-            value1 = self.client.HEADS_EMOTE
-            value2 = self.client.TAILS_EMOTE
-        else:
-            value1 = self.client.TAILS_EMOTE
-            value2 = self.client.HEADS_EMOTE
+        side1, side2 = random.sample([self.client.config.HEADS_EMOTE, self.client.config.TAILS_EMOTE], k=2)
 
-        await interaction.followup.send(value1)
+        await interaction.followup.send(side1)
 
         # the first value in coin_animation's lists, is how long it is dispalyed and the 2nd which icon is shown
-        result = f"Result:\n{random.choice([self.client.HEADS_EMOTE, self.client.TAILS_EMOTE])}"
-        coin_animation = [[0.2, value2], [0.2, value1], [0.2, value2], [0.4, value1], [0.8, value2], [1, result]]
-
-        for step in coin_animation:
+        for step in [[0.2, side2], [0.2, side1], [0.2, side2], [0.4, side1], [0.8, side2], [1, f"Result:\n{random.choice([side1, side2])}"]]:
             await asyncio.sleep(step[0])
             await interaction.edit_original_message(content = step[1])
 

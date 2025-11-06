@@ -1,6 +1,7 @@
+import re
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import re
 
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
@@ -16,7 +17,7 @@ class KeywordAdd(nextcord_C.Cog):
         self.client: SomiBot = client
 
     ####################################################################################################
-    
+
     @ParentCommand.keyword.subcommand(name="add", description="add a keyword to your keyword list")
     async def keyword_add(
         self,
@@ -31,7 +32,7 @@ class KeywordAdd(nextcord_C.Cog):
     ) -> None:
         """This command adds a global keyword to the bot for a user"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/keyword add",
             {"keyword": keyword}
@@ -42,13 +43,11 @@ class KeywordAdd(nextcord_C.Cog):
         keyword = keyword.lower()
 
         # make sure keywords are only letters and numbers
-        if not re.match(r"^[\da-z]+$", keyword):
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"You can only have letters and numbers in your keywords!"), ephemeral=True)
+        if not re.match(r"^[a-z0-9]+$", keyword):
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only have letters and numbers in your keywords!"), ephemeral=True)
             return
 
-        added = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).add(keyword)
-
-        if not added:
+        if not await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).add(keyword):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"You already have `{keyword}` as a keyword.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)
             return
 

@@ -24,35 +24,32 @@ class CustomList(nextcord_C.Cog):
     async def custom_list(self, interaction: nextcord.Interaction) -> None:
         """This command provides a list of all custom-commands of a guild"""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/custom list"))
+        self.client.logger.action_log(Get.log_message(interaction, "/custom list"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        all_commandnames = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).get_list()
-
-        if not all_commandnames:
+        if not (all_commandnames := await (await DBHandler(self.client.database, server_id=interaction.guild.id).custom_command()).get_list()):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("There are no custom-commands on this server.\nTo add a custom-command use `/custom add`."), ephemeral=True)
             return
 
         output = ""
 
-        # formatting the output
         for commandname in all_commandnames:
             output += f"/cc `{commandname}`\n"
 
         if interaction.guild.icon:
             server_icon_url = interaction.guild.icon.url
         else:
-            server_icon_url = self.client.DEFAULT_PFP
+            server_icon_url = self.client.config.DEFAULT_PFP
 
         embed = EmbedFunctions().builder(
-            color = self.client.BOT_COLOR,
+            color = self.client.config.BOT_COLOR,
             author = f"custom-command list for {interaction.guild.name}",
             author_icon = server_icon_url,
             fields = [
                 [
                     "custom-commands:",
-                    output[:1000],
+                    output,
                     False
                 ]
             ]

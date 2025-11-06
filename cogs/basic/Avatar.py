@@ -24,11 +24,10 @@ class Avatar(nextcord_C.Cog):
         )
     ) -> None:
         """This command reposts anyone's avatar in an embed"""
-        
-        if not user:
-            user = interaction.user
 
-        self.client.Loggers.action_log(Get.log_message(
+        user = user or interaction.user
+
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/avatar",
             {"user": str(user.id)}
@@ -37,7 +36,7 @@ class Avatar(nextcord_C.Cog):
         await interaction.response.defer(with_message=True)
 
         embed = EmbedFunctions().builder(
-            color = self.client.BOT_COLOR,
+            color = self.client.config.BOT_COLOR,
             image = user.display_avatar.url,
             title = f"Avatar of: `{user.display_name}`",
             title_url = user.display_avatar.url

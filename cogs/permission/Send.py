@@ -32,7 +32,7 @@ class Send(nextcord_C.Cog):
             min_length = 1,
             max_length = 1000
         ),
-        channel: nextcord.abc.GuildChannel = nextcord.SlashOption(
+        channel: nextcord.TextChannel | nextcord.Thread = nextcord.SlashOption(
             channel_types = Lists.TEXT_CHANNELS,
             description = "channel in which the message will be send",
             required = False
@@ -40,10 +40,9 @@ class Send(nextcord_C.Cog):
     ) -> None:
         """This command allows a user to send a message with the bot."""
 
-        if not channel:
-            channel = interaction.channel
+        channel = channel or interaction.channel
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/send",
             {"message": message, "channel": (channel.id)}
@@ -54,14 +53,11 @@ class Send(nextcord_C.Cog):
         message_object: nextcord.Message = await channel.send(message)
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Message sent in: {channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
 
-
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.PERMISSION_COLOR,
+            color = self.client.config.PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             description = f"{interaction.user.mention} sent a bot message in: {channel.mention} - [Link]({message_object.jump_url})",
@@ -74,7 +70,7 @@ class Send(nextcord_C.Cog):
             ]
         )
 
-        await interaction.guild.get_channel(audit_log_id).send(embed=embed)
+        await audit_log.send(embed=embed)
 
     ####################################################################################################
 
@@ -128,24 +124,21 @@ class Send(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{message_id}` isn't an id of a message sent by the bot in this server."), ephemeral=True)
             return
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/edit",
             {"message_id": str(message_id), "old message": message_object.content, "new message": message}
         ))
 
         await message_object.edit(content=message)
-        
+
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Message edited in: {correct_channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
 
-
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.PERMISSION_COLOR,
+            color = self.client.config.PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             description = f"{interaction.user.mention} edited a bot message in: {correct_channel.mention} - [Link]({message_object.jump_url})",
@@ -164,7 +157,7 @@ class Send(nextcord_C.Cog):
             ]
         )
 
-        await interaction.guild.get_channel(audit_log_id).send(embed=embed)
+        await audit_log.send(embed=embed)
 
 
 

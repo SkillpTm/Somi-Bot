@@ -27,19 +27,17 @@ class Wolfram(nextcord_C.Cog):
     ) -> None:
         """This command uses the given query and sends it to the wolfram API, if a short answer can be found, it will be responded with"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/wolfram",
             {"query": query}
         ))
 
-        await interaction.response.defer(with_message = True)
-
-        query_result = self.client.wolfram_client.query(query)
+        await interaction.response.defer(with_message=True)
 
         try:
-            await interaction.followup.send(f"Query: `{query}`\n```{next(query_result.results).text}```")
-        except:
+            await interaction.followup.send(f"Query: `{query}`\n```{next(self.client.wolfram_client.query(query).results).text}```")
+        except StopIteration:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"Wolfram couldn't find a result for your query:\n`{query}`"))
 
 

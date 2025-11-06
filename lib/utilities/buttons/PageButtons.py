@@ -5,18 +5,21 @@ from lib.modules import EmbedFunctions, Misc
 
 
 class PageButtons(nextcord.ui.View):
+    """Buttons that can flip through pages [start][<<<][current/max][>>>][end]"""
 
     def __init__(self, page: int, last_page: int, interaction: nextcord.Interaction) -> None:
-        self.value = None
         self.page: int = page
         self.last_page: int = last_page
         self.interaction: nextcord.Interaction = interaction
-        super().__init__(timeout = 60)
+        self.value = None
+        super().__init__(timeout=60)
 
     ####################################################################################################
 
-    @nextcord.ui.button(label = "start", style=nextcord.ButtonStyle.green)
-    async def start(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
+    @nextcord.ui.button(label="start", style=nextcord.ButtonStyle.green)
+    async def start(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
+        """returns to the first page"""
+
         if self.interaction.user.id != interaction.user.id:
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return
@@ -25,36 +28,38 @@ class PageButtons(nextcord.ui.View):
         self.value = True
         self.stop()
 
-    @nextcord.ui.button(label = "<<", style=nextcord.ButtonStyle.green)
-    async def left(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
+    @nextcord.ui.button(label="<<", style=nextcord.ButtonStyle.green)
+    async def left(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
+        """goes back one page, without wrapping back to the end"""
+
         if self.interaction.user.id != interaction.user.id:
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return
 
-        self.page -= 1
-        if self.page == 0:
-            self.page = 1
+        self.page = self.page-1 if self.page-1 >= 0 else 1
         self.value = True
         self.stop()
 
-    @nextcord.ui.button(label = "/", style=nextcord.ButtonStyle.gray, disabled=True)
-    async def page_button(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
-        pass
+    @nextcord.ui.button(label="/", style=nextcord.ButtonStyle.gray, disabled=True)
+    async def page_button(self, _button: nextcord.ui.Button, _interaction: nextcord.Interaction) -> None:
+        """does nothing, just displays the page numbers"""
 
-    @nextcord.ui.button(label = ">>", style=nextcord.ButtonStyle.red)
-    async def right(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    @nextcord.ui.button(label=">>", style=nextcord.ButtonStyle.red)
+    async def right(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """goes forward one page, without wrapping back to the start"""
+
         if self.interaction.user.id != interaction.user.id:
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return
 
-        self.page += 1
-        if self.page > self.last_page:
-            self.page = self.last_page
+        self.page = self.page+1 if self.page+1 <= self.last_page else self.last_page
         self.value = True
         self.stop()
 
-    @nextcord.ui.button(label = "end", style=nextcord.ButtonStyle.red)
-    async def end(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
+    @nextcord.ui.button(label="end", style=nextcord.ButtonStyle.red)
+    async def end(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
+        """jumps to the last page"""
+
         if self.interaction.user.id != interaction.user.id:
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return

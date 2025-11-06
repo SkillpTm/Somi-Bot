@@ -20,11 +20,9 @@ class ReminderList(nextcord_C.Cog):
     async def reminder_list(self, interaction: nextcord.Interaction) -> None:
         """This command will list all reminders of a user"""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/reminder list"))
+        self.client.logger.action_log(Get.log_message(interaction, "/reminder list"))
 
-        user_reminders = await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).get_list()
-
-        if not user_reminders:
+        if not (user_reminders := await (await DBHandler(self.client.database, user_id=interaction.user.id).reminder()).get_list()):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You don't have any reminders.\nTo add a reminder use `/reminder add`."), ephemeral=True)
             return
 
@@ -41,7 +39,7 @@ class ReminderList(nextcord_C.Cog):
             output += "`\n\n"
 
         embed = EmbedFunctions().builder(
-            color = self.client.BOT_COLOR,
+            color = self.client.config.BOT_COLOR,
             author = f"Reminder List for {interaction.user.display_name}",
             author_icon = interaction.user.display_avatar.url,
             description = output

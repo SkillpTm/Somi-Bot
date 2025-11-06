@@ -1,7 +1,8 @@
+import urllib.parse
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
-import urllib.parse
 
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
@@ -51,7 +52,7 @@ class Lyrics(nextcord_C.Cog):
                     song = activity.title
                     break
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/lyrics",
             {"artist": artist, "song": song}
@@ -64,36 +65,36 @@ class Lyrics(nextcord_C.Cog):
         # search genius for a matching song
         search_response = requests.get(
             f"https://api.genius.com/search?q={urllib.parse.quote_plus(f'{artist}+{song}')}",
-            headers={"Authorization": f"Bearer {self.client.Keychain.GENIUS_ACCESS_TOKEN}"}
+            headers={"Authorization": f"Bearer {self.client.keychain.GENIUS_ACCESS_TOKEN}"}, timeout=10
         ).json()
 
         # make sure there are results and they're songs
         if not search_response["response"]["hits"] or search_response["response"]["hits"][0]["type"] != "song":
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("Please select a valid artist **and** a valid song or play a song on Spotify!"), ephemeral=True)
             return
-        
+
         await interaction.response.defer(with_message=True)
-        
+
         # use the first result's ID to find the lyrics page
         song_response = requests.get(
             f"https://api.genius.com/songs/{search_response["response"]["hits"][0]["result"]["id"]}",
-            headers={"Authorization": f"Bearer {self.client.Keychain.GENIUS_ACCESS_TOKEN}"}
+            headers={"Authorization": f"Bearer {self.client.keychain.GENIUS_ACCESS_TOKEN}"}, timeout=10
         )
 
         if song_response.status_code != 200:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"Genius couldn't find: `{artist}` - `{song}`, please try again!"))
             return
-        
+
         song_data = song_response.json()
 
 
         embed = EmbedFunctions().builder(
-            color = self.client.GENIUS_COLOR,
+            color = self.client.config.GENIUS_COLOR,
             image = song_data["response"]["song"]["song_art_image_url"],
             title = f"Click Here: {song_data['response']['song']['title']}",
             title_url = song_data["response"]["song"]["url"],
             footer = "Lyrics powered by Genius",
-            footer_icon = self.client.GENIUS_ICON
+            footer_icon = self.client.config.GENIUS_ICON
         )
 
         await interaction.followup.send(embed=embed)

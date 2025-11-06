@@ -30,7 +30,7 @@ class KeywordDelete(nextcord_C.Cog):
     ) -> None:
         """This command let's you delete a keyword by it's name or all keywords with 'ALL'"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/keyword delete",
             {"keyword": keyword}
@@ -38,7 +38,7 @@ class KeywordDelete(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        if not await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).get_list():
+        if not await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).get_list():
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You don't have any keywords.\nTo add a keyword use `/keyword add`."), ephemeral=True)
             return
 
@@ -48,9 +48,7 @@ class KeywordDelete(nextcord_C.Cog):
 
         keyword = keyword.lower()
 
-        deleted = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).delete(keyword)
-
-        if not deleted:
+        if not await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).delete(keyword):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"You don't have a keyword called `{keyword}`.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)
             return
 
@@ -69,7 +67,7 @@ class KeywordDelete(nextcord_C.Cog):
         await interaction.response.send_autocomplete(
             Get.autocomplete_dict_from_search_string(
                 keyword,
-                {user_keyword: user_keyword for user_keyword in await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).get_list()}
+                {user_keyword: user_keyword for user_keyword in await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).get_list()}
             )
         )
 
@@ -86,16 +84,16 @@ class KeywordDelete(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("Your keywords have **not** been deleted!"), ephemeral=True)
             return
 
-        await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).delete_all_user()
+        await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).delete_all_user()
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/keyword delete",
             {"DELETE_ALL": "deleted"}
         ))
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("**ALL** your keywords have been deleted!"), ephemeral=True)
-        return
+
 
 
 def setup(client: SomiBot) -> None:

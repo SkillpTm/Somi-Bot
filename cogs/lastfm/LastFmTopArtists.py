@@ -38,21 +38,16 @@ class LastFmTopArtists(nextcord_C.Cog):
     ) -> None:
         """This command shows someone's top artists"""
 
-        if not user:
-            user = interaction.user
+        user = user or interaction.user
+        timeframe = timeframe or "overall"
 
-        if not timeframe:
-            timeframe = "overall"
-
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/lf topartists",
             {"user": str(user.id), "timeframe": timeframe}
         ))
 
-        lastfm_username = await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).last_fm_get()
-
-        if not lastfm_username:
+        if not (lastfm_username := await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).last_fm_get()):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
@@ -73,7 +68,7 @@ class LastFmTopArtists(nextcord_C.Cog):
     ) -> None:
         """This function recurses on button press and requests the data from the LastFm api to build the embed"""
 
-        top_artists_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&username={lastfm_username}&limit=10&page={page_number}&period={timeframe}&api_key={self.client.Keychain.LAST_FM_API_KEY}&format=json")
+        top_artists_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&username={lastfm_username}&limit=10&page={page_number}&period={timeframe}&api_key={self.client.keychain.LAST_FM_API_KEY}&format=json", timeout=10)
 
         if top_artists_response.status_code != 200:
             await interaction.edit_original_message(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"), view=None)
@@ -85,14 +80,14 @@ class LastFmTopArtists(nextcord_C.Cog):
 
         for artist in top_artists_data["topartists"]["artist"]:
             artist_url = artist["url"]
-            
+
             artist_name = Get.markdown_safe(artist["name"])
             output += f"{artist['@attr']['rank']}. **[{artist_name}]({artist_url})** - *({artist['playcount']} plays)*\n"
 
         embed = EmbedFunctions().builder(
-            color = self.client.LASTFM_COLOR,
+            color = self.client.config.LASTFM_COLOR,
             author = f"{member.display_name} Top Artists: {Lists.LASTFM_TIMEFRAMES_TEXT[timeframe]}",
-            author_icon = self.client.LASTFM_ICON,
+            author_icon = self.client.config.LASTFM_ICON,
             description = output
         )
 

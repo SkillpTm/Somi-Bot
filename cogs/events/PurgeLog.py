@@ -1,7 +1,9 @@
 import datetime
+import os
+import time
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import os
 
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get, Misc
@@ -11,6 +13,9 @@ from lib.utilities import SomiBot
 
 class PurgeLog(nextcord_C.Cog):
 
+    MAX_AUDIT_ENTIRES_LIMIT = 10
+    MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
@@ -19,20 +24,30 @@ class PurgeLog(nextcord_C.Cog):
     async def purge_log(self, messages: list[nextcord.Message]) -> None:
         """A log that activates, when someone gets purged without using the bot"""
 
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=messages[0].guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := messages[0].guild.get_channel(await (await DBHandler(self.client.database, server_id=messages[0].guild.id).server()).audit_log_get() or 0)):
             return
 
-        if messages[0].channel.id in await (await DBHandler(self.client.PostgresDB, server_id=messages[0].guild.id).hidden_channel()).get_list():
+        if messages[0].channel.id in await (await DBHandler(self.client.database, server_id=messages[0].guild.id).hidden_channel()).get_list():
             return
 
-        # we only do this to get "entry" and with that data on who deleted the messages
-        async for entry in messages[0].guild.audit_logs(limit=1, action=nextcord.AuditLogAction.message_bulk_delete):
-            if (datetime.datetime.now(datetime.timezone.utc) - entry.created_at).total_seconds() < 5:
+        entry: nextcord.AuditLogEntry = None
+        entry_count = 0
+
+        async for entry in messages[0].guild.audit_logs(
+            limit=PurgeLog.MAX_AUDIT_ENTIRES_LIMIT,
+            after=datetime.datetime.fromtimestamp(time.time() - PurgeLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
+            action=nextcord.AuditLogAction.message_bulk_delete
+        ):
+            if entry.user:
+                break
+
+            if (entry_count := entry_count + 1) == PurgeLog.MAX_AUDIT_ENTIRES_LIMIT:
                 return
 
-        self.client.Loggers.action_log(Get.log_message(
+        if not entry:
+            return
+
+        self.client.logger.action_log(Get.log_message(
             messages[0],
             "purge log",
             {"amount": str(len(messages))}
@@ -54,11 +69,10 @@ class PurgeLog(nextcord_C.Cog):
             ]
         )
 
-        sent_message = await messages[0].guild.get_channel(audit_log_id).send(embed=embed)
-        await sent_message.reply(file=nextcord.File(csv_name), mention_author=False)
+        await (await audit_log.send(embed=embed)).reply(file=nextcord.File(csv_name), mention_author=False)
         os.remove(csv_name)
 
-        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("purge log")
+        await (await DBHandler(self.client.database).telemetry()).increment("purge log")
 
 
 

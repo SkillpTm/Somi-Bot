@@ -1,6 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
+from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
@@ -8,8 +9,6 @@ from lib.utilities import SomiBot
 
 
 class CustomDelete(nextcord_C.Cog):
-
-    from cogs.basic.ParentCommand import ParentCommand
 
     def __init__(self, client) -> None:
         self.client: SomiBot = client
@@ -30,7 +29,7 @@ class CustomDelete(nextcord_C.Cog):
     ) -> None:
         """This command deletes a custom-command from the server's custom-commands"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/custom delete",
             {"name": name}
@@ -40,22 +39,18 @@ class CustomDelete(nextcord_C.Cog):
 
         name = Get.clean_input_command(name)
 
-        commandtext = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).delete(name)
-
-        if not commandtext:
+        if not (commandtext := await (await DBHandler(self.client.database, server_id=interaction.guild.id).custom_command()).delete(name)):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"There is no custom-command with the name `{name}`.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
             return
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"The custom-command `{name}` has been deleted."), ephemeral=True)
 
 
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.PERMISSION_COLOR,
+            color = self.client.config.PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [
@@ -73,7 +68,7 @@ class CustomDelete(nextcord_C.Cog):
             ]
         )
 
-        await interaction.guild.get_channel(audit_log_id).send(embed=embed)
+        await audit_log.send(embed=embed)
 
     ####################################################################################################
 
@@ -84,11 +79,11 @@ class CustomDelete(nextcord_C.Cog):
         name: str
     ) -> None:
         """provides autocomplete suggestions to discord"""
-        
+
         await interaction.response.send_autocomplete(
             Get.autocomplete_dict_from_search_string(
                 name,
-                {command: command for command in await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).get_list()}
+                {command: command for command in await (await DBHandler(self.client.database, server_id=interaction.guild.id).custom_command()).get_list()}
             )
         )
 

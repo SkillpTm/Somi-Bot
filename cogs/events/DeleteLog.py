@@ -1,4 +1,6 @@
 import datetime
+import time
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
@@ -9,6 +11,9 @@ from lib.utilities import SomiBot
 
 
 class DeleteLog(nextcord_C.Cog):
+
+    MAX_AUDIT_ENTIRES_LIMIT = 10
+    MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
 
     def __init__(self, client) -> None:
         self.client: SomiBot = client
@@ -24,31 +29,34 @@ class DeleteLog(nextcord_C.Cog):
         if not message.content and len(message.attachments) < 1:
             return
 
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := message.guild.get_channel(await (await DBHandler(self.client.database, server_id=message.guild.id).server()).audit_log_get() or 0)):
             return
 
-        if message.channel.id in await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id).hidden_channel()).get_list():
+        if message.channel.id in await (await DBHandler(self.client.database, server_id=message.guild.id).hidden_channel()).get_list():
             return
-        
+
         # check the last audit log entry for message removals, to see make sure this was a deletion or removal
-        async for entry in message.guild.audit_logs(limit=1, action=nextcord.AuditLogAction.message_delete):
-            if message.author.id == entry.target.id and (datetime.datetime.now(datetime.timezone.utc) - entry.created_at).total_seconds() < 5:
-                await self.remove_log(message, audit_log_id, entry)
-            else:
-                await self.delete_log(message, audit_log_id)
+        async for entry in message.guild.audit_logs(
+            limit=DeleteLog.MAX_AUDIT_ENTIRES_LIMIT,
+            after=datetime.datetime.fromtimestamp(time.time() - DeleteLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
+            action=nextcord.AuditLogAction.message_delete
+        ):
+            if message.author.id == entry.target.id:
+                await self.remove_log(message, audit_log, entry)
+                return
+
+        await self.delete_log(message, audit_log)
 
     ####################################################################################################
 
     async def delete_log(
         self,
         message: nextcord.Message,
-        audit_log_id: int
+        audit_log: nextcord.TextChannel
     ) -> None:
         """logs a deleted message"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             message,
             "delete log",
             {"message": message.content}
@@ -62,24 +70,24 @@ class DeleteLog(nextcord_C.Cog):
         )
 
         embed, file_urls = EmbedFunctions.get_or_add_attachments(message.attachments, embed)
-        sent_message = await message.guild.get_channel(audit_log_id).send(embed=embed)
+        sent_message = await audit_log.send(embed=embed)
 
         if file_urls:
             await sent_message.reply(content=file_urls, mention_author=False)
 
-        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("delete log")
+        await (await DBHandler(self.client.database).telemetry()).increment("delete log")
 
     ####################################################################################################
 
     async def remove_log(
         self,
         message: nextcord.Message,
-        audit_log_id: int,
+        audit_log: nextcord.TextChannel,
         entry: nextcord.AuditLogEntry
     ) -> None:
         """logs a removed message"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             message,
             "remove log",
             {"message": message.content, "removed by": str(entry.user.id)}
@@ -93,12 +101,12 @@ class DeleteLog(nextcord_C.Cog):
         )
 
         embed, file_urls = EmbedFunctions.get_or_add_attachments(message.attachments, embed)
-        sent_message = await message.guild.get_channel(audit_log_id).send(embed=embed)
+        sent_message = await audit_log.send(embed=embed)
 
         if file_urls:
             await sent_message.reply(content=file_urls, mention_author=False)
 
-        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("remove log")
+        await (await DBHandler(self.client.database).telemetry()).increment("remove log")
 
 
 

@@ -17,9 +17,9 @@ class Bam(nextcord_C.Cog):
     async def bam(self, interaction: nextcord.Interaction) -> None:
         """This command fake bans someone"""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/bam"))
+        self.client.logger.action_log(Get.log_message(interaction, "/bam"))
 
-        await interaction.response.send_message(f"User has been bammed!\n{self.client.BAN_HAMMER_GIF}")
+        await interaction.response.send_message(f"User has been bammed!\n{self.client.config.BAN_HAMMER_GIF}")
 
 
 

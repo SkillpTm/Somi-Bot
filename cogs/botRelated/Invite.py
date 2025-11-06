@@ -17,9 +17,9 @@ class Invite(nextcord_C.Cog):
     async def invite(self, interaction: nextcord.Interaction) -> None:
         """This command posts the invite link for the bot"""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/about"))
+        self.client.logger.action_log(Get.log_message(interaction, "/about"))
 
-        await interaction.response.send_message(f"<{self.client.BOT_INVITE}>")
+        await interaction.response.send_message(f"<{self.client.config.BOT_INVITE}>")
 
 
 

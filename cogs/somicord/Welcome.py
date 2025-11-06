@@ -16,16 +16,17 @@ class Welcome(nextcord_C.Cog):
     async def welcome(self, member: nextcord.Member) -> None:
         """welcomes a user on the server"""
 
-        if member.guild.id != self.client.SOMICORD_ID:
+        if member.guild.id != self.client.config.MODMAIL_SERVER_ID:
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.BOT_COLOR,
+            color = self.client.config.BOT_COLOR,
             description = f"Hey {member.mention}, welcome to `{member.guild.name}`!\nWhat you waiting for - start chatting.",
-            image = self.client.SOMICORD_WELCOME_GIF
+            image = self.client.config.SOMICORD_WELCOME_GIF
         )
-        sent_message = await member.guild.get_channel(self.client.SOMICORD_WELCOME_CHANNEL_ID).send(embed=embed)
-        await sent_message.add_reaction(self.client.SOMI_WELCOME_EMOTE)
+
+        sent_message = await member.guild.get_channel(self.client.config.WELCOME_CHANNEL_ID).send(embed=embed)
+        await sent_message.add_reaction(self.client.config.SOMI_WELCOME_EMOTE)
 
 
 

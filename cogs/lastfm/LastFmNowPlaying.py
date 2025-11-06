@@ -1,7 +1,8 @@
+import datetime
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
-import datetime
 
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
@@ -34,24 +35,21 @@ class LastFmNowPlaying(nextcord_C.Cog):
     ) -> None:
         """This command displays what someone last listend to (and what they're listening to right now)"""
 
-        if not user:
-            user = interaction.user
+        user = user or interaction.user
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/lf np",
             {"user": str(user.id)}
         ))
 
-        lastfm_username = await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).last_fm_get()
-
-        if not lastfm_username:
+        if not (lastfm_username := await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).last_fm_get()):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
-        await interaction.response.defer(with_message = True)
+        await interaction.response.defer(with_message=True)
 
-        np_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&username={lastfm_username}&limit=1&api_key={self.client.Keychain.LAST_FM_API_KEY}&format=json")
+        np_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&username={lastfm_username}&limit=1&api_key={self.client.keychain.LAST_FM_API_KEY}&format=json", timeout=10)
 
         if np_response.status_code != 200:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
@@ -75,17 +73,17 @@ class LastFmNowPlaying(nextcord_C.Cog):
 
         if not timestamp:
             footer = "Now Playing"
-            footer_icon = self.client.HEADPHONES_ICON
+            footer_icon = self.client.config.HEADPHONES_ICON
         else:
             footer = "Listened:"
             footer_icon = ""
 
         embed = EmbedFunctions().builder(
-            color = self.client.LASTFM_COLOR,
+            color = self.client.config.LASTFM_COLOR,
             image = cover_url,
             author = f"{track_name} - {artist_name}",
             author_url = track_url,
-            author_icon = self.client.LASTFM_ICON,
+            author_icon = self.client.config.LASTFM_ICON,
             description = f"on `{album_name}`",
             footer = footer,
             footer_icon = footer_icon,

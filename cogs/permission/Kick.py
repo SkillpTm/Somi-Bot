@@ -12,7 +12,7 @@ class Kick(nextcord_C.Cog):
         self.client: SomiBot = client
 
     ####################################################################################################
-        
+
     @nextcord.slash_command(
         name = "kick",
         description = "kicks a member",
@@ -37,7 +37,7 @@ class Kick(nextcord_C.Cog):
     ) -> None:
         """This command kicks a member with a reason."""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/ban",
             {"member": str(member.id), "reason": reason}
@@ -52,14 +52,14 @@ class Kick(nextcord_C.Cog):
         if interaction.user.top_role.position < member.top_role.position and interaction.user != interaction.guild.owner:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only kick a member, if your current top-role is above their current top-role!"), ephemeral=True)
             return
-        
+
         try:
             if reason:
                 await member.send(f"You have been __**kicked**__ from `{member.guild.name}`\nFor the reason:\n`{reason}`")
             else:
                 await member.send(f"You have been __**kicked**__ from `{member.guild.name}`\nThere was no provided reason.")
-        except:
-            self.client.Loggers.action_warning(f"/kick send ~ User: {member.id} couldn't be notified, because their pms aren't open to the client")
+        except nextcord.Forbidden:
+            self.client.logger.action_warning(f"/kick send ~ User: {member.id} couldn't be notified, because their pms aren't open to the client")
 
         await interaction.guild.kick(user = member, reason = reason)
 

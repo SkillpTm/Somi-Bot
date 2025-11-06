@@ -1,6 +1,7 @@
+import random
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import random
 
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import OptionsButton, SomiBot
@@ -10,7 +11,7 @@ from lib.utilities import OptionsButton, SomiBot
 class ChooseModal(nextcord.ui.Modal):
 
     def __init__(self, client) -> None:
-        super().__init__("Let Somi choose between something!", timeout=None)
+        super().__init__("Make Somi choose for you!", timeout=None)
         self.client: SomiBot = client
 
         self.choose = nextcord.ui.TextInput(
@@ -18,7 +19,7 @@ class ChooseModal(nextcord.ui.Modal):
             style = nextcord.TextInputStyle.paragraph,
             min_length = 1,
             max_length = 4000,
-            placeholder = "a new line represents a new option",
+            placeholder = "each new line is a new option",
             required = True
         )
 
@@ -33,14 +34,13 @@ class ChooseModal(nextcord.ui.Modal):
         for index, option in enumerate(self.choose.value.split("\n")):
             options[f"{index+1}"] = option
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/choose",
             options
         ))
 
         chosen_key = random.choice(list(options.keys()))
-
 
         view = OptionsButton(interaction=interaction)
         await interaction.response.send_message(f"I have chosen __Option {chosen_key}__:\n`{options[chosen_key]}`", view=view)
@@ -50,17 +50,17 @@ class ChooseModal(nextcord.ui.Modal):
         if not view.value:
             return
 
-        AllOptionsOutput = ""
+        all_options_output = ""
 
         for name, value in options.items():
             # if the option is the chosen option underscore it
             if name == chosen_key:
-                AllOptionsOutput += f"__**Option {name[-1]}: {value}**__\n"
+                all_options_output += f"__**Option {name[-1]}: {value}**__\n"
                 continue
 
-            AllOptionsOutput += f"Option {name[-1]}: {value}\n"
+            all_options_output += f"Option {name[-1]}: {value}\n"
 
-        await interaction.followup.send(embed=EmbedFunctions().get_info_message(AllOptionsOutput, self.client))
+        await interaction.followup.send(embed=EmbedFunctions().get_info_message(all_options_output, self.client))
 
 
 
@@ -79,10 +79,9 @@ class Choose(nextcord_C.Cog):
     async def choose(self, interaction: nextcord.Interaction) -> None:
         """This command randomly chooses between any of the options"""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/choose"))
+        self.client.logger.action_log(Get.log_message(interaction, "/choose"))
 
-        modal = ChooseModal(self.client)
-        await interaction.response.send_modal(modal=modal)
+        await interaction.response.send_modal(ChooseModal(self.client))
 
 
 

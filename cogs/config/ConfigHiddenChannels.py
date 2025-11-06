@@ -1,6 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
+from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import Lists, SomiBot
@@ -8,8 +9,6 @@ from lib.utilities import Lists, SomiBot
 
 
 class ConfigHiddenChannels(nextcord_C.Cog):
-
-    from cogs.basic.ParentCommand import ParentCommand
 
     def __init__(self, client) -> None:
         self.client: SomiBot = client
@@ -26,17 +25,16 @@ class ConfigHiddenChannels(nextcord_C.Cog):
             required = True,
             choices = ["Add", "Remove"]
         ),
-        channel: nextcord.abc.GuildChannel = nextcord.SlashOption(
+        channel: nextcord.TextChannel | nextcord.Thread = nextcord.SlashOption(
             channel_types = Lists.TEXT_CHANNELS,
             description = "the channel to be added/removed",
             required = False)
         ) -> None:
         """This command adds a custom command to the server's custom commands"""
 
-        if not channel:
-            channel = interaction.channel
+        channel = channel or interaction.channel
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/config hidden-channels",
             {"action": action, "channel": str(channel.id)}
@@ -44,27 +42,24 @@ class ConfigHiddenChannels(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-
         if action == "Add":
-            if not await self._addChannel(interaction, channel):
+            if not await self._add_channel(interaction, channel):
                 return
-            
-            mod_action = f"{interaction.user.mention} added: {channel.mention} as a hidden-channel."   
+
+            mod_action = f"{interaction.user.mention} added: {channel.mention} as a hidden-channel."
 
         elif action == "Remove":
-            if not await self._removeChannel(interaction, channel):
+            if not await self._remove_channel(interaction, channel):
                 return
 
-            mod_action = f"{interaction.user.mention} removed: {channel.mention} from the hidden-channels."  
+            mod_action = f"{interaction.user.mention} removed: {channel.mention} from the hidden-channels."
 
 
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.PERMISSION_COLOR,
+            color = self.client.config.PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [
@@ -76,20 +71,18 @@ class ConfigHiddenChannels(nextcord_C.Cog):
             ]
         )
 
-        await interaction.guild.get_channel(audit_log_id).send(embed=embed)
+        await audit_log.send(embed=embed)
 
     ####################################################################################################
 
-    async def _addChannel(
+    async def _add_channel(
         self,
         interaction: nextcord.Interaction,
-        channel: nextcord.abc.GuildChannel
+        channel: nextcord.TextChannel | nextcord.Thread
     ) -> bool:
         "adds or doesn't add the role indicated by the output bool"
 
-        added = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).hidden_channel()).add(channel.id)
-
-        if not added:
+        if not (added := await (await DBHandler(self.client.database, server_id=interaction.guild.id).hidden_channel()).add(channel.id)):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{channel.mention} is already a hidden-channel.\nTo get a list of all the hidden-channels use `/config info`."), ephemeral=True)
             return added
 
@@ -98,16 +91,14 @@ class ConfigHiddenChannels(nextcord_C.Cog):
 
     ####################################################################################################
 
-    async def _removeChannel(
+    async def _remove_channel(
         self,
         interaction: nextcord.Interaction,
-        channel: nextcord.abc.GuildChannel
+        channel: nextcord.TextChannel | nextcord.Thread
     ) -> bool:
         "removes or doesn't remove the channel indicated by the output bool"
 
-        deleted = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).hidden_channel()).delete(channel.id)
-
-        if not deleted:
+        if not (deleted := await (await DBHandler(self.client.database, server_id=interaction.guild.id).hidden_channel()).delete(channel.id)):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{channel.mention} isn't a hidden-channel.\nTo get a list of all the hidden-channels use `/config info`."), ephemeral=True)
             return deleted
 

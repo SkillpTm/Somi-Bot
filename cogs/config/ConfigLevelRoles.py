@@ -1,6 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
+from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get, LevelRoles
 from lib.utilities import SomiBot
@@ -8,8 +9,6 @@ from lib.utilities import SomiBot
 
 
 class ConfigLevelRoles(nextcord_C.Cog):
-
-    from cogs.basic.ParentCommand import ParentCommand
 
     def __init__(self, client) -> None:
         self.client: SomiBot = client
@@ -39,7 +38,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
     ) -> None:
         """This command adds/deletes a level-role to/from the server's level-roles"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/config level-ignore-channel",
             {"action": action, "role": str(role.id), "level": str(level)}
@@ -51,28 +50,24 @@ class ConfigLevelRoles(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only add/remove a role as a level-role, if the role is below your current top role!"), ephemeral=True)
             return
 
-
         if action == "Add":
-            if not await self._addRole(interaction, role, level):
+            if not await self._add_role(interaction, role, level):
                 return
-            
+
             mod_action = f"{interaction.user.mention} added: {role.mention} as a level-role at level `{level}`."
-            
 
         elif action == "Remove":
-            if not await self._removeRole(interaction, role):
+            if not await self._remove_role(interaction, role):
                 return
-            
-            mod_action = f"{interaction.user.mention} removed: {role.mention} from the level-roles."  
+
+            mod_action = f"{interaction.user.mention} removed: {role.mention} from the level-roles."
 
 
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.PERMISSION_COLOR,
+            color = self.client.config.PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [
@@ -84,12 +79,12 @@ class ConfigLevelRoles(nextcord_C.Cog):
             ]
         )
 
-        await interaction.guild.get_channel(audit_log_id).send(embed=embed)
+        await audit_log.send(embed=embed)
 
 
     ####################################################################################################
 
-    async def _addRole(
+    async def _add_role(
         self,
         interaction: nextcord.Interaction,
         role: nextcord.Role,
@@ -101,9 +96,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You need to define a role **and** a level to add a new level-role."), ephemeral=True)
             return False
 
-        added = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level_role()).add(role.id, level)
-
-        if not added:
+        if not (added := await (await DBHandler(self.client.database, server_id=interaction.guild.id).level_role()).add(role.id, level)):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{role.mention} already has a level assigned or the level `{level}` already has a role assigned!\nTo get a list of all the level-roles use `/config info`."), ephemeral=True)
             return added
 
@@ -115,16 +108,14 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
     ####################################################################################################
 
-    async def _removeRole(
+    async def _remove_role(
         self,
         interaction: nextcord.Interaction,
         role: nextcord.Role
     ) -> bool:
         "removes or doesn't remove the role indicated by the output bool"
 
-        deleted = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level_role()).delete(role.id)
-
-        if not deleted:
+        if not (deleted := await (await DBHandler(self.client.database, server_id=interaction.guild.id).level_role()).delete(role.id)):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{role.mention} isn't a level-role.\nTo get a list of all the level-roles use `/config info`."), ephemeral=True)
             return deleted
 

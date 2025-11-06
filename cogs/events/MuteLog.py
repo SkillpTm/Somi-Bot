@@ -1,7 +1,8 @@
 import datetime
+import time
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import time
 
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
@@ -10,6 +11,9 @@ from lib.utilities import SomiBot
 
 
 class MuteLog(nextcord_C.Cog):
+
+    MAX_AUDIT_ENTIRES_LIMIT = 10
+    MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
 
     def __init__(self, client) -> None:
         self.client: SomiBot = client
@@ -25,14 +29,22 @@ class MuteLog(nextcord_C.Cog):
 
         if member_before.communication_disabled_until == member_after.communication_disabled_until:
             return
-        
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=member_before.guild.id).server()).audit_log_get()
 
-        if not audit_log_id:
+        if not (audit_log := member_before.guild.get_channel(await (await DBHandler(self.client.database, server_id=member_before.guild.id).server()).audit_log_get() or 0)):
             return
 
-        async for entry in member_before.guild.audit_logs(limit=1, action=nextcord.AuditLogAction.member_update):
-            if member_before.id != entry.target.id or (datetime.datetime.now(datetime.timezone.utc) - entry.created_at).total_seconds() < 5:
+        entry: nextcord.AuditLogEntry = None
+        entry_count = 0
+
+        async for entry in member_before.guild.audit_logs(
+            limit=MuteLog.MAX_AUDIT_ENTIRES_LIMIT,
+            after=datetime.datetime.fromtimestamp(time.time() - MuteLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
+            action=nextcord.AuditLogAction.member_update
+        ):
+            if member_before.id == entry.target.id:
+                break
+
+            if (entry_count := entry_count + 1) == MuteLog.MAX_AUDIT_ENTIRES_LIMIT:
                 return
 
         if member_after.communication_disabled_until:
@@ -40,9 +52,9 @@ class MuteLog(nextcord_C.Cog):
         else:
             embed = self.unmuted(entry, member_after)
 
-        await member_before.guild.get_channel(audit_log_id).send(embed=embed)
+        await audit_log.send(embed=embed)
 
-        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("mute log")
+        await (await DBHandler(self.client.database).telemetry()).increment("mute log")
 
     ####################################################################################################
 
@@ -53,7 +65,7 @@ class MuteLog(nextcord_C.Cog):
     ) -> None:
         """creates the embed, for if the user was muted"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             member_after,
             "mute log",
             {
@@ -93,7 +105,7 @@ class MuteLog(nextcord_C.Cog):
     ) -> None:
         """creates the embed, for if the user was unmuted"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             member_after,
             "unmute log",
             {"unmuted by": str(entry.user.id)}

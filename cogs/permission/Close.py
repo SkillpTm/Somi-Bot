@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
-from lib.utilities import Lists, SomiBot
+from lib.utilities import SomiBot
 
 
 
@@ -24,16 +24,14 @@ class Close(nextcord_C.Cog):
     async def close(self, interaction: nextcord.Interaction) -> None:
         """This command takes the send-messages permission from the default-role away, effectifly closing down the server. Additionally it sets invites_disabled = True"""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/close"))
+        self.client.logger.action_log(Get.log_message(interaction, "/close"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        default_role_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).default_role_get()
-
         roles_to_modify = [interaction.guild.default_role]
 
-        if default_role_id:
-            roles_to_modify.append(interaction.guild.get_role(default_role_id))
+        if (default_role := interaction.guild.get_role(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).default_role_get())):
+            roles_to_modify.append(interaction.guild.get_role(default_role))
 
         permissions_to_check: list[bool] = []
 
@@ -59,10 +57,7 @@ class Close(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("Closed the server sucessfully.\n To re-open it use `/open`"), ephemeral=True)
 
-
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
             return
 
         embed = EmbedFunctions().builder(
@@ -78,7 +73,7 @@ class Close(nextcord_C.Cog):
             ]
         )
 
-        await interaction.guild.get_channel(audit_log_id).send(embed=embed)
+        await audit_log.send(embed=embed)
 
     ####################################################################################################
 
@@ -92,16 +87,14 @@ class Close(nextcord_C.Cog):
     async def open(self, interaction: nextcord.Interaction) -> None:
         """This command gives the send-messages permission back to the default-role, effectifly opening the server back up."""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/open"))
+        self.client.logger.action_log(Get.log_message(interaction, "/open"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        default_role_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).default_role_get()
-
         roles_to_modify = [interaction.guild.default_role]
 
-        if default_role_id:
-            roles_to_modify.append(interaction.guild.get_role(default_role_id))
+        if (default_role := interaction.guild.get_role(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).default_role_get())):
+            roles_to_modify.append(default_role)
 
         permissions_to_check: list[bool] = []
 
@@ -125,26 +118,10 @@ class Close(nextcord_C.Cog):
                 )
             )
 
-            for channel in interaction.guild.channels:
-                if not channel.type in Lists.TEXT_CHANNELS:
-                    continue
-
-                if not channel.permissions_for(interaction.guild.get_member(self.client.user.id)).manage_channels:
-                    continue
-
-                overwrites = channel.overwrites_for(role)
-                overwrites.send_messages = True
-                overwrites.send_messages_in_threads = True
-                overwrites.add_reactions = True
-
-                await channel.set_permissions(target=role, overwrite=overwrites)
-
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("Re-opened the server sucessfully."), ephemeral=True)
 
 
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
             return
 
         embed = EmbedFunctions().builder(
@@ -160,7 +137,7 @@ class Close(nextcord_C.Cog):
             ]
         )
 
-        await interaction.guild.get_channel(audit_log_id).send(embed=embed)
+        await audit_log.send(embed=embed)
 
 
 

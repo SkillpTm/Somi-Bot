@@ -43,10 +43,9 @@ class Ban(nextcord_C.Cog):
     ) -> None:
         """This command bans a member, while providing a delete message amount (in seconds) and giving a reason. It also protects from self-bans."""
 
-        if not delete_message_hours:
-            delete_message_hours = 1
+        delete_message_hours = delete_message_hours or 1
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/ban",
             {"member": str(member.id), "delete_message_hours": str(delete_message_hours), "reason": reason}
@@ -67,10 +66,10 @@ class Ban(nextcord_C.Cog):
                 await member.send(f"You have been __**banned**__ from `{interaction.guild.name}`\nFor the reason:\n`{reason}`")
             else:
                 await member.send(f"You have been __**banned**__ from `{interaction.guild.name}`\nThere was no provided reason.")
-        except:
-            self.client.Loggers.action_warning(f"/ban send ~ User: {member.id} couldn't be notified, because their pms aren't open to the client")
+        except nextcord.Forbidden:
+            self.client.logger.action_warning(f"/ban send ~ User: {member.id} couldn't be notified, because their pms aren't open to the client")
 
-        await interaction.guild.ban(user = member, reason = reason, delete_message_seconds = delete_message_hours * 60 * 60)
+        await interaction.guild.ban(user=member, reason=reason, delete_message_seconds=delete_message_hours * 60 * 60)
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Succesfully banned {member.mention}."), ephemeral=True)
 
@@ -96,7 +95,7 @@ class Ban(nextcord_C.Cog):
     ) -> None:
         """This command unbans a user, if that user exists and was banned."""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/unban",
             {"user_id": str(user_id)}
@@ -119,8 +118,8 @@ class Ban(nextcord_C.Cog):
         try:
             await interaction.guild.unban(user)
             await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{user.mention} has been unbanned."), ephemeral=True)
-        except:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{user.mention} wasn't banned."), ephemeral=True)
+        except nextcord.Forbidden:
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{user.mention} wasn't unbanned."), ephemeral=True)
             return
 
     ####################################################################################################
@@ -132,14 +131,13 @@ class Ban(nextcord_C.Cog):
         user_id: str
     ) -> None:
         """provides autocomplete suggestions to discord"""
-        
-        bans = await interaction.guild.bans(limit=None).flatten()
 
-        all_bans_dict = {ban.user.id: ban.user.id for ban in bans}
-
-        autocomplete_dict = Get.autocomplete_dict_from_search_string(user_id, all_bans_dict)
-
-        await interaction.response.send_autocomplete(autocomplete_dict)
+        await interaction.response.send_autocomplete(
+            Get.autocomplete_dict_from_search_string(
+                user_id,
+                {ban.user.id: ban.user.id async for ban in interaction.guild.bans(limit=None)}
+            )
+        )
 
 
 

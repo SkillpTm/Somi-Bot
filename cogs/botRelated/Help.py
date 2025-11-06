@@ -33,7 +33,7 @@ class Help(nextcord_C.Cog):
         if not name.startswith("/"):
             name = f"/{name}"
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/help",
             {"name": name}
@@ -41,38 +41,31 @@ class Help(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        # if not a command name return early
-        if name not in self.client.Lists.HELP_AUTOCOMPLETE_TUPLE:
+        if name not in self.client.lists.HELP_AUTOCOMPLETE_TUPLE:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{name}` isn't a valid command name."), ephemeral=True)
             return
 
-        HELP_OUTPUT = {**self.client.Lists.HELP_PERMISSION_OUTPUT, **self.client.Lists.HELP_NORMAL_OUTPUT}
-
-        # check if the command is a permission command (permission command dicts have 3 elements, regular just 2)
-        if len(HELP_OUTPUT[name]) == 3:
-            permissions_text = HELP_OUTPUT[name][2]
-        else:
-            permissions_text = "" # an empty string will lead for the field to no be displayed
+        help_oputput = {**self.client.lists.HELP_PERMISSION_OUTPUT, **self.client.lists.HELP_NORMAL_OUTPUT}
 
         embed = EmbedFunctions.builder(
-            color = self.client.BOT_COLOR,
+            color = self.client.config.BOT_COLOR,
             title = f"Help for `{name}`",
             fields = [
                 [
                     "Syntax:",
-                    "\n".join([line.strip() for line in HELP_OUTPUT[name][0].split("\n")]),
+                    "\n".join([line.strip() for line in help_oputput[name][0].split("\n")]),
                     False
                 ],
 
                 [
                     "Example:",
-                    HELP_OUTPUT[name][1],
+                    help_oputput[name][1],
                     False
                 ],
 
                 [
                     "Required Default Permissions:",
-                    permissions_text,
+                    help_oputput[name][2] if len(help_oputput[name]) == 3 else "",
                     False
                 ]
             ]
@@ -80,7 +73,7 @@ class Help(nextcord_C.Cog):
 
         await interaction.followup.send(embed=embed, ephemeral=True)
 
-        await (await DBHandler(self.client.PostgresDB).telemetry()).increment(f"help selection: {name[1:]}")
+        await (await DBHandler(self.client.database).telemetry()).increment(f"help selection: {name[1:]}")
 
     ####################################################################################################
 
@@ -95,7 +88,7 @@ class Help(nextcord_C.Cog):
         await interaction.response.send_autocomplete(
             Get.autocomplete_dict_from_search_string(
                 name,
-                {command: command[1:] for command in self.client.Lists.HELP_AUTOCOMPLETE_TUPLE}
+                {command: command[1:] for command in self.client.lists.HELP_AUTOCOMPLETE_TUPLE}
             )
         )
 

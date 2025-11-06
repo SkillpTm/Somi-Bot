@@ -18,18 +18,19 @@ class About(nextcord_C.Cog):
     async def about(self, interaction: nextcord.Interaction) -> None:
         """This command outputs various information about the bot to the user"""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/about"))
+        self.client.logger.action_log(Get.log_message(interaction, "/about"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         embed = EmbedFunctions().builder(
-            color = self.client.BOT_COLOR,
+            color = self.client.config.BOT_COLOR,
             author = f"{self.client.user}",
             author_icon = self.client.user.display_avatar.url,
             title = "Information",
             description = f"""
                           {self.client.user.mention} is a themed bot after the kpop soloist Jeon Somi written in Python using the [Nextcord API wrapper](https://docs.nextcord.dev/en/stable/).
-                          Originally it was created to fullfil all needs of [Somicord]({self.client.SOMICORD_INVITE}).
+                          Originally it was created to fullfil all needs of [Somicord]({self.client.config.SOMICORD_INVITE}).
+                          Additionally you can checkout Somi's source code on [GitHub]({self.client.config.BOT_GITHUB}).
                           """,
             fields = [
                 [
@@ -40,7 +41,7 @@ class About(nextcord_C.Cog):
 
                 [
                     "Current Version:",
-                    f"`{self.client.VERSION}`",
+                    f"`{self.client.config.VERSION}`",
                     True
                 ],
 
@@ -58,19 +59,19 @@ class About(nextcord_C.Cog):
 
                 [
                     "Visible Users:",
-                    f"`{len(Get.visible_users(self.client))}`",
+                    f"`{len(self.client.visible_users())}`",
                     True
                 ],
 
                 [
                     "Global Command Executions:",
-                    f"`{await (await DBHandler(self.client.PostgresDB).telemetry()).get_total_amount()}`",
+                    f"`{await (await DBHandler(self.client.database).telemetry()).get_total_amount()}`",
                     True
                 ],
 
                 [
                     "Invites:",
-                    f"You can invite Somi using this [link]({self.client.BOT_INVITE}). Additionally you can checkout Somi's source code on [GitHub]({self.client.BOT_GITHUB}).",
+                    f"You can invite Somi using this [link]({self.client.config.BOT_INVITE}) and her support server can be found [here]({self.client.config.SUPPORT_SERVER_INVITE}).",
                     False
                 ],
 
@@ -82,12 +83,12 @@ class About(nextcord_C.Cog):
 
                 [
                     "Data and Usage:",
-                    f"Here you can find our [Terms of Service]({self.client.BOT_TOS}) and [Privacy Policy]({self.client.BOT_PP}).",
+                    f"Here you can find our [Terms of Service]({self.client.config.BOT_TOS}) and [Privacy Policy]({self.client.config.BOT_PP}).",
                     False
                 ]
             ]
         )
-        
+
         await interaction.followup.send(embed=embed, ephemeral=True)
 
 

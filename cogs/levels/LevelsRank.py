@@ -28,10 +28,9 @@ class LevelsRank(nextcord_C.Cog):
     ) -> None:
         """Displays any users level, rank and level progression, with a progession bar"""
 
-        if not member:
-            member = interaction.guild.get_member(interaction.user.id)
+        member = member or interaction.guild.get_member(interaction.user.id)
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/levels rank",
             {"member": str(member.id)}
@@ -39,17 +38,17 @@ class LevelsRank(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        user_level, xp_until_next_level = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).level()).get_level_and_xp_until_next()
+        user_level, xp_until_next_level = await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).level()).get_level_and_xp_until_next()
         next_level_xp = (user_level+1) * 200
         xp_progress_to_next_level = next_level_xp - xp_until_next_level
         output_percentage = int((float(xp_progress_to_next_level) / float(next_level_xp)) * 100)
-        
+
         # calculate a 20 segment progress bar with the percentage of xp to the next level
         percent = 20 * (float(xp_progress_to_next_level) / float(next_level_xp))
         percent_bar = "[" + "█" * int(percent) + " -" * (20 - int(percent)) + "]"
 
         embed = EmbedFunctions().builder(
-            color = self.client.BOT_COLOR,
+            color = self.client.config.BOT_COLOR,
             thumbnail = member.display_avatar.url,
             title = f"Rank for `{member.display_name}` on `{interaction.guild.name}`",
             fields = [
@@ -61,19 +60,19 @@ class LevelsRank(nextcord_C.Cog):
 
                 [
                     "Rank:",
-                    f"`{'{:,}'.format(await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).level()).get_rank())}`",
+                    f"`{f"{await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).level()).get_rank():,}"}`",
                     True
                 ],
 
                 [
                     "Total XP:",
-                    f"`{'{:,}'.format(await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id, user_id=interaction.user.id).level()).get_total_xp())}`",
+                    f"`{f"{await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).level()).get_total_xp():,}"}`",
                     True
                 ],
 
                 [
                     "Level Progress:",
-                    f"{percent_bar}\n{'{:,}'.format(xp_progress_to_next_level)}/{'{:,}'.format(next_level_xp)} ({output_percentage}%)",
+                    f"{percent_bar}\n{f"{xp_progress_to_next_level:,}"}/{f"{next_level_xp:,}"} ({output_percentage}%)",
                     False
                 ]
             ]

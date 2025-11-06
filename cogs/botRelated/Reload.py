@@ -1,10 +1,11 @@
+import os
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
-import os
 
 from lib.modules import EmbedFunctions, Get
-from lib.utilities import SomiBot
+from lib.utilities import Config, Keychain, Lists, Logger, SomiBot
 
 
 
@@ -18,7 +19,7 @@ class Reload(nextcord_C.Cog):
     @nextcord.slash_command(
         name = "reload",
         description = "reload the entire bot",
-        guild_ids = [SomiBot.SUPPORT_SERVER_ID],
+        guild_ids = [Config.SUPPORT_SERVER_ID],
         default_member_permissions = nextcord.Permissions(administrator=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
@@ -27,30 +28,37 @@ class Reload(nextcord_C.Cog):
     async def reload(self, interaction: nextcord.Interaction) -> None:
         """This command reloads the bot, it can only be executed from the owner"""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/reload"))
+        self.client.logger.action_log(Get.log_message(interaction, "/reload"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
+        self.client.is_setup = False
+
+        self.client.config = Config()
+        self.client.keychain = Keychain()
+        self.client.lists = Lists(self.client.config.APPLICATION_ID)
+        self.client.logger = Logger()
+        self.client.change_presence(nextcord.Activity(type=nextcord.ActivityType.listening, name=self.client.config.ACTIVITY_NAME))
 
         # crawl through ./cogs/ 's subfolders to reload all cogs
-        for folder in os.listdir(f"./cogs/"):
+        for folder in os.listdir("./cogs/"):
             if not os.path.isdir(f"./cogs/{folder}/"):
                 continue
-            
+
             for file in os.listdir(f"./cogs/{folder}/"):
                 if not file.endswith(".py"):
                     continue
 
                 self.client.reload_extension(f"cogs.{folder}.{file[:-3]}")
 
-
         await self.client.sync_application_commands()
-                    
+
+        self.client.is_setup = True
+
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("The bot has been reloaded."), ephemeral=True)
 
-
         embed = EmbedFunctions().builder(
-            color = self.client.PERMISSION_COLOR,
+            color = self.client.config.PERMISSION_COLOR,
             author = "Dev Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [
@@ -62,7 +70,7 @@ class Reload(nextcord_C.Cog):
             ]
         )
 
-        await self.client.get_channel(self.client.SUPPORT_SERVER_LOGS_ID).send(embed=embed)
+        await self.client.get_channel(self.client.config.SUPPORT_SERVER_LOGS_ID).send(embed=embed)
 
 
 

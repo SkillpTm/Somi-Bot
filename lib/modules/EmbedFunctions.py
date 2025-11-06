@@ -1,4 +1,5 @@
 import datetime
+
 import nextcord
 
 from lib.modules.Get import Get
@@ -6,16 +7,15 @@ from lib.modules.Get import Get
 
 
 class EmbedFunctions():
-
-    def __init__(self) -> None:
-        pass
+    """Helper class for embed related functions"""
 
     ####################################################################################################
 
-    def get_critical_error_message(self, response: str) -> nextcord.Embed:
+    @staticmethod
+    def get_critical_error_message(response: str) -> nextcord.Embed:
         """Makes an Embed for a critial error message"""
 
-        embed = self.builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.dark_red(),
             description = response
         )
@@ -24,10 +24,11 @@ class EmbedFunctions():
 
     ####################################################################################################
 
-    def get_error_message(self, response: str) -> nextcord.Embed:
+    @staticmethod
+    def get_error_message(response: str) -> nextcord.Embed:
         """Makes an Embed for a error message"""
 
-        embed = self.builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.brand_red(),
             description = response
         )
@@ -36,10 +37,11 @@ class EmbedFunctions():
 
     ####################################################################################################
 
-    def get_info_message(self, repsonse: str, client) -> nextcord.Embed:
+    @staticmethod
+    def get_info_message(repsonse: str, client) -> nextcord.Embed:
         """Makes an Embed for a succes message"""
 
-        embed = self.builder(
+        embed = EmbedFunctions.builder(
             color = client.BOT_COLOR,
             description = repsonse
         )
@@ -48,10 +50,11 @@ class EmbedFunctions():
 
     ####################################################################################################
 
-    def get_success_message(self, repsonse: str) -> nextcord.Embed:
+    @staticmethod
+    def get_success_message(repsonse: str) -> nextcord.Embed:
         """Makes an Embed for a succes message"""
 
-        embed = self.builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.green(),
             description = repsonse
         )
@@ -84,23 +87,17 @@ class EmbedFunctions():
         """This function builds an embed"""
 
         embed = nextcord.Embed(
-            title = Get.rid_of_whitespace(title[:256]), # 256 is Discord's title char limit
+            title = Get.rid_of_whitespace(f"{title[:256-3]}..." if len(title) > 256 else title), # 256 is Discord's title char limit
             url = title_url,
-            description = Get.rid_of_whitespace(description[:4096]), # 4096 is Discord's description char limit
+            description = Get.rid_of_whitespace(f"{description[:4096-3]}..." if len(description) > 4096 else description), # 4096 is Discord's description char limit
             color = color,
+            timestamp = footer_timestamp if footer_timestamp else None
         )
 
-        embed.set_author(name = Get.rid_of_whitespace(author[:256]), url = author_url, icon_url = author_icon)  # 256 is Discord's author char limit
-        embed.set_thumbnail(url = thumbnail)
-        embed.set_image(url = image)
-        embed.set_footer(text = Get.rid_of_whitespace(footer[:2048]), icon_url = footer_icon)  # 2048 is Discord's footer char limit
-
-        if footer_timestamp:
-            embed.timestamp = footer_timestamp
-
-            if not footer_icon:
-                from lib.utilities.SomiBot import SomiBot
-                embed.set_footer(text = Get.rid_of_whitespace(footer[:2048]), icon_url = SomiBot.CLOCK_ICON)
+        embed.set_author(name=Get.rid_of_whitespace(f"{author[:256-3]}..." if len(author) > 256 else author), url = author_url, icon_url = author_icon)  # 256 is Discord's author char limit
+        embed.set_thumbnail(url=thumbnail)
+        embed.set_image(url=image)
+        embed.set_footer(text=Get.rid_of_whitespace(f"{footer[:2048-3]}..." if len(footer) > 2048 else footer), icon_url = footer_icon)  # 2048 is Discord's footer char limit
 
         for field in fields[:25]:  # 25 is Discord's field limit
             if not field[0]:
@@ -110,12 +107,12 @@ class EmbedFunctions():
                 break
 
             # fail save, should never have to happen
-            if field[2] == None:
+            if field[2] is None:
                 field[2] = True
-            
+
             embed.add_field(
-                name = Get.rid_of_whitespace(f"{field[0]}"[:256]),  # 256 is Discord's field name char limit
-                value = Get.rid_of_whitespace(f"{field[1]}"[:1024]),  # 1024 is Discord's field value char limit
+                name = Get.rid_of_whitespace(f"{field[0][:256-3]}..." if len(field[0]) > 256 else field[0]),  # 256 is Discord's field name char limit
+                value = Get.rid_of_whitespace(f"{field[1][:1024-3]}..." if len(field[1]) > 1024 else field[1]),  # 1024 is Discord's field value char limit
                 inline = field[2]
             )
 
@@ -139,10 +136,10 @@ class EmbedFunctions():
                 images.append(attachment)
 
         # if we only have 1 image or a limit of 1 embed the first image
-        if len(images) == 1 or (len(images) and limit == 1):
+        if len(images) == 1 or (images and limit == 1):
             embed.set_image(url=images[0].url)
 
-        # if there is no limit a and we have more than 1 attachment put them into a STRING
+        # if there is no limit a and we have more than 1 attachment put them into a string
         if not limit and len(attachments_list) > 1:
             for attachment in attachments_list:
                 file_urls += f"{attachment.url}\n"

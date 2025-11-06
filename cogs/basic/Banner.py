@@ -25,34 +25,27 @@ class Banner(nextcord_C.Cog):
     ) -> None:
         """This command reposts anyone's banner in an embed"""
 
-        if not user:
-            user = interaction.user
+        user = user or interaction.user
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/banner",
             {"user": str(user.id)}
         ))
 
-        if interaction.guild:
-            user_banner = (await interaction.guild.fetch_member(user.id)).display_banner
-        else:
-            user_banner = (await self.client.fetch_user(user.id)).banner
-
-
-        if not user_banner:
+        if not (user_banner := (await interaction.guild.fetch_member(user.id)).display_banner if interaction.guild else (await self.client.fetch_user(user.id)).banner):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"The user {user.mention} doesn't have a banner."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
 
         embed = EmbedFunctions().builder(
-            color = self.client.BOT_COLOR,
+            color = self.client.config.BOT_COLOR,
             image = user_banner.url,
             title = f"Banner of: `{user.display_name}`",
             title_url = user_banner.url
         )
-        
+
         await interaction.followup.send(embed=embed)
 
 

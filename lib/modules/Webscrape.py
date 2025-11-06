@@ -1,15 +1,14 @@
-from bs4 import BeautifulSoup
 import re
 import urllib.parse
+
+from bs4 import BeautifulSoup
 
 from lib.modules import Get
 
 
 
 class Webscrape():
-
-    def __init__(self) -> None:
-        pass
+    """Helper class to make webscraping lastfm at a higher level easier"""
 
     ####################################################################################################
 
@@ -91,16 +90,16 @@ class Webscrape():
 
     ####################################################################################################
 
+    @staticmethod
     def _output_lists(
-        self,
         soup: BeautifulSoup,
         artist_for_url: str,
         type_flag: str
     ) -> tuple[str, str]:
         """Formates the positions, album/track names and scrobbles and the URLs for the output"""
 
-        positions_list = self._type_element_positions(soup)
-        names_list, scorbbles_list = self._type_list(soup)
+        positions_list = Webscrape._type_element_positions(soup)
+        names_list, scorbbles_list = Webscrape._type_list(soup)
 
         album_output = ""
         track_output = ""
@@ -111,17 +110,9 @@ class Webscrape():
                 current_element_album += 1
 
             name = re.sub("\n", "", name) # can be both album and track
-
             safe_name = Get.markdown_safe(name)
-
             element_name_for_url = urllib.parse.quote_plus(name)
-
-
-            if int(scrobbles) == 1:
-                scrobbles += " play"
-            else:
-                scrobbles += " plays"
-
+            scrobbles += " play" if int(scrobbles) == 1 else " plays"
 
             if current_element_album != 1 or type_flag == "album":
                 track_output += f"{position}. "
@@ -131,13 +122,13 @@ class Webscrape():
                 album_output += f"{position}. "
                 album_output += f"[{safe_name}](https://www.last.fm/music/{artist_for_url}/{element_name_for_url}/) "
                 album_output += f"- *({scrobbles})*\n"
-        
+
         return track_output, album_output
 
     ####################################################################################################
 
+    @staticmethod
     def library_subpage(
-        self,
         soup: BeautifulSoup,
         artist_for_url: str,
         type_flag: str # type_flag can be "artist", "album" or "track"
@@ -145,26 +136,10 @@ class Webscrape():
         """Manages depending on the type_flag what data to webscrape and returns the data
            type in all contextes here means either 'artist', 'album' or 'track', dpending on the flag set"""
 
-        type_name = ""
-        artist_name = ""
-        cover_image_url = ""
-        metadata_list = [""]
-        album_output = ""
-        track_output = ""
-
-        if type_flag: # should be in artists/album/track
-            type_name = self._type_name(soup, type_flag)
-
-        if any(i == type_flag for i in ["album", "track"]): # should be in album/track
-            artist_name = self._artist_name(soup)
-
-        if type_flag: # should be in artists/album/track
-            cover_image_url = self._type_image(soup, type_flag)
-
-        if type_flag: # should be in artists/album/track
-            metadata_list = self._type_metadata(soup)
-
-        if any(i == type_flag for i in ["artist", "album"]): # should be in artist/album
-            track_output, album_output = self._output_lists(soup, artist_for_url, type_flag)
+        type_name = Webscrape._type_name(soup, type_flag) if type_flag else "" # should be in artists/album/track
+        artist_name = Webscrape._artist_name(soup) if any(i == type_flag for i in ["album", "track"]) else "" # should be in album/track
+        cover_image_url = Webscrape._type_image(soup, type_flag) if type_flag else "" # should be in artists/album/track
+        metadata_list = Webscrape._type_metadata(soup) if type_flag else [""] # should be in artists/album/track
+        track_output, album_output = Webscrape._output_lists(soup, artist_for_url, type_flag) if any(i == type_flag for i in ["artist", "album"]) else ("", "") # should be in artist/album
 
         return type_name, artist_name, cover_image_url, metadata_list, track_output, album_output

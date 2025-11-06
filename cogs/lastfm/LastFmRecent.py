@@ -1,7 +1,8 @@
+import urllib.parse
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
-import urllib.parse
 
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
@@ -34,25 +35,22 @@ class LastFmRecent(nextcord_C.Cog):
     ) -> None:
         """This command shows someone's recent tracks and what they are now playing on the first page"""
 
-        if not user:
-            user = interaction.user
+        user = user or interaction.user
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/lf recent",
             {"user": str(user.id)}
         ))
 
-        lastfm_username = await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).last_fm_get()
-
-        if not lastfm_username:
+        if not (lastfm_username := await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).last_fm_get()):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
         # send a dummy respone to be updated in the recursive function
         await interaction.response.send_message(embed=EmbedFunctions().builder(title=" "))
 
-        await self.lastfm_recent_rec(interaction, user, lastfm_username, page_number = 1, first_message_sent = False)
+        await self.lastfm_recent_rec(interaction, user, lastfm_username, page_number = 1)
 
     ####################################################################################################
 
@@ -65,7 +63,7 @@ class LastFmRecent(nextcord_C.Cog):
     ) -> None:
         """This function recurses on button press and requests the data from the LastFm api to build the embed"""
 
-        np_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&username={lastfm_username}&limit=10&page={page_number}&api_key={self.client.Keychain.LAST_FM_API_KEY}&format=json")
+        np_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&username={lastfm_username}&limit=10&page={page_number}&api_key={self.client.keychain.LAST_FM_API_KEY}&format=json", timeout=10)
 
         if np_response.status_code != 200:
             await interaction.edit_original_message(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"), view=None) 
@@ -99,9 +97,9 @@ class LastFmRecent(nextcord_C.Cog):
                 output += f"{index + (page_number - 1) * 10}. **[{track_name}]({track_url})** by [{artist_name}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}\n"
 
         embed = EmbedFunctions().builder(
-            color = self.client.LASTFM_COLOR,
+            color = self.client.config.LASTFM_COLOR,
             author = f"{user.display_name} recently played:",
-            author_icon = self.client.LASTFM_ICON,
+            author_icon = self.client.config.LASTFM_ICON,
             description = output
         )
 

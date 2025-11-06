@@ -1,7 +1,8 @@
 import datetime
+import zoneinfo
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import zoneinfo
 
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
@@ -45,7 +46,7 @@ class Mute(nextcord_C.Cog):
     ) -> None:
         """This command mutes a member, with time and reason, if their current top-role is below your current top-role."""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/mute",
             {"member": str(member.id), "time": time, "reason": reason}
@@ -63,7 +64,7 @@ class Mute(nextcord_C.Cog):
 
         total_seconds = Get.seconds_from_time(time)
 
-        if total_seconds == 0 or total_seconds > 2419200: #28d in seconds
+        if not total_seconds or total_seconds > 2419200: #28d in seconds
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{time}` is not a valid time period. Make sure to use the formating in the input description and that your time period is smaller than 28 days."), ephemeral=True)
             return
 
@@ -91,7 +92,7 @@ class Mute(nextcord_C.Cog):
     ) -> None:
         """This command unmutes a member, if they were muted."""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/unmute",
             {"member": str(member.id)}

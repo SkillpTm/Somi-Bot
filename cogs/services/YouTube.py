@@ -31,26 +31,25 @@ class YouTube(nextcord_C.Cog):
     ) -> None:
         """This command uses the given query and sends it to the YouTube Data API, then the user can flip thourgh the top 50 results"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/youtube",
             {"query": query}
         ))
 
-        await interaction.response.defer(with_message = True)
+        await interaction.response.defer(with_message=True)
 
-        search = self.client.youtube.search().list(q=query, part="snippet", type="video", maxResults=50)
-        search_result = search.execute()
+        search_result = self.client.youtube.search().list(q=query, part="snippet", type="video", maxResults=50).execute()
         results = [f"https://www.youtube.com/watch?v={item['id']['videoId']}" for item in search_result["items"]]
 
-        if results == []:
+        if not (results := [f"https://www.youtube.com/watch?v={item['id']['videoId']}" for item in search_result["items"]]):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"YouTube couldn't find a video for your query:\n`{query}`"))
             return
-        
+
         await interaction.followup.send(content=results[0])
 
         await self.youtube_rec(interaction=interaction, results=results, page_number=1)
-    
+
     ####################################################################################################
 
     async def youtube_rec(

@@ -1,6 +1,7 @@
+import time
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import time
 
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
@@ -30,10 +31,9 @@ class Userinfo(nextcord_C.Cog):
     ) -> None:
         """This command gives you infomration about a user"""
 
-        if not user:
-            user = interaction.user
+        user = user or interaction.user
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/userinfo",
             {"user": str(user.id)}
@@ -50,12 +50,7 @@ class Userinfo(nextcord_C.Cog):
 
             status = str(member.status)
             top_role = member.top_role.mention
-
-            if member.premium_since:
-                booster = "Yes"
-            else:
-                booster = "No"
-
+            booster = "Yes" if member.premium_since else "No"
             joined_time = f"<t:{int(time.mktime(member.joined_at.timetuple()))}>"
 
         embed = EmbedFunctions().builder(

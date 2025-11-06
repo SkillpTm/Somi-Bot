@@ -5,21 +5,21 @@ from lib.modules import EmbedFunctions, Misc
 
 
 class YesNoButtons(nextcord.ui.View):
-    
+    """Buttons that say yes/no, self.value is true on yes and false on no"""
+
     def __init__(self, *, interaction: nextcord.Interaction = None, response: nextcord.Message = None) -> None:
-        super().__init__(timeout = 60)
         self.response = response
         self.interaction = interaction
         self.value: bool = None
+        super().__init__(timeout=60)
 
     ####################################################################################################
 
-    @nextcord.ui.button(label = "Yes", style=nextcord.ButtonStyle.green)
-    async def yes(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
-        if self.interaction:
-            original_user = self.interaction.user
-        elif self.response:
-            original_user = self.response.author
+    @nextcord.ui.button(label="Yes", style=nextcord.ButtonStyle.green)
+    async def yes(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
+        """set the value to true when pressed"""
+
+        original_user = self.interaction.user if self.interaction else self.response.author
 
         if original_user.id != interaction.user.id:
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
@@ -29,12 +29,11 @@ class YesNoButtons(nextcord.ui.View):
         self.stop()
         await Misc.deactivate_view_children(self)
 
-    @nextcord.ui.button(label = "No", style=nextcord.ButtonStyle.red)
-    async def no(self, button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
-        if self.interaction:
-            original_user = self.interaction.user
-        elif self.response:
-            original_user = self.response.author
+    @nextcord.ui.button(label="No", style=nextcord.ButtonStyle.red)
+    async def no(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
+        """set the value to false when pressed"""
+
+        original_user = self.interaction.user if self.interaction else self.response.author
 
         if original_user.id != interaction.user.id:
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)

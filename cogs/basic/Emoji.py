@@ -32,7 +32,7 @@ class Emoji(nextcord_C.Cog):
     ) -> None:
         """This command reposts the original url of any custom emoji"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/color",
             {"emoji": emoji}
@@ -54,7 +54,7 @@ class Emoji(nextcord_C.Cog):
         partial_emoji_object = nextcord.PartialEmoji(name = emoji_name, id = emoji_id, animated = emote_animated)
 
         # check via the cdn if what we got was actually a valid emote
-        if not requests.get(partial_emoji_object.url).status_code == 200:
+        if not requests.get(partial_emoji_object.url, timeout=10).status_code == 200:
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("Please select a custom emoji."), ephemeral=True)
             return
 

@@ -32,7 +32,7 @@ class CustomCommand(nextcord_C.Cog):
     ) -> None:
         """This command will post a custom-command, if given it's name"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/custom-command",
             {"name": name}
@@ -40,9 +40,7 @@ class CustomCommand(nextcord_C.Cog):
 
         name = Get.clean_input_command(name)
 
-        commandtext = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).get_text(name)
-
-        if not commandtext:
+        if not (commandtext := await (await DBHandler(self.client.database, server_id=interaction.guild.id).custom_command()).get_text(name)):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"There is no custom-command with the name `{name}`.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
             return
 
@@ -61,7 +59,7 @@ class CustomCommand(nextcord_C.Cog):
         await interaction.response.send_autocomplete(
             Get.autocomplete_dict_from_search_string(
                 name,
-                {command: command for command in await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).get_list()}
+                {command: command for command in await (await DBHandler(self.client.database, server_id=interaction.guild.id).custom_command()).get_list()}
             )
         )
 

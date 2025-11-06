@@ -1,3 +1,5 @@
+import re
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
@@ -17,39 +19,40 @@ class Reactions(nextcord_C.Cog):
     async def reaction(self, message: nextcord.Message) -> None:
         """makes the bot react to certain message contents"""               
 
-        # react to ings
+        # react to pings
         if self.client.user.mentioned_in(message):
-            await message.add_reaction(self.client.REACTION_EMOTE)
+            await message.add_reaction(self.client.config.REACTION_EMOTE)
 
-            self.client.Loggers.action_log(Get.log_message(message, "reaction ping"))
+            self.client.logger.action_log(Get.log_message(message, "reaction ping"))
 
-            await (await DBHandler(self.client.PostgresDB).telemetry()).increment("reacted @ping")
+            await (await DBHandler(self.client.database).telemetry()).increment("reacted @ping")
 
 
         # react to somionly
         if "somionly" in str(message.content.lower()):
-            await message.add_reaction(self.client.SOMI_ONLY_EMOTE)
+            await message.add_reaction(self.client.config.SOMI_ONLY_EMOTE)
 
-            self.client.Loggers.action_log(Get.log_message(message, "reaction somionly"))
+            self.client.logger.action_log(Get.log_message(message, "reaction somionly"))
 
-            await (await DBHandler(self.client.PostgresDB).telemetry()).increment("reacted somionly")
+            await (await DBHandler(self.client.database).telemetry()).increment("reacted somionly")
 
 
         # react to a "f" in a message
-        if any(f_string in f" {message.content.lower()} " for f_string in [" f ", "\nf ", " f\n", self.client.SOMI_F_EMOTE.lower()]):
-            await message.add_reaction(self.client.SOMI_F_EMOTE)
+        if re.search(rf"\b(f|{self.client.config.SOMI_F_EMOTE.lower()})\b", message.content.lower()):
+            await message.add_reaction(self.client.config.SOMI_F_EMOTE)
 
-            self.client.Loggers.action_log(Get.log_message(message, "reaction f"))
+            self.client.logger.action_log(Get.log_message(message, "reaction f"))
 
-            await (await DBHandler(self.client.PostgresDB).telemetry()).increment("reacted SomiF")
+            await (await DBHandler(self.client.database).telemetry()).increment("reacted SomiF")
 
         # react to the somibestgrill emote
         if "somibestgrill" in str(message.content.lower()):
-            await message.add_reaction(self.client.SOMI_BEST_GRILL_EMOTE)
+            await message.add_reaction(self.client.config.SOMI_BEST_GRILL_EMOTE)
 
-            self.client.Loggers.action_log(Get.log_message(message, "reaction bestgrill"))
+            self.client.logger.action_log(Get.log_message(message, "reaction bestgrill"))
 
-            await (await DBHandler(self.client.PostgresDB).telemetry()).increment("reacted SomiBestGrill")
+            await (await DBHandler(self.client.database).telemetry()).increment("reacted SomiBestGrill")
+
 
 
 def setup(client: SomiBot) -> None:

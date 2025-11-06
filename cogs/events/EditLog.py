@@ -23,47 +23,43 @@ class EditLog(nextcord_C.Cog):
 
         if not message_before.guild:
             return
-        
+
         if message_before.author.id == self.client.user.id:
             return
 
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=message_before.guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := message_before.guild.get_channel(await (await DBHandler(self.client.database, server_id=message_before.guild.id).server()).audit_log_get() or 0)):
             return
 
-        if message_before.channel.id in await (await DBHandler(self.client.PostgresDB, server_id=message_before.guild.id).hidden_channel()).get_list():
+        if message_before.channel.id in await (await DBHandler(self.client.database, server_id=message_before.guild.id).hidden_channel()).get_list():
             return
 
         # content may be the same, if an embed changed
         if message_before.content == message_after.content:
             return
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             message_before,
             "edit log",
             {"message_before": message_before.content, "message_after": message_after.content}
         ))
 
-        first_embed: nextcord.Embed = None
         second_embed: nextcord.Embed = None
-        file_urls: str = ""
 
         if len(message_before.content) < 1024 and len(message_after.content) < 1024:
             first_embed, file_urls = self.single_response(message_before, message_after)
         else:
             first_embed, second_embed, file_urls = self.multi_response(message_before, message_after)
 
-        last_sent_response = await message_before.guild.get_channel(audit_log_id).send(embed=first_embed)
+        inital_response = await audit_log.send(embed=first_embed)
 
         # there is only a second embed for larger message edits
         if second_embed:
-            last_sent_response = await last_sent_response.reply(embed=second_embed)
+            await inital_response.reply(embed=second_embed)
 
         if file_urls:
-            await last_sent_response.reply(content=file_urls, mention_author=False)
+            await inital_response.reply(content=file_urls, mention_author=False)
 
-        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("edit log")
+        await (await DBHandler(self.client.database).telemetry()).increment("edit log")
 
     ####################################################################################################
 
@@ -96,7 +92,7 @@ class EditLog(nextcord_C.Cog):
 
         embed, file_urls = EmbedFunctions.get_or_add_attachments(message_before.attachments, embed)
         return embed, file_urls
-    
+
     ####################################################################################################
 
     @staticmethod
@@ -118,7 +114,7 @@ class EditLog(nextcord_C.Cog):
             description = f"**After:**\n{message_after.content}",
         )
 
-        embed_after, file_urls = EmbedFunctions.get_or_add_attachments(message_before.attachments, embed_after)
+        embed_before, file_urls = EmbedFunctions.get_or_add_attachments(message_before.attachments, embed_before)
 
         return embed_before, embed_after, file_urls
 

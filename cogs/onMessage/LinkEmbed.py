@@ -1,7 +1,7 @@
+import re
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import re
-import zoneinfo
 
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
@@ -22,9 +22,9 @@ class LinkEmbed(nextcord_C.Cog):
         if not message.guild:
             return
 
-        if not f"discord.com/channels/{message.guild.id}" in str(message.content):
+        if f"discord.com/channels/{message.guild.id}" not in str(message.content):
             return
-        
+
         # if the message link is surrounded by <> it won't embed
         if re.search(fr"<https?://(canary\.)?discord\.com/channels/{message.guild.id}\S+>", message.content).group():
             return
@@ -36,14 +36,14 @@ class LinkEmbed(nextcord_C.Cog):
         if not original_message:
             return
 
-        if original_message.channel.id in await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id).hidden_channel()).get_list():
+        if original_message.channel.id in await (await DBHandler(self.client.database, server_id=message.guild.id).hidden_channel()).get_list():
             return
 
         # this happens, if the original message is just an embed
         if original_message.content == "" and len(original_message.attachments) == 0:
             return
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             message,
             "link embed",
             {"link": link}
@@ -56,12 +56,12 @@ class LinkEmbed(nextcord_C.Cog):
 
 
         embed = EmbedFunctions().builder(
-            color = self.client.BOT_COLOR,
+            color = self.client.config.BOT_COLOR,
             author = "Message Embed",
             author_icon = original_message.author.display_avatar.url,
             description = f"{original_message.channel.mention} - [Link]({link})",
             footer_timestamp = original_message.created_at,
-            footer_icon = self.client.LINK_EMBED_ICON,
+            footer_icon = self.client.config.LINK_EMBED_ICON,
             fields = [
                 [
                     f"{original_message.author.display_name} said:",
@@ -74,7 +74,7 @@ class LinkEmbed(nextcord_C.Cog):
         embed, _ = EmbedFunctions.get_or_add_attachments(original_message.attachments, embed, limit = 1)
         await message.reply(embed=embed, mention_author=False)
 
-        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("link embed")
+        await (await DBHandler(self.client.database).telemetry()).increment("link embed")
 
 
 

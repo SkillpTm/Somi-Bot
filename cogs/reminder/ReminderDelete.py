@@ -28,7 +28,7 @@ class ReminderDelete(nextcord_C.Cog):
     ) -> None:
         """This command let's you delete a reminder with it's ID or all reminders with 'ALL'"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/reminder delete",
             {"reminder_id": reminder_id}
@@ -36,7 +36,7 @@ class ReminderDelete(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        if not await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).get_list():
+        if not await (await DBHandler(self.client.database, user_id=interaction.user.id).reminder()).get_list():
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You don't have any reminders to be deleted!"), ephemeral=True)
             return
 
@@ -50,7 +50,7 @@ class ReminderDelete(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{reminder_id}` isn't a valid reminder id."), ephemeral=True)
             return
 
-        if not await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).delete():
+        if not await (await DBHandler(self.client.database, user_id=interaction.user.id).reminder()).delete():
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"You don't have a reminder with the ID `{reminder_id}`.\nTo get a list of your reminders use `/reminder list`."), ephemeral=True)
             return
 
@@ -68,9 +68,9 @@ class ReminderDelete(nextcord_C.Cog):
 
         valid_ids = {}
 
-        for reminder in await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).get_list():
+        for reminder in await (await DBHandler(self.client.database, user_id=interaction.user.id).reminder()).get_list():
             reminder_text = f"{reminder[3][:30]}"
-            
+
             if len(reminder[3]) > 30:
                 reminder_text += "..."
 
@@ -87,7 +87,7 @@ class ReminderDelete(nextcord_C.Cog):
 
     async def delete_all(self, interaction: nextcord.Interaction) -> None:
         """asks the user if they want to delete all their reminders and does as answered"""
-    
+
         view = YesNoButtons(interaction=interaction)
         await interaction.followup.send(embed=EmbedFunctions().get_info_message("Do you really want to delete **ALL** your reminders __**(they can't be recovered)?**__", self.client), view=view, ephemeral=True)
         await view.wait()
@@ -95,10 +95,10 @@ class ReminderDelete(nextcord_C.Cog):
         if not view.value:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("Your reminders have **not** been deleted!"), ephemeral=True)
             return
-            
-        await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).delete_all()
 
-        self.client.Loggers.action_log(Get.log_message(
+        await (await DBHandler(self.client.database, user_id=interaction.user.id).reminder()).delete_all()
+
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/reminder delete",
             {"DELETE_ALL": "deleted"}

@@ -27,15 +27,13 @@ class Modmail(nextcord_C.Cog):
         if message.author.bot:
             return
 
-        SOMICORD = self.client.get_guild(self.client.SOMICORD_ID)
-
-        if not SOMICORD.get_member(message.author.id):
+        if not self.client.get_guild(self.client.config.MODMAIL_SERVER_ID).get_member(message.author.id):
             return
 
         if len(message.content) < 50:
             await message.channel.send(embed=EmbedFunctions().get_error_message("Your modmail must be longer than 50 characters! Please describe your problem precisely!"))
             return
-        
+
         response = await message.reply(embed=EmbedFunctions().get_info_message("Do you really want to submit this as a modmail?", self.client), mention_author=False)
         view = YesNoButtons(response=response)
         await response.edit(embed=response.embeds[0], view=view, delete_after=70)
@@ -45,40 +43,41 @@ class Modmail(nextcord_C.Cog):
             await response.reply(embed=EmbedFunctions().get_error_message("Your modmail has **not** been submitted!"), mention_author=False)
             return
 
-        self.client.Loggers.action_log(Get.log_message(message, "modmail", {"message": message.content}))
+        self.client.logger.action_log(Get.log_message(message, "modmail", {"message": message.content}))
 
-        MOD_CHANNEL: nextcord.TextChannel = self.client.get_channel(self.client.SOMICORD_MOD_CHANNEL_ID)
+        modmail_channel: nextcord.TextChannel = self.client.get_channel(self.client.config.MODMAIL_CHANNEL_ID)
         user_thread: nextcord.Thread = None
 
         # check if the user already has a thread
-        for thread in MOD_CHANNEL.threads:
+        for thread in modmail_channel.threads:
             if f"Modmail ({message.author.name})" == thread.name[9:-1]:
                 user_thread = thread
 
         # check if the user already has an archived thread
         if not user_thread:
-            async for thread in MOD_CHANNEL.archived_threads():
+            async for thread in modmail_channel.archived_threads():
                 if f"Modmail ({message.author.name})" == thread.name[9:-1]:
                     user_thread = thread
 
         # if the user doesn't already have a thread, make one
         if not user_thread:
-            user_thread = await MOD_CHANNEL.create_thread(
+            user_thread = await modmail_channel.create_thread(
                 name = f"Modmail ({message.author})",
                 message = None,
                 auto_archive_duration = 4320, #4320 is 3 days in minutes
                 type = nextcord.ChannelType.public_thread
             )
 
-            for member in MOD_CHANNEL.members:
+            for member in modmail_channel.members:
                 if not member.bot and member.id != 108218817531887616: # exclude inactive owner
                     await user_thread.add_user(member)
 
         embed = EmbedFunctions().builder(
-            color = self.client.PERMISSION_COLOR,
+            color = self.client.config.PERMISSION_COLOR,
             thumbnail = message.author.display_avatar.url,
             title = f"Modmail by {message.author.display_name}",
             description = f"__**Message:**__\n{message.content}"[:4096],
+            footer_icon = self.client.config.CLOCK_ICON,
             footer_timestamp = message.created_at,
             fields = [
                 [
@@ -98,13 +97,13 @@ class Modmail(nextcord_C.Cog):
         embed, file_urls = EmbedFunctions.get_or_add_attachments(message.attachments, embed)
 
         sent_modmail = await user_thread.send(embed=embed)
-        
+
         if file_urls:
             await sent_modmail.reply(content=file_urls, mention_author=False)
 
         await message.reply(embed=EmbedFunctions().get_success_message("Your modmail has been submitted!"), mention_author=False)
 
-        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("modmail send")
+        await (await DBHandler(self.client.database).telemetry()).increment("modmail send")
 
 
 

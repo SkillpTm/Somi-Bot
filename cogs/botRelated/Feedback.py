@@ -1,3 +1,5 @@
+import datetime
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
@@ -29,25 +31,25 @@ class FeedbackModal(nextcord.ui.Modal):
     ) -> None:
         """Submits the feedback to the db"""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/feedback", {"submission": self.feedback.value}))
+        self.client.logger.action_log(Get.log_message(interaction, "/feedback", {"submission": self.feedback.value}))
 
         if interaction.guild:
             server_id = interaction.guild.id
             origin_text = f"Feedback from server: `{interaction.guild.name}` | `({interaction.guild.id})`:"
         else:
             server_id = 0 # DMs are indecated by a 0
-            origin_text = f"Feedback from DM channel:"
+            origin_text = f"Feedback from DM channel: `{interaction.user.name}` | `({interaction.user.id})`:"
 
-        await (await DBHandler(self.client.PostgresDB, server_id, interaction.user.id).feedback()).submit(Get.kst_timestamp(), self.feedback.value)
+        await (await DBHandler(self.client.database, server_id, interaction.user.id).feedback()).submit(datetime.datetime.now().strftime("Date: `%Y/%m/%d`\nTime: `%H:%M:%S %Z`"), self.feedback.value)
 
         embed = EmbedFunctions().builder(
-            color = self.client.BOT_COLOR,
+            color = self.client.config.BOT_COLOR,
             title = f"Feedback by: `{interaction.user.name}` | `({interaction.user.id})`",
             thumbnail = interaction.user.display_avatar.url,
             description = f"{origin_text}\n{self.feedback.value}"
         )
 
-        await self.client.get_channel(self.client.SUPPORT_SERVER_FEEDBACK_ID).send(embed=embed)
+        await self.client.get_channel(self.client.config.SUPPORT_SERVER_FEEDBACK_ID).send(embed=embed)
         await interaction.response.send_message(embed=EmbedFunctions().get_success_message("Your feedback has been submitted!"), ephemeral=True)
 
 
@@ -61,11 +63,11 @@ class Feedback(nextcord_C.Cog):
 
     @nextcord.slash_command(name="feedback", description="give feedback to the bot, with a suggestion or submit a bug-report")
     async def feedback(self, interaction: nextcord.Interaction) -> None:
+        """Sends out a modal to receive feedback"""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/feedback"))
+        self.client.logger.action_log(Get.log_message(interaction, "/feedback"))
 
-        modal = FeedbackModal(self.client)
-        await interaction.response.send_modal(modal=modal)
+        await interaction.response.send_modal(FeedbackModal(self.client))
 
 
 

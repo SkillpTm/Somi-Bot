@@ -600,7 +600,7 @@ class Lists():
                 An IANA timezone code.
 
                 """,
-                f"/time [Asia/Seoul]"
+                "/time [Asia/Seoul]"
             ],
 
             "/userinfo": [

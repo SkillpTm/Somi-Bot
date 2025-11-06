@@ -34,13 +34,11 @@ class Purge(nextcord_C.Cog):
     ) -> None:
         """This command removes the given amount of last messages from a channel."""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/purge",
             {"amount": str(amount)}
         ))
-
-        self.client.Loggers.action_log(f"Guild: {interaction.guild.id} ~ Channel: {interaction.channel.id} ~ User: {interaction.user.id} ~ /purge {amount}")
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 

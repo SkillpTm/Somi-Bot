@@ -1,4 +1,6 @@
 import datetime
+import time
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
@@ -10,6 +12,9 @@ from lib.utilities import SomiBot
 
 class BanLog(nextcord_C.Cog):
 
+    MAX_AUDIT_ENTIRES_LIMIT = 10
+    MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
+
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
@@ -18,17 +23,28 @@ class BanLog(nextcord_C.Cog):
     async def ban_log(self, guild: nextcord.Guild, user: nextcord.User) -> None:
         """A log that activates, when someone gets banned and an audit log is set"""
 
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := guild.get_channel(await (await DBHandler(self.client.database, server_id=guild.id).server()).audit_log_get() or 0)):
             return
 
+        entry: nextcord.AuditLogEntry = None
+        entry_count = 0
+
         # check the last audit log entry for bans, to see make sure this was a ban
-        async for entry in guild.audit_logs(limit=1, action=nextcord.AuditLogAction.ban):
-            if user.id != entry.target.id or (datetime.datetime.now(datetime.timezone.utc) - entry.created_at).total_seconds() < 5:
+        async for entry in guild.audit_logs(
+            limit=BanLog.MAX_AUDIT_ENTIRES_LIMIT,
+            after=datetime.datetime.fromtimestamp(time.time() - BanLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
+            action=nextcord.AuditLogAction.ban
+        ):
+            if user.id == entry.target.id:
+                break
+
+            if (entry_count := entry_count + 1) == BanLog.MAX_AUDIT_ENTIRES_LIMIT:
                 return
 
-        self.client.Loggers.action_log(Get.log_message(
+        if not entry:
+            return
+
+        self.client.logger.action_log(Get.log_message(
             user,
             "ban log",
             {"guild": str(guild.id), "banned by": str(entry.user.id), "reason": entry.reason}
@@ -53,25 +69,36 @@ class BanLog(nextcord_C.Cog):
             ]
         )
 
-        await guild.get_channel(audit_log_id).send(embed=embed)
+        await audit_log.send(embed=embed)
 
-        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("ban log")
+        await (await DBHandler(self.client.database).telemetry()).increment("ban log")
 
     ####################################################################################################
 
     async def unban_log(self, guild: nextcord.Guild, user: nextcord.User) -> None:
         """A log that activates, when someone gets unbanned and an audit log is set"""
 
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := guild.get_channel(await (await DBHandler(self.client.database, server_id=guild.id).server()).audit_log_get() or 0)):
             return
 
-        async for entry in guild.audit_logs(limit=1, action=nextcord.AuditLogAction.unban):
-            if user.id != entry.target.id or (datetime.datetime.now(datetime.timezone.utc) - entry.created_at).total_seconds() < 5:
+        entry: nextcord.AuditLogEntry = None
+        entry_count = 0
+
+        async for entry in guild.audit_logs(
+            limit=BanLog.MAX_AUDIT_ENTIRES_LIMIT,
+            after=datetime.datetime.fromtimestamp(time.time() - BanLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
+            action=nextcord.AuditLogAction.unban
+        ):
+            if user.id == entry.target.id:
+                break
+
+            if (entry_count := entry_count + 1) == BanLog.MAX_AUDIT_ENTIRES_LIMIT:
                 return
 
-        self.client.Loggers.action_log(Get.log_message(
+        if not entry:
+            return
+
+        self.client.logger.action_log(Get.log_message(
             user,
             "unban log",
             {"guild": str(guild.id), "unbanned by": str(entry.user.id)}
@@ -90,9 +117,9 @@ class BanLog(nextcord_C.Cog):
             ]
         )
 
-        await guild.get_channel(audit_log_id).send(embed=embed)
+        await audit_log.send(embed=embed)
 
-        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("unban log")
+        await (await DBHandler(self.client.database).telemetry()).increment("unban log")
 
 
 

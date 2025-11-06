@@ -24,34 +24,28 @@ class LevelsLeaderboard(nextcord_C.Cog):
     async def levels_leaderboard(self, interaction: nextcord.Interaction) -> None:
         """Displays the top 10 (or less, if there isn't 10 users in the levels table) users by XP"""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/levels leaderboard"))
+        self.client.logger.action_log(Get.log_message(interaction, "/levels leaderboard"))
 
         await interaction.response.defer(with_message=True)
 
-        user_ids_and_levels = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level()).get_all_users_ranked(limit=10)
         output: str = ""
 
-        for index, user_data in enumerate(user_ids_and_levels):
-            member = interaction.guild.get_member(user_data[0])
-            user = self.client.get_user(user_data[0])
+        for index, user_data in enumerate(await (await DBHandler(self.client.database, server_id=interaction.guild.id).level()).get_all_users_ranked(limit=10)):
             name = f"[Deleted User] - ({user_data[0]})" # default value for, if the user's account doesn't exit anymore
 
             # check if the user is still in the server
-            if member:
+            if (member := interaction.guild.get_member(user_data[0])):
                 name = member.mention
             # check if the user's account still exists
-            elif not member and user:
+            elif not member and (user := self.client.get_user(user_data[0])):
                 name = user.display_name
 
             output += f"**{index+1}. {name}** - Level: __`{user_data[1]}`__\n"
 
-        if interaction.guild.icon:
-            server_icon_url = interaction.guild.icon.url
-        else:
-            server_icon_url = self.client.DEFAULT_PFP
+        server_icon_url = interaction.guild.icon.url if interaction.guild.icon else self.client.config.DEFAULT_PFP
 
         embed = EmbedFunctions().builder(
-            color = self.client.BOT_COLOR,
+            color = self.client.config.BOT_COLOR,
             thumbnail = server_icon_url,
             title = f"`{interaction.guild.name}`: Top users by level",
             description = output

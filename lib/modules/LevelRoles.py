@@ -4,9 +4,7 @@ from lib.dbModules import DBHandler
 
 
 class LevelRoles():
-
-    def __init__(self) -> None:
-        pass
+    """Helper class holding level role related methodes"""
 
     ####################################################################################################
 
@@ -20,22 +18,16 @@ class LevelRoles():
            If they don't, it findes out, which level role they should have and applys it."""
 
         # a list of lists all level roles this server has [[role_id, level], ...], sorted by accending levels
-        all_level_roles = await (await DBHandler(client.PostgresDB, server_id=server.id).level_role()).get_list()
-
-        if not all_level_roles:
+        if not (all_level_roles := await (await DBHandler(client.database, server_id=server.id).level_role()).get_list()):
             return
 
-        if not members_and_levels:
-            members_and_levels = [[member[0], member[1]] for member in await (await DBHandler(client.PostgresDB, server_id=server.id).level()).get_all_users_ranked()]
-
+        members_and_levels = members_and_levels or [[member[0], member[1]] for member in await (await DBHandler(client.database, server_id=server.id).level()).get_all_users_ranked()]
         level_role_list: list[nextcord.Role] = []
 
         for level_role_id in all_level_roles:
-            level_role = server.get_role(level_role_id[0])
-
             # if a role doesn't exist anymore, don't add it to the list and delete it from the db
-            if not level_role:
-                await (await DBHandler(client.PostgresDB, server_id=server.id).level_role()).delete(level_role_id[0])
+            if not (level_role := server.get_role(level_role_id[0])):
+                await (await DBHandler(client.database, server_id=server.id).level_role()).delete(level_role_id[0])
                 continue
 
             level_role_list.append(level_role)
@@ -62,7 +54,7 @@ class LevelRoles():
                     break
 
                 new_role_id = role_id
-            
+
             if not new_role_id:
                 continue
 

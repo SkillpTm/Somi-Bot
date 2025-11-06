@@ -1,15 +1,13 @@
-import datetime
+import re
+
 import nextcord
 import nextcord.ext.application_checks as nextcord_AC
-import re
-import zoneinfo
+import nextcord.ext.commands as nextcord_C
 
 
 
 class Get():
-
-    def __init__(self) -> None:
-        pass
+    """Helper class holding methodes to get data"""
 
     ####################################################################################################
 
@@ -30,9 +28,6 @@ class Get():
         # key: "50 Minutes" value: "50m"
         for key, value in autocomplete_dict.items():
             key, value = str(key), str(value)
-
-            if sum([len(prio_dict) for prio_dict in priority_dict.values()]) == 25: # discord limits autocomplete suggestions to 25
-                break
 
             # prority 0: search_string is the beginning of value
             if value.lower().startswith(search_string):
@@ -60,7 +55,7 @@ class Get():
         for value in priority_dict.values():
             output |= value
 
-        return output
+        return {key: value for index, (key, value) in enumerate(output.items()) if index < 25} # discord limits autocomplete suggestions to 25
 
     ####################################################################################################
 
@@ -78,23 +73,8 @@ class Get():
 
         def predicate(interaction: nextcord.Interaction) -> bool:
             return interaction.user.id == interaction.client.owner_id
-        
+
         return nextcord_AC.check(predicate)
-
-    ####################################################################################################
-
-    @staticmethod
-    def kst_timestamp(slash_kst_format: bool = False) -> str:
-        """This function returns the current time in KST as a humanreadable string"""
-
-        now_korea = datetime.datetime.now(zoneinfo.ZoneInfo("Asia/Seoul"))
-
-        if slash_kst_format:
-            format = "Date: `%Y/%m/%d`\nTime: `%H:%M:%S %Z`"
-        else:
-            format = "%Y/%m/%d %H:%M:%S %Z"
-
-        return now_korea.strftime(format)
 
     ####################################################################################################
 
@@ -106,6 +86,8 @@ class Get():
     ) -> str:
         """makes the log message for an interaction, member event, user event or message event"""
 
+        aggregator_id = 0
+
         # check if the data_provider is an Interaction, Member, User or Message top get the user's id
         if isinstance(data_provider, nextcord.Interaction):
             aggregator_id = data_provider.user.id
@@ -116,10 +98,7 @@ class Get():
         elif isinstance(data_provider, nextcord.Message):
             aggregator_id = data_provider.author.id
 
-        ouput = ""
-
-        ouput += f"{action_name} "
-        ouput += f"~ User: {aggregator_id} "
+        ouput = f"{action_name} ~ User: {aggregator_id} "
 
         # check if the interaction was in a guild or dm
         if hasattr(data_provider, "guild"):
@@ -141,7 +120,7 @@ class Get():
         return ouput
 
     ####################################################################################################
-    
+
     @staticmethod
     def markdown_safe(input_string: str) -> str:
         """Replaces markdown relevant characters with similar unicode chars to avoid issues, in places like embeds"""
@@ -170,15 +149,14 @@ class Get():
     ####################################################################################################
 
     @staticmethod
-    async def message_object_from_link(link: str, client) -> nextcord.Message | None:
+    async def message_object_from_link(link: str, client: nextcord_C.Bot) -> nextcord.Message | None:
         """Generates a message object from a discord message link input"""
 
         _, channel_id, message_id = re.search(r"/channels/(\d+)/(\d+)/(\d+)", link).groups()
 
-        channel = await client.fetch_channel(channel_id)
         try:
-            message: nextcord.Message = await channel.fetch_message(message_id)
-        except:
+            message = await (await client.fetch_channel(channel_id)).fetch_message(message_id)
+        except (nextcord.NotFound, nextcord.Forbidden):
             message = None
 
         return message
@@ -197,26 +175,9 @@ class Get():
 
     @staticmethod
     def seconds_from_time(time: str) -> int:
-        """Converts a humanreadable time input into seconds:
-            4h4s = 14404"""
+        """Converts a humanreadable time input into seconds: 4h4s = 14404"""
 
-        clean_time = time.replace(" ", "").lower()
-        timeframes = re.findall(r"\d+[smhdwy]", clean_time)
         time_in_seconds = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800, "y": 31536000}
+        timeframes = re.findall(r"[0-9]+[smhdwy]", time.replace(" ", "").lower())
 
         return sum([int(timeframe[:-1]) * time_in_seconds[timeframe[-1]] for timeframe in timeframes])
-
-    ####################################################################################################
-
-    @staticmethod
-    def visible_users(client) -> set[int]:
-        """Gets a set of all unique user ids, the client can see"""
-        
-        unique_users: set[int] = set()
-
-        for guild in client.guilds:
-            for member in guild.members:
-                if not member.bot:
-                    unique_users.add(member.id)
-
-        return unique_users

@@ -1,6 +1,7 @@
+import time
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import time
 
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
@@ -14,7 +15,7 @@ class JoinLog(nextcord_C.Cog):
         self.client: SomiBot = client
 
     ####################################################################################################
-    
+
     async def join_log(self, member: nextcord.Member) -> None:
         """
         This function will:
@@ -22,21 +23,16 @@ class JoinLog(nextcord_C.Cog):
         - create a join-log message, if the guild has the audit log setup
         """
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             member,
             "join log",
             {"member": str(member.id)}
         ))
 
+        if not member.bot and (default_role := member.guild.get_role(await (await DBHandler(self.client.database, server_id=member.guild.id).server()).default_role_get())):
+            await member.add_roles(member.guild.get_role(default_role))
 
-        default_role_id = await (await DBHandler(self.client.PostgresDB, server_id=member.guild.id).server()).default_role_get()
-
-        if default_role_id and not member.bot:
-            await member.add_roles(member.guild.get_role(default_role_id))
-
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=member.guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := member.guild.get_channel(await (await DBHandler(self.client.database, server_id=member.guild.id).server()).audit_log_get() or 0)):
             return
 
         embed = EmbedFunctions().builder(
@@ -70,9 +66,9 @@ class JoinLog(nextcord_C.Cog):
             ]
         )
 
-        await member.guild.get_channel(audit_log_id).send(embed=embed)
+        await audit_log.send(embed=embed)
 
-        await (await DBHandler(self.client.PostgresDB).telemetry()).increment("join log")
+        await (await DBHandler(self.client.database).telemetry()).increment("join log")
 
 
 

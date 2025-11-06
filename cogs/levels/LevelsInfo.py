@@ -20,22 +20,18 @@ class LevelsInfo(nextcord_C.Cog):
     async def levels_info(self, interaction: nextcord.Interaction) -> None:
         """Displays information about levels and (if existing) shows a list of the levelroles/ignore channels"""
 
-        self.client.Loggers.action_log(Get.log_message(interaction, "/levels info"))
+        self.client.logger.action_log(Get.log_message(interaction, "/levels info"))
 
         await interaction.response.defer(with_message=True)
 
-        output_role_list = LevelRoles.get_level_range_with_role(await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level_role()).get_list())
-        output_ignore_channels = "".join(f"<#{channel_id}>\n" for channel_id in await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).level_ignore_channel()).get_list())
-        
-
-        if not output_role_list:
+        if not (output_role_list := LevelRoles.get_level_range_with_role(await (await DBHandler(self.client.database, server_id=interaction.guild.id).level_role()).get_list())):
             output_role_list = "`This server doesn't have any level-roles.`"
 
-        if not output_ignore_channels:
+        if not (output_ignore_channels := "".join(f"<#{channel_id}>\n" for channel_id in await (await DBHandler(self.client.database, server_id=interaction.guild.id).level_ignore_channel()).get_list())):
             output_ignore_channels = "`In this server you can earn XP in all channels`"
 
         embed = EmbedFunctions().builder(
-            color = self.client.BOT_COLOR,
+            color = self.client.config.BOT_COLOR,
             title = "Level Information",
             fields = [
                 [

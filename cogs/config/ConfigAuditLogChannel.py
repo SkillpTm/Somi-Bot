@@ -1,6 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
+from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import Lists, SomiBot
@@ -8,8 +9,6 @@ from lib.utilities import Lists, SomiBot
 
 
 class ConfigAuditLogChannel(nextcord_C.Cog):
-
-    from cogs.basic.ParentCommand import ParentCommand
 
     def __init__(self, client) -> None:
         self.client: SomiBot = client
@@ -26,7 +25,7 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
             required = True,
             choices = ["Set", "Reset"]
         ),
-        channel: nextcord.abc.GuildChannel = nextcord.SlashOption(
+        channel: nextcord.TextChannel | nextcord.Thread = nextcord.SlashOption(
             description = "the channel to be set/reset",
             required = False,
             channel_types = Lists.TEXT_CHANNELS
@@ -34,10 +33,9 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
     ) -> None:
         """This command sets/resets the audit-log-channel of the server."""
 
-        if not channel:
-            channel = interaction.channel
+        channel = channel or interaction.channel
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/config audit-log-channel",
             {"action": action, "channel": str(channel.id)}
@@ -45,25 +43,24 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-
         if action == "Set":
-            await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_set(channel.id)
+            await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_set(channel.id)
             await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{channel.mention} is from now on this server's audit-log-channel."), ephemeral=True)
 
             mod_action = f"{interaction.user.mention} set: {channel.mention} as the new audit-log-channel."
 
         elif action == "Reset":
-            if not await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_reset():
+            if not await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_reset():
                 await interaction.followup.send(embed=EmbedFunctions().get_error_message("This server doesn't have an audit-log-channel."), ephemeral=True)
                 return
-            
+
             await interaction.followup.send(embed=EmbedFunctions().get_success_message("You successfully reset this server's audit-log-channel."), ephemeral=True)
 
             mod_action = f"{interaction.user.mention} reset: {channel.mention} as the audit-log-channel."
 
 
         embed = EmbedFunctions().builder(
-            color = self.client.PERMISSION_COLOR,
+            color = self.client.config.PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [

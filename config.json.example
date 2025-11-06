@@ -36,7 +36,8 @@
         "SOMI_BEST_GRILL_IMAGE": "",
         "SOMICORD_INVITE": "",
         "SOMICORD_WELCOME_GIF": "",
-        "SPOTIFY_ICON": ""
+        "SPOTIFY_ICON": "",
+		"SUPPORT_SERVER_INVITE": ""
     },
     "SOMICORD": {
         "MODMAIL_SERVER_ID": 0,

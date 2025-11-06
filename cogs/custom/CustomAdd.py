@@ -1,7 +1,9 @@
-import nextcord
-import nextcord.ext.commands as nextcord_C
 import re
 
+import nextcord
+import nextcord.ext.commands as nextcord_C
+
+from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
@@ -9,8 +11,6 @@ from lib.utilities import SomiBot
 
 
 class CustomAdd(nextcord_C.Cog):
-
-    from cogs.basic.ParentCommand import ParentCommand
 
     def __init__(self, client) -> None:
         self.client: SomiBot = client
@@ -37,7 +37,7 @@ class CustomAdd(nextcord_C.Cog):
     ) -> None:
         """This command adds a custom-command to the server's custom-commands"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/custom add",
             {"name": name, "text": text}
@@ -48,26 +48,22 @@ class CustomAdd(nextcord_C.Cog):
         name = Get.clean_input_command(name)
 
         # make sure name is only letters and numbers
-        if not re.match(r"^[\da-z]+$", name):
+        if not re.match(r"^[a-z0-9]+$", name):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only have letters and numbers in your custom-name!"), ephemeral=True)
             return
 
-        added = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).custom_command()).add(name, text)
-
-        if not added:
+        if not await (await DBHandler(self.client.database, server_id=interaction.guild.id).custom_command()).add(name, text):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"A custom-command with the name `{name}` already exists.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
             return
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Your custom-command with the name `{name}` has been created."), ephemeral=True)
 
 
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.PERMISSION_COLOR,
+            color = self.client.config.PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [
@@ -85,7 +81,7 @@ class CustomAdd(nextcord_C.Cog):
             ]
         )
 
-        await interaction.guild.get_channel(audit_log_id).send(embed=embed)
+        await audit_log.send(embed=embed)
 
 
 

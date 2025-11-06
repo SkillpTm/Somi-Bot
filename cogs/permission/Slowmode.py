@@ -13,7 +13,7 @@ class Slowmode(nextcord_C.Cog):
         self.client: SomiBot = client
 
     ####################################################################################################
-        
+
     @nextcord.slash_command(
         name = "slowmode",
         description = "set/resets a slowmode in a channel",
@@ -31,7 +31,7 @@ class Slowmode(nextcord_C.Cog):
             min_value = 0,
             max_value = 21600 # 6 hours in seconds
         ),
-        channel: nextcord.abc.GuildChannel = nextcord.SlashOption(
+        channel: nextcord.TextChannel | nextcord.Thread = nextcord.SlashOption(
             channel_types = Lists.TEXT_CHANNELS,
             description = "the channel to activate slowmode in",
             required = False
@@ -39,10 +39,9 @@ class Slowmode(nextcord_C.Cog):
     ) -> None:
         """This command allows a user to set a slowmode in a channel."""
 
-        if not channel:
-            channel = interaction.channel
+        channel = channel or interaction.channel
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/slowmode",
             {"delay": str(delay), "channel": (channel.id)}
@@ -54,17 +53,12 @@ class Slowmode(nextcord_C.Cog):
 
         if delay:
             await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Activated slowmode in {channel.mention} with a delay of `{delay}` seconds."), ephemeral=True)
-            # used in the audit log embed later
             mod_action = f"{interaction.user.mention} activated slowmode in {channel.mention} with a delay of `{delay} seconds`"
         else:
             await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Deactivated slowmode in {channel.mention}."), ephemeral=True)
-            # used in the audit log embed later
             mod_action = f"{interaction.user.mention} deactivated slowmode in {channel.mention}"
 
-
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
             return
 
 
@@ -81,7 +75,7 @@ class Slowmode(nextcord_C.Cog):
             ]
         )
 
-        await interaction.guild.get_channel(audit_log_id).send(embed=embed)
+        await audit_log.send(embed=embed)
 
 
 

@@ -1,7 +1,8 @@
+import random
+import time
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import random
-import time as py_time
 
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
@@ -17,13 +18,14 @@ class ReminderAdd(nextcord_C.Cog):
         self.client: SomiBot = client
 
     ####################################################################################################
-    
+
     @ParentCommand.reminder.subcommand(name="add", description="add a reminder to your reminder list")
     async def reminder_add(
         self,
         interaction: nextcord.Interaction,
         *,
-        time: str = nextcord.SlashOption(
+        reminder_time: str = nextcord.SlashOption(
+            name = "time",
             description = "the time to be reminded in (input: xy | xw |xd | xh | xm | xs) Example: 5d7h28s)",
             required = True,
             min_length = 2,
@@ -38,42 +40,38 @@ class ReminderAdd(nextcord_C.Cog):
     ) -> None:
         """This command let's you add a reminder for anytime within the next 10 years"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/reminder add",
-            {"time": time, "reminder": reminder}
+            {"time": reminder_time, "reminder": reminder}
         ))
 
-        total_seconds = Get.seconds_from_time(time)
-
-        if total_seconds == 0:
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"`{time}` is not a valid time period. Make sure to use the formating in the input description."), ephemeral=True)
+        if 0 == (total_seconds := Get.seconds_from_time(reminder_time)):
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"`{reminder_time}` is not a valid time period. Make sure to use the formating in the input description."), ephemeral=True)
             return
 
         if total_seconds > 315576000: #10y in seconds
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"`{time}` is too long for a reminder. Reminders have to be under 10 years long."), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"`{reminder_time}` is too long for a reminder. Reminders have to be under 10 years long."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
-
-        reminder_time = int(py_time.time()) + total_seconds
 
         while True:
             reminder_id = random.randint(10**9, 10**10 - 1) # get a random 9 digit number
 
             # check if the reminder_id has already been used for this user
-            if reminder_id not in [user_reminder[0] for user_reminder in await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).get_list()]:
+            if reminder_id not in [user_reminder[0] for user_reminder in await (await DBHandler(self.client.database, user_id=interaction.user.id).reminder()).get_list()]:
                 break
 
         embed = EmbedFunctions().builder(
-            color = self.client.BOT_COLOR,
+            color = self.client.config.BOT_COLOR,
             author = f"Reminder Set for {interaction.user.display_name}",
             author_icon = interaction.user.display_avatar.url,
             description = reminder,
             fields = [
                 [
                     "Time:",
-                    f"<t:{reminder_time}:F>",
+                    f"<t:{int(time.time()) + total_seconds}:F>",
                     True
                 ],
 
@@ -89,7 +87,7 @@ class ReminderAdd(nextcord_C.Cog):
 
         bot_reply = await interaction.original_message()
 
-        await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).reminder()).add(reminder_id, reminder_time, bot_reply.jump_url, reminder)
+        await (await DBHandler(self.client.database, user_id=interaction.user.id).reminder()).add(reminder_id, reminder_time, bot_reply.jump_url, reminder)
 
 
 

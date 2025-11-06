@@ -40,10 +40,9 @@ class Spotify(nextcord_C.Cog):
         To get data about a track, it uses the Spotipy API wrapper.
         """
 
-        if not member:
-            member = interaction.guild.get_member(interaction.user.id)
+        member = member or interaction.guild.get_member(interaction.user.id)
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/spotify",
             {"member": str(member.id), "details": details}
@@ -71,9 +70,9 @@ class Spotify(nextcord_C.Cog):
             image = output_data["cover_url"],
             author = f"{output_data['track_name']} - {output_data['artists']}",
             author_url = output_data['track_url'],
-            author_icon = self.client.SPOTIFY_ICON,
+            author_icon = self.client.config.SPOTIFY_ICON,
             footer = "Now Playing",
-            footer_icon = self.client.HEADPHONES_ICON,
+            footer_icon = self.client.config.HEADPHONES_ICON,
             fields = [
                 [
                     "Track Duration:",
@@ -124,13 +123,13 @@ class Spotify(nextcord_C.Cog):
     ) -> dict[str, str]:
         """uses the Spotify API to get the output data (potentially with details, if specified)"""
 
-        spotify_object = spotipy.Spotify(auth=self.client.spotifyOAuth.get_cached_token()["access_token"])
+        spotify_object = spotipy.Spotify(auth=self.client.spotify_oauth.get_cached_token()["access_token"])
         track_data = spotify_object.track(f"spotify:track:{member_activity.track_id}")
         artist_data = spotify_object.artist(f"spotify:artist:{track_data['artists'][0]['id']}")
         output_data: dict[str, str] = {}
 
         # the artists are seperated by commas and have a markdown link to their SF page on them: [name](link), [name2](link2)...
-        output_data["artists"] = ", ".join([artist['name'] for artist in track_data["artists"]])
+        output_data["artists"] = ", ".join([artist["name"] for artist in track_data["artists"]])
         output_data["album_name"] = track_data["album"]["name"]
         output_data["album_url"] = track_data["album"]["external_urls"]["spotify"]
         output_data["cover_url"] = track_data["album"]["images"][0]["url"]
@@ -139,14 +138,11 @@ class Spotify(nextcord_C.Cog):
 
         if details:
             output_data["artist_genres"] = ", ".join(artist_data["genres"])
-            output_data["artist_followers"] = "{:,}".format(int(artist_data["followers"]["total"]))
+            output_data["artist_followers"] = f"{int(artist_data["followers"]["total"]):,}"
             output_data["artist_popularity"] = f"`{int(artist_data['popularity'])}/100`"
             output_data["track_duration"] = f"`{int(round(track_data['duration_ms'] / 1000) / 60)}:{round(track_data['duration_ms'] / 1000) % 60}`"
             output_data["track_popularity"] = f"`{int(track_data['popularity'])}/100`"
-            if track_data["explicit"]:
-                output_data["track_explicit"] = "Yes"
-            else:
-                output_data["track_explicit"] = "No"
+            output_data["track_explicit"] = "Yes" if track_data["explicit"] else "No"
         else:
             # if the value of a field is an empty string it gets hidden, meaning if details is set to "No" no field will be displayed
             output_data["artist_genres"] = ""

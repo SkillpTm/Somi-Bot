@@ -1,6 +1,7 @@
+import re
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import re
 
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
@@ -27,14 +28,12 @@ class KeywordSend(nextcord_C.Cog):
             return
 
         # remove messages from hidden channels
-        if message.channel.id in await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id).hidden_channel()).get_list():
+        if message.channel.id in await (await DBHandler(self.client.database, server_id=message.guild.id).hidden_channel()).get_list():
             return
 
-        all_users_keywords = await (await DBHandler(self.client.PostgresDB, server_id=message.guild.id, user_id=message.author.id).keyword()).get_all()
+        for user_id, user_keywords in (await (await DBHandler(self.client.database, server_id=message.guild.id, user_id=message.author.id).keyword()).get_all()).items():
 
-        for user_id, user_keywords in all_users_keywords.items():
-            
-            # if the user has no keywords or left the guidl skip them
+            # if the user has no keywords or left the guild skip them
             if not user_keywords or not message.guild.get_member(user_id):
                 continue
 
@@ -42,18 +41,15 @@ class KeywordSend(nextcord_C.Cog):
             message_content = re.sub("<[^ ]+?>", "", message.content.lower()) # regex -> message without emotes
 
             for keyword in user_keywords:
-                # we don't want keywords within other words so we check here against all cases except that.
-                if (f" {keyword} " in message_content
-                    or message_content.startswith(f"{keyword} ")
-                    or message_content.endswith(f" {keyword}")
-                    or message_content == f"{keyword}"):
+                # we don't want keywords within other words so we check here against that
+                if re.search(rf"\b{keyword}\b", message_content):
                     user_keywords_in_content.append(f"`{keyword}`")
 
             # if no keywords found skip user
             if not user_keywords_in_content:
                 continue
 
-            self.client.Loggers.action_log(Get.log_message(
+            self.client.logger.action_log(Get.log_message(
                 message,
                 "/keyword send",
                 {"keywords": ", ".join(user_keywords_in_content)}
@@ -69,9 +65,8 @@ class KeywordSend(nextcord_C.Cog):
 
             keywords_info += f"{keywords_info} been mentioned in {message.channel.mention} by {message.author.mention}:"
 
-
             embed = EmbedFunctions().builder(
-                color = self.client.BOT_COLOR,
+                color = self.client.config.BOT_COLOR,
                 title = f"Keyword Notification: {output_keywords}",
                 title_url = message.jump_url,
                 description = f"{keywords_info}\n\n__**Message:**__\n{message.content}"
@@ -81,10 +76,11 @@ class KeywordSend(nextcord_C.Cog):
 
             try:
                 await self.client.fetch_user(user_id).send(embed=embed)
-            except:
-                self.client.Loggers.action_warning(f"keyword send ~ User: {user_id} couldn't be notified, because their pms aren't open to the client")
+            except nextcord.Forbidden:
+                self.client.logger.action_warning(f"keyword send ~ User: {user_id} couldn't be notified, because their pms aren't open to the client")
 
-            await (await DBHandler(self.client.PostgresDB).telemetry()).increment("keyword send")
+            await (await DBHandler(self.client.database).telemetry()).increment("keyword send")
+
 
 
 def setup(client: SomiBot) -> None:

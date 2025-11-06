@@ -1,8 +1,9 @@
 import datetime
+import urllib.parse
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
-import urllib.parse
 
 from lib.dbModules import DBHandler
 from lib.modules import EmbedFunctions, Get
@@ -31,44 +32,43 @@ class Weather(nextcord_C.Cog):
     ) -> None:
         """This command outputs various statistics about the weather of any place (that's on openweathermap)"""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/weather",
             {"location": location}
         ))
 
-        await interaction.response.defer(with_message = True)
+        await interaction.response.defer(with_message=True)
 
-        if not location:
-            location = await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).weather_get()
+        location = location or await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).weather_get()
 
-        response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={self.client.Keychain.WEATHER_API_KEY}&q={urllib.parse.quote_plus(location)}&units=metric")
+        response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={self.client.keychain.WEATHER_API_KEY}&q={urllib.parse.quote_plus(location)}&units=metric", timeout=10)
 
         if response.status_code != 200:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{location} couldn't be found."), ephemeral=True)
             return
 
-        if location != await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).weather_get():
-            await (await DBHandler(self.client.PostgresDB, user_id=interaction.user.id).user()).weather_set(location)
+        if location != await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).weather_get():
+            await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).weather_set(location)
 
         response_json: dict = response.json()
         output_data: dict[str, str] = {}
 
         # pull all the data we need from the json (and potentially format it, ready for the output)
         output_data["cloudiness"] = str(response_json["clouds"]["all"])
-        output_data["country"] = self.client.ISOCountryTagDict[str(response_json["sys"]["country"])]
+        output_data["country"] = self.client.config.ISO_COUNTRY_TAGS[str(response_json["sys"]["country"])]
         output_data["descirption"] = str(response_json["weather"][0]["description"])
         output_data["humidity"] = str(response_json["main"]["humidity"])
         output_data["id"] = str(response_json["id"])
         output_data["local_time"] = datetime.datetime.fromtimestamp(response_json["dt"] + response_json["timezone"]).strftime("%H:%M:%S")
         output_data["metric_temp"] = str(round(response_json["main"]["temp"], 1))
-        output_data["imperial_temp"] = str(round(response_json["main"]["temp"] * 9/5 + 32, 1)) #(0°C × 9/5) + 32 = 32°F
-        output_data["metric_wind_speed"] = str(round(response_json["wind"]["speed"] * 3.6)) #m/s * 3.6 = km/h
-        output_data["imperial_wind_speed"] = str(round(response_json["wind"]["speed"] * 3.6 * 1.609)) #km/h * 1,609 = mph
+        output_data["imperial_temp"] = str(round(response_json["main"]["temp"] * 9/5 + 32, 1)) # (0°C × 9/5) + 32 = 32°F
+        output_data["metric_wind_speed"] = str(round(response_json["wind"]["speed"] * 3.6)) # m/s * 3.6 = km/h
+        output_data["imperial_wind_speed"] = str(round(response_json["wind"]["speed"] * 3.6 * 1.609)) # km/h * 1,609 = mph
         output_data["name"] = str(response_json["name"])
 
         embed = EmbedFunctions().builder(
-            color = self.client.BOT_COLOR,
+            color = self.client.config.BOT_COLOR,
             title = f"Weather in: {output_data["name"]}, {output_data["country"]}",
             title_url = f"https://openweathermap.org/city/{output_data["id"]}",
             description = "\n".join([line.strip() for line in f"""
@@ -80,7 +80,7 @@ class Weather(nextcord_C.Cog):
             💧 Humidity: {output_data["humidity"]}%
             """.split("\n")]),
             footer = "Weather powered by OpenWeatherMap",
-            footer_icon = self.client.OPENWEATHERMAP_ICON
+            footer_icon = self.client.config.OPENWEATHERMAP_ICON
         )
 
         await interaction.followup.send(embed=embed)

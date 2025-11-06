@@ -37,7 +37,7 @@ class VCAccess(nextcord_C.Cog):
     ) -> None:
         """This command can restirct or grant access to all voice-channels in a guild."""
 
-        self.client.Loggers.action_log(Get.log_message(
+        self.client.logger.action_log(Get.log_message(
             interaction,
             "/slowmode",
             {"action": action, "member": (member.id)}
@@ -65,14 +65,11 @@ class VCAccess(nextcord_C.Cog):
             # used in the audit log embed later
             mod_action = f"{interaction.user.mention} took access to all voice-channels from {member.mention} away."
 
-
-        audit_log_id = await (await DBHandler(self.client.PostgresDB, server_id=interaction.guild.id).server()).audit_log_get()
-
-        if not audit_log_id:
+        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.PERMISSION_COLOR,
+            color = self.client.config.PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [
@@ -84,7 +81,7 @@ class VCAccess(nextcord_C.Cog):
             ]
         )
 
-        await interaction.guild.get_channel(audit_log_id).send(embed=embed)
+        await audit_log.send(embed=embed)
 
 
 

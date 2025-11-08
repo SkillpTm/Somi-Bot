@@ -4,7 +4,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import LevelRoles
+from lib.helpers import LevelRoles
 from lib.utilities import SomiBot
 
 
@@ -42,7 +42,7 @@ class LevelsGainXp(nextcord_C.Cog):
         user_level_after, _ =  await (await DBHandler(self.client.database, server_id=message.guild.id, user_id=message.author.id).level()).get_level_and_xp_until_next()
 
         if user_level_before < user_level_after:
-            await LevelRoles().update_users(self.client, message.guild, [[message.author.id, user_level_after]])
+            await LevelRoles.update_users(self.client, message.guild, [[message.author.id, user_level_after]])
 
 
 

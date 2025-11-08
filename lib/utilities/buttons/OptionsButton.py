@@ -1,6 +1,6 @@
 import nextcord
 
-from lib.modules import Misc
+from lib.helpers import Misc
 
 
 

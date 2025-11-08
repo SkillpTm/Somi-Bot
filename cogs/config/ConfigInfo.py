@@ -3,8 +3,8 @@ import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
+from lib.helpers import EmbedFunctions, LevelRoles
 from lib.managers import Config
-from lib.modules import EmbedFunctions, LevelRoles
 from lib.utilities import SomiBot
 
 
@@ -129,7 +129,7 @@ class ConfigInfo(nextcord_C.Cog):
             if not interaction.guild.get_role(level_role[0]):
                 level_roles.pop(index)
                 await (await DBHandler(self.client.database, server_id=interaction.guild.id).level_role()).delete(level_role[0])
-                LevelRoles().update_users(self.client, interaction.guild)
+                LevelRoles.update_users(self.client, interaction.guild)
 
         if level_roles:
             level_roles_output = LevelRoles.get_level_range_with_role(level_roles)

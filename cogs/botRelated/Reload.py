@@ -4,8 +4,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
+from lib.helpers import EmbedFunctions, Get
 from lib.managers import Config, Singleton
-from lib.modules import EmbedFunctions, Get
 from lib.utilities import Lists, SomiBot
 
 

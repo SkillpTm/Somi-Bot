@@ -3,8 +3,8 @@ import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
+from lib.helpers import EmbedFunctions, LevelRoles
 from lib.managers import Config
-from lib.modules import EmbedFunctions, LevelRoles
 from lib.utilities import SomiBot
 
 
@@ -97,7 +97,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{role.mention} has been added to the level-roles.\nThe role is being applied to users now, this can take a few minutes."), ephemeral=True)
 
-        await LevelRoles().update_users(self.client, interaction.guild)
+        await LevelRoles.update_users(self.client, interaction.guild)
 
         return added
 
@@ -116,7 +116,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{role.mention} has been removed from the level-roles.\nThe level-roles are being re-applied to users now, this can take a few minutes."), ephemeral=True)
 
-        await LevelRoles().update_users(self.client, interaction.guild)
+        await LevelRoles.update_users(self.client, interaction.guild)
 
         return deleted
 

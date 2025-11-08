@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.helpers import EmbedFunctions, Get
 from lib.utilities import SomiBot, YesNoButtons
 
 class ReminderDelete(nextcord_C.Cog):
@@ -83,7 +83,7 @@ class ReminderDelete(nextcord_C.Cog):
         """asks the user if they want to delete all their reminders and does as answered"""
 
         view = YesNoButtons(interaction=interaction)
-        await interaction.followup.send(embed=EmbedFunctions().get_info_message("Do you really want to delete **ALL** your reminders __**(they can't be recovered)?**__", self.client), view=view, ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_info_message("Do you really want to delete **ALL** your reminders __**(they can't be recovered)?**__"), view=view, ephemeral=True)
         await view.wait()
 
         if not view.value:

@@ -4,7 +4,7 @@ import zoneinfo
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.modules import EmbedFunctions, Get
+from lib.helpers import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
 

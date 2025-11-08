@@ -2,8 +2,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
+from lib.helpers import EmbedFunctions, Get
 from lib.managers import Config
-from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot, YesNoButtons
 
 
@@ -30,7 +30,7 @@ class Shutdown(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         view = YesNoButtons(interaction=interaction)
-        await interaction.followup.send(embed=EmbedFunctions().get_info_message("Do you really want to shutdown the bot?", self.client), view=view, ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_info_message("Do you really want to shutdown the bot?"), view=view, ephemeral=True)
         await view.wait()
 
         if not view.value:

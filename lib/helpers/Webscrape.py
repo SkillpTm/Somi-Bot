@@ -3,7 +3,7 @@ import urllib.parse
 
 from bs4 import BeautifulSoup
 
-from lib.modules import Get
+from lib.helpers import Get
 
 
 

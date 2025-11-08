@@ -2,8 +2,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
+from lib.helpers import EmbedFunctions
 from lib.managers import Config, Logger
-from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot, YesNoButtons
 
 
@@ -35,7 +35,7 @@ class Modmail(nextcord_C.Cog):
             await message.channel.send(embed=EmbedFunctions().get_error_message("Your modmail must be longer than 50 characters! Please describe your problem precisely!"))
             return
 
-        response = await message.reply(embed=EmbedFunctions().get_info_message("Do you really want to submit this as a modmail?", self.client), mention_author=False)
+        response = await message.reply(embed=EmbedFunctions().get_info_message("Do you really want to submit this as a modmail?"), mention_author=False)
         view = YesNoButtons(response=response)
         await response.edit(embed=response.embeds[0], view=view, delete_after=70)
         await view.wait()

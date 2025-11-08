@@ -2,7 +2,8 @@ import datetime
 
 import nextcord
 
-from lib.modules.Get import Get
+from lib.helpers.Get import Get
+from lib.managers.Config import Config
 
 
 
@@ -38,11 +39,11 @@ class EmbedFunctions():
     ####################################################################################################
 
     @staticmethod
-    def get_info_message(repsonse: str, client) -> nextcord.Embed:
+    def get_info_message(repsonse: str) -> nextcord.Embed:
         """Makes an Embed for a succes message"""
 
         embed = EmbedFunctions.builder(
-            color = client.BOT_COLOR,
+            color = Config().BOT_COLOR,
             description = repsonse
         )
 

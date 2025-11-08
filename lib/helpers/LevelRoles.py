@@ -8,8 +8,8 @@ class LevelRoles():
 
     ####################################################################################################
 
+    @staticmethod
     async def update_users(
-        self,
         client,
         server: nextcord.Guild,
         members_and_levels: list[list[int]] = [] # [[member_id, level], ...]
@@ -34,7 +34,7 @@ class LevelRoles():
 
         # if a role doesn't exist anymore, these will missmatch, so redo the level roles on everyone
         if len(all_level_roles) != len(level_role_list):
-            self.update_users(client, server)
+            LevelRoles.update_users(client, server)
             return
 
 

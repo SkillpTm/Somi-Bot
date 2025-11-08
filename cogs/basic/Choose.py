@@ -3,8 +3,8 @@ import random
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
+from lib.helpers import EmbedFunctions
 from lib.managers import Logger
-from lib.modules import EmbedFunctions
 from lib.utilities import OptionsButton, SomiBot
 
 
@@ -61,7 +61,7 @@ class ChooseModal(nextcord.ui.Modal):
 
             all_options_output += f"Option {name[-1]}: {value}\n"
 
-        await interaction.followup.send(embed=EmbedFunctions().get_info_message(all_options_output, self.client))
+        await interaction.followup.send(embed=EmbedFunctions().get_info_message(all_options_output))
 
 
 

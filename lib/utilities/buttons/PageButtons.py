@@ -1,6 +1,6 @@
 import nextcord
 
-from lib.modules import EmbedFunctions, Misc
+from lib.helpers import EmbedFunctions, Misc
 
 
 

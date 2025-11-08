@@ -6,8 +6,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
+from lib.helpers import EmbedFunctions, Misc
 from lib.managers import Logger
-from lib.modules import EmbedFunctions, Misc
 from lib.utilities import SomiBot
 
 

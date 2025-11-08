@@ -8,8 +8,8 @@ import nextcord.ext.commands as nextcord_C
 import requests
 
 from lib.dbModules import DBHandler, PostgresDB
+from lib.helpers import EmbedFunctions
 from lib.managers import Config, Keychain, Logger, Singleton
-from lib.modules import EmbedFunctions
 from lib.utilities import Lists
 
 

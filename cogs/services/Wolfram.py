@@ -1,6 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
+from lib.managers import Keychain
 from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
@@ -30,7 +31,7 @@ class Wolfram(nextcord_C.Cog):
         await interaction.response.defer(with_message=True)
 
         try:
-            await interaction.followup.send(f"Query: `{query}`\n```{next(self.client.wolfram_client.query(query).results).text}```")
+            await interaction.followup.send(f"Query: `{query}`\n```{next(Keychain().wolfram_client.query(query).results).text}```")
         except StopIteration:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"Wolfram couldn't find a result for your query:\n`{query}`"))
 

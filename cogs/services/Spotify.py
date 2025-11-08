@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import spotipy
 
-from lib.managers import Config
+from lib.managers import Config, Keychain
 from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
@@ -117,7 +117,7 @@ class Spotify(nextcord_C.Cog):
     ) -> dict[str, str]:
         """uses the Spotify API to get the output data (potentially with details, if specified)"""
 
-        spotify_object = spotipy.Spotify(auth=self.client.spotify_oauth.get_cached_token()["access_token"])
+        spotify_object = spotipy.Spotify(auth=Keychain().spotify_oauth.get_cached_token()["access_token"])
         track_data = spotify_object.track(f"spotify:track:{member_activity.track_id}")
         artist_data = spotify_object.artist(f"spotify:artist:{track_data['artists'][0]['id']}")
         output_data: dict[str, str] = {}

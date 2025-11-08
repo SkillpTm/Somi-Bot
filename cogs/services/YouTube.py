@@ -1,6 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
+from lib.managers import Keychain
 from lib.modules import EmbedFunctions
 from lib.utilities import PageButtons, SomiBot
 
@@ -33,7 +34,7 @@ class YouTube(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        search_result = self.client.youtube.search().list(q=query, part="snippet", type="video", maxResults=50).execute()
+        search_result = Keychain().youtube.search().list(q=query, part="snippet", type="video", maxResults=50).execute()
         results = [f"https://www.youtube.com/watch?v={item['id']['videoId']}" for item in search_result["items"]]
 
         if not (results := [f"https://www.youtube.com/watch?v={item['id']['videoId']}" for item in search_result["items"]]):

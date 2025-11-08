@@ -1,6 +1,10 @@
 import json
 import os
 
+import googleapiclient.discovery
+import spotipy
+import wolframalpha
+
 from lib.managers.Singleton import Singleton
 
 
@@ -24,3 +28,18 @@ class Keychain(metaclass=Singleton):
         # Webscraping cookies/headers to get around last.fm login
         self.LAST_FM_COOKIES: str = json.loads(os.getenv("LAST_FM_COOKIES"))
         self.LAST_FM_HEADERS: str = json.loads(os.getenv("LAST_FM_HEADERS"))
+
+        self.spotify_oauth = spotipy.SpotifyOAuth(
+            client_id = self.SPOTIPY_CLIENT_ID,
+            client_secret = self.SPOTIPY_CLIENT_SECRET,
+            redirect_uri = self.SPOTIPY_REDIRECT_URI,
+            scope = "user-read-currently-playing"
+        )
+
+        self.wolfram_client = wolframalpha.Client(self.WOLFRAM_APP_ID)
+
+        self.youtube = googleapiclient.discovery.build(
+            "youtube",
+            "v3",
+            developerKey = self.YOUTUBE_API_KEY
+        )

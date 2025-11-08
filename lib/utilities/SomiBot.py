@@ -3,15 +3,12 @@ import os
 import sys
 import time
 
-import googleapiclient.discovery
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
-import spotipy
-import wolframalpha
 
 from lib.dbModules import DBHandler, PostgresDB
-from lib.managers import Config, Keychain, Logger
+from lib.managers import Config, Keychain, Logger, Singleton
 from lib.modules import EmbedFunctions
 from lib.utilities import Lists
 
@@ -22,10 +19,6 @@ class SomiBot(nextcord_C.Bot):
 
     def __init__(self) -> None:
         self.database: PostgresDB = None
-        self.spotify_oauth: spotipy.SpotifyOAuth = None
-        self.wolfram_client: wolframalpha.Client = None
-        self.youtube: googleapiclient.discovery = None
-
         self.is_setup = False
         self.start_time = int(time.time())
         self.lists = Lists(Config().APPLICATION_ID)
@@ -42,37 +35,6 @@ class SomiBot(nextcord_C.Bot):
 
         self.add_check(self._global_command_checks)
         self.application_command_before_invoke(self._before_command)
-
-    ####################################################################################################
-
-    def _api_login(self) -> None:
-        """This function adds API logins for Spotify, WolframAlpha and YouTube on the client"""
-
-        self.spotify_oauth = spotipy.SpotifyOAuth(
-            client_id = Keychain().SPOTIPY_CLIENT_ID,
-            client_secret = Keychain().SPOTIPY_CLIENT_SECRET,
-            redirect_uri = Keychain().SPOTIPY_REDIRECT_URI,
-            scope = "user-read-currently-playing"
-        )
-
-        self.wolfram_client = wolframalpha.Client(Keychain().WOLFRAM_APP_ID)
-
-        self.youtube = googleapiclient.discovery.build(
-            "youtube",
-            "v3",
-            developerKey = Keychain().YOUTUBE_API_KEY
-        )
-
-    ####################################################################################################
-
-    def _api_logout(self) -> None:
-        """Logs the client from the Spotify and YouTube API out"""
-
-        self.spotify_oauth = None
-        self.wolfram_client = None
-
-        if self.youtube:
-            self.youtube.close()
 
     ####################################################################################################
 
@@ -143,10 +105,9 @@ class SomiBot(nextcord_C.Bot):
     async def on_ready(self) -> None:
         """This function overwrites the build in on_ready function, to login for our APIs and to start all infinite loops"""
 
-        # logout in case this was a restart and we didn't properly exit those API connections
-        self._api_logout()
+        # api logout in case this was a restart and we didn't properly exit those API connections
+        Singleton.reset(Keychain)
         Logger().bot_status(f"{self.user}: ready and logged in")
-        self._api_login()
 
         self.database = await PostgresDB.create("./sql/schema.sql", "./sql/queries.sql", Config().POSTGRES_POOL_MAX_SIZE)
 
@@ -166,7 +127,7 @@ class SomiBot(nextcord_C.Bot):
         # attempt to logout the api connections
         try:
             if requests.get("https://www.google.com/", timeout=10).status_code == 200:
-                self._api_logout()
+                Singleton.reset(Keychain)
         except requests.ConnectionError:
             pass
 

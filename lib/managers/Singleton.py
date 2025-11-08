@@ -10,6 +10,10 @@ class Singleton(type):
         return cls._instances[cls]
 
     @staticmethod
-    def reset():
+    def reset(reset_class=None):
         """Resets all singelton classes"""
-        Singleton._instances = {}
+        if not reset_class:
+            Singleton._instances = {}
+            return
+
+        Singleton._instances.pop(reset_class)

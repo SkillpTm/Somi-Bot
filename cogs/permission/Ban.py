@@ -1,6 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
+from lib.managers import Logger
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -45,12 +46,6 @@ class Ban(nextcord_C.Cog):
 
         delete_message_hours = delete_message_hours or 1
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/ban",
-            {"member": str(member.id), "delete_message_hours": str(delete_message_hours), "reason": reason}
-        ))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if interaction.user.id == member.id:
@@ -67,7 +62,7 @@ class Ban(nextcord_C.Cog):
             else:
                 await member.send(f"You have been __**banned**__ from `{interaction.guild.name}`\nThere was no provided reason.")
         except nextcord.Forbidden:
-            self.client.logger.action_warning(f"/ban send ~ User: {member.id} couldn't be notified, because their pms aren't open to the client")
+            Logger().action_warning(f"/ban send ~ User: {member.id} couldn't be notified, because their pms aren't open to the client")
 
         await interaction.guild.ban(user=member, reason=reason, delete_message_seconds=delete_message_hours * 60 * 60)
 
@@ -94,12 +89,6 @@ class Ban(nextcord_C.Cog):
         )
     ) -> None:
         """This command unbans a user, if that user exists and was banned."""
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/unban",
-            {"user_id": str(user_id)}
-        ))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 

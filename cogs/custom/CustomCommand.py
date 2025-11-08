@@ -32,12 +32,6 @@ class CustomCommand(nextcord_C.Cog):
     ) -> None:
         """This command will post a custom-command, if given it's name"""
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/custom-command",
-            {"name": name}
-        ))
-
         name = Get.clean_input_command(name)
 
         if not (commandtext := await (await DBHandler(self.client.database, server_id=interaction.guild.id).custom_command()).get_text(name)):

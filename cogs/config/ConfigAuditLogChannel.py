@@ -3,7 +3,8 @@ import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config
+from lib.modules import EmbedFunctions
 from lib.utilities import Lists, SomiBot
 
 
@@ -33,15 +34,9 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
     ) -> None:
         """This command sets/resets the audit-log-channel of the server."""
 
-        channel = channel or interaction.channel
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/config audit-log-channel",
-            {"action": action, "channel": str(channel.id)}
-        ))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
+
+        channel = channel or interaction.channel
 
         if action == "Set":
             await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_set(channel.id)
@@ -60,7 +55,7 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
 
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.PERMISSION_COLOR,
+            color = Config().PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [

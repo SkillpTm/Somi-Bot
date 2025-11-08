@@ -3,7 +3,8 @@ import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config
+from lib.modules import EmbedFunctions
 from lib.utilities import Lists, SomiBot
 
 
@@ -31,15 +32,9 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
         ) -> None:
         """This command will deactivate/activate XP in the given channel."""
 
-        channel = channel or interaction.channel
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/config level-ignore-channel",
-            {"action": action, "channel": str(channel.id)}
-        ))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
+
+        channel = channel or interaction.channel
 
         if action == "Add":
             if not await self._add_channel(interaction, channel):
@@ -58,7 +53,7 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.PERMISSION_COLOR,
+            color = Config().PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [

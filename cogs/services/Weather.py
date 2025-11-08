@@ -6,7 +6,8 @@ import nextcord.ext.commands as nextcord_C
 import requests
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config, Keychain
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -32,17 +33,10 @@ class Weather(nextcord_C.Cog):
     ) -> None:
         """This command outputs various statistics about the weather of any place (that's on openweathermap)"""
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/weather",
-            {"location": location}
-        ))
-
         await interaction.response.defer(with_message=True)
 
         location = location or await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).weather_get()
-
-        response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={self.client.keychain.WEATHER_API_KEY}&q={urllib.parse.quote_plus(location)}&units=metric", timeout=10)
+        response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={Keychain().WEATHER_API_KEY}&q={urllib.parse.quote_plus(location)}&units=metric", timeout=10)
 
         if response.status_code != 200:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{location} couldn't be found."), ephemeral=True)
@@ -56,7 +50,7 @@ class Weather(nextcord_C.Cog):
 
         # pull all the data we need from the json (and potentially format it, ready for the output)
         output_data["cloudiness"] = str(response_json["clouds"]["all"])
-        output_data["country"] = self.client.config.ISO_COUNTRY_TAGS[str(response_json["sys"]["country"])]
+        output_data["country"] = Config().ISO_COUNTRY_TAGS[str(response_json["sys"]["country"])]
         output_data["descirption"] = str(response_json["weather"][0]["description"])
         output_data["humidity"] = str(response_json["main"]["humidity"])
         output_data["id"] = str(response_json["id"])
@@ -68,7 +62,7 @@ class Weather(nextcord_C.Cog):
         output_data["name"] = str(response_json["name"])
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.BOT_COLOR,
+            color = Config().BOT_COLOR,
             title = f"Weather in: {output_data["name"]}, {output_data["country"]}",
             title_url = f"https://openweathermap.org/city/{output_data["id"]}",
             description = "\n".join([line.strip() for line in f"""
@@ -80,7 +74,7 @@ class Weather(nextcord_C.Cog):
             💧 Humidity: {output_data["humidity"]}%
             """.split("\n")]),
             footer = "Weather powered by OpenWeatherMap",
-            footer_icon = self.client.config.OPENWEATHERMAP_ICON
+            footer_icon = Config().OPENWEATHERMAP_ICON
         )
 
         await interaction.followup.send(embed=embed)

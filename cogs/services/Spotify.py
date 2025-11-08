@@ -2,7 +2,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import spotipy
 
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -41,13 +42,6 @@ class Spotify(nextcord_C.Cog):
         """
 
         member = member or interaction.guild.get_member(interaction.user.id)
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/spotify",
-            {"member": str(member.id), "details": details}
-        ))
-
         member_activity: nextcord.Spotify = None
 
         # check the members activities for Spotify
@@ -70,9 +64,9 @@ class Spotify(nextcord_C.Cog):
             image = output_data["cover_url"],
             author = f"{output_data['track_name']} - {output_data['artists']}",
             author_url = output_data['track_url'],
-            author_icon = self.client.config.SPOTIFY_ICON,
+            author_icon = Config().SPOTIFY_ICON,
             footer = "Now Playing",
-            footer_icon = self.client.config.HEADPHONES_ICON,
+            footer_icon = Config().HEADPHONES_ICON,
             fields = [
                 [
                     "Track Duration:",

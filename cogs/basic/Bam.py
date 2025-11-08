@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.modules import Get
+from lib.managers import Config
 from lib.utilities import SomiBot
 
 
@@ -17,9 +17,7 @@ class Bam(nextcord_C.Cog):
     async def bam(self, interaction: nextcord.Interaction) -> None:
         """This command fake bans someone"""
 
-        self.client.logger.action_log(Get.log_message(interaction, "/bam"))
-
-        await interaction.response.send_message(f"User has been bammed!\n{self.client.config.BAN_HAMMER_GIF}")
+        await interaction.response.send_message(f"User has been bammed!\n{Config().BAN_HAMMER_GIF}")
 
 
 

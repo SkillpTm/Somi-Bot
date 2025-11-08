@@ -5,7 +5,7 @@ import zlib
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.modules import EmbedFunctions, Get
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 WIDTH = 300
@@ -35,12 +35,6 @@ class Color(nextcord_C.Cog):
         """This command converts a hexcode to an image of that color."""
 
         hexcode = hexcode.strip("#").lower()
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/color",
-            {"hexcode": hexcode}
-        ))
 
         # check if the input is a valid hexcode
         if not re.match(r"^[0-9a-f]{6}$", hexcode):

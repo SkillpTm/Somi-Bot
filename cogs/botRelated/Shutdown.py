@@ -2,8 +2,9 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
+from lib.managers import Config
 from lib.modules import EmbedFunctions, Get
-from lib.utilities import Config, SomiBot, YesNoButtons
+from lib.utilities import SomiBot, YesNoButtons
 
 
 
@@ -17,7 +18,7 @@ class Shutdown(nextcord_C.Cog):
     @nextcord.slash_command(
         name = "shutdown",
         description = "shuts the bot down",
-        guild_ids = [Config.SUPPORT_SERVER_ID],
+        guild_ids = [Config().SUPPORT_SERVER_ID],
         default_member_permissions = nextcord.Permissions(administrator=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
@@ -25,8 +26,6 @@ class Shutdown(nextcord_C.Cog):
     @nextcord_AC.check(Get.interaction_by_owner())
     async def shutdown(self, interaction: nextcord.Interaction) -> None:
         """This command let's you shutdown the bot, it can only be executed from a moderator on Somicord."""
-
-        self.client.logger.action_log(Get().log_message(interaction, "/shutdown"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
@@ -54,7 +53,7 @@ class Shutdown(nextcord_C.Cog):
             ]
         )
 
-        await self.client.get_channel(self.client.config.SUPPORT_SERVER_LOGS_ID).send(embed=embed)
+        await self.client.get_channel(Config().SUPPORT_SERVER_LOGS_ID).send(embed=embed)
         await self.client.close()
 
 

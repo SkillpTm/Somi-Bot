@@ -4,7 +4,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config, Logger
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -31,7 +32,7 @@ class FeedbackModal(nextcord.ui.Modal):
     ) -> None:
         """Submits the feedback to the db"""
 
-        self.client.logger.action_log(Get.log_message(interaction, "/feedback", {"submission": self.feedback.value}))
+        Logger().action_log(interaction, "/feedback", {"submission": self.feedback.value})
 
         if interaction.guild:
             server_id = interaction.guild.id
@@ -43,13 +44,13 @@ class FeedbackModal(nextcord.ui.Modal):
         await (await DBHandler(self.client.database, server_id, interaction.user.id).feedback()).submit(datetime.datetime.now().strftime("Date: `%Y/%m/%d`\nTime: `%H:%M:%S %Z`"), self.feedback.value)
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.BOT_COLOR,
+            color = Config().BOT_COLOR,
             title = f"Feedback by: `{interaction.user.name}` | `({interaction.user.id})`",
             thumbnail = interaction.user.display_avatar.url,
             description = f"{origin_text}\n{self.feedback.value}"
         )
 
-        await self.client.get_channel(self.client.config.SUPPORT_SERVER_FEEDBACK_ID).send(embed=embed)
+        await self.client.get_channel(Config().SUPPORT_SERVER_FEEDBACK_ID).send(embed=embed)
         await interaction.response.send_message(embed=EmbedFunctions().get_success_message("Your feedback has been submitted!"), ephemeral=True)
 
 
@@ -64,8 +65,6 @@ class Feedback(nextcord_C.Cog):
     @nextcord.slash_command(name="feedback", description="give feedback to the bot, with a suggestion or submit a bug-report")
     async def feedback(self, interaction: nextcord.Interaction) -> None:
         """Sends out a modal to receive feedback"""
-
-        self.client.logger.action_log(Get.log_message(interaction, "/feedback"))
 
         await interaction.response.send_modal(FeedbackModal(self.client))
 

@@ -5,7 +5,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Logger
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -56,11 +57,11 @@ class DeleteLog(nextcord_C.Cog):
     ) -> None:
         """logs a deleted message"""
 
-        self.client.logger.action_log(Get.log_message(
+        Logger().action_log(
             message,
             "delete log",
             {"message": message.content}
-        ))
+        )
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),
@@ -87,11 +88,11 @@ class DeleteLog(nextcord_C.Cog):
     ) -> None:
         """logs a removed message"""
 
-        self.client.logger.action_log(Get.log_message(
+        Logger().action_log(
             message,
             "remove log",
             {"message": message.content, "removed by": str(entry.user.id)}
-        ))
+        )
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),

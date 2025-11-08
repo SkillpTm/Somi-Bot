@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.modules import EmbedFunctions, Get
+from lib.modules import EmbedFunctions
 from lib.utilities import PageButtons, SomiBot
 
 
@@ -30,12 +30,6 @@ class YouTube(nextcord_C.Cog):
         )
     ) -> None:
         """This command uses the given query and sends it to the YouTube Data API, then the user can flip thourgh the top 50 results"""
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/youtube",
-            {"query": query}
-        ))
 
         await interaction.response.defer(with_message=True)
 

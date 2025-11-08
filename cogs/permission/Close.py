@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -23,8 +23,6 @@ class Close(nextcord_C.Cog):
     )
     async def close(self, interaction: nextcord.Interaction) -> None:
         """This command takes the send-messages permission from the default-role away, effectifly closing down the server. Additionally it sets invites_disabled = True"""
-
-        self.client.logger.action_log(Get.log_message(interaction, "/close"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
@@ -86,8 +84,6 @@ class Close(nextcord_C.Cog):
     )
     async def open(self, interaction: nextcord.Interaction) -> None:
         """This command gives the send-messages permission back to the default-role, effectifly opening the server back up."""
-
-        self.client.logger.action_log(Get.log_message(interaction, "/open"))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 

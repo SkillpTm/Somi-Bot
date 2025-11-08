@@ -2,7 +2,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -30,12 +31,6 @@ class LevelsRank(nextcord_C.Cog):
 
         member = member or interaction.guild.get_member(interaction.user.id)
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/levels rank",
-            {"member": str(member.id)}
-        ))
-
         await interaction.response.defer(with_message=True)
 
         user_level, xp_until_next_level = await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).level()).get_level_and_xp_until_next()
@@ -48,7 +43,7 @@ class LevelsRank(nextcord_C.Cog):
         percent_bar = "[" + "█" * int(percent) + " -" * (20 - int(percent)) + "]"
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.BOT_COLOR,
+            color = Config().BOT_COLOR,
             thumbnail = member.display_avatar.url,
             title = f"Rank for `{member.display_name}` on `{interaction.guild.name}`",
             fields = [

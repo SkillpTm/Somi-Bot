@@ -3,7 +3,8 @@ import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -32,16 +33,10 @@ class ConfigDefaultRole(nextcord_C.Cog):
     ) -> None:
         """This command sets/resets a default-role to the server. Meaning that on_member_join will apply this role automatically, if set"""
 
+        await interaction.response.defer(ephemeral=True, with_message=True)
+
         # just gets set to the default_role so we don't error on stuff later
         role = role or interaction.guild.default_role
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/config default-role",
-            {"action": action, "role": str(role.id)}
-        ))
-
-        await interaction.response.defer(ephemeral=True, with_message=True)
 
         if action == "Set":
             if not await self._set_role(interaction, role):
@@ -63,7 +58,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.PERMISSION_COLOR,
+            color = Config().PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [

@@ -79,49 +79,6 @@ class Get():
     ####################################################################################################
 
     @staticmethod
-    def log_message(
-        data_provider: nextcord.Interaction | nextcord.Member | nextcord.User | nextcord.Message,
-        action_name: str,
-        action_args: dict[str, str] = {}
-    ) -> str:
-        """makes the log message for an interaction, member event, user event or message event"""
-
-        aggregator_id = 0
-
-        # check if the data_provider is an Interaction, Member, User or Message top get the user's id
-        if isinstance(data_provider, nextcord.Interaction):
-            aggregator_id = data_provider.user.id
-        elif isinstance(data_provider, nextcord.Member):
-            aggregator_id = data_provider.id
-        elif isinstance(data_provider, nextcord.User):
-            aggregator_id = data_provider.id
-        elif isinstance(data_provider, nextcord.Message):
-            aggregator_id = data_provider.author.id
-
-        ouput = f"{action_name} ~ User: {aggregator_id} "
-
-        # check if the interaction was in a guild or dm
-        if hasattr(data_provider, "guild"):
-            if data_provider.guild:
-                ouput += f"~ Guild: {data_provider.guild.id} "
-
-            if hasattr(data_provider, "channel"):
-                if data_provider.channel:
-                    ouput += f"~ Channel: {data_provider.channel.id} "
-        elif hasattr(data_provider, "channel"):
-            if data_provider.channel:
-                if data_provider.channel.type == nextcord.ChannelType.private:
-                    ouput += "~ Guild: DM channel "
-
-        ouput += "~ args: "
-        for key, value in action_args.items():
-            ouput += f"[{key}: {value}]"
-
-        return ouput
-
-    ####################################################################################################
-
-    @staticmethod
     def markdown_safe(input_string: str) -> str:
         """Replaces markdown relevant characters with similar unicode chars to avoid issues, in places like embeds"""
 

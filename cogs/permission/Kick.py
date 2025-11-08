@@ -1,7 +1,8 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Logger
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -37,12 +38,6 @@ class Kick(nextcord_C.Cog):
     ) -> None:
         """This command kicks a member with a reason."""
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/ban",
-            {"member": str(member.id), "reason": reason}
-        ))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if interaction.user.id == member.id:
@@ -59,7 +54,7 @@ class Kick(nextcord_C.Cog):
             else:
                 await member.send(f"You have been __**kicked**__ from `{member.guild.name}`\nThere was no provided reason.")
         except nextcord.Forbidden:
-            self.client.logger.action_warning(f"/kick send ~ User: {member.id} couldn't be notified, because their pms aren't open to the client")
+            Logger().action_warning(f"/kick send ~ User: {member.id} couldn't be notified, because their pms aren't open to the client")
 
         await interaction.guild.kick(user = member, reason = reason)
 

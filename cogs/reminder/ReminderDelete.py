@@ -28,12 +28,6 @@ class ReminderDelete(nextcord_C.Cog):
     ) -> None:
         """This command let's you delete a reminder with it's ID or all reminders with 'ALL'"""
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/reminder delete",
-            {"reminder_id": reminder_id}
-        ))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if not await (await DBHandler(self.client.database, user_id=interaction.user.id).reminder()).get_list():
@@ -97,12 +91,6 @@ class ReminderDelete(nextcord_C.Cog):
             return
 
         await (await DBHandler(self.client.database, user_id=interaction.user.id).reminder()).delete_all()
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/reminder delete",
-            {"DELETE_ALL": "deleted"}
-        ))
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("**ALL** your reminders have been deleted!"))
         return

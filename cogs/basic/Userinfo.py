@@ -3,7 +3,7 @@ import time
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.modules import EmbedFunctions, Get
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -31,15 +31,9 @@ class Userinfo(nextcord_C.Cog):
     ) -> None:
         """This command gives you infomration about a user"""
 
-        user = user or interaction.user
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/userinfo",
-            {"user": str(user.id)}
-        ))
-
         await interaction.response.defer(with_message=True)
+
+        user = user or interaction.user
 
         # empty server data, if left empty the coresponding fields will not be dispalyed
         booster, joined_time, status, top_role = "", "", "", ""

@@ -5,7 +5,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Logger
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -27,11 +28,11 @@ class LeaveLog(nextcord_C.Cog):
         And if a server has an audit-log-channel set it posts a log message
         """
 
-        self.client.logger.action_log(Get.log_message(
+        Logger().action_log(
             member,
             "leave log",
             {"member": str(member.id)}
-        ))
+        )
 
         if not (audit_log := member.guild.get_channel(await (await DBHandler(self.client.database, server_id=member.guild.id).server()).audit_log_get() or 0)):
             return

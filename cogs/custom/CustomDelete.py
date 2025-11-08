@@ -3,6 +3,7 @@ import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
+from lib.managers import Config
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -29,12 +30,6 @@ class CustomDelete(nextcord_C.Cog):
     ) -> None:
         """This command deletes a custom-command from the server's custom-commands"""
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/custom delete",
-            {"name": name}
-        ))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         name = Get.clean_input_command(name)
@@ -50,7 +45,7 @@ class CustomDelete(nextcord_C.Cog):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.PERMISSION_COLOR,
+            color = Config().PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [

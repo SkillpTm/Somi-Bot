@@ -5,6 +5,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
+from lib.managers import Config
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -33,12 +34,6 @@ class Time(nextcord_C.Cog):
 
         timezone = timezone or await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).timezone_get()
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/time",
-            {"timezone": timezone}
-        ))
-
         if not timezone in zoneinfo.available_timezones():
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("Please input a valid IANA timezone code."), ephemeral=True)
             return
@@ -60,7 +55,7 @@ class Time(nextcord_C.Cog):
         clock_emoji = f":clock{current_time.hour % 12 or 12}:"
 
         embed = EmbedFunctions.builder(
-            color = self.client.config.BOT_COLOR,
+            color = Config().BOT_COLOR,
             author = current_time.strftime(f"%Z (UTC {utc_offset})"),
             description = current_time.strftime(f"# {clock_emoji} `%H:%M:%S`\n:calendar_spiral: `%Y/%m/%d`")
         )

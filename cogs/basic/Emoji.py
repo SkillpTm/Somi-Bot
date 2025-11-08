@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
 
-from lib.modules import EmbedFunctions, Get
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -31,12 +31,6 @@ class Emoji(nextcord_C.Cog):
         )
     ) -> None:
         """This command reposts the original url of any custom emoji"""
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/color",
-            {"emoji": emoji}
-        ))
 
         # check if basic syntax for an emoji is met
         if not emoji.startswith("<") and not emoji.endswith(">"):

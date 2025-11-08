@@ -4,7 +4,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config, Logger
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -49,12 +50,6 @@ class KeywordSend(nextcord_C.Cog):
             if not user_keywords_in_content:
                 continue
 
-            self.client.logger.action_log(Get.log_message(
-                message,
-                "/keyword send",
-                {"keywords": ", ".join(user_keywords_in_content)}
-            ))
-
             # create the output text and preserve output_keywords for the title in the embed
             if len(user_keywords_in_content) > 1:
                 output_keywords = ", ".join(user_keywords_in_content[:-1]) + f" and {user_keywords_in_content[-1]}"
@@ -66,7 +61,7 @@ class KeywordSend(nextcord_C.Cog):
             keywords_info += f"{keywords_info} been mentioned in {message.channel.mention} by {message.author.mention}:"
 
             embed = EmbedFunctions().builder(
-                color = self.client.config.BOT_COLOR,
+                color = Config().BOT_COLOR,
                 title = f"Keyword Notification: {output_keywords}",
                 title_url = message.jump_url,
                 description = f"{keywords_info}\n\n__**Message:**__\n{message.content}"
@@ -77,7 +72,7 @@ class KeywordSend(nextcord_C.Cog):
             try:
                 await self.client.fetch_user(user_id).send(embed=embed)
             except nextcord.Forbidden:
-                self.client.logger.action_warning(f"keyword send ~ User: {user_id} couldn't be notified, because their pms aren't open to the client")
+                Logger().action_warning(f"keyword send ~ User: {user_id} couldn't be notified, because their pms aren't open to the client")
 
             await (await DBHandler(self.client.database).telemetry()).increment("keyword send")
 

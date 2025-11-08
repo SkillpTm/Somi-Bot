@@ -2,7 +2,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get, LevelRoles
+from lib.managers import Config
+from lib.modules import EmbedFunctions, LevelRoles
 from lib.utilities import SomiBot
 
 
@@ -20,8 +21,6 @@ class LevelsInfo(nextcord_C.Cog):
     async def levels_info(self, interaction: nextcord.Interaction) -> None:
         """Displays information about levels and (if existing) shows a list of the levelroles/ignore channels"""
 
-        self.client.logger.action_log(Get.log_message(interaction, "/levels info"))
-
         await interaction.response.defer(with_message=True)
 
         if not (output_role_list := LevelRoles.get_level_range_with_role(await (await DBHandler(self.client.database, server_id=interaction.guild.id).level_role()).get_list())):
@@ -31,7 +30,7 @@ class LevelsInfo(nextcord_C.Cog):
             output_ignore_channels = "`In this server you can earn XP in all channels`"
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.BOT_COLOR,
+            color = Config().BOT_COLOR,
             title = "Level Information",
             fields = [
                 [

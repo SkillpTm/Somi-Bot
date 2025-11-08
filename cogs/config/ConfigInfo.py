@@ -3,7 +3,8 @@ import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get, LevelRoles
+from lib.managers import Config
+from lib.modules import EmbedFunctions, LevelRoles
 from lib.utilities import SomiBot
 
 
@@ -25,14 +26,12 @@ class ConfigInfo(nextcord_C.Cog):
     async def config_info(self, interaction: nextcord.Interaction) -> None:
         """This command outputs a server's configuration info and some explanations."""
 
-        self.client.logger.action_log(Get.log_message(interaction, "/config info"))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         audit_log_output, default_role_output, hidden_channels_output, level_ignore_channels_output, level_roles_output = await self.get_config_data(interaction)
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.PERMISSION_COLOR,
+            color = Config().PERMISSION_COLOR,
             title = f"Configuration of: `{interaction.guild.name}`",
             fields = [
                 [

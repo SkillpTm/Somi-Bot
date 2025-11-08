@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.modules import Get
+from lib.managers import Config
 from lib.utilities import SomiBot
 
 
@@ -17,9 +17,7 @@ class Invite(nextcord_C.Cog):
     async def invite(self, interaction: nextcord.Interaction) -> None:
         """This command posts the invite link for the bot"""
 
-        self.client.logger.action_log(Get.log_message(interaction, "/about"))
-
-        await interaction.response.send_message(f"<{self.client.config.BOT_INVITE}>")
+        await interaction.response.send_message(f"<{Config().BOT_INVITE}>")
 
 
 

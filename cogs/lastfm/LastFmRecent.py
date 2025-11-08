@@ -5,6 +5,7 @@ import nextcord.ext.commands as nextcord_C
 import requests
 
 from lib.dbModules import DBHandler
+from lib.managers import Config, Keychain
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import PageButtons, SomiBot
 
@@ -37,12 +38,6 @@ class LastFmRecent(nextcord_C.Cog):
 
         user = user or interaction.user
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/lf recent",
-            {"user": str(user.id)}
-        ))
-
         if not (lastfm_username := await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).last_fm_get()):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
@@ -63,7 +58,7 @@ class LastFmRecent(nextcord_C.Cog):
     ) -> None:
         """This function recurses on button press and requests the data from the LastFm api to build the embed"""
 
-        np_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&username={lastfm_username}&limit=10&page={page_number}&api_key={self.client.keychain.LAST_FM_API_KEY}&format=json", timeout=10)
+        np_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&username={lastfm_username}&limit=10&page={page_number}&api_key={Keychain().LAST_FM_API_KEY}&format=json", timeout=10)
 
         if np_response.status_code != 200:
             await interaction.edit_original_message(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"), view=None) 
@@ -97,9 +92,9 @@ class LastFmRecent(nextcord_C.Cog):
                 output += f"{index + (page_number - 1) * 10}. **[{track_name}]({track_url})** by [{artist_name}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}\n"
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.LASTFM_COLOR,
+            color = Config().LASTFM_COLOR,
             author = f"{user.display_name} recently played:",
-            author_icon = self.client.config.LASTFM_ICON,
+            author_icon = Config().LASTFM_ICON,
             description = output
         )
 

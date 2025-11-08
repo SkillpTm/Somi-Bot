@@ -2,7 +2,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -20,8 +21,6 @@ class KeywordList(nextcord_C.Cog):
     async def keyword_list(self, interaction: nextcord.Interaction) -> None:
         """This command outputs a list of all keywords a user has"""
 
-        self.client.logger.action_log(Get.log_message(interaction, "/keyword list"))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if not (user_keywords := await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).get_list()):
@@ -34,7 +33,7 @@ class KeywordList(nextcord_C.Cog):
             output += f"{index + 1}. `{keyword}`\n"
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.BOT_COLOR,
+            color = Config().BOT_COLOR,
             author = f"Keyword List for: {interaction.user.display_name}",
             author_icon = interaction.user.display_avatar.url,
             fields = [

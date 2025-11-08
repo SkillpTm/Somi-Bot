@@ -30,12 +30,6 @@ class KeywordDelete(nextcord_C.Cog):
     ) -> None:
         """This command let's you delete a keyword by it's name or all keywords with 'ALL'"""
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/keyword delete",
-            {"keyword": keyword}
-        ))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if not await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).get_list():
@@ -85,12 +79,6 @@ class KeywordDelete(nextcord_C.Cog):
             return
 
         await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).delete_all_user()
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/keyword delete",
-            {"DELETE_ALL": "deleted"}
-        ))
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("**ALL** your keywords have been deleted!"), ephemeral=True)
 

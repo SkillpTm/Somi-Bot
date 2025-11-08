@@ -1,8 +1,9 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.modules import EmbedFunctions, Get
-from lib.utilities import Config, SomiBot
+from lib.modules import EmbedFunctions
+from lib.managers import Config
+from lib.utilities import SomiBot
 
 
 
@@ -16,7 +17,7 @@ class Rules(nextcord_C.Cog):
     @nextcord.slash_command(
         name = "rules",
         description = "posts a rule for you",
-        guild_ids = [Config.MODMAIL_SERVER_ID, Config.SUPPORT_SERVER_ID],
+        guild_ids = [Config().MODMAIL_SERVER_ID, Config().SUPPORT_SERVER_ID],
         default_member_permissions = nextcord.Permissions(manage_guild=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
@@ -44,12 +45,6 @@ class Rules(nextcord_C.Cog):
         )
     ) -> None:
         """This command let's you post an embed for the specified rule."""
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/rules",
-            {"rule": rule}
-        ))
 
         await interaction.response.defer(with_message=True)
 

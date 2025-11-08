@@ -2,7 +2,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -19,8 +20,6 @@ class ReminderList(nextcord_C.Cog):
     @ParentCommand.reminder.subcommand(name="list", description="a list of all your reminders")
     async def reminder_list(self, interaction: nextcord.Interaction) -> None:
         """This command will list all reminders of a user"""
-
-        self.client.logger.action_log(Get.log_message(interaction, "/reminder list"))
 
         if not (user_reminders := await (await DBHandler(self.client.database, user_id=interaction.user.id).reminder()).get_list()):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You don't have any reminders.\nTo add a reminder use `/reminder add`."), ephemeral=True)
@@ -39,7 +38,7 @@ class ReminderList(nextcord_C.Cog):
             output += "`\n\n"
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.BOT_COLOR,
+            color = Config().BOT_COLOR,
             author = f"Reminder List for {interaction.user.display_name}",
             author_icon = interaction.user.display_avatar.url,
             description = output

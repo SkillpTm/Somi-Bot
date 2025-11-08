@@ -3,7 +3,8 @@ import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get, LevelRoles
+from lib.managers import Config
+from lib.modules import EmbedFunctions, LevelRoles
 from lib.utilities import SomiBot
 
 
@@ -38,12 +39,6 @@ class ConfigLevelRoles(nextcord_C.Cog):
     ) -> None:
         """This command adds/deletes a level-role to/from the server's level-roles"""
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/config level-ignore-channel",
-            {"action": action, "role": str(role.id), "level": str(level)}
-        ))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner:
@@ -67,7 +62,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.PERMISSION_COLOR,
+            color = Config().PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [

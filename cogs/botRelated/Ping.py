@@ -5,7 +5,6 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import Get
 from lib.utilities import SomiBot
 
 
@@ -22,8 +21,6 @@ class Ping(nextcord_C.Cog):
         """This command shows the ping and some general stats about the bot"""
 
         start = time.time()
-
-        self.client.logger.action_log(Get.log_message(interaction, "/ping"))
 
         await interaction.response.send_message(content="Pong! 🏓")
 

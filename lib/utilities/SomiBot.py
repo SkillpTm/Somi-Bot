@@ -11,8 +11,9 @@ import spotipy
 import wolframalpha
 
 from lib.dbModules import DBHandler, PostgresDB
-from lib.modules import EmbedFunctions, Get
-from lib.utilities import Keychain, Lists, Logger, Config
+from lib.managers import Config, Keychain, Logger
+from lib.modules import EmbedFunctions
+from lib.utilities import Lists
 
 
 
@@ -27,22 +28,20 @@ class SomiBot(nextcord_C.Bot):
 
         self.is_setup = False
         self.start_time = int(time.time())
-        self.config = Config()
-        self.keychain = Keychain()
-        self.lists = Lists(self.config.APPLICATION_ID)
-        self.logger = Logger()
+        self.lists = Lists(Config().APPLICATION_ID)
 
         super().__init__(
-            max_messages = self.config.MAX_MESSAGES_CACHE,
-            application_id = self.config.APPLICATION_ID,
+            max_messages = Config().MAX_MESSAGES_CACHE,
+            application_id = Config().APPLICATION_ID,
             intents = nextcord.Intents.all(),
             status = nextcord.Status.online,
-            activity = nextcord.Activity(type=nextcord.ActivityType.listening, name=self.config.ACTIVITY_NAME),
+            activity = nextcord.Activity(type=nextcord.ActivityType.listening, name=Config().ACTIVITY_NAME),
             allowed_mentions = nextcord.AllowedMentions(everyone=False),
-            owner_id = self.config.OWNER_ID
+            owner_id = Config().OWNER_ID
         )
 
         self.add_check(self._global_command_checks)
+        self.application_command_before_invoke(self._before_command)
 
     ####################################################################################################
 
@@ -50,18 +49,18 @@ class SomiBot(nextcord_C.Bot):
         """This function adds API logins for Spotify, WolframAlpha and YouTube on the client"""
 
         self.spotify_oauth = spotipy.SpotifyOAuth(
-            client_id = self.keychain.SPOTIPY_CLIENT_ID,
-            client_secret = self.keychain.SPOTIPY_CLIENT_SECRET,
-            redirect_uri = self.keychain.SPOTIPY_REDIRECT_URI,
+            client_id = Keychain().SPOTIPY_CLIENT_ID,
+            client_secret = Keychain().SPOTIPY_CLIENT_SECRET,
+            redirect_uri = Keychain().SPOTIPY_REDIRECT_URI,
             scope = "user-read-currently-playing"
         )
 
-        self.wolfram_client = wolframalpha.Client(self.keychain.WOLFRAM_APP_ID)
+        self.wolfram_client = wolframalpha.Client(Keychain().WOLFRAM_APP_ID)
 
         self.youtube = googleapiclient.discovery.build(
             "youtube",
             "v3",
-            developerKey = self.keychain.YOUTUBE_API_KEY
+            developerKey = Keychain().YOUTUBE_API_KEY
         )
 
     ####################################################################################################
@@ -97,6 +96,27 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
+    async def _before_command(self, interaction: nextcord.Interaction) -> None:
+        command_name: str = ""
+
+        if not hasattr(interaction, "application_command"):
+            return
+
+        if hasattr(interaction.application_command, "parent_cmd"):
+            command_name += f"{interaction.application_command.parent_cmd.name} "
+
+        if hasattr(interaction.application_command, "name"):
+            command_name += f"{interaction.application_command.name}"
+
+        if not command_name:
+            return
+
+        await (await DBHandler(self.database).telemetry()).increment(command_name)
+
+        Logger().action_log(interaction, command_name, interaction.data.get("options", []))
+
+    ####################################################################################################
+
     async def _global_command_checks(self, interaction: nextcord.Interaction) -> bool:
         """checks on all commands for: if the bot is properly setup and if the interaction wasn't created by a bot"""
 
@@ -125,10 +145,10 @@ class SomiBot(nextcord_C.Bot):
 
         # logout in case this was a restart and we didn't properly exit those API connections
         self._api_logout()
-        self.logger.bot_status(f"{self.user}: ready and logged in")
+        Logger().bot_status(f"{self.user}: ready and logged in")
         self._api_login()
 
-        self.database = await PostgresDB.create("./sql/schema.sql", "./sql/queries.sql", self.config.POSTGRES_POOL_MAX_SIZE)
+        self.database = await PostgresDB.create("./sql/schema.sql", "./sql/queries.sql", Config().POSTGRES_POOL_MAX_SIZE)
 
         await self._apply_missing_default_roles()
 
@@ -141,7 +161,7 @@ class SomiBot(nextcord_C.Bot):
     async def on_close(self) -> None:
         """This function overwrites the build in on_close function, to logout from our APIs"""
 
-        self.logger.bot_status(f"{self.user}: logged out")
+        Logger().bot_status(f"{self.user}: logged out")
 
         # attempt to logout the api connections
         try:
@@ -154,25 +174,6 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
-    async def on_application_command_completion(self, interaction: nextcord.Interaction) -> None:
-        """This function overwrites the build in on_application_command_completion function, to update the usage count of a command with the name of the used application command"""
-
-        command_name: str = ""
-
-        if not hasattr(interaction, "application_command"):
-            return
-
-        if hasattr(interaction.application_command, "parent_cmd"):
-            command_name += f"{interaction.application_command.parent_cmd.name} "
-
-        if hasattr(interaction.application_command, "name"):
-            command_name += f"{interaction.application_command.name}"
-
-        if command_name:
-            await (await DBHandler(self.database).telemetry()).increment(command_name)
-
-    ####################################################################################################
-
     async def on_application_command_error(
         self,
         interaction: nextcord.Interaction,
@@ -180,14 +181,14 @@ class SomiBot(nextcord_C.Bot):
     ) -> tuple[nextcord.Interaction, nextcord.ApplicationError]:
         """This function overwrites the build in on_application_command_error function, to create a global error log and exception handler."""
 
-        self.logger.application_command_error(
+        Logger().application_command_error(
             exception = exception,
             context = interaction.context,
             created_at = interaction.created_at,
             expires_at = interaction.expires_at,
             type = interaction.type._name_,
             file = interaction.application_command.parent_cog,
-            meta_data = Get.log_message(interaction, "error"),
+            meta_data = Logger.get_log_message(interaction, "error"),
             data = interaction.data,
             app_permissions = interaction.app_permissions.value,
             user_permissions = interaction.permissions.value,
@@ -200,7 +201,7 @@ class SomiBot(nextcord_C.Bot):
         else:
             await interaction.response.send_message(embed=EmbedFunctions().get_critical_error_message(erroe_message), ephemeral=True)
 
-        await self.get_guild(self.config.SUPPORT_SERVER_ID).get_channel(self.config.SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().get_critical_error_message(f"```{exception}```"))
+        await self.get_guild(Config().SUPPORT_SERVER_ID).get_channel(Config().SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().get_critical_error_message(f"```{exception}```"))
 
         return await super().on_application_command_error(interaction, exception)
 

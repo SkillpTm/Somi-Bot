@@ -2,7 +2,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Logger
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -43,7 +44,7 @@ class NameLog(nextcord_C.Cog):
             previous_name = member_before.display_name if any(member_before.display_name in [member_before.global_name, member_before.name]) else "`None`"
             current_name = member_after.display_name if any(member_after.display_name in [member_after.global_name, member_after.name]) else "`None`"
 
-        self.client.logger.action_log(Get.log_message(
+        Logger().action_log(
             member_before,
             "name log",
             {
@@ -51,7 +52,7 @@ class NameLog(nextcord_C.Cog):
                 "name before": previous_name,
                 "name after": current_name,
             }
-        ))
+        )
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.yellow(),

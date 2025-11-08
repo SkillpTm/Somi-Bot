@@ -4,7 +4,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -31,12 +31,6 @@ class KeywordAdd(nextcord_C.Cog):
         )
     ) -> None:
         """This command adds a global keyword to the bot for a user"""
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/keyword add",
-            {"keyword": keyword}
-        ))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 

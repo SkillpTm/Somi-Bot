@@ -2,7 +2,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config
+from lib.modules import EmbedFunctions
 from lib.utilities import Lists, SomiBot
 
 
@@ -42,12 +43,6 @@ class Send(nextcord_C.Cog):
 
         channel = channel or interaction.channel
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/send",
-            {"message": message, "channel": (channel.id)}
-        ))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         message_object: nextcord.Message = await channel.send(message)
@@ -57,7 +52,7 @@ class Send(nextcord_C.Cog):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.PERMISSION_COLOR,
+            color = Config().PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             description = f"{interaction.user.mention} sent a bot message in: {channel.mention} - [Link]({message_object.jump_url})",
@@ -124,12 +119,6 @@ class Send(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{message_id}` isn't an id of a message sent by the bot in this server."), ephemeral=True)
             return
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/edit",
-            {"message_id": str(message_id), "old message": message_object.content, "new message": message}
-        ))
-
         await message_object.edit(content=message)
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Message edited in: {correct_channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
@@ -138,7 +127,7 @@ class Send(nextcord_C.Cog):
             return
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.PERMISSION_COLOR,
+            color = Config().PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             description = f"{interaction.user.mention} edited a bot message in: {correct_channel.mention} - [Link]({message_object.jump_url})",

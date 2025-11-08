@@ -4,6 +4,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
+from lib.managers import Config
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -43,12 +44,6 @@ class LinkEmbed(nextcord_C.Cog):
         if original_message.content == "" and len(original_message.attachments) == 0:
             return
 
-        self.client.logger.action_log(Get.log_message(
-            message,
-            "link embed",
-            {"link": link}
-        ))
-
         message_content = original_message.content
 
         if len(original_message.content) > 1024:
@@ -56,12 +51,12 @@ class LinkEmbed(nextcord_C.Cog):
 
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.BOT_COLOR,
+            color = Config().BOT_COLOR,
             author = "Message Embed",
             author_icon = original_message.author.display_avatar.url,
             description = f"{original_message.channel.mention} - [Link]({link})",
             footer_timestamp = original_message.created_at,
-            footer_icon = self.client.config.LINK_EMBED_ICON,
+            footer_icon = Config().LINK_EMBED_ICON,
             fields = [
                 [
                     f"{original_message.author.display_name} said:",

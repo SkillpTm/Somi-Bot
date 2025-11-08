@@ -5,7 +5,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Logger
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -65,7 +66,7 @@ class MuteLog(nextcord_C.Cog):
     ) -> None:
         """creates the embed, for if the user was muted"""
 
-        self.client.logger.action_log(Get.log_message(
+        Logger().action_log(
             member_after,
             "mute log",
             {
@@ -73,7 +74,7 @@ class MuteLog(nextcord_C.Cog):
                 "until": str(int(time.mktime(member_after.communication_disabled_until.timetuple()))),
                 "reason": entry.reason
             }
-        ))
+        )
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.yellow(),
@@ -105,11 +106,11 @@ class MuteLog(nextcord_C.Cog):
     ) -> None:
         """creates the embed, for if the user was unmuted"""
 
-        self.client.logger.action_log(Get.log_message(
+        Logger().action_log(
             member_after,
             "unmute log",
             {"unmuted by": str(entry.user.id)}
-        ))
+        )
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.green(),

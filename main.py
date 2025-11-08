@@ -3,6 +3,7 @@ import time
 
 import requests
 
+from lib.managers.Keychain import Keychain
 from lib.utilities.SomiBot import SomiBot
 
 ####################################################################################################
@@ -44,7 +45,7 @@ def start(client: SomiBot) -> None:
     # if there is no internet connection indefinitly restart the bot
     try:
         if requests.get("https://www.google.com/", timeout=10).status_code == 200:
-            client.run(client.keychain.DISCORD_TOKEN)
+            client.run(Keychain().DISCORD_TOKEN)
 
     except KeyboardInterrupt:
         return

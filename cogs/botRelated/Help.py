@@ -2,6 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
+from lib.managers import Config
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -29,17 +30,9 @@ class Help(nextcord_C.Cog):
         """This command generates a select box that is corresponding to all commands of the bot.
            It delivers help for the usage of said commands."""
 
-        # ensure /[name] syntax
-        if not name.startswith("/"):
-            name = f"/{name}"
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/help",
-            {"name": name}
-        ))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
+
+        name = name if name.startswith("/") else f"/{name}"
 
         if name not in self.client.lists.HELP_AUTOCOMPLETE_TUPLE:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{name}` isn't a valid command name."), ephemeral=True)
@@ -48,7 +41,7 @@ class Help(nextcord_C.Cog):
         help_oputput = {**self.client.lists.HELP_PERMISSION_OUTPUT, **self.client.lists.HELP_NORMAL_OUTPUT}
 
         embed = EmbedFunctions.builder(
-            color = self.client.config.BOT_COLOR,
+            color = Config().BOT_COLOR,
             title = f"Help for `{name}`",
             fields = [
                 [

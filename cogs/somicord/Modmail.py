@@ -2,7 +2,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config, Logger
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot, YesNoButtons
 
 
@@ -27,7 +28,7 @@ class Modmail(nextcord_C.Cog):
         if message.author.bot:
             return
 
-        if not self.client.get_guild(self.client.config.MODMAIL_SERVER_ID).get_member(message.author.id):
+        if not self.client.get_guild(Config().MODMAIL_SERVER_ID).get_member(message.author.id):
             return
 
         if len(message.content) < 50:
@@ -43,9 +44,9 @@ class Modmail(nextcord_C.Cog):
             await response.reply(embed=EmbedFunctions().get_error_message("Your modmail has **not** been submitted!"), mention_author=False)
             return
 
-        self.client.logger.action_log(Get.log_message(message, "modmail", {"message": message.content}))
+        Logger().action_log(message, "modmail", {"message": message.content})
 
-        modmail_channel: nextcord.TextChannel = self.client.get_channel(self.client.config.MODMAIL_CHANNEL_ID)
+        modmail_channel: nextcord.TextChannel = self.client.get_channel(Config().MODMAIL_CHANNEL_ID)
         user_thread: nextcord.Thread = None
 
         # check if the user already has a thread
@@ -73,11 +74,11 @@ class Modmail(nextcord_C.Cog):
                     await user_thread.add_user(member)
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.PERMISSION_COLOR,
+            color = Config().PERMISSION_COLOR,
             thumbnail = message.author.display_avatar.url,
             title = f"Modmail by {message.author.display_name}",
             description = f"__**Message:**__\n{message.content}"[:4096],
-            footer_icon = self.client.config.CLOCK_ICON,
+            footer_icon = Config().CLOCK_ICON,
             footer_timestamp = message.created_at,
             fields = [
                 [

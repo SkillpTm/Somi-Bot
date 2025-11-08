@@ -2,7 +2,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -24,8 +25,6 @@ class LevelsLeaderboard(nextcord_C.Cog):
     async def levels_leaderboard(self, interaction: nextcord.Interaction) -> None:
         """Displays the top 10 (or less, if there isn't 10 users in the levels table) users by XP"""
 
-        self.client.logger.action_log(Get.log_message(interaction, "/levels leaderboard"))
-
         await interaction.response.defer(with_message=True)
 
         output: str = ""
@@ -42,10 +41,10 @@ class LevelsLeaderboard(nextcord_C.Cog):
 
             output += f"**{index+1}. {name}** - Level: __`{user_data[1]}`__\n"
 
-        server_icon_url = interaction.guild.icon.url if interaction.guild.icon else self.client.config.DEFAULT_PFP
+        server_icon_url = interaction.guild.icon.url if interaction.guild.icon else Config().DEFAULT_PFP
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.BOT_COLOR,
+            color = Config().BOT_COLOR,
             thumbnail = server_icon_url,
             title = f"`{interaction.guild.name}`: Top users by level",
             description = output

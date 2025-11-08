@@ -46,12 +46,6 @@ class Mute(nextcord_C.Cog):
     ) -> None:
         """This command mutes a member, with time and reason, if their current top-role is below your current top-role."""
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/mute",
-            {"member": str(member.id), "time": time, "reason": reason}
-        ))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if interaction.user.id == member.id:
@@ -91,12 +85,6 @@ class Mute(nextcord_C.Cog):
         )
     ) -> None:
         """This command unmutes a member, if they were muted."""
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/unmute",
-            {"member": str(member.id)}
-        ))
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 

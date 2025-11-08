@@ -6,7 +6,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get, Misc
+from lib.managers import Logger
+from lib.modules import EmbedFunctions, Misc
 from lib.utilities import SomiBot
 
 
@@ -47,11 +48,11 @@ class PurgeLog(nextcord_C.Cog):
         if not entry:
             return
 
-        self.client.logger.action_log(Get.log_message(
+        Logger().action_log(
             messages[0],
             "purge log",
             {"amount": str(len(messages))}
-        ))
+        )
 
         # we create the csv first to reduce delay between the inital embed and the csv response message
         csv_name = Misc.make_bulk_messages_csv(messages)

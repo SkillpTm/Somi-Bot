@@ -5,7 +5,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Logger
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -44,11 +45,11 @@ class KickLog(nextcord_C.Cog):
             return
 
 
-        self.client.logger.action_log(Get.log_message(
+        Logger().action_log(
             member,
             "kick log",
             {"kicked by": str(entry.user.id), "reason": entry.reason}
-        ))
+        )
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),

@@ -6,7 +6,8 @@ import nextcord.ext.commands as nextcord_C
 import requests
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get, Webscrape
+from lib.managers import Config, Keychain
+from lib.modules import EmbedFunctions, Webscrape
 from lib.utilities import Lists, SomiBot
 
 
@@ -64,7 +65,7 @@ class LastFmTrack(nextcord_C.Cog):
         await interaction.response.defer(with_message=True)
 
         if not artist and not track:
-            np_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&username={lastfm_username}&limit=1&api_key={self.client.keychain.LAST_FM_API_KEY}&format=json", timeout=10)
+            np_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&username={lastfm_username}&limit=1&api_key={Keychain().LAST_FM_API_KEY}&format=json", timeout=10)
 
             if np_response.status_code != 200:
                 await interaction.followup.send(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
@@ -74,16 +75,10 @@ class LastFmTrack(nextcord_C.Cog):
             artist =  np_user_data["recenttracks"]["track"][0]["artist"]["#text"]
             track = np_user_data["recenttracks"]["track"][0]["name"]
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/lf track",
-            {"artist": artist, "track": track, "user": str(user.id), "timeframe": timeframe}
-        ))
-
 
         artist_for_url = urllib.parse.quote_plus(artist)
         track_for_url = urllib.parse.quote_plus(track)
-        track_response = requests.get(f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}", cookies=self.client.keychain.LAST_FM_COOKIES, headers=self.client.keychain.LAST_FM_HEADERS, timeout=10)
+        track_response = requests.get(f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}", cookies=Keychain().LAST_FM_COOKIES, headers=Keychain().LAST_FM_HEADERS, timeout=10)
 
         if track_response.status_code != 200:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"The track `{artist} - {track}` couldn't be found on LastFm."))
@@ -98,11 +93,11 @@ class LastFmTrack(nextcord_C.Cog):
         type_name, artist_name, cover_image_url, metadata_list, _, _ = Webscrape().library_subpage(soup, artist_for_url, "track")
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.LASTFM_COLOR,
+            color = Config().LASTFM_COLOR,
             thumbnail = cover_image_url,
             author = f"{user.display_name} × {type_name}: {Lists.LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}",
             author_url = f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}",
-            author_icon = self.client.config.LASTFM_ICON,
+            author_icon = Config().LASTFM_ICON,
             description = f"Total plays: __**{metadata_list[0]}**__\n" +
                           f"[{type_name}](https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}) by [{artist_name}](https://www.last.fm/music/{artist_for_url})"
         )

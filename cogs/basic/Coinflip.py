@@ -4,7 +4,7 @@ import random
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.modules import Get
+from lib.managers import Config
 from lib.utilities import SomiBot
 
 
@@ -20,11 +20,9 @@ class Coinflip(nextcord_C.Cog):
     async def coinflip(self, interaction: nextcord.Interaction) -> None:
         """This command does a coinflip with a small animation"""
 
-        self.client.logger.action_log(Get.log_message(interaction, "/coinflip"))
-
         await interaction.response.defer(with_message=True)
 
-        side1, side2 = random.sample([self.client.config.HEADS_EMOTE, self.client.config.TAILS_EMOTE], k=2)
+        side1, side2 = random.sample([Config().HEADS_EMOTE, Config().TAILS_EMOTE], k=2)
 
         await interaction.followup.send(side1)
 

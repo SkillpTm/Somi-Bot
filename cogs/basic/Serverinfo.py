@@ -3,7 +3,8 @@ import time
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -25,15 +26,13 @@ class Severinfo(nextcord_C.Cog):
     async def serverinfo(self, interaction: nextcord.Interaction) -> None:
         """This command gives you infomration about a server"""
 
-        self.client.logger.action_log(Get.log_message(interaction, "/serverinfo"))
-
         await interaction.response.defer(with_message=True)
 
         guild_with_counts = await self.client.fetch_guild(interaction.guild.id, with_counts=True)
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.BOT_COLOR,
-            thumbnail = interaction.guild.icon.url if interaction.guild.icon else self.client.config.DEFAULT_PFP,
+            color = Config().BOT_COLOR,
+            thumbnail = interaction.guild.icon.url if interaction.guild.icon else Config().DEFAULT_PFP,
             title = f"Server Information: `{interaction.guild.name}`",
             fields = [
                 [

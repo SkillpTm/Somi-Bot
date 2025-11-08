@@ -5,7 +5,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Logger
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -44,11 +45,11 @@ class BanLog(nextcord_C.Cog):
         if not entry:
             return
 
-        self.client.logger.action_log(Get.log_message(
+        Logger().action_log(
             user,
             "ban log",
             {"guild": str(guild.id), "banned by": str(entry.user.id), "reason": entry.reason}
-        ))
+        )
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),
@@ -98,11 +99,11 @@ class BanLog(nextcord_C.Cog):
         if not entry:
             return
 
-        self.client.logger.action_log(Get.log_message(
+        Logger().action_log(
             user,
             "unban log",
             {"guild": str(guild.id), "unbanned by": str(entry.user.id)}
-        ))
+        )
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.orange(),

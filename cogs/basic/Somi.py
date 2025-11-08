@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.modules import Get
+from lib.managers import Config
 from lib.utilities import SomiBot
 
 
@@ -17,9 +17,7 @@ class Somi(nextcord_C.Cog):
     async def somi(self,interaction: nextcord.Interaction) -> None:
         """This command tells you the truth"""
 
-        self.client.logger.action_log(Get.log_message(interaction, "/somi"))
-
-        await interaction.response.send_message(f"Somi best grill!\n{self.client.config.SOMI_BEST_GRILL_IMAGE}")
+        await interaction.response.send_message(f"Somi best grill!\n{Config().SOMI_BEST_GRILL_IMAGE}")
 
 
 

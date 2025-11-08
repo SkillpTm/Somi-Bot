@@ -3,7 +3,8 @@ import nextcord.ext.commands as nextcord_C
 import requests
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config, Logger
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -46,17 +47,17 @@ class ReminderSend(nextcord_C.Cog):
 
             _, reminder_link, reminder_text = await (await DBHandler(self.client.database, user_id=user_id).reminder()).get_reminder(reminder_id)
 
-            self.client.logger.action_log(Get.log_message(
+            Logger().action_log(
                 self.client.get_user(user_id),
                 "reminder send",
                 {
                     "reminder id": str(reminder_id),
                     "reminder text": reminder_text
                 }
-            ))
+            )
 
             embed = EmbedFunctions().builder(
-                color = self.client.config.BOT_COLOR,
+                color = Config().BOT_COLOR,
                 title = "Reminder Notification",
                 title_url = reminder_link,
                 description = reminder_text
@@ -66,7 +67,7 @@ class ReminderSend(nextcord_C.Cog):
                 user = await self.client.fetch_user(user_id)
                 await user.send(embed=embed)
             else:
-                self.client.logger.action_warning(f"reminder send: {user_id} couldn't be reminded, because their pms aren't open to the client")
+                Logger().action_warning(f"reminder send: {user_id} couldn't be reminded, because their pms aren't open to the client")
 
             await (await DBHandler(self.client.database, user_id=user_id).reminder()).delete(reminder_id)
 

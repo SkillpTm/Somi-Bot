@@ -4,7 +4,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Logger
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -23,11 +24,11 @@ class JoinLog(nextcord_C.Cog):
         - create a join-log message, if the guild has the audit log setup
         """
 
-        self.client.logger.action_log(Get.log_message(
+        Logger().action_log(
             member,
             "join log",
             {"member": str(member.id)}
-        ))
+        )
 
         if not member.bot and (default_role := member.guild.get_role(await (await DBHandler(self.client.database, server_id=member.guild.id).server()).default_role_get())):
             await member.add_roles(member.guild.get_role(default_role))

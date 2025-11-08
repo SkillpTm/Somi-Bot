@@ -1,7 +1,8 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -25,18 +26,12 @@ class Avatar(nextcord_C.Cog):
     ) -> None:
         """This command reposts anyone's avatar in an embed"""
 
-        user = user or interaction.user
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/avatar",
-            {"user": str(user.id)}
-        ))
-
         await interaction.response.defer(with_message=True)
 
+        user = user or interaction.user
+
         embed = EmbedFunctions().builder(
-            color = self.client.config.BOT_COLOR,
+            color = Config().BOT_COLOR,
             image = user.display_avatar.url,
             title = f"Avatar of: `{user.display_name}`",
             title_url = user.display_avatar.url

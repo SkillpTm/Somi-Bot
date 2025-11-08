@@ -2,7 +2,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -24,8 +25,6 @@ class CustomList(nextcord_C.Cog):
     async def custom_list(self, interaction: nextcord.Interaction) -> None:
         """This command provides a list of all custom-commands of a guild"""
 
-        self.client.logger.action_log(Get.log_message(interaction, "/custom list"))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if not (all_commandnames := await (await DBHandler(self.client.database, server_id=interaction.guild.id).custom_command()).get_list()):
@@ -40,10 +39,10 @@ class CustomList(nextcord_C.Cog):
         if interaction.guild.icon:
             server_icon_url = interaction.guild.icon.url
         else:
-            server_icon_url = self.client.config.DEFAULT_PFP
+            server_icon_url = Config().DEFAULT_PFP
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.BOT_COLOR,
+            color = Config().BOT_COLOR,
             author = f"custom-command list for {interaction.guild.name}",
             author_icon = server_icon_url,
             fields = [

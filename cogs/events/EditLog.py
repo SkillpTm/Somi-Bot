@@ -2,7 +2,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Logger
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -37,11 +38,11 @@ class EditLog(nextcord_C.Cog):
         if message_before.content == message_after.content:
             return
 
-        self.client.logger.action_log(Get.log_message(
+        Logger().action_log(
             message_before,
             "edit log",
             {"message_before": message_before.content, "message_after": message_after.content}
-        ))
+        )
 
         second_embed: nextcord.Embed = None
 

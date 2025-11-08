@@ -5,6 +5,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
+from lib.managers import Config
 from lib.modules import EmbedFunctions, Get
 from lib.utilities import SomiBot
 
@@ -40,12 +41,6 @@ class ReminderAdd(nextcord_C.Cog):
     ) -> None:
         """This command let's you add a reminder for anytime within the next 10 years"""
 
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/reminder add",
-            {"time": reminder_time, "reminder": reminder}
-        ))
-
         if 0 == (total_seconds := Get.seconds_from_time(reminder_time)):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"`{reminder_time}` is not a valid time period. Make sure to use the formating in the input description."), ephemeral=True)
             return
@@ -64,7 +59,7 @@ class ReminderAdd(nextcord_C.Cog):
                 break
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.BOT_COLOR,
+            color = Config().BOT_COLOR,
             author = f"Reminder Set for {interaction.user.display_name}",
             author_icon = interaction.user.display_avatar.url,
             description = reminder,

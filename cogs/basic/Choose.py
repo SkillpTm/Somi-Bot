@@ -3,7 +3,8 @@ import random
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Logger
+from lib.modules import EmbedFunctions
 from lib.utilities import OptionsButton, SomiBot
 
 
@@ -34,11 +35,11 @@ class ChooseModal(nextcord.ui.Modal):
         for index, option in enumerate(self.choose.value.split("\n")):
             options[f"{index+1}"] = option
 
-        self.client.logger.action_log(Get.log_message(
+        Logger().action_log(
             interaction,
             "/choose",
             options
-        ))
+        )
 
         chosen_key = random.choice(list(options.keys()))
 
@@ -78,8 +79,6 @@ class Choose(nextcord_C.Cog):
     )
     async def choose(self, interaction: nextcord.Interaction) -> None:
         """This command randomly chooses between any of the options"""
-
-        self.client.logger.action_log(Get.log_message(interaction, "/choose"))
 
         await interaction.response.send_modal(ChooseModal(self.client))
 

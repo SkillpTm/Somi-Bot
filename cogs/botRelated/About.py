@@ -2,7 +2,8 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.managers import Config
+from lib.modules import EmbedFunctions
 from lib.utilities import SomiBot
 
 
@@ -18,19 +19,17 @@ class About(nextcord_C.Cog):
     async def about(self, interaction: nextcord.Interaction) -> None:
         """This command outputs various information about the bot to the user"""
 
-        self.client.logger.action_log(Get.log_message(interaction, "/about"))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         embed = EmbedFunctions().builder(
-            color = self.client.config.BOT_COLOR,
+            color = Config().BOT_COLOR,
             author = f"{self.client.user}",
             author_icon = self.client.user.display_avatar.url,
             title = "Information",
             description = f"""
                           {self.client.user.mention} is a themed bot after the kpop soloist Jeon Somi written in Python using the [Nextcord API wrapper](https://docs.nextcord.dev/en/stable/).
-                          Originally it was created to fullfil all needs of [Somicord]({self.client.config.SOMICORD_INVITE}).
-                          Additionally you can checkout Somi's source code on [GitHub]({self.client.config.BOT_GITHUB}).
+                          Originally it was created to fullfil all needs of [Somicord]({Config().SOMICORD_INVITE}).
+                          Additionally you can checkout Somi's source code on [GitHub]({Config().BOT_GITHUB}).
                           """,
             fields = [
                 [
@@ -41,7 +40,7 @@ class About(nextcord_C.Cog):
 
                 [
                     "Current Version:",
-                    f"`{self.client.config.VERSION}`",
+                    f"`{Config().VERSION}`",
                     True
                 ],
 
@@ -71,7 +70,7 @@ class About(nextcord_C.Cog):
 
                 [
                     "Invites:",
-                    f"You can invite Somi using this [link]({self.client.config.BOT_INVITE}) and her support server can be found [here]({self.client.config.SUPPORT_SERVER_INVITE}).",
+                    f"You can invite Somi using this [link]({Config().BOT_INVITE}) and her support server can be found [here]({Config().SUPPORT_SERVER_INVITE}).",
                     False
                 ],
 
@@ -83,7 +82,7 @@ class About(nextcord_C.Cog):
 
                 [
                     "Data and Usage:",
-                    f"Here you can find our [Terms of Service]({self.client.config.BOT_TOS}) and [Privacy Policy]({self.client.config.BOT_PP}).",
+                    f"Here you can find our [Terms of Service]({Config().BOT_TOS}) and [Privacy Policy]({Config().BOT_PP}).",
                     False
                 ]
             ]

@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.modules import EmbedFunctions, Get
+from lib.modules import EmbedFunctions
 from lib.utilities import Lists, SomiBot
 
 
@@ -39,15 +39,9 @@ class Slowmode(nextcord_C.Cog):
     ) -> None:
         """This command allows a user to set a slowmode in a channel."""
 
-        channel = channel or interaction.channel
-
-        self.client.logger.action_log(Get.log_message(
-            interaction,
-            "/slowmode",
-            {"delay": str(delay), "channel": (channel.id)}
-        ))
-
         await interaction.response.defer(ephemeral=True, with_message=True)
+
+        channel = channel or interaction.channel
 
         await channel.edit(slowmode_delay=delay)
 

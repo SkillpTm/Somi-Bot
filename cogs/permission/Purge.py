@@ -35,9 +35,7 @@ class Purge(nextcord_C.Cog):
         """This command removes the given amount of last messages from a channel."""
 
         await interaction.response.defer(ephemeral=True, with_message=True)
-
         await interaction.channel.purge(limit=amount)
-
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Succesfully purged the last `{amount}` messages from {interaction.channel.mention}."), ephemeral=True)
 
 

@@ -22,8 +22,8 @@ class ReminderDelete(nextcord_C.Cog):
         reminder_id: str = nextcord.SlashOption(
             description = "the ID of the remidner to be deleted or 'DELETE_ALL' (to find your reminder ID use '/reminder list'",
             required = True,
-            min_length = 1,
-            max_length = 10
+            min_length = 9,
+            max_length = 9
         )
     ) -> None:
         """This command let's you delete a reminder with it's ID or all reminders with 'ALL'"""

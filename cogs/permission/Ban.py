@@ -33,7 +33,8 @@ class Ban(nextcord_C.Cog):
             description = "the amount of hours someone's messages will get deleted for (default=1)",
             required = False,
             min_value = 0,
-            max_value = 168
+            max_value = 168,
+            default = 1
         ),
         reason: str = nextcord.SlashOption(
             description = "reason for the ban",
@@ -43,8 +44,6 @@ class Ban(nextcord_C.Cog):
         )
     ) -> None:
         """This command bans a member, while providing a delete message amount (in seconds) and giving a reason. It also protects from self-bans."""
-
-        delete_message_hours = delete_message_hours or 1
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 

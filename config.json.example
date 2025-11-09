@@ -1,12 +1,12 @@
 {
-    "ACTIVITY_NAME": "",
+    "ACTIVITY_NAME": "name",
 	"APPLICATION_BANNER_PATH": "./assets/icon/bot/banner.png",
 	"APPLICATION_ICON_PATH": "./assets/icon/bot/icon.png",
-	"APPLICATION_ID": 0,
-	"APPLICATION_NAME": "",
+	"APPLICATION_ID": 000000000000000000,
+	"APPLICATION_NAME": "name",
     "MAX_MESSAGES_CACHE": 0,
     "POSTGRES_POOL_MAX_SIZE": 0,
-    "OWNER_ID": 0,
+    "OWNER_ID": 000000000000000000,
     "VERSION": "",
     "COLORS": {
         "BOT": "0x000000",
@@ -15,42 +15,42 @@
         "PERMISSION": "0x000000"
     },
     "EMOTES": {
-        "HEADS": "",
-        "REACTION": "",
-        "SOMI_BEST_GRILL": "",
-        "SOMI_F": "",
-        "SOMI_ONLY": "",
-        "SOMI_WELCOME": "",
-        "TAILS": ""
+        "HEADS": "<name:000000000000000000>",
+        "REACTION": "<name:000000000000000000>",
+        "SOMI_BEST_GRILL": "<name:000000000000000000>",
+        "SOMI_F": "<name:000000000000000000>",
+        "SOMI_ONLY": "<name:000000000000000000>",
+        "SOMI_WELCOME": "<name:000000000000000000>",
+        "TAILS": "<name:000000000000000000>"
     },
     "LINKS": {
-        "BAN_HAMMER_GIF": "",
-        "BOT_GITHUB": "",
-        "BOT_INVITE": "",
-        "BOT_PP": "",
-        "BOT_TOS": "",
-        "CLOCK_ICON": "",
-        "DEFAULT_PFP": "",
-        "GENIUS_ICON": "",
-		"HEADPHONES_ICON": "", 
-        "LASTFM_ICON": "",
-        "LINK_EMBED_ICON": "",
-        "OPENWEATHERMAP_ICON": "",
-        "SOMI_BEST_GRILL_IMAGE": "",
-        "SOMICORD_INVITE": "",
-        "SOMICORD_WELCOME_GIF": "",
-        "SPOTIFY_ICON": "",
-		"SUPPORT_SERVER_INVITE": ""
+        "BAN_HAMMER_GIF": "https://example.com/name.ext",
+        "BOT_GITHUB": "https://example.com/name.ext",
+        "BOT_INVITE": "https://example.com/name.ext",
+        "BOT_PP": "https://example.com/name.ext",
+        "BOT_TOS": "https://example.com/name.ext",
+        "CLOCK_ICON": "https://example.com/name.ext",
+        "DEFAULT_PFP": "https://example.com/name.ext",
+        "GENIUS_ICON": "https://example.com/name.ext",
+		"HEADPHONES_ICON": "https://example.com/name.ext", 
+        "LASTFM_ICON": "https://example.com/name.ext",
+        "LINK_EMBED_ICON": "https://example.com/name.ext",
+        "OPENWEATHERMAP_ICON": "https://example.com/name.ext",
+        "SOMI_BEST_GRILL_IMAGE": "https://example.com/name.ext",
+        "SOMICORD_INVITE": "https://example.com/name.ext",
+        "SOMICORD_WELCOME_GIF": "https://example.com/name.ext",
+        "SPOTIFY_ICON": "https://example.com/name.ext",
+		"SUPPORT_SERVER_INVITE": "https://example.com/name.ext"
     },
     "SOMICORD": {
-        "MODMAIL_SERVER_ID": 0,
-        "MODMAIL_CHANNEL_ID": 0,
-        "WELCOME_CHANNEL_ID": 0
+        "MODMAIL_SERVER_ID": 000000000000000000,
+        "MODMAIL_CHANNEL_ID": 000000000000000000,
+        "WELCOME_CHANNEL_ID": 000000000000000000
     },
     "SUPPORT_SERVER": {
-        "ID": 0,
-        "ERRORS_CHANNEL_ID": 0,
-        "FEEDBACK_CHANNEL_ID": 0,
-        "LOGS_CHANNEL_ID": 0
+        "ID": 000000000000000000,
+        "ERRORS_CHANNEL_ID": 000000000000000000,
+        "FEEDBACK_CHANNEL_ID": 000000000000000000,
+        "LOGS_CHANNEL_ID": 000000000000000000
     }
 }

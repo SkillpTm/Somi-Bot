@@ -2,6 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
+from lib.managers import Commands
 from lib.utilities import SomiBot
 
 
@@ -14,10 +15,10 @@ class Purge(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "clear",
-        description = "clears the entered amount of messages in a channel",
+        Commands().data["purge"].alias,
+        Commands().data["purge"].description,
+        name_localizations = {country_tag: Commands().data["purge"].name for country_tag in nextcord.Locale},
         default_member_permissions = nextcord.Permissions(manage_messages=True),
-        name_localizations = {country_tag:"purge" for country_tag in nextcord.Locale},
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
@@ -26,7 +27,8 @@ class Purge(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         amount: int = nextcord.SlashOption(
-            description = "amount of messages to be purged",
+            Commands().data["purge"].parameters["amount"].name,
+            Commands().data["purge"].parameters["amount"].description,
             required = True,
             min_value = 1,
             max_value = 1000

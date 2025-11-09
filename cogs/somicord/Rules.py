@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
-from lib.managers import Config
+from lib.managers import Commands, Config, Lists
 from lib.utilities import SomiBot
 
 
@@ -15,8 +15,8 @@ class Rules(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "rules",
-        description = "posts a rule for you",
+        Commands().data["rules"].name,
+        Commands().data["rules"].description,
         guild_ids = [Config().MODMAIL_SERVER_ID, Config().SUPPORT_SERVER_ID],
         default_member_permissions = nextcord.Permissions(manage_guild=True),
         integration_types = [nextcord.IntegrationType.guild_install],
@@ -27,7 +27,8 @@ class Rules(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         rule: str = nextcord.SlashOption(
-            description = "rule you want to post",
+            Commands().data["rules"].parameters["rule"].name,
+            Commands().data["rules"].parameters["rule"].description,
             required = True,
             choices = [
                 "1 NSFW Content",
@@ -52,8 +53,8 @@ class Rules(nextcord_C.Cog):
             color = nextcord.Color.brand_red(),
             author = f"Rule {rule}",
             author_icon = interaction.guild.icon.url, 
-            description = self.client.lists.SOMICORD_RULES[rule][0],
-            footer = self.client.lists.SOMICORD_RULES[rule][1]
+            description = Lists().SOMICORD_RULES[rule][0],
+            footer = Lists().SOMICORD_RULES[rule][1]
         )
 
         await interaction.followup.send(embed=embed)

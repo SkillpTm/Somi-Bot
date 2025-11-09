@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
-from lib.managers import Logger
+from lib.managers import Commands, Logger
 from lib.utilities import SomiBot
 
 
@@ -15,8 +15,8 @@ class Kick(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "kick",
-        description = "kicks a member",
+        Commands().data["kick"].name,
+        Commands().data["kick"].description,
         default_member_permissions = nextcord.Permissions(kick_members=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
@@ -26,11 +26,13 @@ class Kick(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         member: nextcord.Member = nextcord.SlashOption(
-            description = "Member to be kicked",
+            Commands().data["kick"].parameters["member"].name,
+            Commands().data["kick"].parameters["member"].description,
             required = True
         ),
         reason: str = nextcord.SlashOption(
-            description = "Reason for the kick",
+            Commands().data["kick"].parameters["reason"].name,
+            Commands().data["kick"].parameters["reason"].description,
             required = False,
             min_length = 2,
             max_length = 1000

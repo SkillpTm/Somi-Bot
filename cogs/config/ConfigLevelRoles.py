@@ -4,7 +4,7 @@ import nextcord.ext.commands as nextcord_C
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, LevelRoles
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -16,22 +16,29 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.config.subcommand(name="level-roles", description="set a role to be given, when a certain level is reached")
+    @ParentCommand.config.subcommand(
+        Commands().data["config level-roles"].alias,
+        Commands().data["config level-roles"].description,
+        name_localizations = {country_tag: Commands().data["config level-roles"].name for country_tag in nextcord.Locale}
+    )
     async def config_level_roles(
         self,
         interaction: nextcord.Interaction,
         *,
         action: str = nextcord.SlashOption(
-            description = "which action do you want to take",
+            Commands().data["config level-roles"].parameters["action"].name,
+            Commands().data["config level-roles"].parameters["action"].description,
             required = True,
             choices = ["Add", "Remove"]
         ),
         role: nextcord.Role = nextcord.SlashOption(
-            description = "the role users should/ the role to be deleted",
+            Commands().data["config level-roles"].parameters["role"].name,
+            Commands().data["config level-roles"].parameters["role"].description,
             required = True
         ),
         level: int = nextcord.SlashOption(
-            description = "the level you're supposed to get a role at",
+            Commands().data["config level-roles"].parameters["level"].name,
+            Commands().data["config level-roles"].parameters["level"].description,
             required = False,
             min_value = 2,
             max_value = 1000

@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -17,7 +17,7 @@ class KeywordList(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.keyword.subcommand(name="list", description="a list of all your keywords")
+    @ParentCommand.keyword.subcommand(Commands().data["keyword list"].name, Commands().data["keyword list"].description)
     async def keyword_list(self, interaction: nextcord.Interaction) -> None:
         """This command outputs a list of all keywords a user has"""
 

@@ -3,6 +3,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Get
+from lib.managers import Commands
 from lib.utilities import SomiBot
 
 
@@ -15,16 +16,17 @@ class CustomCommand(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "cc",
-        description = "post a custom-command",
-        name_localizations = {country_tag:"custom-command" for country_tag in nextcord.Locale}
+        Commands().data["custom-command"].alias,
+        Commands().data["custom-command"].description,
+        name_localizations = {country_tag: Commands().data["custom-command"].name for country_tag in nextcord.Locale}
     )
     async def customcommand(
         self,
         interaction: nextcord.Interaction,
         *,
         name: str = nextcord.SlashOption(
-            description = "the name of the custom-command",
+            Commands().data["custom-command"].parameters["name"].name,
+            Commands().data["custom-command"].parameters["name"].description,
             required = True,
             min_length = 2,
             max_length = 50

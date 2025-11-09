@@ -6,7 +6,7 @@ import requests
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Get
-from lib.managers import Config, Keychain
+from lib.managers import Commands, Config, Keychain
 from lib.utilities import SomiBot
 
 
@@ -21,16 +21,17 @@ class LastFmNowPlaying(nextcord_C.Cog):
     ####################################################################################################
 
     @ParentCommand.lastfm.subcommand(
-        name = "np",
-        description = "shows what someone is listening to right now",
-        name_localizations = {country_tag:"now-playing" for country_tag in nextcord.Locale}
+        Commands().data["lf now-playing"].alias,
+        Commands().data["lf now-playing"].description,
+        name_localizations = {country_tag: Commands().data["lf now-playing"].name for country_tag in nextcord.Locale}
     )
     async def lastfm_now_playing(
         self,
         interaction: nextcord.Interaction,
         *,
         user: nextcord.User = nextcord.SlashOption(
-            description = "the user you want to be shown, what they're listening to",
+            Commands().data["lf now-playing"].parameters["user"].name,
+            Commands().data["lf now-playing"].parameters["user"].description,
             required = False
         )
     ) -> None:

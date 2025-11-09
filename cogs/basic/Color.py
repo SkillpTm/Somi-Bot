@@ -6,27 +6,29 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
+from lib.managers import Commands
 from lib.utilities import SomiBot
-
-WIDTH = 300
-HEIGHT = 300
 
 
 
 class Color(nextcord_C.Cog):
+
+    WIDTH = 300
+    HEIGHT = 300
 
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
 
-    @nextcord.slash_command(name="color", description="shows you what a color looks like")
+    @nextcord.slash_command(Commands().data["color"].name, Commands().data["color"].description)
     async def color(
         self,
         interaction: nextcord.Interaction,
         *,
         hexcode: str = nextcord.SlashOption(
-            description = "input a color hexcode here",
+            Commands().data["color"].parameters["hexcode"].name,
+            Commands().data["color"].parameters["hexcode"].description,
             required = True,
             min_length = 6,
             max_length = 7
@@ -62,8 +64,8 @@ class Color(nextcord_C.Cog):
 
         output_image += chunk(
             b"IHDR",
-            WIDTH.to_bytes(4, "big") +
-            HEIGHT.to_bytes(4, "big") +
+            Color.WIDTH.to_bytes(4, "big") +
+            Color.HEIGHT.to_bytes(4, "big") +
             b"\x08" +        # Bit depth
             b"\x02" +        # Color type: Truecolor RGB
             b"\x00" +        # Compression method
@@ -74,7 +76,7 @@ class Color(nextcord_C.Cog):
         rgb_vals: list[int] = [int(hexcode[i:i+2], 16) for i in range(0, len(hexcode), 2)]
         raw_image_data = bytearray(
             b"".join(
-                bytes([0]) + bytes(rgb_vals * WIDTH) for _ in range(HEIGHT)
+                bytes([0]) + bytes(rgb_vals * Color.WIDTH) for _ in range(Color.HEIGHT)
             )
         )
         output_image += chunk(b"IDAT", zlib.compress(raw_image_data))

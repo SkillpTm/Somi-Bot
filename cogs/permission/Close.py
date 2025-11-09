@@ -3,6 +3,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
+from lib.managers import Commands
 from lib.utilities import SomiBot
 
 
@@ -15,8 +16,8 @@ class Close(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "close",
-        description = "removes send message perms from @everyone and the default role, on the roles, also pauses invites",
+        Commands().data["close"].name,
+        Commands().data["close"].description,
         default_member_permissions = nextcord.Permissions(manage_roles=True, manage_guild=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
@@ -76,8 +77,8 @@ class Close(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "open",
-        description = "gives back send message perms for @everyone and the default role, on the roles, also pauses invites",
+        Commands().data["open"].name,
+        Commands().data["open"].description,
         default_member_permissions = nextcord.Permissions(manage_roles=True, manage_guild=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]

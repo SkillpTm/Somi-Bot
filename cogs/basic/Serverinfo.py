@@ -4,7 +4,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -17,9 +17,9 @@ class Severinfo(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "si",
-        description = "gives information about this server",
-        name_localizations = {country_tag:"serverinfo" for country_tag in nextcord.Locale},
+        Commands().data["serverinfo"].alias,
+        Commands().data["serverinfo"].description,
+        name_localizations = {country_tag: Commands().data["serverinfo"].name for country_tag in nextcord.Locale},
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )

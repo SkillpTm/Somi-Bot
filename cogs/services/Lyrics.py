@@ -5,7 +5,7 @@ import nextcord.ext.commands as nextcord_C
 import requests
 
 from lib.helpers import EmbedFunctions
-from lib.managers import Config, Keychain
+from lib.managers import Commands, Config, Keychain
 from lib.utilities import SomiBot
 
 
@@ -18,22 +18,24 @@ class Lyrics(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "genius",
-        description = "Posts the link to the lyircs of the song you are playing",
-        name_localizations = {country_tag:"lyrics" for country_tag in nextcord.Locale}
+        Commands().data["lyrics"].alias,
+        Commands().data["lyrics"].description,
+        name_localizations = {country_tag: Commands().data["lyrics"].name for country_tag in nextcord.Locale}
     )
     async def lyrics(
         self,
         interaction: nextcord.Interaction,
         *,
         artist: str = nextcord.SlashOption(
-            description = "the artist you want a song to get the lyrics of",
+            Commands().data["lyrics"].parameters["artist"].name,
+            Commands().data["lyrics"].parameters["artist"].description,
             required = False,
             min_length = 2,
             max_length = 100
         ),
         song: str = nextcord.SlashOption(
-            description = "the song of that artist you want to get the lyrics of",
+            Commands().data["lyrics"].parameters["song"].name,
+            Commands().data["lyrics"].parameters["song"].description,
             required = False,
             min_length = 2,
             max_length = 100

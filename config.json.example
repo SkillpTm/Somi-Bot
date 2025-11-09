@@ -1,6 +1,9 @@
 {
     "ACTIVITY_NAME": "",
-    "APPLICATION_ID": 0,
+	"APPLICATION_BANNER_PATH": "./assets/icon/bot/banner.png",
+	"APPLICATION_ICON_PATH": "./assets/icon/bot/icon.png",
+	"APPLICATION_ID": 0,
+	"APPLICATION_NAME": "",
     "MAX_MESSAGES_CACHE": 0,
     "POSTGRES_POOL_MAX_SIZE": 0,
     "OWNER_ID": 0,

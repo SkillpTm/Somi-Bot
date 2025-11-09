@@ -10,7 +10,6 @@ import requests
 from lib.dbModules import DBHandler, PostgresDB
 from lib.helpers import EmbedFunctions
 from lib.managers import Config, Keychain, Logger, Singleton
-from lib.utilities import Lists
 
 
 
@@ -21,7 +20,6 @@ class SomiBot(nextcord_C.Bot):
         self.database: PostgresDB = None
         self.is_setup = False
         self.start_time = int(time.time())
-        self.lists = Lists(Config().APPLICATION_ID)
 
         super().__init__(
             max_messages = Config().MAX_MESSAGES_CACHE,
@@ -107,7 +105,6 @@ class SomiBot(nextcord_C.Bot):
 
         # api logout in case this was a restart and we didn't properly exit those API connections
         Singleton.reset(Keychain)
-        Logger().bot_status(f"{self.user}: ready and logged in")
 
         self.database = await PostgresDB.create("./sql/schema.sql", "./sql/queries.sql", Config().POSTGRES_POOL_MAX_SIZE)
 
@@ -115,6 +112,7 @@ class SomiBot(nextcord_C.Bot):
 
         self.is_setup = True
 
+        Logger().bot_status(f"{self.user}: ready and logged in")
         await self._start_infinite_loops()
 
     ####################################################################################################

@@ -4,7 +4,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
-from lib.managers import Logger
+from lib.managers import Commands, Logger
 from lib.utilities import OptionsButton, SomiBot
 
 
@@ -73,9 +73,9 @@ class Choose(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "select",
-        description = "let the bot choose one of the options for you!",
-        name_localizations = {country_tag:"choose" for country_tag in nextcord.Locale}
+        Commands().data["choose"].alias,
+        Commands().data["choose"].description,
+        name_localizations = {country_tag: Commands().data["choose"].name for country_tag in nextcord.Locale}
     )
     async def choose(self, interaction: nextcord.Interaction) -> None:
         """This command randomly chooses between any of the options"""

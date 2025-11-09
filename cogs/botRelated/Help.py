@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Get
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -15,13 +15,14 @@ class Help(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name="help", description="explanations for every command")
+    @nextcord.slash_command(Commands().data["help"].name, Commands().data["help"].description)
     async def help(
         self,
         interaction: nextcord.Interaction,
         *,
         name: str = nextcord.SlashOption(
-            description = "which command do you need help for",
+            Commands().data["help"].parameters["name"].name,
+            Commands().data["help"].parameters["name"].description,
             required = True,
             min_length = 2,
             max_length = 50
@@ -32,35 +33,46 @@ class Help(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        name = name if name.startswith("/") else f"/{name}"
+        name = name[1:] if name.startswith("/") else name
 
-        if name not in self.client.lists.HELP_AUTOCOMPLETE_TUPLE:
+        if name not in Commands().overview.values():
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{name}` isn't a valid command name."), ephemeral=True)
             return
 
-        help_oputput = {**self.client.lists.HELP_PERMISSION_OUTPUT, **self.client.lists.HELP_NORMAL_OUTPUT}
+        parent_alias = Commands().data[name].parent.alias or Commands().data[name].parent.name
+        sub_alias = Commands().data[name].alias or Commands().data[name].name
+        alias = f"{parent_alias} {sub_alias}".strip()
+        if alias != Commands().data[name].full_name:
+            alias_line = f"`Alias:` /{alias}\n"
+        else:
+            alias_line = ""
+
+        if Commands().data[name].permissions:
+            permission_line = "\nRequired Permissions:\n" + "".join([f"- {permission} :white_check_mark:\n" for permission in Commands().data[name].permissions])
+        else:
+            permission_line = ""
+
+        parameter_fields: list[list[str | bool]] = []
+
+        for parameter in Commands().data[name].parameters.values():
+            new_field = []
+            new_field.append(f"`{parameter.name}` - ({'required' if parameter.required else 'optional'})")
+            new_field.append(f"{parameter.description}\n`Type:` {parameter.type}\n{'`Default:` ' + parameter.default if parameter.default else ''}")
+            new_field.append(False)
+            parameter_fields.append(new_field)
 
         embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
-            title = f"Help for `{name}`",
+            title = f"Help for `/{Commands().data[name].full_name}`",
+            description = f"{Commands().data[name].description}\n" + alias_line + permission_line,
+            footer = f"Example: {Commands().data[name].example}",
             fields = [
                 [
-                    "Syntax:",
-                    "\n".join([line.strip() for line in help_oputput[name][0].split("\n")]),
+                    "Structure:",
+                    f"```{Commands().data[name].structure}```",
                     False
                 ],
-
-                [
-                    "Example:",
-                    help_oputput[name][1],
-                    False
-                ],
-
-                [
-                    "Required Default Permissions:",
-                    help_oputput[name][2] if len(help_oputput[name]) == 3 else "",
-                    False
-                ]
+                *parameter_fields
             ]
         )
 
@@ -81,7 +93,7 @@ class Help(nextcord_C.Cog):
         await interaction.response.send_autocomplete(
             Get.autocomplete_dict_from_search_string(
                 name,
-                {command: command[1:] for command in self.client.lists.HELP_AUTOCOMPLETE_TUPLE}
+                Commands().overview
             )
         )
 

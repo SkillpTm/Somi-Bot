@@ -3,6 +3,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Get
+from lib.managers import Commands
 from lib.utilities import SomiBot, YesNoButtons
 
 
@@ -16,13 +17,14 @@ class KeywordDelete(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.keyword.subcommand(name="delete", description="delete a keyword from your keyword list")
+    @ParentCommand.keyword.subcommand(Commands().data["keyword delete"].name, Commands().data["keyword delete"].description)
     async def keyword_delete(
         self,
         interaction: nextcord.Interaction,
         *,
         keyword: str = nextcord.SlashOption(
-            description = "the keyword to be deleted or 'DELETE_ALL' to delete every keyword",
+            Commands().data["keyword delete"].parameters["keyword"].name,
+            Commands().data["keyword delete"].parameters["keyword"].description,
             required = True,
             min_length = 2,
             max_length = 50

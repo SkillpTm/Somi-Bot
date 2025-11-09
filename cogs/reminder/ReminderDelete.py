@@ -3,6 +3,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Get
+from lib.managers import Commands
 from lib.utilities import SomiBot, YesNoButtons
 
 class ReminderDelete(nextcord_C.Cog):
@@ -14,13 +15,14 @@ class ReminderDelete(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.reminder.subcommand(name="delete", description="delete a reminder from your reminder list")
+    @ParentCommand.reminder.subcommand(Commands().data["reminder delete"].name, Commands().data["reminder delete"].description)
     async def reminder_delete(
         self,
         interaction: nextcord.Interaction,
         *,
         reminder_id: str = nextcord.SlashOption(
-            description = "the ID of the remidner to be deleted or 'DELETE_ALL' (to find your reminder ID use '/reminder list'",
+            Commands().data["reminder delete"].parameters["reminder_id"].name,
+            Commands().data["reminder delete"].parameters["reminder_id"].description,
             required = True,
             min_length = 9,
             max_length = 9

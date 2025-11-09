@@ -5,6 +5,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
+from lib.managers import Commands
 from lib.utilities import SomiBot
 
 
@@ -16,7 +17,7 @@ class Ping(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name="ping", description="shows the bot's ping to discord")
+    @nextcord.slash_command(Commands().data["ping"].name, Commands().data["ping"].description)
     async def ping(self, interaction: nextcord.Interaction) -> None:
         """This command shows the ping and some general stats about the bot"""
 

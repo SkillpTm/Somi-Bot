@@ -4,8 +4,8 @@ import nextcord.ext.commands as nextcord_C
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
-from lib.managers import Config
-from lib.utilities import Lists, SomiBot
+from lib.managers import Commands, Config, Lists
+from lib.utilities import SomiBot
 
 
 
@@ -16,20 +16,23 @@ class ConfigHiddenChannels(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.config.subcommand(name="hidden-channels", description="add/remove a hidden-channel to this server")
+    @ParentCommand.config.subcommand(Commands().data["config hidden-channels"].name, Commands().data["config hidden-channels"].description)
     async def config_hidden_channels(
         self,
         interaction: nextcord.Interaction,
         *,
         action: str = nextcord.SlashOption(
-            description = "which action do you want to take",
+            Commands().data["config hidden-channels"].parameters["action"].name,
+            Commands().data["config hidden-channels"].parameters["action"].description,
             required = True,
             choices = ["Add", "Remove"]
         ),
         channel: nextcord.TextChannel | nextcord.Thread = nextcord.SlashOption(
-            channel_types = Lists.TEXT_CHANNELS,
-            description = "the channel to be added/removed",
-            required = False)
+            Commands().data["config hidden-channels"].parameters["channel"].name,
+            Commands().data["config hidden-channels"].parameters["channel"].description,
+            required = False,
+            channel_types = Lists().TEXT_CHANNELS
+        )
         ) -> None:
         """This command adds a custom command to the server's custom commands"""
 

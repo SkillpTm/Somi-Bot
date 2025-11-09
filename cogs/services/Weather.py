@@ -7,7 +7,7 @@ import requests
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
-from lib.managers import Config, Keychain
+from lib.managers import Commands, Config, Keychain
 from lib.utilities import SomiBot
 
 
@@ -19,13 +19,14 @@ class Weather(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name="weather", description="find out what the weather is in any place")
+    @nextcord.slash_command(Commands().data["weather"].name, Commands().data["weather"].description)
     async def weather(
         self,
         interaction: nextcord.Interaction,
         *,
         location: str = nextcord.SlashOption(
-            description = "the location you want to know the weather of",
+            Commands().data["weather"].parameters["location"].name,
+            Commands().data["weather"].parameters["location"].description,
             required = False,
             min_length = 2,
             max_length = 50

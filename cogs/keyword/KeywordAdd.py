@@ -5,6 +5,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
+from lib.managers import Commands
 from lib.utilities import SomiBot
 
 
@@ -18,13 +19,14 @@ class KeywordAdd(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.keyword.subcommand(name="add", description="add a keyword to your keyword list")
+    @ParentCommand.keyword.subcommand(Commands().data["keyword add"].name, Commands().data["keyword add"].description)
     async def keyword_add(
         self,
         interaction: nextcord.Interaction,
         *,
         keyword: str = nextcord.SlashOption(
-            description = "your new keyword",
+            Commands().data["keyword add"].parameters["keyword"].name,
+            Commands().data["keyword add"].parameters["keyword"].description,
             required = True,
             min_length = 2,
             max_length = 50

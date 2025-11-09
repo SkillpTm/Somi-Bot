@@ -4,6 +4,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
+from lib.managers import Commands
 from lib.utilities import SomiBot
 
 
@@ -16,16 +17,17 @@ class Userinfo(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "ui",
-        description = "gives information about a user",
-        name_localizations = {country_tag:"userinfo" for country_tag in nextcord.Locale}
+        Commands().data["userinfo"].alias,
+        Commands().data["userinfo"].description,
+        name_localizations = {country_tag: Commands().data["userinfo"].name for country_tag in nextcord.Locale}
     )
     async def userinfo(
         self,
         interaction: nextcord.Interaction,
         *,
         user: nextcord.User = nextcord.SlashOption(
-            description = "the user you want information about",
+            Commands().data["userinfo"].parameters["user"].name,
+            Commands().data["userinfo"].parameters["user"].description,
             required = False
         )
     ) -> None:

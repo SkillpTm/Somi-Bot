@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -18,9 +18,9 @@ class LevelsLeaderboard(nextcord_C.Cog):
     ####################################################################################################
 
     @ParentCommand.levels.subcommand(
-        name = "top",
-        description = "shows the top users by level of this server",
-        name_localizations = {country_tag:"leaderboard" for country_tag in nextcord.Locale}
+        Commands().data["levels leaderboard"].alias,
+        Commands().data["levels leaderboard"].description,
+        name_localizations = {country_tag: Commands().data["levels leaderboard"].name for country_tag in nextcord.Locale}
     )
     async def levels_leaderboard(self, interaction: nextcord.Interaction) -> None:
         """Displays the top 10 (or less, if there isn't 10 users in the levels table) users by XP"""

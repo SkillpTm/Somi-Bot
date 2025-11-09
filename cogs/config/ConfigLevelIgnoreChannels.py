@@ -4,8 +4,8 @@ import nextcord.ext.commands as nextcord_C
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
-from lib.managers import Config
-from lib.utilities import Lists, SomiBot
+from lib.managers import Commands, Config, Lists
+from lib.utilities import SomiBot
 
 
 
@@ -16,19 +16,25 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.config.subcommand(name="level-ignore-channels", description="deactivate/activate xp gain in a channel")
+    @ParentCommand.config.subcommand(
+        Commands().data["config level-ignore-channels"].alias,
+        Commands().data["config level-ignore-channels"].description,
+        name_localizations = {country_tag: Commands().data["config level-ignore-channels"].name for country_tag in nextcord.Locale}
+    )
     async def config_level_ignore_channels(
         self,
         interaction: nextcord.Interaction,
         action: str = nextcord.SlashOption(
-            description = "which action do you want to take",
+            Commands().data["config level-ignore-channels"].parameters["action"].name,
+            Commands().data["config level-ignore-channels"].parameters["action"].description,
             required = True,
             choices = ["Add", "Remove"]
         ),
         channel: nextcord.TextChannel | nextcord.Thread = nextcord.SlashOption(
-            description = "the channel to have (no) xp gain in",
+            Commands().data["config level-ignore-channels"].parameters["channel"].name,
+            Commands().data["config level-ignore-channels"].parameters["channel"].description,
             required = False,
-            channel_types = Lists.TEXT_CHANNELS)
+            channel_types = Lists().TEXT_CHANNELS)
         ) -> None:
         """This command will deactivate/activate XP in the given channel."""
 

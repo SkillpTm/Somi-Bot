@@ -6,7 +6,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Get
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -20,20 +20,21 @@ class ReminderAdd(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.reminder.subcommand(name="add", description="add a reminder to your reminder list")
+    @ParentCommand.reminder.subcommand(Commands().data["reminder add"].name, Commands().data["reminder add"].description)
     async def reminder_add(
         self,
         interaction: nextcord.Interaction,
         *,
         reminder_time: str = nextcord.SlashOption(
-            name = "time",
-            description = "the time to be reminded in (input: xy | xw |xd | xh | xm | xs) Example: 5d7h28s)",
+            Commands().data["reminder add"].parameters["reminder_time"].name,
+            Commands().data["reminder add"].parameters["reminder_time"].description,
             required = True,
             min_length = 2,
             max_length = 50
         ),
         reminder: str = nextcord.SlashOption(
-            description = "what you want to be reminded about.",
+            Commands().data["reminder add"].parameters["reminder"].name,
+            Commands().data["reminder add"].parameters["reminder"].description,
             required = True,
             min_length = 1,
             max_length = 4096

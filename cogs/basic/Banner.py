@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -14,13 +14,14 @@ class Banner(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name="banner", description="posts someone's banner")
+    @nextcord.slash_command(Commands().data["banner"].name, Commands().data["avatar"].description)
     async def banner(
         self,
         interaction: nextcord.Interaction,
         *,
         user: nextcord.User = nextcord.SlashOption(
-            description = "the user you want the banner from",
+            Commands().data["banner"].parameters["user"].name,
+            Commands().data["banner"].parameters["user"].description,
             required = False
         )
     ) -> None:

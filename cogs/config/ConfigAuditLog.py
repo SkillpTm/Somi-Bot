@@ -4,35 +4,37 @@ import nextcord.ext.commands as nextcord_C
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
-from lib.managers import Config
-from lib.utilities import Lists, SomiBot
+from lib.managers import Commands, Config, Lists
+from lib.utilities import SomiBot
 
 
 
-class ConfigAuditLogChannel(nextcord_C.Cog):
+class ConfigAuditLog(nextcord_C.Cog):
 
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
     ####################################################################################################
 
-    @ParentCommand.config.subcommand(name="audit-log-channel", description="set/reset a channel for the bot to post logs")
-    async def config_audit_log_channel(
+    @ParentCommand.config.subcommand(Commands().data["config audit-log"].name, Commands().data["config audit-log"].description)
+    async def config_audit_log(
         self,
         interaction: nextcord.Interaction,
         *,
         action: str = nextcord.SlashOption(
-            description = "which action do you want to take",
+            Commands().data["config audit-log"].parameters["action"].name,
+            Commands().data["config audit-log"].parameters["action"].description,
             required = True,
             choices = ["Set", "Reset"]
         ),
         channel: nextcord.TextChannel | nextcord.Thread = nextcord.SlashOption(
-            description = "the channel to be set/reset",
+            Commands().data["config audit-log"].parameters["channel"].name,
+            Commands().data["config audit-log"].parameters["channel"].description,
             required = False,
-            channel_types = Lists.TEXT_CHANNELS
+            channel_types = Lists().TEXT_CHANNELS
         )
     ) -> None:
-        """This command sets/resets the audit-log-channel of the server."""
+        """This command sets/resets the audit-log of the server."""
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
@@ -60,7 +62,7 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 [
-                    "/config audit-log-channel:",
+                    "/config audit-log:",
                     mod_action,
                     False
                 ]
@@ -72,4 +74,4 @@ class ConfigAuditLogChannel(nextcord_C.Cog):
 
 
 def setup(client: SomiBot) -> None:
-    client.add_cog(ConfigAuditLogChannel(client))
+    client.add_cog(ConfigAuditLog(client))

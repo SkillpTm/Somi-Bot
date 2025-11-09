@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
-from lib.managers import Keychain
+from lib.managers import Commands, Keychain
 from lib.utilities import SomiBot
 
 
@@ -14,13 +14,14 @@ class Wolfram(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name="wolfram", description="find an answer to a query")
+    @nextcord.slash_command(Commands().data["wolfram"].name, Commands().data["wolfram"].description)
     async def wolfram(
         self,
         interaction: nextcord.Interaction,
         *,
         query: str = nextcord.SlashOption(
-            description = "for what do you want an answer",
+            Commands().data["wolfram"].parameters["query"].name,
+            Commands().data["wolfram"].parameters["query"].description,
             required = True,
             min_length = 2,
             max_length = 200

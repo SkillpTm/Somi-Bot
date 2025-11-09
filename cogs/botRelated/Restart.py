@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
 from lib.helpers import EmbedFunctions, Get
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -16,8 +16,8 @@ class Restart(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "restart",
-        description = "restarts the entire bot",
+        Commands().data["restart"].name,
+        Commands().data["restart"].description,
         guild_ids = [Config().SUPPORT_SERVER_ID],
         default_member_permissions = nextcord.Permissions(administrator=True),
         integration_types = [nextcord.IntegrationType.guild_install],

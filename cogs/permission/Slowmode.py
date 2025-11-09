@@ -2,8 +2,9 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
+from lib.managers import Commands, Lists
 from lib.helpers import EmbedFunctions
-from lib.utilities import Lists, SomiBot
+from lib.utilities import SomiBot
 
 
 
@@ -15,8 +16,8 @@ class Slowmode(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "slowmode",
-        description = "set/resets a slowmode in a channel",
+        Commands().data["slowmode"].name,
+        Commands().data["slowmode"].description,
         default_member_permissions = nextcord.Permissions(manage_channels=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
@@ -26,15 +27,17 @@ class Slowmode(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         delay: int = nextcord.SlashOption(
-            description = "how long it takes until a user can send a message again in seconds. (To end slowmode input '0')",
+            Commands().data["slowmode"].parameters["delay"].name,
+            Commands().data["slowmode"].parameters["delay"].description,
             required = True,
             min_value = 0,
             max_value = 21600 # 6 hours in seconds
         ),
         channel: nextcord.TextChannel | nextcord.Thread = nextcord.SlashOption(
-            channel_types = Lists.TEXT_CHANNELS,
-            description = "the channel to activate slowmode in",
-            required = False
+            Commands().data["slowmode"].parameters["channel"].name,
+            Commands().data["slowmode"].parameters["channel"].description,
+            required = False,
+            channel_types = Lists().TEXT_CHANNELS
         )
     ) -> None:
         """This command allows a user to set a slowmode in a channel."""

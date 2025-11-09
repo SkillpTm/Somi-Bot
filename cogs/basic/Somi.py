@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -13,7 +13,7 @@ class Somi(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name="somi", description="speaks facts")
+    @nextcord.slash_command(Commands().data["somi"].name, Commands().data["somi"].description)
     async def somi(self,interaction: nextcord.Interaction) -> None:
         """This command tells you the truth"""
 

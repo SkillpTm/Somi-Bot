@@ -4,7 +4,7 @@ import requests
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
-from lib.managers import Keychain
+from lib.managers import Commands, Keychain
 from lib.utilities import SomiBot
 
 
@@ -18,13 +18,14 @@ class LastFmSet(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.lastfm.subcommand(name="set", description="set your LastFm account")
+    @ParentCommand.lastfm.subcommand(Commands().data["lf set"].name, Commands().data["lf set"].description)
     async def lastfm_set(
         self,
         interaction: nextcord.Interaction,
         *,
         lastfmname: str = nextcord.SlashOption(
-            description = "input your LastFm name",
+            Commands().data["lf set"].parameters["lastfmname"].name,
+            Commands().data["lf set"].parameters["lastfmname"].description,
             required = True,
             min_length = 2,
             max_length = 100
@@ -48,7 +49,7 @@ class LastFmSet(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.lastfm.subcommand(name="reset", description="reset your LastFm-Discord account connection")
+    @ParentCommand.lastfm.subcommand(Commands().data["lf reset"].name, Commands().data["lf reset"].description)
     async def lastfm_reset(self, interaction: nextcord.Interaction) -> None:
         """This command deletes the user's connection from the db"""
 

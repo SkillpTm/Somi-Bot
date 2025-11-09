@@ -3,12 +3,12 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, LevelRoles
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
 
-class LevelsInfo(nextcord_C.Cog):
+class LevelsOverview(nextcord_C.Cog):
 
     from cogs.basic.ParentCommand import ParentCommand
 
@@ -17,8 +17,12 @@ class LevelsInfo(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.levels.subcommand(name="info", description="displays an explanation for levels, a list of ignored channels and levelroles")
-    async def levels_info(self, interaction: nextcord.Interaction) -> None:
+    @ParentCommand.levels.subcommand(
+        Commands().data["levels overview"].alias,
+        Commands().data["levels overview"].description,
+        name_localizations = {country_tag: Commands().data["levels overview"].name for country_tag in nextcord.Locale}
+    )
+    async def levels_overview(self, interaction: nextcord.Interaction) -> None:
         """Displays information about levels and (if existing) shows a list of the levelroles/ignore channels"""
 
         await interaction.response.defer(with_message=True)
@@ -31,7 +35,7 @@ class LevelsInfo(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = Config().BOT_COLOR,
-            title = "Level Information",
+            title = "Levels Overview",
             fields = [
                 [
                     "What are levels?",
@@ -58,4 +62,4 @@ class LevelsInfo(nextcord_C.Cog):
 
 
 def setup(client: SomiBot) -> None:
-    client.add_cog(LevelsInfo(client))
+    client.add_cog(LevelsOverview(client))

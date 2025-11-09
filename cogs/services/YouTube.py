@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
-from lib.managers import Keychain
+from lib.managers import Commands, Keychain
 from lib.utilities import PageButtons, SomiBot
 
 
@@ -15,16 +15,17 @@ class YouTube(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "yt",
-        description = "find a video on YouTube",
-        name_localizations = {country_tag:"youtube" for country_tag in nextcord.Locale}
+        Commands().data["youtube"].alias,
+        Commands().data["youtube"].description,
+        name_localizations = {country_tag: Commands().data["youtube"].name for country_tag in nextcord.Locale}
     )
     async def youtube(
         self,
         interaction: nextcord.Interaction,
         *,
         query: str = nextcord.SlashOption(
-            description = "your YouTube Search",
+            Commands().data["youtube"].parameters["query"].name,
+            Commands().data["youtube"].parameters["query"].description,
             required = True,
             min_length = 2,
             max_length = 200

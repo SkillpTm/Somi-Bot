@@ -4,7 +4,7 @@ import nextcord.ext.commands as nextcord_C
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, LevelRoles
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -22,7 +22,7 @@ class ConfigInfo(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.config.subcommand(name="info", description="get information on how this server is configured")
+    @ParentCommand.config.subcommand(Commands().data["config info"].name, Commands().data["config info"].description)
     async def config_info(self, interaction: nextcord.Interaction) -> None:
         """This command outputs a server's configuration info and some explanations."""
 

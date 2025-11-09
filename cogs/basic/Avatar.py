@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -14,13 +14,14 @@ class Avatar(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name="avatar", description="posts someone's avatar")
+    @nextcord.slash_command(Commands().data["avatar"].name, Commands().data["avatar"].description)
     async def avatar(
         self,
         interaction: nextcord.Interaction,
         *,
         user: nextcord.User = nextcord.SlashOption(
-            description = "the user you want the avatar from",
+            Commands().data["avatar"].parameters["user"].name,
+            Commands().data["avatar"].parameters["user"].description,
             required = False
         )
     ) -> None:

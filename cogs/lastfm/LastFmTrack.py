@@ -7,8 +7,8 @@ import requests
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Webscrape
-from lib.managers import Config, Keychain
-from lib.utilities import Lists, SomiBot
+from lib.managers import Commands, Config, Keychain, Lists
+from lib.utilities import SomiBot
 
 
 
@@ -21,31 +21,35 @@ class LastFmTrack(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.lastfm.subcommand(name="track", description="shows you your LastFm stats for any track")
+    @ParentCommand.lastfm.subcommand(Commands().data["lf track"].name, Commands().data["lf track"].description)
     async def lastfm_track(
         self,
         interaction: nextcord.Interaction,
         *,
         artist: str = nextcord.SlashOption(
-            description = "the artist you want to see your stats for",
+            Commands().data["lf track"].parameters["artist"].name,
+            Commands().data["lf track"].parameters["artist"].description,
             required = False,
             min_length = 2,
             max_length = 100
         ),
         track: str = nextcord.SlashOption(
-            description = "the track you want to see your stats for",
+            Commands().data["lf track"].parameters["track"].name,
+            Commands().data["lf track"].parameters["track"].description,
             required = False,
             min_length = 2,
             max_length = 100
         ),
         user: nextcord.User = nextcord.SlashOption(
-            description = "the user you want to be shown, what they're listening to",
+            Commands().data["lf track"].parameters["user"].name,
+            Commands().data["lf track"].parameters["user"].description,
             required = False
         ),
         timeframe: str = nextcord.SlashOption(
-            description = "the timeframe you want the stats for",
+            Commands().data["lf track"].parameters["timeframe"].name,
+            Commands().data["lf track"].parameters["timeframe"].description,
             required = False,
-            choices = Lists.LASTFM_TIMEFRAMES_WEBSCRAPING
+            choices = Lists().LASTFM_TIMEFRAMES_WEBSCRAPING
         )
     ) -> None:
         """This command webscrapes the data of a user from LastFm to get their plays on a track"""
@@ -78,7 +82,12 @@ class LastFmTrack(nextcord_C.Cog):
 
         artist_for_url = urllib.parse.quote_plus(artist)
         track_for_url = urllib.parse.quote_plus(track)
-        track_response = requests.get(f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}", cookies=Keychain().LAST_FM_COOKIES, headers=Keychain().LAST_FM_HEADERS, timeout=10)
+        track_response = requests.get(
+            f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}",
+            cookies = Keychain().LAST_FM_COOKIES,
+            headers = Keychain().LAST_FM_HEADERS,
+            timeout = 10
+        )
 
         if track_response.status_code != 200:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"The track `{artist} - {track}` couldn't be found on LastFm."))
@@ -87,7 +96,7 @@ class LastFmTrack(nextcord_C.Cog):
         soup = BeautifulSoup(track_response.content, "html.parser")
 
         if "didn't scrobble this track during the selected date range. Try expanding the date range or view scrobbles for " in str(soup.text):
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{user.mention} hasn't listened to the track `{artist} - {track}` in the timeframe: `{Lists.LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}`"))
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{user.mention} hasn't listened to the track `{artist} - {track}` in the timeframe: `{Lists().LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}`"))
             return
 
         type_name, artist_name, cover_image_url, metadata_list, _, _ = Webscrape().library_subpage(soup, artist_for_url, "track")
@@ -95,7 +104,7 @@ class LastFmTrack(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = Config().LASTFM_COLOR,
             thumbnail = cover_image_url,
-            author = f"{user.display_name} × {type_name}: {Lists.LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}",
+            author = f"{user.display_name} × {type_name}: {Lists().LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}",
             author_url = f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}",
             author_icon = Config().LASTFM_ICON,
             description = f"Total plays: __**{metadata_list[0]}**__\n" +

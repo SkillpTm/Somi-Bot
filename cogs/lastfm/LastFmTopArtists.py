@@ -4,8 +4,8 @@ import requests
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Get
-from lib.managers import Config, Keychain
-from lib.utilities import Lists, PageButtons, SomiBot
+from lib.managers import Commands, Config, Keychain, Lists
+from lib.utilities import PageButtons, SomiBot
 
 
 
@@ -19,22 +19,24 @@ class LastFmTopArtists(nextcord_C.Cog):
     ####################################################################################################
 
     @ParentCommand.lastfm.subcommand(
-        name = "tar",
-        description = "shows your top artists on LastFm",
-        name_localizations = {country_tag:"topartists" for country_tag in nextcord.Locale}
+        Commands().data["lf top-artists"].alias,
+        Commands().data["lf top-artists"].description,
+        name_localizations = {country_tag: Commands().data["lf top-artists"].name for country_tag in nextcord.Locale}
     )
     async def lastfm_top_artists(
         self,
         interaction: nextcord.Interaction,
         *,
         user: nextcord.User = nextcord.SlashOption(
-            description = "the user you want the top artists of",
+            Commands().data["lf top-artists"].parameters["user"].name,
+            Commands().data["lf top-artists"].parameters["user"].description,
             required = False
         ),
         timeframe: str = nextcord.SlashOption(
-            description = "the timeframe you want the top artists for",
+            Commands().data["lf top-artists"].parameters["timeframe"].name,
+            Commands().data["lf top-artists"].parameters["timeframe"].description,
             required = False,
-            choices = Lists.LASTFM_TIMEFRAMES
+            choices = Lists().LASTFM_TIMEFRAMES
         )
     ) -> None:
         """This command shows someone's top artists"""
@@ -81,7 +83,7 @@ class LastFmTopArtists(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = Config().LASTFM_COLOR,
-            author = f"{member.display_name} Top Artists: {Lists.LASTFM_TIMEFRAMES_TEXT[timeframe]}",
+            author = f"{member.display_name} Top Artists: {Lists().LASTFM_TIMEFRAMES_TEXT[timeframe]}",
             author_icon = Config().LASTFM_ICON,
             description = output
         )

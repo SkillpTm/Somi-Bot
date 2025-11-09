@@ -1,0 +1,1289 @@
+[
+	{
+		"parent": {},
+		"name": "about",
+		"alias": "",
+		"description": "Tells you various information about the bot",
+		"example": "/about",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "avatar",
+		"alias": "",
+		"description": "Posts the display avatar of a user",
+		"example": "/avatar [@APPLICATION_NAME]",
+		"parameters": {
+			"user": {
+				"name": "user",
+				"description": "The user you want the display avatar posted for",
+				"type": "Discord User",
+				"required": false,
+				"default": "You"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "bam",
+		"alias": "",
+		"description": "Bams a user",
+		"example": "/bam",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "ban",
+		"alias": "",
+		"description": "Permanatly bans a user from this server",
+		"example": "/ban [@APPLICATION_NAME] [24] [Crypto spam bot]",
+		"parameters": {
+			"member": {
+				"name": "member",
+				"description": "The server member you want to ban",
+				"type": "Discord Server Member",
+				"required": true,
+				"default": ""
+			},
+			"delete_message_hours": {
+				"name": "purge-messages-for",
+				"description": "For how many hours back to delete their messages",
+				"type": "Integer between 0 to 168 (1 week)",
+				"required": false,
+				"default": "1"
+			},
+			"reason": {
+				"name": "reason",
+				"description": "The reason why they were banned (this will be DMed to the User)",
+				"type": "Text between 2 to 1000 Characters",
+				"required": false,
+				"default": ""
+			}
+		},
+		"permissions": [
+			"Ban Members"
+		]
+	},
+	{
+		"parent": {},
+		"name": "banner",
+		"alias": "",
+		"description": "Posts the banner of a user",
+		"example": "/banner [@APPLICATION_NAME]",
+		"parameters": {
+			"user": {
+				"name": "user",
+				"description": "The user you want the banner posted of",
+				"type": "Discord User",
+				"required": false,
+				"default": "You"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "choose",
+		"alias": "select",
+		"description": "Opens a Pop-up and randomly chooses an option",
+		"example": "/choose",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "close",
+		"alias": "",
+		"description": "Removes send message permissions from @everyone and the default role. Also pauses invites",
+		"example": "/close",
+		"parameters": {},
+		"permissions": [
+			"Manage Guild",
+			"Manage Roles"
+		]
+	},
+	{
+		"parent": {},
+		"name": "coinflip",
+		"alias": "",
+		"description": "Flips a coin with heads and tails",
+		"example": "/coinflip",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "color",
+		"alias": "",
+		"description": "Posts a picture of a color",
+		"example": "/color [#FFA6FC]",
+		"parameters": {
+			"hexcode": {
+				"name": "hexcode",
+				"description": "The hexcode of a color",
+				"type": "Hexcode between #000000 to #FFFFFF",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "config",
+			"alias": "manage"
+		},
+		"name": "audit-log",
+		"alias": "",
+		"description": "Allows you to setup or remove the bot's aduit-log channel",
+		"example": "/config audit-log [Set] [#logs]",
+		"parameters": {
+			"action": {
+				"name": "action",
+				"description": "If you want to setup or remove the audit-log",
+				"type": "Set Choice",
+				"required": true,
+				"default": ""
+			},
+			"channel": {
+				"name": "channel",
+				"description": "The channel to become or stop being the bot's audit log",
+				"type": "Discord Text Channel or Thread",
+				"required": false,
+				"default": "Current Channel"
+			}
+		},
+		"permissions": [
+			"Manage Guild"
+		]
+	},
+	{
+		"parent": {
+			"name": "config",
+			"alias": "manage"
+		},
+		"name": "default-role",
+		"alias": "",
+		"description": "Allows you to setup or remove the bot's default role, to be applied to all members",
+		"example": "/config default-role [Set] [@MemberRole]",
+		"parameters": {
+			"action": {
+				"name": "action",
+				"description": "If you want to setup or remove the default role",
+				"type": "Set Choice",
+				"required": true,
+				"default": ""
+			},
+			"role": {
+				"name": "role",
+				"description": "The role to become or stop being the bot's default role. Optional on Remove",
+				"type": "Discord Role",
+				"required": false,
+				"default": "Previously set role"
+			}
+		},
+		"permissions": [
+			"Manage Guild"
+		]
+	},
+	{
+		"parent": {
+			"name": "config",
+			"alias": "manage"
+		},
+		"name": "hidden-channels",
+		"alias": "",
+		"description": "Allows you to add or remove a hidden channel (a channel with: no logs, no keywords, no embeds)",
+		"example": "/config hidden-channels [Add] [#logs]",
+		"parameters": {
+			"action": {
+				"name": "action",
+				"description": "If you want to setup or remove the hidden channel",
+				"type": "Set Choice",
+				"required": true,
+				"default": ""
+			},
+			"channel": {
+				"name": "channel",
+				"description": "The channel you want to make a hidden channel",
+				"type": "Discord Text Channel or Thread",
+				"required": false,
+				"default": "Current Channel"
+			}
+		},
+		"permissions": [
+			"Manage Guild"
+		]
+	},
+	{
+		"parent": {
+			"name": "config",
+			"alias": "manage"
+		},
+		"name": "info",
+		"alias": "",
+		"description": "Shows information on /config commands and this server's configuration",
+		"example": "/config info",
+		"parameters": {},
+		"permissions": [
+			"Manage Guild"
+		]
+	},
+	{
+		"parent": {
+			"name": "config",
+			"alias": "manage"
+		},
+		"name": "level-ignore-channels",
+		"alias": "xp-ignore-channels",
+		"description": "Allows you to add or remove a level ignore channel (a channel without xp gain)",
+		"example": "/config level-ignore-channels [Add] [#spam]",
+		"parameters": {
+			"action": {
+				"name": "action",
+				"description": "If you want to setup or remove the level ignore channel",
+				"type": "Set Choice",
+				"required": true,
+				"default": ""
+			},
+			"channel": {
+				"name": "channel",
+				"description": "The channel you want to make a level ignore channel",
+				"type": "Discord Text Channel or Thread",
+				"required": false,
+				"default": "Current Channel"
+			}
+		},
+		"permissions": [
+			"Manage Guild"
+		]
+	},
+	{
+		"parent": {
+			"name": "config",
+			"alias": "manage"
+		},
+		"name": "level-roles",
+		"alias": "xp-roles",
+		"description": "Allows you to add or remove a level role (a role you get at a certain level)",
+		"example": "/config level-roles [Add] [@LevelOne] [1]",
+		"parameters": {
+			"action": {
+				"name": "action",
+				"description": "If you want to setup or remove the level role",
+				"type": "Set Choice",
+				"required": true,
+				"default": ""
+			},
+			"role": {
+				"name": "role",
+				"description": "The role you want to make a level role",
+				"type": "Discord Role",
+				"required": true,
+				"default": ""
+			},
+			"level": {
+				"name": "level",
+				"description": "The level the members will get this role at. Optional on Remove",
+				"type": "Integer between 1 to 1000",
+				"required": false,
+				"default": "Previously set Level"
+			}
+		},
+		"permissions": [
+			"Manage Guild"
+		]
+	},
+	{
+		"parent": {
+			"name": "custom",
+			"alias": ""
+		},
+		"name": "add",
+		"alias": "",
+		"description": "Adds an option to /custom-command with a text as a response",
+		"example": "/custom add [closer] [Oh, I got you in my arms underneath those lights. You'll be my oasis for tonight. I love the way you're driving me crazy]",
+		"parameters": {
+			"name": {
+				"name": "name",
+				"description": "The name of the custom command",
+				"type": "Text between 2 to 50 Characters",
+				"required": true,
+				"default": ""
+			},
+			"text": {
+				"name": "response",
+				"description": "The text to be send by the bot, when the custom command is called",
+				"type": "Text between 2 to 1000 Characters",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": [
+			"Manage Guild"
+		]
+	},
+	{
+		"parent": {
+			"name": "custom",
+			"alias": ""
+		},
+		"name": "delete",
+		"alias": "",
+		"description": "Removes an option of /custom-command",
+		"example": "/custom delete [closer]",
+		"parameters": {
+			"name": {
+				"name": "name",
+				"description": "The name of the custom command. Delete all custom commands with 'DELETE_ALL'",
+				"type": "Text between 2 to 50 Characters or DELETE_ALL",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": [
+			"Manage Guild"
+		]
+	},
+	{
+		"parent": {},
+		"name": "custom-command",
+		"alias": "cc",
+		"description": "Posts the response text of a custom command",
+		"example": "/custom-command [closer]",
+		"parameters": {
+			"name": {
+				"name": "name",
+				"description": "The name of the custom command",
+				"type": "Text between 2 to 50 Characters",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "custom-list",
+		"alias": "cl",
+		"description": "Posts a list of all custom commands",
+		"example": "/custom-list",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "edit",
+		"alias": "",
+		"description": "Posts the response text of a custom command",
+		"example": "/edit [1345296439848341544] [Chaotic & Confused]",
+		"parameters": {
+			"message_id": {
+				"name": "message-id",
+				"description": "The ID of a message send by the bot",
+				"type": "Discord Message ID",
+				"required": true,
+				"default": ""
+			},
+			"message": {
+				"name": "new-message",
+				"description": "The new text the edited message is supposed to be",
+				"type": "Text between 1 to 1000 Characters",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": [
+			"Manage Messages"
+		]
+	},
+	{
+		"parent": {},
+		"name": "emoji",
+		"alias": "emote",
+		"description": "Reposts an emoji as a picture in full resolution with a link",
+		"example": "/emoji [<:SomiBestGrill:1345335694016647258>]",
+		"parameters": {
+			"emoji": {
+				"name": "emoji",
+				"description": "The emoji to be reposted",
+				"type": "Discord Custom Emoji",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "feedback",
+		"alias": "",
+		"description": "Opens a Pop-up to give feedback or report a bug with, regarding the bot",
+		"example": "/feedback",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "help",
+		"alias": "",
+		"description": "Provides help for any command of the bot",
+		"example": "/help [/help]",
+		"parameters": {
+			"name": {
+				"name": "name",
+				"description": "The name of the command you need help with",
+				"type": "Set Choice",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "invite",
+		"alias": "",
+		"description": "Posts the invite link for the bot",
+		"example": "/invite",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "kick",
+		"alias": "",
+		"description": "Kicks a member from the server and DMs them a reason, if given",
+		"example": "/kick [@APPLICATION_NAME] [Comeback nicer]",
+		"parameters": {
+			"member": {
+				"name": "member",
+				"description": "The server member you want to kick",
+				"type": "Discord Server Member",
+				"required": true,
+				"default": ""
+			},
+			"reason": {
+				"name": "reason",
+				"description": "The reason why they were kicked (this will be DMed to the User)",
+				"type": "Text between 2 to 1000 Characters",
+				"required": false,
+				"default": ""
+			}
+		},
+		"permissions": [
+			"Kick Members"
+		]
+	},
+	{
+		"parent": {
+			"name": "keyword",
+			"alias": "noti"
+		},
+		"name": "add",
+		"alias": "",
+		"description": "Add keyword on this server (be notified when a message includes this word)",
+		"example": "/keyword add [Somi]",
+		"parameters": {
+			"keyword": {
+				"name": "keyword",
+				"description": "The keyword you want to be notified by",
+				"type": "Text between 2 to 50 Characters",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "keyword",
+			"alias": "noti"
+		},
+		"name": "delete",
+		"alias": "",
+		"description": "Delete one of your keywords from this server",
+		"example": "/keyword delete [somi]",
+		"parameters": {
+			"keyword": {
+				"name": "keyword",
+				"description": ". Delete all keywords with 'DELETE_ALL'",
+				"type": "Text between 2 to 50 Characters or DELETE_ALL",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "keyword",
+			"alias": "noti"
+		},
+		"name": "list",
+		"alias": "",
+		"description": "Posts a list of all your keywords on this server",
+		"example": "/keyword list",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "levels",
+			"alias": "xp"
+		},
+		"name": "info",
+		"alias": "rank",
+		"description": "Shows a member's level information on this server",
+		"example": "/level info [@APPLICATION_NAME]",
+		"parameters": {
+			"member": {
+				"name": "member",
+				"description": "The server member you want to get information for",
+				"type": "Discord Server Member",
+				"required": false,
+				"default": "You"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "levels",
+			"alias": "xp"
+		},
+		"name": "leaderboard",
+		"alias": "top",
+		"description": "Posts a list of the top 10 members on this server by level",
+		"example": "/levels leaderboard",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "levels",
+			"alias": "xp"
+		},
+		"name": "overview",
+		"alias": "help",
+		"description": "Posts basic information on levels and an overview of level roles and level ignore channels",
+		"example": "/levels overview",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "lf",
+			"alias": "lastfm"
+		},
+		"name": "album",
+		"alias": "",
+		"description": "Shows a user's LastFm data for an album",
+		"example": "/lf album [Jeon Somi] [XOXO] [@APPLICATION_NAME] [Past Year]",
+		"parameters": {
+			"artist": {
+				"name": "artist",
+				"description": "The artist of the album to be shown data for",
+				"type": "Text between 2 to 100 Characters",
+				"required": false,
+				"default": "The artist you're listening to"
+			},
+			"album": {
+				"name": "album",
+				"description": "The name of the album to be shown data for",
+				"type": "Text between 2 to 100 Characters",
+				"required": false,
+				"default": "The album you're listening to"
+			},
+			"user": {
+				"name": "user",
+				"description": "The user you want the album date to be shown for",
+				"type": "Discord User",
+				"required": false,
+				"default": "You"
+			},
+			"timeframe": {
+				"name": "time-period",
+				"description": "The time period you want the album data to be shown for",
+				"type": "Set Choice",
+				"required": false,
+				"default": "All Time"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "lf",
+			"alias": "lastfm"
+		},
+		"name": "artist",
+		"alias": "",
+		"description": "Shows a user's LastFm data for an artist",
+		"example": "/lf artist [Jeon Somi] [@APPLICATION_NAME] [Past Year]",
+		"parameters": {
+			"artist": {
+				"name": "artist",
+				"description": "The artist to be shown data for",
+				"type": "Text between 2 to 100 Characters",
+				"required": false,
+				"default": "The artist you're listening to"
+			},
+			"user": {
+				"name": "user",
+				"description": "The user you want the artist data to be shown for",
+				"type": "Discord User",
+				"required": false,
+				"default": "You"
+			},
+			"timeframe": {
+				"name": "time-period",
+				"description": "The time period you want the artist data to be shown for",
+				"type": "Set Choice",
+				"required": false,
+				"default": "All Time"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "lf",
+			"alias": "lastfm"
+		},
+		"name": "now-playing",
+		"alias": "np",
+		"description": "Shows the song a user is listening or last listened to",
+		"example": "/lf now-playing [@APPLICATION_NAME]",
+		"parameters": {
+			"user": {
+				"name": "user",
+				"description": "The user you want to be shown for, what they're listening to",
+				"type": "Discord User",
+				"required": false,
+				"default": "You"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "lf",
+			"alias": "lastfm"
+		},
+		"name": "profile",
+		"alias": "",
+		"description": "Shows information for a user's LastFm profile",
+		"example": "/lf profile [@APPLICATION_NAME]",
+		"parameters": {
+			"user": {
+				"name": "user",
+				"description": "The profile of the user you want to be shown",
+				"type": "Discord User",
+				"required": false,
+				"default": "You"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "lf",
+			"alias": "lastfm"
+		},
+		"name": "recent",
+		"alias": "rc",
+		"description": "Shows a user's listening history on LastFm",
+		"example": "/lf recent [@APPLICATION_NAME]",
+		"parameters": {
+			"user": {
+				"name": "user",
+				"description": "The user you want to be shown for, what they recently listened to",
+				"type": "Discord User",
+				"required": false,
+				"default": "You"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "lf",
+			"alias": "lastfm"
+		},
+		"name": "reset",
+		"alias": "",
+		"description": "Allows you to reset the LastFm profile, used to display your data",
+		"example": "/lf reset",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "lf",
+			"alias": "lastfm"
+		},
+		"name": "set",
+		"alias": "",
+		"description": "Allows you to set the LastFm profile, used to display your data",
+		"example": "/lf [Somi-LastFm]",
+		"parameters": {
+			"lastfmname": {
+				"name": "lastfm-username",
+				"description": "Your username on LastFm (Your profile needs to be public, for bot to be able to dispaly your data)",
+				"type": "Text between 2 to 100 Characters",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "lf",
+			"alias": "lastfm"
+		},
+		"name": "top-albums",
+		"alias": "tal",
+		"description": "Displays the user's Top 10 listened to albums",
+		"example": "/lf top-albums [@APPLICATION_NAME] [Past Year]",
+		"parameters": {
+			"user": {
+				"name": "user",
+				"description": "The user you want the top album data to be shown for",
+				"type": "Discord User",
+				"required": false,
+				"default": "You"
+			},
+			"timeframe": {
+				"name": "time-period",
+				"description": "The time period you want the top artist data to be shown for",
+				"type": "Set Choice",
+				"required": false,
+				"default": "All Time"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "lf",
+			"alias": "lastfm"
+		},
+		"name": "top-artists",
+		"alias": "tar",
+		"description": "Displays the user's Top 10 listened to artists",
+		"example": "/lf top-artists [@APPLICATION_NAME] [Past Year]",
+		"parameters": {
+			"user": {
+				"name": "user",
+				"description": "The user you want the top artist data to be shown for",
+				"type": "Discord User",
+				"required": false,
+				"default": "You"
+			},
+			"timeframe": {
+				"name": "time-period",
+				"description": "The time period you want the top artist data to be shown for",
+				"type": "Set Choice",
+				"required": false,
+				"default": "All Time"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "lf",
+			"alias": "lastfm"
+		},
+		"name": "top-tracks",
+		"alias": "tt",
+		"description": "Displays the user's Top 10 listened to tracks",
+		"example": "/lf top-tracks [@APPLICATION_NAME] [Past Year]",
+		"parameters": {
+			"user": {
+				"name": "user",
+				"description": "The user you want the top tracks data to be shown for",
+				"type": "Discord User",
+				"required": false,
+				"default": "You"
+			},
+			"timeframe": {
+				"name": "time-period",
+				"description": "The time period you want the top tracks data to be shown for",
+				"type": "Set Choice",
+				"required": false,
+				"default": "All Time"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "lf",
+			"alias": "lastfm"
+		},
+		"name": "track",
+		"alias": "",
+		"description": "Shows a user's LastFm data for a song",
+		"example": "/lf track [Jeon Somi] [The Way] [@APPLICATION_NAME] [Past Year]",
+		"parameters": {
+			"artist": {
+				"name": "artist",
+				"description": "The artist of the song to be shown data for",
+				"type": "Text between 2 to 100 Characters",
+				"required": false,
+				"default": "The artist you're listening to"
+			},
+			"track": {
+				"name": "track",
+				"description": "The name of the track to be shown data for",
+				"type": "Text between 2 to 100 Characters",
+				"required": false,
+				"default": "The track you're listening to"
+			},
+			"user": {
+				"name": "user",
+				"description": "The user you want the track date to be shown for",
+				"type": "Discord User",
+				"required": false,
+				"default": "You"
+			},
+			"timeframe": {
+				"name": "time-period",
+				"description": "The time period you want the track data to be shown for",
+				"type": "Set Choice",
+				"required": false,
+				"default": "All Time"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "lyrics",
+		"alias": "genius",
+		"description": "Posts the link to lyrics of a song on Genius",
+		"example": "/lyrics [Jeon Somi] [Ice Cream]",
+		"parameters": {
+			"artist": {
+				"name": "artist",
+				"description": "The artist of the song to get lyrics for",
+				"type": "Text between 2 to 100 Characters",
+				"required": false,
+				"default": "The artist you're listening to"
+			},
+			"song": {
+				"name": "song",
+				"description": "The name of the song to get lyrics for",
+				"type": "Text between 2 to 100 Characters",
+				"required": false,
+				"default": "The song you're listening to"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "mute",
+		"alias": "",
+		"description": "Mutes a member for a certain amount of time",
+		"example": "/mute [@APPLICATION_NAME] [1w5d7m] [Was mean to Somi.]",
+		"parameters": {
+			"member": {
+				"name": "member",
+				"description": "The member to be muted",
+				"type": "Discord Server Member",
+				"required": true,
+				"default": ""
+			},
+			"time": {
+				"name": "time",
+				"description": "The time to mute the member for, in [y]ears & [w]eeks & [d]ays & [h]ours & [m]inutes & [s]econds)",
+				"type": "Time between 2 to 50 Characters, less than 28 days",
+				"required": true,
+				"default": ""
+			},
+			"reason": {
+				"name": "reason",
+				"description": "The reason why they were muted (this will NOT be DMed to the User)",
+				"type": "Time between 2 to 50 Characters",
+				"required": false,
+				"default": ""
+			}
+		},
+		"permissions": [
+			"Mute Members"
+		]
+	},
+	{
+		"parent": {},
+		"name": "open",
+		"alias": "",
+		"description": "Returns send message permissions from @everyone and the default role. Also unpauses invites",
+		"example": "/open",
+		"parameters": {},
+		"permissions": [
+			"Manage Guild",
+			"Manage Roles"
+		]
+	},
+	{
+		"parent": {},
+		"name": "ping",
+		"alias": "",
+		"description": "Shows the bot's ping and general performance data",
+		"example": "/ping",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "purge",
+		"alias": "clear",
+		"description": "Delete an amount of messages in this channel",
+		"example": "/purge [309]",
+		"parameters": {
+			"amount": {
+				"name": "amount",
+				"description": "The amount of messages to be deleted from this channel",
+				"type": "Integer between 1 to 1000",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "reload",
+		"alias": "",
+		"description": "Reloads various data on the bot without restarting it",
+		"example": "/reload",
+		"parameters": {},
+		"permissions": [
+			"Bot Owner"
+		]
+	},
+	{
+		"parent": {
+			"name": "reminder",
+			"alias": "alarm"
+		},
+		"name": "add",
+		"alias": "",
+		"description": "Make a message to be reminded about in a certain period of time",
+		"example": "/reminder add [1y5w7h3s] [Buy Somi's new album.]",
+		"parameters": {
+			"reminder_time": {
+				"name": "time",
+				"description": "The time to to be reminded in, in [y]ears & [w]eeks & [d]ays & [h]ours & [m]inutes & [s]econds)",
+				"type": "Time between 2 to 50 Characters, less than 10 years",
+				"required": true,
+				"default": ""
+			},
+			"reminder": {
+				"name": "message",
+				"description": "The message that will be provided as a reminder",
+				"type": "Text between 1 to 4096 Characters",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "reminder",
+			"alias": "alarm"
+		},
+		"name": "delete",
+		"alias": "",
+		"description": "Delete one of your reminder messages",
+		"example": "/reminder delete [1y5w7h3s]",
+		"parameters": {
+			"reminder_id": {
+				"name": "reminder-id",
+				"description": "The time to to be reminded in, in [y]ears & [w]eeks & [d]ays & [h]ours & [m]inutes & [s]econds)",
+				"type": "Set Choice or Integer between 100000000 to 999999999",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "reminder",
+			"alias": "alarm"
+		},
+		"name": "list",
+		"alias": "",
+		"description": "Posts a list of all of your reminders, sorted to the closest to now",
+		"example": "/reminder list",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "restart",
+		"alias": "",
+		"description": "Shuts down and starts the bot up again",
+		"example": "/restart",
+		"parameters": {},
+		"permissions": [
+			"Bot Owner"
+		]
+	},
+	{
+		"parent": {},
+		"name": "rules",
+		"alias": "",
+		"description": "Allows you to post a full rule",
+		"example": "/rules",
+		"parameters": {
+			"rule": {
+				"name": "rule",
+				"description": "The rule you want to have posted",
+				"type": "Set Choice",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": [
+			"Manage Guild"
+		]
+	},
+	{
+		"parent": {},
+		"name": "send",
+		"alias": "say",
+		"description": "Make the bot send a message",
+		"example": "/send [Jeon Somi is the best grill.] [#annoucments]",
+		"parameters": {
+			"message": {
+				"name": "message",
+				"description": "The message to be send by the bot",
+				"type": "Text between 1 to 1000 Characters",
+				"required": true,
+				"default": ""
+			},
+			"channel": {
+				"name": "channel",
+				"description": "The channel to send the message in",
+				"type": "Discord Text Channel or Thread",
+				"required": false,
+				"default": "Current Channel"
+			}
+		},
+		"permissions": [
+			"Manage Messages"
+		]
+	},
+	{
+		"parent": {},
+		"name": "serverinfo",
+		"alias": "si",
+		"description": "Gives you information, about this server",
+		"example": "/serverinfo",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "shutdown",
+		"alias": "",
+		"description": "Shuts down the bot, will require to manually start the bot again",
+		"example": "/shutdown",
+		"parameters": {},
+		"permissions": [
+			"Bot Owner"
+		]
+	},
+	{
+		"parent": {},
+		"name": "slowmode",
+		"alias": "",
+		"description": "Allows you to set or reset the delay for messages by regular members in a channel",
+		"example": "/slowmode [30]",
+		"parameters": {
+			"delay": {
+				"name": "delay",
+				"description": "How many seconds member will have to wait, between sending messages",
+				"type": "Integer between 0 to 21600 (6 hours)",
+				"required": true,
+				"default": ""
+			},
+			"channel": {
+				"name": "channel",
+				"description": "The channel to change slowmode in",
+				"type": "Discord Text Channel or Thread",
+				"required": false,
+				"default": "Current Channel"
+			}
+		},
+		"permissions": [
+			"Manage Channel"
+		]
+	},
+	{
+		"parent": {},
+		"name": "somi",
+		"alias": "",
+		"description": "Posts the truth about Somi",
+		"example": "/somi",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "spotify",
+		"alias": "sf",
+		"description": "Shows the song a member is listening to on Spotify",
+		"example": "/spotify [@APPLICATION_NAME] [Yes]",
+		"parameters": {
+			"member": {
+				"name": "member",
+				"description": "The member to show listening activity for. Requires: Spotify Activity on Discord and to be online",
+				"type": "Discord Server Member",
+				"required": false,
+				"default": "You"
+			},
+			"details": {
+				"name": "more-details",
+				"description": "Whether to show more details, about the song being listened to",
+				"type": "Set Choice",
+				"required": false,
+				"default": ""
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "time",
+		"alias": "",
+		"description": "Shows the time in any timezone right now.",
+		"example": "/time [Asia/Seoul]",
+		"parameters": {
+			"timezone": {
+				"name": "timezone",
+				"description": "An IANA timezone code, for the time to be dispalyed",
+				"type": "Set Choice",
+				"required": false,
+				"default": "Previously set timezone"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "unban",
+		"alias": "",
+		"description": "Unbans a user from this server",
+		"example": "/unban [@APPLICATION_NAME]",
+		"parameters": {
+			"user_id": {
+				"name": "user-id",
+				"description": "The user ID of the user to be unbanned",
+				"type": "Discord User ID",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": [
+			"Ban Members"
+		]
+	},
+	{
+		"parent": {},
+		"name": "unmute",
+		"alias": "",
+		"description": "Remove the remaning mute time from a member",
+		"example": "/unmute [@APPLICATION_NAME]",
+		"parameters": {
+			"member": {
+				"name": "member",
+				"description": "The member to be unmuted",
+				"type": "Discord Server Member",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": [
+			"Mute Members"
+		]
+	},
+	{
+		"parent": {},
+		"name": "userinfo",
+		"alias": "ui",
+		"description": "Gives information about the provided user",
+		"example": "/userinfo [@APPLICATION_NAME]",
+		"parameters": {
+			"user": {
+				"name": "user",
+				"description": "The user to get information for",
+				"type": "Discord User",
+				"required": false,
+				"default": "You"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "weather",
+		"alias": "",
+		"description": "Gives you the weather in any place from OpenWeatherMap",
+		"example": "/weather [Seoul]",
+		"parameters": {
+			"location": {
+				"name": "location",
+				"description": "The location to get weather for",
+				"type": "Text between 2 to 50 Characters",
+				"required": false,
+				"default": "Previously set weather"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "wolfram",
+		"alias": "",
+		"description": "Get a query answered by WolframAlpha",
+		"example": "/wolfram [Jeon Somi birthday]",
+		"parameters": {
+			"query": {
+				"name": "query",
+				"description": "A query you want to get answered",
+				"type": "Text between 2 to 200 Characters",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
+		"name": "youtube",
+		"alias": "yt",
+		"description": "Make a search on YouTube",
+		"example": "/youtube [Jeon Somi Birthday MV]",
+		"parameters": {
+			"query": {
+				"name": "query",
+				"description": "What you want to find a video for",
+				"type": "Text between 2 to 200 Characters",
+				"required": true,
+				"default": ""
+			}
+		},
+		"permissions": []
+	}
+]

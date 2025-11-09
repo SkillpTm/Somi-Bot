@@ -4,7 +4,7 @@ import nextcord.ext.commands as nextcord_C
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -16,18 +16,20 @@ class ConfigDefaultRole(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.config.subcommand(name="default-role", description="set/reset a role someone gets upon joining this server")
+    @ParentCommand.config.subcommand(Commands().data["config default-role"].name, Commands().data["config default-role"].description)
     async def config_default_role(
         self,
         interaction: nextcord.Interaction,
         *,
         action: str = nextcord.SlashOption(
-            description = "which action do you want to take",
+            Commands().data["config default-role"].parameters["action"].name,
+            Commands().data["config default-role"].parameters["action"].description,
             required = True,
             choices = ["Set", "Reset"]
         ),
         role: nextcord.Role = nextcord.SlashOption(
-            description = "the role to be set/reset",
+            Commands().data["config default-role"].parameters["role"].name,
+            Commands().data["config default-role"].parameters["role"].description,
             required = False
         )
     ) -> None:

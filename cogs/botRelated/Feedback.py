@@ -5,7 +5,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
-from lib.managers import Config, Logger
+from lib.managers import Commands, Config, Logger
 from lib.utilities import SomiBot
 
 
@@ -62,7 +62,7 @@ class Feedback(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name="feedback", description="give feedback to the bot, with a suggestion or submit a bug-report")
+    @nextcord.slash_command(Commands().data["feedback"].name, Commands().data["about"].description)
     async def feedback(self, interaction: nextcord.Interaction) -> None:
         """Sends out a modal to receive feedback"""
 

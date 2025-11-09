@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -13,7 +13,7 @@ class Bam(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name="bam", description="bams a member")
+    @nextcord.slash_command(Commands().data["bam"].name, Commands().data["avatar"].description)
     async def bam(self, interaction: nextcord.Interaction) -> None:
         """This command fake bans someone"""
 

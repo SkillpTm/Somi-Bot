@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -17,7 +17,7 @@ class ReminderList(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.reminder.subcommand(name="list", description="a list of all your reminders")
+    @ParentCommand.reminder.subcommand(Commands().data["reminder list"].name, Commands().data["reminder list"].description)
     async def reminder_list(self, interaction: nextcord.Interaction) -> None:
         """This command will list all reminders of a user"""
 

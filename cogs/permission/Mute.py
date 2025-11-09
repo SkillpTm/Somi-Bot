@@ -5,6 +5,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions, Get
+from lib.managers import Commands
 from lib.utilities import SomiBot
 
 
@@ -17,8 +18,8 @@ class Mute(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "mute",
-        description = "mutes a member",
+        Commands().data["mute"].name,
+        Commands().data["mute"].description,
         default_member_permissions = nextcord.Permissions(mute_members=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
@@ -28,17 +29,20 @@ class Mute(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         member: nextcord.Member = nextcord.SlashOption(
-            description = "the member to be muted",
+            Commands().data["mute"].parameters["member"].name,
+            Commands().data["mute"].parameters["member"].description,
             required = True
         ),
         time: str = nextcord.SlashOption(
-            description = "the time to mute the member for (input: xy | xw |xd | xh | xm | xs) example: 5d7h28s)",
+            Commands().data["mute"].parameters["time"].name,
+            Commands().data["mute"].parameters["time"].description,
             required = True,
             min_length = 2,
             max_length = 50
         ),
         reason: str = nextcord.SlashOption(
-            description = "reason for the mute",
+            Commands().data["mute"].parameters["reason"].name,
+            Commands().data["mute"].parameters["reason"].description,
             required = False,
             min_length = 2,
             max_length = 1000
@@ -69,8 +73,8 @@ class Mute(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "unmute",
-        description = "unmutes a member",
+        Commands().data["unmute"].name,
+        Commands().data["unmute"].description,
         default_member_permissions = nextcord.Permissions(mute_members=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
@@ -80,7 +84,8 @@ class Mute(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         member: nextcord.Member = nextcord.SlashOption(
-            description = "member to be unmuted",
+            Commands().data["unmute"].parameters["member"].name,
+            Commands().data["unmute"].parameters["member"].description,
             required = True
         )
     ) -> None:

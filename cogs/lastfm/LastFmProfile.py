@@ -6,7 +6,7 @@ import requests
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Get
-from lib.managers import Config, Keychain
+from lib.managers import Commands, Config, Keychain
 from lib.utilities import SomiBot
 
 
@@ -20,13 +20,14 @@ class LastFmProfile(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.lastfm.subcommand(name="profile", description="shows stats about someone's LastFm account")
+    @ParentCommand.lastfm.subcommand(Commands().data["lf profile"].name, Commands().data["lf profile"].description)
     async def lastfm_profile(
         self,
         interaction: nextcord.Interaction,
         *,
         user: nextcord.User = nextcord.SlashOption(
-            description = "the user you want to know stats about",
+            Commands().data["lf profile"].parameters["user"].name,
+            Commands().data["lf profile"].parameters["user"].description,
             required = False
         )
     ) -> None:

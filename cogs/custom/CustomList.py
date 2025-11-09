@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -16,9 +16,9 @@ class CustomList(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "cl",
-        description = "a list of all custom-commands on this server",
-        name_localizations = {country_tag:"custom-list" for country_tag in nextcord.Locale},
+        Commands().data["custom-list"].alias,
+        Commands().data["custom-list"].description,
+        name_localizations = {country_tag: Commands().data["custom-list"].name for country_tag in nextcord.Locale},
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )

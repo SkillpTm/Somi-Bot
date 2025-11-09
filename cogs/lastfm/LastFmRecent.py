@@ -6,7 +6,7 @@ import requests
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Get
-from lib.managers import Config, Keychain
+from lib.managers import Commands, Config, Keychain
 from lib.utilities import PageButtons, SomiBot
 
 
@@ -21,16 +21,17 @@ class LastFmRecent(nextcord_C.Cog):
     ####################################################################################################
 
     @ParentCommand.lastfm.subcommand(
-        name = "rc",
-        description = "shows your recently played songs on LastFm",
-        name_localizations = {country_tag:"recent" for country_tag in nextcord.Locale}
+        Commands().data["lf recent"].alias,
+        Commands().data["lf recent"].description,
+        name_localizations = {country_tag: Commands().data["lf recent"].name for country_tag in nextcord.Locale}
     )
     async def lastfm_recent(
         self,
         interaction: nextcord.Interaction,
         *,
         user: nextcord.User = nextcord.SlashOption(
-            description = "the user you want the recent tracks of",
+            Commands().data["lf recent"].parameters["user"].name,
+            Commands().data["lf recent"].parameters["user"].description,
             required = False
         )
     ) -> None:

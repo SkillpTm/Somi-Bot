@@ -5,8 +5,8 @@ import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
 from lib.helpers import EmbedFunctions, Get
-from lib.managers import Config, Singleton
-from lib.utilities import Lists, SomiBot
+from lib.managers import Commands, Config, Singleton
+from lib.utilities import SomiBot
 
 
 
@@ -18,8 +18,8 @@ class Reload(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "reload",
-        description = "reload the entire bot",
+        Commands().data["reload"].name,
+        Commands().data["reload"].description,
         guild_ids = [Config().SUPPORT_SERVER_ID],
         default_member_permissions = nextcord.Permissions(administrator=True),
         integration_types = [nextcord.IntegrationType.guild_install],
@@ -34,7 +34,7 @@ class Reload(nextcord_C.Cog):
         self.client.is_setup = False
 
         Singleton.reset()
-        self.client.lists = Lists(Config().APPLICATION_ID)
+        await self.client.user.edit(username=Config().APPLICATION_NAME, avatar=nextcord.File(Config().APPLICATION_ICON_PATH), banner=nextcord.File(Config().APPLICATION_BANNER_PATH))
         self.client.change_presence(nextcord.Activity(type=nextcord.ActivityType.listening, name=Config().ACTIVITY_NAME))
 
         # crawl through ./cogs/ 's subfolders to reload all cogs

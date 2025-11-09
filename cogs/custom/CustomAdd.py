@@ -6,7 +6,7 @@ import nextcord.ext.commands as nextcord_C
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Get
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -18,19 +18,21 @@ class CustomAdd(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.custom.subcommand(name="add", description="add a custom-command to this server")
+    @ParentCommand.custom.subcommand(Commands().data["custom add"].name, Commands().data["custom add"].description)
     async def custom_add(
         self,
         interaction: nextcord.Interaction,
         *,
         name: str = nextcord.SlashOption(
-            description = "new custom-command name",
+            Commands().data["custom add"].parameters["name"].name,
+            Commands().data["custom add"].parameters["name"].description,
             required = True,
             min_length = 2,
             max_length = 50
         ),
         text: str = nextcord.SlashOption(
-            description = "the content of the new custom-command",
+            Commands().data["custom add"].parameters["text"].name,
+            Commands().data["custom add"].parameters["text"].description,
             required = True,
             min_length = 2,
             max_length = 1000

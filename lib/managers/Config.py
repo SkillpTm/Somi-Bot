@@ -18,7 +18,10 @@ class Config(metaclass=Singleton):
 
         # Meta values
         self.ACTIVITY_NAME: str = config_data["ACTIVITY_NAME"]
+        self.APPLICATION_BANNER_PATH: str = config_data["APPLICATION_BANNER_PATH"]
+        self.APPLICATION_ICON_PATH: str = config_data["APPLICATION_ICON_PATH"]
         self.APPLICATION_ID: int = config_data["APPLICATION_ID"]
+        self.APPLICATION_NAME: str = config_data["APPLICATION_NAME"]
         self.MAX_MESSAGES_CACHE: int = config_data["MAX_MESSAGES_CACHE"]
         self.POSTGRES_POOL_MAX_SIZE: int = config_data["POSTGRES_POOL_MAX_SIZE"]
         self.OWNER_ID: int = config_data["OWNER_ID"]

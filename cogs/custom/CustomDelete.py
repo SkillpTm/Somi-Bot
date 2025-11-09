@@ -4,7 +4,7 @@ import nextcord.ext.commands as nextcord_C
 from cogs.basic.ParentCommand import ParentCommand
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Get
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -16,13 +16,14 @@ class CustomDelete(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @ParentCommand.custom.subcommand(name="delete", description="delete a custom-command")
+    @ParentCommand.custom.subcommand(Commands().data["custom delete"].name, Commands().data["custom delete"].description)
     async def custom_delete(
         self,
         interaction: nextcord.Interaction,
         *,
         name: str = nextcord.SlashOption(
-            description = "custom-command to be deleted",
+            Commands().data["custom delete"].parameters["name"].name,
+            Commands().data["custom delete"].parameters["name"].description,
             required = True,
             min_length = 2,
             max_length = 50

@@ -3,8 +3,8 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
-from lib.managers import Config
-from lib.utilities import Lists, SomiBot
+from lib.managers import Commands, Config, Lists
+from lib.utilities import SomiBot
 
 
 
@@ -16,10 +16,10 @@ class Send(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "say",
-        description = "sends a message in a channel",
+        Commands().data["send"].alias,
+        Commands().data["send"].description,
+        name_localizations = {country_tag: Commands().data["send"].name for country_tag in nextcord.Locale},
         default_member_permissions = nextcord.Permissions(manage_messages=True),
-        name_localizations = {country_tag:"send" for country_tag in nextcord.Locale},
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
@@ -28,15 +28,17 @@ class Send(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         message: str = nextcord.SlashOption(
-            description = "the message to be send by the bot",
+            Commands().data["send"].parameters["message"].name,
+            Commands().data["send"].parameters["message"].description,
             required = True,
             min_length = 1,
             max_length = 1000
         ),
         channel: nextcord.TextChannel | nextcord.Thread = nextcord.SlashOption(
-            channel_types = Lists.TEXT_CHANNELS,
-            description = "channel in which the message will be send",
-            required = False
+            Commands().data["send"].parameters["channel"].name,
+            Commands().data["send"].parameters["channel"].description,
+            required = False,
+            channel_types = Lists().TEXT_CHANNELS
         )
     ) -> None:
         """This command allows a user to send a message with the bot."""
@@ -70,8 +72,8 @@ class Send(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "edit",
-        description = "edits a bot message in a channel",
+        Commands().data["edit"].name,
+        Commands().data["edit"].description,
         default_member_permissions = nextcord.Permissions(manage_messages=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
@@ -81,13 +83,15 @@ class Send(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         message_id: str = nextcord.SlashOption(
-            description = "ID of the message to be edited",
+            Commands().data["edit"].parameters["message_id"].name,
+            Commands().data["edit"].parameters["message_id"].description,
             required = True,
             min_length = 18,
             max_length = 19
         ),
         message: str = nextcord.SlashOption(
-            description = "the new message to be edited by the bot",
+            Commands().data["edit"].parameters["message"].name,
+            Commands().data["edit"].parameters["message"].description,
             required = True,
             min_length = 1,
             max_length = 1000
@@ -105,7 +109,7 @@ class Send(nextcord_C.Cog):
 
         # check all channels for in which one the message was send
         for channel in await interaction.guild.fetch_channels():
-            if not channel.type in Lists.TEXT_CHANNELS:
+            if not channel.type in Lists().TEXT_CHANNELS:
                 continue
 
             try:

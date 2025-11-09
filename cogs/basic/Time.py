@@ -6,7 +6,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Get
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -18,13 +18,14 @@ class Time(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name="time", description="shows the current time in any timezone")
+    @nextcord.slash_command(Commands().data["time"].name, Commands().data["time"].description)
     async def time(
         self,
         interaction: nextcord.Interaction,
         *,
         timezone: str = nextcord.SlashOption(
-            description = "the IANA code timezone, you want the time of",
+            Commands().data["time"].parameters["timezone"].name,
+            Commands().data["time"].parameters["timezone"].description,
             required = False,
             min_length = 2,
             max_length = 100

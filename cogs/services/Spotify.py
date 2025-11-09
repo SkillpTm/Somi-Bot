@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 import spotipy
 
 from lib.helpers import EmbedFunctions
-from lib.managers import Config, Keychain
+from lib.managers import Commands, Config, Keychain
 from lib.utilities import SomiBot
 
 
@@ -16,9 +16,9 @@ class Spotify(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "sf",
-        description = "tells you what someone is listening to on Spotify",
-        name_localizations = {country_tag:"spotify" for country_tag in nextcord.Locale},
+        Commands().data["spotify"].alias,
+        Commands().data["spotify"].description,
+        name_localizations = {country_tag: Commands().data["spotify"].name for country_tag in nextcord.Locale},
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
@@ -27,11 +27,13 @@ class Spotify(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         member: nextcord.Member = nextcord.SlashOption(
-            description = "the user listening to Spotify",
+            Commands().data["spotify"].parameters["member"].name,
+            Commands().data["spotify"].parameters["member"].description,
             required = False
         ),
         details: str = nextcord.SlashOption(
-            description = "do you want to get additional information on the song and artist",
+            Commands().data["spotify"].parameters["details"].name,
+            Commands().data["spotify"].parameters["details"].description,
             required = False,
             choices = ["Yes"]
         )

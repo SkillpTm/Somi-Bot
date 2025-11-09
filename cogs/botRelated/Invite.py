@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -13,7 +13,7 @@ class Invite(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name="invite", description="posts the bot's invite link")
+    @nextcord.slash_command(Commands().data["invite"].name, Commands().data["invite"].description)
     async def invite(self, interaction: nextcord.Interaction) -> None:
         """This command posts the invite link for the bot"""
 

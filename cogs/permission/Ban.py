@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions, Get
-from lib.managers import Logger
+from lib.managers import Commands, Logger
 from lib.utilities import SomiBot
 
 
@@ -15,8 +15,8 @@ class Ban(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "ban",
-        description = "bans a member",
+        Commands().data["ban"].name,
+        Commands().data["ban"].description,
         default_member_permissions = nextcord.Permissions(ban_members=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
@@ -26,18 +26,21 @@ class Ban(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         member: nextcord.Member = nextcord.SlashOption(
-            description = "member to be banned",
+            Commands().data["ban"].parameters["member"].name,
+            Commands().data["ban"].parameters["member"].description,
             required = True
         ),
         delete_message_hours: int = nextcord.SlashOption(
-            description = "the amount of hours someone's messages will get deleted for (default=1)",
+            Commands().data["ban"].parameters["delete_message_hours"].name,
+            Commands().data["ban"].parameters["delete_message_hours"].description,
             required = False,
             min_value = 0,
             max_value = 168,
             default = 1
         ),
         reason: str = nextcord.SlashOption(
-            description = "reason for the ban",
+            Commands().data["ban"].parameters["reason"].name,
+            Commands().data["ban"].parameters["reason"].description,
             required = False,
             min_length = 2,
             max_length = 1000
@@ -70,8 +73,8 @@ class Ban(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "unban",
-        description = "unbans a user",
+        Commands().data["unban"].name,
+        Commands().data["unban"].description,
         default_member_permissions = nextcord.Permissions(ban_members=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
@@ -81,7 +84,8 @@ class Ban(nextcord_C.Cog):
         interaction: nextcord.Interaction,
         *,
         user_id: str = nextcord.SlashOption(
-            description = "user ID of the user to be unbanned",
+            Commands().data["unban"].parameters["user_id"].name,
+            Commands().data["unban"].parameters["user_id"].description,
             required = True,
             min_length = 18,
             max_length = 19

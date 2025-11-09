@@ -4,7 +4,7 @@ import random
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -16,7 +16,7 @@ class Coinflip(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name="coinflip", description="does a coinflip")
+    @nextcord.slash_command(Commands().data["coinflip"].name, Commands().data["coinflip"].description)
     async def coinflip(self, interaction: nextcord.Interaction) -> None:
         """This command does a coinflip with a small animation"""
 

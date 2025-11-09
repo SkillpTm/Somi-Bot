@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
-from lib.managers import Config
+from lib.managers import Commands, Config
 from lib.utilities import SomiBot
 
 
@@ -15,7 +15,7 @@ class About(nextcord_C.Cog):
 
     ####################################################################################################
 
-    @nextcord.slash_command(name="about", description="tells you about Somi bot")
+    @nextcord.slash_command(Commands().data["about"].name, Commands().data["about"].description)
     async def about(self, interaction: nextcord.Interaction) -> None:
         """This command outputs various information about the bot to the user"""
 

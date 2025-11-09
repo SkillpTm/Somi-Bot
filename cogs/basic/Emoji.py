@@ -3,6 +3,7 @@ import nextcord.ext.commands as nextcord_C
 import requests
 
 from lib.helpers import EmbedFunctions
+from lib.managers import Commands
 from lib.utilities import SomiBot
 
 
@@ -15,16 +16,17 @@ class Emoji(nextcord_C.Cog):
     ####################################################################################################
 
     @nextcord.slash_command(
-        name = "emote",
-        description = "make an emoji larger",
-        name_localizations = {country_tag:"emoji" for country_tag in nextcord.Locale}
+        Commands().data["emoji"].alias,
+        Commands().data["emoji"].description,
+        name_localizations = {country_tag: Commands().data["emoji"].name for country_tag in nextcord.Locale}
     )
     async def emoji(
         self,
         interaction: nextcord.Interaction,
         *,
         emoji: str = nextcord.SlashOption(
-            description = "your emoji",
+            Commands().data["emoji"].parameters["emoji"].name,
+            Commands().data["emoji"].parameters["emoji"].description,
             required = True,
             min_length = 2,
             max_length = 100

@@ -4,7 +4,7 @@ import spotipy
 
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands, Config, Keychain
-from lib.utilities import SomiBot
+from lib.modules import SomiBot
 
 
 

@@ -8,7 +8,7 @@ import requests
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Webscrape
 from lib.managers import Commands, Config, Keychain, Lists
-from lib.utilities import SomiBot
+from lib.modules import SomiBot
 
 
 

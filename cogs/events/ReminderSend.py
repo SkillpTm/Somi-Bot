@@ -5,7 +5,7 @@ import requests
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
 from lib.managers import Config, Logger
-from lib.utilities import SomiBot
+from lib.modules import SomiBot
 
 
 

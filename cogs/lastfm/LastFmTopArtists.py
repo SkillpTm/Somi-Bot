@@ -5,7 +5,7 @@ import requests
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands, Config, Keychain, Lists
-from lib.utilities import PageButtons, SomiBot
+from lib.modules import PageButtons, SomiBot
 
 
 

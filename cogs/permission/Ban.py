@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands, Logger
-from lib.utilities import SomiBot
+from lib.modules import SomiBot
 
 
 

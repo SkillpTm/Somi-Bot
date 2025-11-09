@@ -4,7 +4,7 @@ import time
 import requests
 
 from lib.managers.Keychain import Keychain
-from lib.utilities.SomiBot import SomiBot
+from lib.modules.SomiBot import SomiBot
 
 ####################################################################################################
 

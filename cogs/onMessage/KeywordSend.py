@@ -6,7 +6,7 @@ import nextcord.ext.commands as nextcord_C
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions
 from lib.managers import Config, Logger
-from lib.utilities import SomiBot
+from lib.modules import SomiBot
 
 
 class KeywordSend(nextcord_C.Cog):

@@ -5,7 +5,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands, Logger
-from lib.utilities import OptionsButton, SomiBot
+from lib.modules import OptionsButton, SomiBot
 
 
 

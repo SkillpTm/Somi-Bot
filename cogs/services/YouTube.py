@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands, Keychain
-from lib.utilities import PageButtons, SomiBot
+from lib.modules import PageButtons, SomiBot
 
 
 

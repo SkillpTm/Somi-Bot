@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.dbModules import DBHandler
-from lib.utilities import SomiBot
+from lib.modules import SomiBot
 
 
 

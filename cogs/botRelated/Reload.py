@@ -6,7 +6,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands, Config, Singleton
-from lib.utilities import SomiBot
+from lib.modules import SomiBot
 
 
 

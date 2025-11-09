@@ -4,7 +4,7 @@ import nextcord.ext.commands as nextcord_C
 from lib.dbModules import DBHandler
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands
-from lib.utilities import SomiBot, YesNoButtons
+from lib.modules import SomiBot, YesNoButtons
 
 class ReminderDelete(nextcord_C.Cog):
 

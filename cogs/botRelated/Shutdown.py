@@ -4,7 +4,7 @@ import nextcord.ext.application_checks as nextcord_AC
 
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands, Config
-from lib.utilities import SomiBot, YesNoButtons
+from lib.modules import SomiBot, YesNoButtons
 
 
 

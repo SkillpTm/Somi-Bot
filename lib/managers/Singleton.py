@@ -16,4 +16,5 @@ class Singleton(type):
             Singleton._instances = {}
             return
 
-        Singleton._instances.pop(reset_class)
+        if reset_class in Singleton._instances:
+            Singleton._instances.pop(reset_class)

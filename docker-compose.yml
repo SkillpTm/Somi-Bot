@@ -1,0 +1,47 @@
+services:
+  bot-db:
+    container_name: somi_mariadb
+    image: mariadb:12.0.2-noble
+    restart: unless-stopped
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    environment:
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  bot-dev:
+    build: .
+    container_name: somi-bot-dev
+    depends_on:
+      bot-db:
+        condition: service_healthy
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    profiles:
+      - dev
+
+  bot-prod:
+    build: .
+    container_name: somi-bot-prod
+    restart: unless-stopped
+    depends_on:
+      bot-db:
+        condition: service_healthy
+    env_file:
+      - .env
+    profiles:
+      - prod
+
+volumes:
+  mariadb_data:

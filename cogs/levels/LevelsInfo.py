@@ -70,7 +70,7 @@ class LevelsInfo(nextcord_C.Cog):
 
                 [
                     "Total XP:",
-                    f"`{f"{await db.Level.XP.get({db.Level.SERVER: interaction.guild.id, db.Level.USER: interaction.user.id}):,}"}`",
+                    f"`{f"{total_xp:,}"}`",
                     True
                 ],
 

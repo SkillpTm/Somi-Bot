@@ -22,9 +22,9 @@ class Query(enum.Enum):
         queries: dict[str, str],
         table: str = "",
         *,
-        data: dict[str, str] = {},
+        data: dict[str, int | str | None] = {},
         select: list[str] = [],
-        where: dict[str, str] = [],
+        where: dict[str, int | str | None] = [],
         order_by: str = None,
         order: Order = Order.NONE,
         limit: int = 1
@@ -33,9 +33,11 @@ class Query(enum.Enum):
 
         query = queries[self.value]
         query = query.replace(":_table", table)
-        query = query.replace(":_columns", ", ".join(data.keys())).replace(":_values", ", ".join(["%s"] * len(data)))
+        query = query.replace(":_columns", ", ".join(data.keys()))
+        query = query.replace(":_values", ", ".join(["%s"] * len(data)))
+        query = query.replace(":_set", " , ".join([f"{key} = %s"for key in data.keys()]))
         query = query.replace(":_selects", ", ".join(select))
-        query = query.replace(":_where_columns", ", ".join(where.keys())).replace(":_where_values", ", ".join(["%s"] * len(where)))
+        query = query.replace(":_where", " AND ".join([f"{key} = %s"for key in where.keys()]))
         query = query.replace(":_order", f"{order_by or '(SELECT NULL)'} {order.value}")
         query = query.replace(":_limit", str(limit))
 

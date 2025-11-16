@@ -112,7 +112,7 @@ class Database(metaclass=Singleton):
             async with con.cursor() as cur:
                 try:
                     await con.begin()
-                    await cur.execute(formated_query, [*data.values(), *where.values()])
+                    await cur.execute(formated_query, (*data.values(), *where.values()))
 
                     if cur.rowcount > limit:
                         await con.rollback()
@@ -127,7 +127,7 @@ class Database(metaclass=Singleton):
                     print(e)
                     await con.rollback()
                     return False
-                
+
         return False
 
     ####################################################################################################
@@ -157,8 +157,12 @@ class Database(metaclass=Singleton):
 
         async with self._pool.acquire() as con:
             async with con.cursor() as cur:
-                await cur.execute(formated_query, list(where.values()))
-                return (await cur.fetchone() or {}).get(select, None)
+                await cur.execute(formated_query, tuple(where.values()))
+                result = (await cur.fetchone() or {}).get(select, None)
+
+            await con.commit()
+
+        return result
 
     ####################################################################################################
 
@@ -187,8 +191,12 @@ class Database(metaclass=Singleton):
 
         async with self._pool.acquire() as con:
             async with con.cursor() as cur:
-                await cur.execute(formated_query, list(where.values()))
-                return await cur.fetchone()
+                await cur.execute(formated_query, tuple(where.values()))
+                result = await cur.fetchone()
+
+            await con.commit()
+
+        return result
 
     ####################################################################################################
 
@@ -224,6 +232,8 @@ class Database(metaclass=Singleton):
 
         async with self._pool.acquire() as con:
             async with con.cursor() as cur:
-                await cur.execute(formated_query, list(where.values()))
+                await cur.execute(formated_query, tuple(where.values()))
                 async for row in cur:
                     yield row
+
+            await con.commit()

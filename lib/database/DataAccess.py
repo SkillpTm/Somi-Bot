@@ -155,7 +155,7 @@ class DataAccessMixin():
         return await Database().execute(
             self.get_table(),
             Query.UPDATE,
-            data = {key.value: value for key, value in where.items()},
+            data = {key.value: value for key, value in data.items()},
             where = {key.value: value for key, value in where.items()}
         )
 

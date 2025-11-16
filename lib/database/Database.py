@@ -79,7 +79,7 @@ class Database(metaclass=Singleton):
 
         end = time.perf_counter()
 
-        return int(round((end-start) * 1000))
+        return round((end-start) * 1000, 2)
 
     ####################################################################################################
 

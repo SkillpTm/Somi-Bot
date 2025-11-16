@@ -21,11 +21,11 @@ class Ping(nextcord_C.Cog):
     async def ping(self, interaction: nextcord.Interaction) -> None:
         """This command shows the ping and some general stats about the bot"""
 
-        start = time.time()
+        start = time.perf_counter()
 
         await interaction.response.send_message(content="Pong! 🏓")
 
-        end = time.time()
+        end = time.perf_counter()
 
         cpu_usage = round(float(subprocess.run("top -bn1 | grep 'Cpu(s)' | awk '{print 100 - $8}'", shell=True, check=False, capture_output=True, text=True).stdout.strip().replace(",", ".")), 1)
         mem_usage = round(float(subprocess.run("top -bn1 | grep 'MiB Mem' | awk '{print 100 - ((($6 + $10)/$4) * 100)}'", shell=True, check=False, capture_output=True, text=True).stdout.strip().replace(",", ".")), 1)

@@ -379,12 +379,12 @@
 		"name": "edit",
 		"alias": "",
 		"description": "Posts the response text of a custom command",
-		"example": "/edit [1345296439848341544] [Chaotic & Confused]",
+		"example": "/edit [https://canary.discord.com/channels/769668499605159998/995733745137107004/1199068019436027986] [Chaotic & Confused]",
 		"parameters": {
-			"message_id": {
-				"name": "message-id",
-				"description": "The ID of a message send by the bot",
-				"type": "Discord Message ID",
+			"link": {
+				"name": "link",
+				"description": "The link of a message send by the bot",
+				"type": "Discord Message Link",
 				"required": true,
 				"default": ""
 			},

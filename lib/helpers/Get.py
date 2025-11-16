@@ -2,7 +2,6 @@ import re
 
 import nextcord
 import nextcord.ext.application_checks as nextcord_AC
-import nextcord.ext.commands as nextcord_C
 
 
 
@@ -102,21 +101,6 @@ class Get():
                 input_string[index] = CHAR_AND_REPLACMENT[char]
 
         return input_string
-
-    ####################################################################################################
-
-    @staticmethod
-    async def message_object_from_link(link: str, client: nextcord_C.Bot) -> nextcord.Message | None:
-        """Generates a message object from a discord message link input"""
-
-        _, channel_id, message_id = re.search(r"/channels/(\d+)/(\d+)/(\d+)", link).groups()
-
-        try:
-            message = await (await client.fetch_channel(channel_id)).fetch_message(message_id)
-        except (nextcord.NotFound, nextcord.Forbidden):
-            message = None
-
-        return message
 
     ####################################################################################################
 

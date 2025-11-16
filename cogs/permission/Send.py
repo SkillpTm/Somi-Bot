@@ -82,12 +82,12 @@ class Send(nextcord_C.Cog):
         self,
         interaction: nextcord.Interaction,
         *,
-        message_id: str = nextcord.SlashOption(
-            Commands().data["edit"].parameters["message_id"].name,
-            Commands().data["edit"].parameters["message_id"].description,
+        link: str = nextcord.SlashOption(
+            Commands().data["edit"].parameters["link"].name,
+            Commands().data["edit"].parameters["link"].description,
             required = True,
-            min_length = 18,
-            max_length = 19
+            min_length = 80,
+            max_length = 110
         ),
         message: str = nextcord.SlashOption(
             Commands().data["edit"].parameters["message"].name,
@@ -101,31 +101,16 @@ class Send(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        message_object: nextcord.Message = None
-
-        if not message_id.isdigit():
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{message_id}` isn't a valid message ID."), ephemeral=True)
+        if not (message_object := await self.client.get_message_from_link(link)):
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{link}` isn't a valid message link."), ephemeral=True)
             return
 
-        # check all channels for in which one the message was send
-        for channel in await interaction.guild.fetch_channels():
-            if not channel.type in Lists().TEXT_CHANNELS:
-                continue
-
-            try:
-                message_object = await channel.fetch_message(int(message_id))
-                correct_channel = channel
-                break
-            except nextcord.NotFound:
-                pass
-
-        if not message_object or message_object.author.id != self.client.user.id:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{message_id}` isn't an id of a message sent by the bot in this server."), ephemeral=True)
+        if message_object.author.id != self.client.user.id or message_object.guild.id != interaction.guild.id:
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{link}` isn't the link of a message sent by the bot in this server."), ephemeral=True)
             return
 
         await message_object.edit(content=message)
-
-        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Message edited in: {correct_channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Message edited in: {message_object.channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
 
         if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
             return
@@ -134,7 +119,7 @@ class Send(nextcord_C.Cog):
             color = Config().PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
-            description = f"{interaction.user.mention} edited a bot message in: {correct_channel.mention} - [Link]({message_object.jump_url})",
+            description = f"{interaction.user.mention} edited a bot message in: {message_object.chann.mention} - [Link]({message_object.jump_url})",
             fields = [
                 [
                     "Before:",

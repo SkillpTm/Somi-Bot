@@ -1,5 +1,6 @@
 import asyncio
 import os
+import re
 import sys
 import time
 
@@ -326,6 +327,23 @@ class SomiBot(nextcord_C.Bot):
         await asyncio.gather(
             self.get_cog("ConfigValidate").on_delete(thread)
         )
+
+    ####################################################################################################
+
+    async def get_message_from_link(self, link: str) -> nextcord.Message | None:
+        """Generates a message object from a discord message link input"""
+
+        _, channel_id, message_id = matches.groups() if (matches := re.search(r"/channels/(\d+)/(\d+)/(\d+)", link)) else (None, None, None)
+
+        if not channel_id or not message_id:
+            return None
+
+        try:
+            message = await (await self.fetch_channel(channel_id)).fetch_message(message_id)
+        except (nextcord.NotFound, nextcord.Forbidden):
+            message = None
+
+        return message
 
     ####################################################################################################
 

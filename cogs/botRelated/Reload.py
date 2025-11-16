@@ -35,7 +35,7 @@ class Reload(nextcord_C.Cog):
 
         Singleton.reset()
         await self.client.user.edit(username=Config().APPLICATION_NAME, avatar=nextcord.File(Config().APPLICATION_ICON_PATH), banner=nextcord.File(Config().APPLICATION_BANNER_PATH))
-        self.client.change_presence(nextcord.Activity(type=nextcord.ActivityType.listening, name=Config().ACTIVITY_NAME))
+        await self.client.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.listening, name=Config().ACTIVITY_NAME))
 
         # crawl through ./cogs/ 's subfolders to reload all cogs
         for folder in os.listdir("./cogs/"):

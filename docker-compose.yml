@@ -1,10 +1,12 @@
 services:
   bot-db:
-    container_name: somi_mariadb
+    container_name: somi-bot-db
     image: mariadb:12.0.2-noble
     restart: unless-stopped
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - mariadb_data:/var/lib/mariadb
+      - ./debug/logs:/var/log/mariadb
+      - ./mariadb.cnf:/etc/mysql/mariadb.conf.d/mariadb.cnf
     ports:
       - "${DB_PORT}:${DB_PORT}"
     environment:
@@ -40,6 +42,8 @@ services:
         condition: service_healthy
     env_file:
       - .env
+    volumes:
+      - ./debug/logs:/app/debug/logs
     profiles:
       - prod
 

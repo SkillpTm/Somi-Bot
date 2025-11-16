@@ -4,7 +4,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
 
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands, Config, Keychain
 from lib.modules import SomiBot
 
@@ -88,7 +88,7 @@ class Lyrics(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = Config().GENIUS_COLOR,
             image = song_data["response"]["song"]["song_art_image_url"],
-            title = f"Click Here: {song_data['response']['song']['title']}",
+            title = f"Click Here: {Get.markdown_safe(song_data['response']['song']['title'])}",
             title_url = song_data["response"]["song"]["url"],
             footer = "Lyrics powered by Genius",
             footer_icon = Config().GENIUS_ICON

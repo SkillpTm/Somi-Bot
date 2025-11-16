@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands
 from lib.modules import SomiBot
@@ -36,7 +36,7 @@ class CustomCommand(nextcord_C.Cog):
 
         name = Get.clean_input_command(name)
 
-        if not (commandtext := await (await DBHandler(self.client.database, server_id=interaction.guild.id).custom_command()).get_text(name)):
+        if not (commandtext := await db.CustomCommand.TEXT.get({db.CustomCommand.NAME: name, db.CustomCommand.SERVER: interaction.guild.id})):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"There is no custom-command with the name `{name}`.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
             return
 
@@ -55,7 +55,7 @@ class CustomCommand(nextcord_C.Cog):
         await interaction.response.send_autocomplete(
             Get.autocomplete_dict_from_search_string(
                 name,
-                {command: command for command in await (await DBHandler(self.client.database, server_id=interaction.guild.id).custom_command()).get_list()}
+                {db.CustomCommand.NAME.retrieve(entry): db.CustomCommand.NAME.retrieve(entry) async for entry in db.CustomCommand.NAME.get_multiple(where={db.CustomCommand.SERVER: interaction.guild.id})}
             )
         )
 

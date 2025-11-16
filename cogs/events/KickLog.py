@@ -4,7 +4,7 @@ import time
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Logger
 from lib.modules import SomiBot
@@ -24,7 +24,7 @@ class KickLog(nextcord_C.Cog):
     async def kick_log(self, member: nextcord.Member) -> None:
         """A log that activates, when someone gets kicked and an audit log is set"""
 
-        if not (audit_log := member.guild.get_channel(await (await DBHandler(self.client.database, server_id=member.guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := member.guild.get_channel(await db.Server.AUDIT_LOG.get(member.guild.id) or 0)):
             return
 
         entry: nextcord.AuditLogEntry = None
@@ -71,8 +71,7 @@ class KickLog(nextcord_C.Cog):
         )
 
         await audit_log.send(embed=embed)
-
-        await (await DBHandler(self.client.database).telemetry()).increment("kick log")
+        await db.Telemetry.AMOUNT.increment("kick log")
 
 
 

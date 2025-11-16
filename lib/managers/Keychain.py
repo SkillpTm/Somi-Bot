@@ -15,6 +15,12 @@ class Keychain(metaclass=Singleton):
     def __init__(self):
         self.DISCORD_TOKEN: str = os.getenv("DISCORD_TOKEN")
 
+        self.DB_HOST: str = os.getenv("DB_HOST")
+        self.DB_PORT: int = int(os.getenv("DB_PORT"))
+        self.DB_USER: str = os.getenv("DB_USER")
+        self.DB_PASSWORD: str = os.getenv("DB_PASSWORD")
+        self.DB_NAME: str = os.getenv("DB_NAME")
+
         self.SPOTIPY_CLIENT_ID: str = os.getenv("SPOTIPY_CLIENT_ID")
         self.SPOTIPY_CLIENT_SECRET: str = os.getenv("SPOTIPY_CLIENT_SECRET")
         self.SPOTIPY_REDIRECT_URI: str = os.getenv("SPOTIPY_REDIRECT_URI")

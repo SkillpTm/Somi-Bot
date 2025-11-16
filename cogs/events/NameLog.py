@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Logger
 from lib.modules import SomiBot
@@ -26,7 +26,7 @@ class NameLog(nextcord_C.Cog):
         if (member_before.display_name == member_after.display_name) and (member_before.global_name == member_after.global_name) and (member_before.name == member_after.name):
             return
 
-        if not (audit_log := member_before.guild.get_channel(await (await DBHandler(self.client.database, server_id=member_before.guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := member_before.guild.get_channel(await db.Server.AUDIT_LOG.get(member_before.guild.id) or 0)):
             return
 
         if member_before.name != member_after.name:
@@ -74,8 +74,7 @@ class NameLog(nextcord_C.Cog):
         )
 
         await audit_log.send(embed=embed)
-
-        await (await DBHandler(self.client.database).telemetry()).increment("name log")
+        await db.Telemetry.AMOUNT.increment("name log")
 
 
 

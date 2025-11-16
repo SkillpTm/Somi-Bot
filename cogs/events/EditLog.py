@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Logger
 from lib.modules import SomiBot
@@ -28,10 +28,10 @@ class EditLog(nextcord_C.Cog):
         if message_before.author.id == self.client.user.id:
             return
 
-        if not (audit_log := message_before.guild.get_channel(await (await DBHandler(self.client.database, server_id=message_before.guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := message_before.guild.get_channel(await db.Server.AUDIT_LOG.get(message_before.guild.id) or 0)):
             return
 
-        if message_before.channel.id in await (await DBHandler(self.client.database, server_id=message_before.guild.id).hidden_channel()).get_list():
+        if await db.HiddenChannel._.get_entry(message_before.channel.id):
             return
 
         # content may be the same, if an embed changed
@@ -60,7 +60,7 @@ class EditLog(nextcord_C.Cog):
         if file_urls:
             await inital_response.reply(content=file_urls, mention_author=False)
 
-        await (await DBHandler(self.client.database).telemetry()).increment("edit log")
+        await db.Telemetry.AMOUNT.increment("edit log")
 
     ####################################################################################################
 

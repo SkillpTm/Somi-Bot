@@ -1,8 +1,10 @@
 import asyncio
+import time
+
 import nextcord.ext.commands as nextcord_C
 import requests
 
-from lib.dbModules import DBHandler
+from lib.database import db, Order
 from lib.helpers import EmbedFunctions
 from lib.managers import Config, Logger
 from lib.modules import SomiBot
@@ -40,38 +42,34 @@ class ReminderSend(nextcord_C.Cog):
         If the current time is larger or equal to the reminder time, then the reminder gets send to the user and deleted from the db.
         """
 
-        reminders = await (await DBHandler(self.client.database).reminder()).get_upcoming() 
-
-        for reminder in reminders:
-            reminder_id, user_id = reminder[0], reminder[1]
-
-            _, reminder_link, reminder_text = await (await DBHandler(self.client.database, user_id=user_id).reminder()).get_reminder(reminder_id)
+        async for entry in db.Reminder._.get_multiple(order_by=db.Reminder.TIME, order=Order.ASCENDING):
+            if db.Reminder.TIME.retrieve(entry) > int(time.time()):
+                return
 
             Logger().action_log(
-                self.client.get_user(user_id),
+                self.client.get_user(db.Reminder.USER.retrieve(entry)),
                 "reminder send",
                 {
-                    "reminder id": str(reminder_id),
-                    "reminder text": reminder_text
+                    "reminder id": str(db.Reminder.ID.retrieve(entry)),
+                    "reminder text": db.Reminder.MESSAGE.retrieve(entry)
                 }
             )
 
             embed = EmbedFunctions().builder(
                 color = Config().BOT_COLOR,
                 title = "Reminder Notification",
-                title_url = reminder_link,
-                description = reminder_text
+                title_url = db.Reminder.LINK.retrieve(entry),
+                description = db.Reminder.MESSAGE.retrieve(entry)
             )
 
-            if user_id in self.client.visible_users():
-                user = await self.client.fetch_user(user_id)
+            if db.Reminder.USER.retrieve(entry) in self.client.visible_users():
+                user = await self.client.fetch_user(db.Reminder.USER.retrieve(entry))
                 await user.send(embed=embed)
             else:
-                Logger().action_warning(f"reminder send: {user_id} couldn't be reminded, because their pms aren't open to the client")
+                Logger().action_warning(f"reminder send: {db.Reminder.USER.retrieve(entry)} couldn't be reminded, because their pms aren't open to the client")
 
-            await (await DBHandler(self.client.database, user_id=user_id).reminder()).delete(reminder_id)
-
-            await (await DBHandler(self.client.database).telemetry()).increment("reminder send")
+            await db.Reminder._.delete(db.Reminder.ID.retrieve(entry))
+            await db.Telemetry.AMOUNT.increment("reminder send")
 
 
 

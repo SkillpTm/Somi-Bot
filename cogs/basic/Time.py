@@ -4,7 +4,7 @@ import zoneinfo
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
@@ -33,16 +33,16 @@ class Time(nextcord_C.Cog):
     ) -> None:
         """This command will display the current date and time in any timezone"""
 
-        timezone = timezone or await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).timezone_get()
+        timezone = timezone or (db_tz := await db.User.TIMEZONE.get(interaction.user.id))
 
-        if not timezone in zoneinfo.available_timezones():
+        if timezone and timezone not in zoneinfo.available_timezones():
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("Please input a valid IANA timezone code."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
 
-        if timezone != await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).timezone_get():
-            await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).timezone_set(timezone)
+        if timezone != db_tz:
+            await db.User.TIMEZONE.set(interaction.user.id, timezone)
 
         current_time = datetime.datetime.now(zoneinfo.ZoneInfo(timezone))
         offset_hours = current_time.utcoffset().total_seconds() / 3600

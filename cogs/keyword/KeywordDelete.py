@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands
 from lib.modules import SomiBot, YesNoButtons
@@ -34,7 +34,7 @@ class KeywordDelete(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        if not await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).get_list():
+        if not await db.Keyword._.get_all(where={db.Keyword.SERVER: interaction.guild.id, db.Keyword.USER: interaction.user.id}):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You don't have any keywords.\nTo add a keyword use `/keyword add`."), ephemeral=True)
             return
 
@@ -44,28 +44,11 @@ class KeywordDelete(nextcord_C.Cog):
 
         keyword = keyword.lower()
 
-        if not await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).delete(keyword):
+        if not await db.Keyword._.delete(where={db.Keyword.SERVER: interaction.guild.id, db.Keyword.USER: interaction.user.id, db.Keyword.KEYWORD: keyword}):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"You don't have a keyword called `{keyword}`.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)
             return
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"`{keyword}` has been deleted from your keywords."), ephemeral=True)
-
-    ####################################################################################################
-
-    @keyword_delete.on_autocomplete("keyword")
-    async def keyword_delete_autocomplete_keyword(
-        self,
-        interaction: nextcord.Interaction,
-        keyword: str
-    ) -> None:
-        """provides autocomplete suggestions to discord"""
-
-        await interaction.response.send_autocomplete(
-            Get.autocomplete_dict_from_search_string(
-                keyword,
-                {user_keyword: user_keyword for user_keyword in await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).get_list()}
-            )
-        )
 
     ####################################################################################################
 
@@ -80,9 +63,26 @@ class KeywordDelete(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("Your keywords have **not** been deleted!"), ephemeral=True)
             return
 
-        await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).delete_all_user()
+        await db.Keyword._.delete(where={db.Keyword.SERVER: interaction.guild.id, db.Keyword.USER: interaction.user.id})
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("**ALL** your keywords have been deleted!"), ephemeral=True)
+
+    ####################################################################################################
+
+    @keyword_delete.on_autocomplete("keyword")
+    async def keyword_delete_autocomplete_keyword(
+        self,
+        interaction: nextcord.Interaction,
+        keyword: str
+    ) -> None:
+        """provides autocomplete suggestions to discord"""
+
+        await interaction.response.send_autocomplete(
+            Get.autocomplete_dict_from_search_string(
+                keyword,
+                {db.Keyword.KEYWORD.retrieve(entry): db.Keyword.KEYWORD.retrieve(entry) async for entry in db.Keyword.KEYWORD.get_multiple(where={db.Keyword.SERVER: interaction.guild.id, db.Keyword.USER: interaction.user.id})}
+            )
+        )
 
 
 

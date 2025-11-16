@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
@@ -77,8 +77,7 @@ class Help(nextcord_C.Cog):
         )
 
         await interaction.followup.send(embed=embed, ephemeral=True)
-
-        await (await DBHandler(self.client.database).telemetry()).increment(f"help selection: {name[1:]}")
+        await db.Telemetry.AMOUNT.increment(f"help selection: {name[1:]}")
 
     ####################################################################################################
 

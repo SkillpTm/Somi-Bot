@@ -3,7 +3,7 @@ import re
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands
 from lib.modules import SomiBot
@@ -43,7 +43,12 @@ class KeywordAdd(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only have letters and numbers in your keywords!"), ephemeral=True)
             return
 
-        if not await (await DBHandler(self.client.database, server_id=interaction.guild.id, user_id=interaction.user.id).keyword()).add(keyword):
+        added = await db.Keyword._.add_unique(
+            {db.Keyword.KEYWORD: keyword, db.Keyword.SERVER: interaction.guild.id, db.Keyword.USER: interaction.user.id},
+            {db.Keyword.KEYWORD: keyword, db.Keyword.SERVER: interaction.guild.id, db.Keyword.USER: interaction.user.id}
+        )
+
+        if not added:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"You already have `{keyword}` as a keyword.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)
             return
 

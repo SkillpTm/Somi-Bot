@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db, Order
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
@@ -28,18 +28,28 @@ class LevelsLeaderboard(nextcord_C.Cog):
         await interaction.response.defer(with_message=True)
 
         output: str = ""
+        rank: int = 1
 
-        for index, user_data in enumerate(await (await DBHandler(self.client.database, server_id=interaction.guild.id).level()).get_all_users_ranked(limit=10)):
-            name = f"[Deleted User] - ({user_data[0]})" # default value for, if the user's account doesn't exit anymore
+        async for entry in db.Level._.get_multiple(
+            [db.Level.USER, db.Level.XP],
+            {db.Level.SERVER: interaction.guild.id},
+            db.Level.XP,
+            Order.DESCENDING,
+            10
+        ):
+            name = f"[Deleted User] - ({db.Level.USER.retrieve(entry)})" # default value for, if the user's account doesn't exit anymore
 
             # check if the user is still in the server
-            if (member := interaction.guild.get_member(user_data[0])):
+            if (member := interaction.guild.get_member(db.Level.USER.retrieve(entry))):
                 name = member.mention
             # check if the user's account still exists
-            elif not member and (user := self.client.get_user(user_data[0])):
+            elif not member and (user := self.client.get_user(db.Level.USER.retrieve(entry))):
                 name = user.display_name
 
-            output += f"**{index+1}. {name}** - Level: __`{user_data[1]}`__\n"
+            output += f"**{rank}. {name}** - Level: __`{db.Level._.get_level(db.Level.XP.retrieve(entry))}`__\n"
+            rank += 1
+
+        output = output or "`No users have earned any XP on this server yet.`"
 
         server_icon_url = interaction.guild.icon.url if interaction.guild.icon else Config().DEFAULT_PFP
 

@@ -3,7 +3,7 @@ import datetime
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands, Config, Logger
 from lib.modules import SomiBot
@@ -41,7 +41,12 @@ class FeedbackModal(nextcord.ui.Modal):
             server_id = 0 # DMs are indecated by a 0
             origin_text = f"Feedback from DM channel: `{interaction.user.name}` | `({interaction.user.id})`:"
 
-        await (await DBHandler(self.client.database, server_id, interaction.user.id).feedback()).submit(datetime.datetime.now().strftime("Date: `%Y/%m/%d`\nTime: `%H:%M:%S %Z`"), self.feedback.value)
+        await db.Feedback._.add({
+            db.Feedback.SERVER: server_id,
+            db.Feedback.USER: interaction.user.id,
+            db.Feedback.TIME: datetime.datetime.now().strftime("Date: `%Y/%m/%d`\nTime: `%H:%M:%S %Z`"),
+            db.Feedback.MESSAGE: self.feedback.value
+        })
 
         embed = EmbedFunctions().builder(
             color = Config().BOT_COLOR,

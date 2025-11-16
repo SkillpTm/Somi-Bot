@@ -4,7 +4,7 @@ import time
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Logger
 from lib.modules import SomiBot
@@ -30,10 +30,10 @@ class DeleteLog(nextcord_C.Cog):
         if not message.content and len(message.attachments) < 1:
             return
 
-        if not (audit_log := message.guild.get_channel(await (await DBHandler(self.client.database, server_id=message.guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := message.guild.get_channel(await db.Server.AUDIT_LOG.get(message.guild.id) or 0)):
             return
 
-        if message.channel.id in await (await DBHandler(self.client.database, server_id=message.guild.id).hidden_channel()).get_list():
+        if await db.HiddenChannel._.get_entry(message.channel.id):
             return
 
         # check the last audit log entry for message removals, to see make sure this was a deletion or removal
@@ -76,7 +76,7 @@ class DeleteLog(nextcord_C.Cog):
         if file_urls:
             await sent_message.reply(content=file_urls, mention_author=False)
 
-        await (await DBHandler(self.client.database).telemetry()).increment("delete log")
+        await db.Telemetry.AMOUNT.increment("delete log")
 
     ####################################################################################################
 
@@ -107,7 +107,7 @@ class DeleteLog(nextcord_C.Cog):
         if file_urls:
             await sent_message.reply(content=file_urls, mention_author=False)
 
-        await (await DBHandler(self.client.database).telemetry()).increment("remove log")
+        await db.Telemetry.AMOUNT.increment("remove log")
 
 
 

@@ -4,7 +4,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
@@ -49,14 +49,14 @@ class CustomAdd(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only have letters and numbers in your custom-name!"), ephemeral=True)
             return
 
-        if not await (await DBHandler(self.client.database, server_id=interaction.guild.id).custom_command()).add(name, text):
+        if not await db.CustomCommand._.add({db.CustomCommand.NAME: name, db.CustomCommand.TEXT: text, db.CustomCommand.SERVER: interaction.guild.id}):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"A custom-command with the name `{name}` already exists.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
             return
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Your custom-command with the name `{name}` has been created."), ephemeral=True)
 
 
-        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
             return
 
         embed = EmbedFunctions().builder(

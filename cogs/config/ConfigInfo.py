@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions, LevelRoles
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
@@ -76,22 +76,22 @@ class ConfigInfo(nextcord_C.Cog):
 
         audit_log_output = ""
 
-        if (audit_log_id := await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0):
+        if (audit_log_id := await db.Server.AUDIT_LOG.get(interaction.guild.id)):
             if interaction.guild.get_channel(audit_log_id):
                 audit_log_output = f"<#{audit_log_id}>"
             else:
-                await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_reset()
+                await db.Server.AUDIT_LOG.set(interaction.guild.id, None)
 
         audit_log_output = audit_log_output or "`This server doesn't have a desginated channel for audit-Log messages.`"
 
 
         default_role_output = ""
 
-        if (default_role_id := await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).default_role_get() or 0):
+        if (default_role_id := await db.Server.DEFAULT_ROLE.get(interaction.guild.id)):
             if interaction.guild.get_role(default_role_id):
                 default_role_output = f"<#{default_role_id}>"
             else:
-                await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).default_role_reset()
+                await db.Server.DEFAULT_ROLE.set(interaction.guild.id, None)
 
         default_role_output = default_role_output or "`This server doesn't have a desginated default-role.`"
 
@@ -99,10 +99,10 @@ class ConfigInfo(nextcord_C.Cog):
         hidden_channels_output = ""
 
         # check if all hidden channels still exits, the ones that do, get added to the output
-        for index, hidden_channel_id in enumerate((hidden_channel_ids := await (await DBHandler(self.client.database, server_id=interaction.guild.id).hidden_channel()).get_list())):
+        async for entry in db.HiddenChannel.ID.get_multiple(where=interaction.guild.id):
+            hidden_channel_id: int = db.HiddenChannel.ID.retrieve(entry)
             if not interaction.guild.get_channel(hidden_channel_id or 0):
-                hidden_channel_ids.pop(index)
-                await (await DBHandler(self.client.database, server_id=interaction.guild.id).hidden_channel()).delete(hidden_channel_id)
+                await db.HiddenChannel._.delete(hidden_channel_id)
                 continue
 
             hidden_channels_output +=  f"<#{hidden_channel_id}>\n"
@@ -113,28 +113,32 @@ class ConfigInfo(nextcord_C.Cog):
         level_ignore_channels_output = ""
 
         # check if all level ignore channels still exits, the ones that do, get added to the output
-        for index, level_ignore_channel_id in enumerate((level_ignore_channel_ids := await (await DBHandler(self.client.database, server_id=interaction.guild.id).level_ignore_channel()).get_list())):
-            if not interaction.guild.get_channel(level_ignore_channel_id):
-                level_ignore_channel_ids.pop(index)
-                await (await DBHandler(self.client.database, server_id=interaction.guild.id).level_ignore_channel()).delete(level_ignore_channel_id)
+        async for entry in db.LevelIgnoreChannel.ID.get_multiple(where=interaction.guild.id):
+            level_ignore_channel_id: int = db.LevelIgnoreChannel.ID.retrieve(entry)
+            if not interaction.guild.get_channel(level_ignore_channel_id or 0):
+                await db.LevelIgnoreChannel._.delete(level_ignore_channel_id)
                 continue
 
             level_ignore_channels_output +=  f"<#{level_ignore_channel_id}>\n"
 
         level_ignore_channels_output = level_ignore_channels_output or "`This server doesn't have any level-ignore-channels.`"
 
+        removed_role = False
+        level_roles: list[dict[str, int]] = []
 
         # check if all level roles still exits, the ones that do, get added to the output
-        for index, level_role in enumerate((level_roles := await (await DBHandler(self.client.database, server_id=interaction.guild.id).level_role()).get_list())):
-            if not interaction.guild.get_role(level_role[0]):
-                level_roles.pop(index)
-                await (await DBHandler(self.client.database, server_id=interaction.guild.id).level_role()).delete(level_role[0])
-                LevelRoles.update_users(self.client, interaction.guild)
+        async for entry in db.LevelRole._.get_multiple([db.LevelRole.ID, db.LevelRole.LEVEL], interaction.guild.id):
+            level_role = db.LevelRole.ID.retrieve(entry)
+            if not interaction.guild.get_role(level_role or 0):
+                removed_role = True
+                await db.LevelRole._.delete(level_role)
 
-        if level_roles:
-            level_roles_output = LevelRoles.get_level_range_with_role(level_roles)
-        else:
-            level_roles_output = "`This server doesn't have any level-roles.`"
+            level_roles.append(entry)
+
+        if removed_role:
+            await LevelRoles.update_users(interaction.guild)
+
+        level_roles_output = await LevelRoles.get_level_range_with_role(interaction.guild)
 
 
         return audit_log_output, default_role_output, hidden_channels_output, level_ignore_channels_output, level_roles_output

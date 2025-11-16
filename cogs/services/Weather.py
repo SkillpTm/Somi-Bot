@@ -5,7 +5,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands, Config, Keychain
 from lib.modules import SomiBot
@@ -36,15 +36,15 @@ class Weather(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        location = location or await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).weather_get()
+        location = location or (db_location := await db.User.WEATHER.get(interaction.user.id))
         response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={Keychain().WEATHER_API_KEY}&q={urllib.parse.quote_plus(location)}&units=metric", timeout=10)
 
         if response.status_code != 200:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{location} couldn't be found."), ephemeral=True)
             return
 
-        if location != await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).weather_get():
-            await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).weather_set(location)
+        if location != db_location:
+            await db.User.WEATHER.set(interaction.user.id, location)
 
         response_json: dict = response.json()
         output_data: dict[str, str] = {}

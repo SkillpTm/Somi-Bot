@@ -3,7 +3,7 @@ import re
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Config, Logger
 from lib.modules import SomiBot
@@ -16,7 +16,7 @@ class KeywordSend(nextcord_C.Cog):
 
     ####################################################################################################
 
-    async def keyword_send(self, message: nextcord.Message):
+    async def keyword_send(self, message: nextcord.Message) -> None:
         """
         This function sends keyword notis to users:
         1. in the same guild as the message
@@ -29,15 +29,21 @@ class KeywordSend(nextcord_C.Cog):
             return
 
         # remove messages from hidden channels
-        if message.channel.id in await (await DBHandler(self.client.database, server_id=message.guild.id).hidden_channel()).get_list():
+        if await db.HiddenChannel._.get_entry(message.channel.id):
             return
 
-        for user_id, user_keywords in (await (await DBHandler(self.client.database, server_id=message.guild.id, user_id=message.author.id).keyword()).get_all()).items():
+        users_keywords: dict[int, list[str]] = {}
 
-            # if the user has no keywords or left the guild skip them
-            if not user_keywords or not message.guild.get_member(user_id):
-                continue
+        async for entry in db.Keyword._.get_multiple(where={db.Keyword.SERVER: message.guild.id}):
+            if message.author.id == db.Keyword.USER.retrieve(entry):
+                return
 
+            if not users_keywords.get(db.Keyword.USER.retrieve(entry), None):
+                users_keywords[db.Keyword.USER.retrieve(entry)] = []
+
+            users_keywords[db.Keyword.USER.retrieve(entry)].append(db.Keyword.KEYWORD.retrieve(entry).lower())
+
+        for user_id, user_keywords in users_keywords.items():
             user_keywords_in_content: list[str] = []
             message_content = re.sub("<[^ ]+?>", "", message.content.lower()) # regex -> message without emotes
 
@@ -74,7 +80,7 @@ class KeywordSend(nextcord_C.Cog):
             except nextcord.Forbidden:
                 Logger().action_warning(f"keyword send ~ User: {user_id} couldn't be notified, because their pms aren't open to the client")
 
-            await (await DBHandler(self.client.database).telemetry()).increment("keyword send")
+            await db.Telemetry.AMOUNT.increment("keyword send")
 
 
 

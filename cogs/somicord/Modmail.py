@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Config, Logger
 from lib.modules import SomiBot, YesNoButtons
@@ -103,8 +103,7 @@ class Modmail(nextcord_C.Cog):
             await sent_modmail.reply(content=file_urls, mention_author=False)
 
         await message.reply(embed=EmbedFunctions().get_success_message("Your modmail has been submitted!"), mention_author=False)
-
-        await (await DBHandler(self.client.database).telemetry()).increment("modmail send")
+        await db.Telemetry.AMOUNT.increment("modmail send")
 
 
 

@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands, Config, Lists
 from lib.modules import SomiBot
@@ -55,7 +55,7 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
             mod_action = f"{interaction.user.mention} removed: {channel.mention} from the level-ignore-channels."
 
 
-        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
             return
 
         embed = EmbedFunctions().builder(
@@ -82,7 +82,7 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
     ) -> bool:
         "adds or doesn't add the channel indicated by the output bool"
 
-        if not (added := await (await DBHandler(self.client.database, server_id=interaction.guild.id).level_ignore_channel()).add(channel.id)):
+        if not (added := await db.LevelIgnoreChannel._.add({db.LevelIgnoreChannel.ID: channel.id, db.LevelIgnoreChannel.SERVER: interaction.guild.id})):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{channel.mention} is already a level-ignore-channel.\nTo get a list of all the level-ignore-channels use `/config info`."), ephemeral=True)
             return added
 
@@ -98,7 +98,7 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
     ) -> bool:
         "removes or doesn't remove the channel indicated by the output bool"
 
-        if not (deleted := await (await DBHandler(self.client.database, server_id=interaction.guild.id).hidden_channel()).delete(channel.id)):
+        if not (deleted := await db.LevelIgnoreChannel._.delete(interaction.guild.id, channel.id)):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{channel.mention} isn't a level-ignore-channel.\nTo get a list of all the level-ignore-channels use `/config info`."), ephemeral=True)
             return deleted
 

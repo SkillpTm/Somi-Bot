@@ -7,7 +7,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
 
-from lib.dbModules import DBHandler, PostgresDB
+from lib.database import Database, db
 from lib.helpers import EmbedFunctions
 from lib.managers import Config, Keychain, Logger, Singleton
 
@@ -17,7 +17,6 @@ class SomiBot(nextcord_C.Bot):
     """Extended Bot class with overwritten methodes and custom attributes"""
 
     def __init__(self) -> None:
-        self.database: PostgresDB = None
         self.is_setup = False
         self.start_time = int(time.time())
 
@@ -25,6 +24,7 @@ class SomiBot(nextcord_C.Bot):
             max_messages = Config().MAX_MESSAGES_CACHE,
             application_id = Config().APPLICATION_ID,
             intents = nextcord.Intents.all(),
+            chunk_guilds_at_startup = True,
             status = nextcord.Status.online,
             activity = nextcord.Activity(type=nextcord.ActivityType.listening, name=Config().ACTIVITY_NAME),
             allowed_mentions = nextcord.AllowedMentions(everyone=False),
@@ -36,23 +36,45 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
-    async def _apply_missing_default_roles(self) -> None:
-        """Checks on all guilds if all users have the default role. This should never be the case, unless someone joined a server during downtime."""
+    async def _sync_discord_and_db(self) -> None:
+        """This function syncs the discord servers and users with the database and applies missing default roles"""
+
+        unique_servers: set[int] = set()
+        unique_users: set[int] = set()
 
         for guild in self.guilds:
-            if not (default_role := guild.get_role(await (await DBHandler(self.database, server_id=guild.id).server()).default_role_get() or 0)):
-                continue
+            unique_servers.add(guild.id)
 
-            if not (difference := len(guild.humans) - len(default_role.members)):
-                continue
+            if not guild.chunked:
+                await guild.chunk()
+
+            default_role = guild.get_role(await db.Server.DEFAULT_ROLE.get(guild.id) or 0)
+            difference = len(guild.humans) - len(default_role.members) if default_role else 0
 
             for member in guild.humans:
-                if not difference:
-                    break
+                unique_users.add(member.id)
 
-                if member not in default_role.members:
+                if not difference:
+                    continue
+
+                if default_role not in member.roles:
                     await member.add_roles(default_role)
                     difference -= 1
+
+        all_db_guilds: set[int] = set(await db.Server.ID.get_all())
+        all_db_users: set[int] = set(await db.User.ID.get_all())
+
+        for guild_id in all_db_guilds - unique_servers:
+            await db.Server._.delete(guild_id)
+
+        for guild_id in unique_servers - all_db_guilds:
+            await db.Server._.add({db.Server.ID: guild_id})
+
+        for user_id in all_db_users - unique_users:
+            await db.User._.delete(user_id)
+
+        for user_id in unique_users - all_db_users:
+            await db.User._.add({db.User.ID: user_id})
 
     ####################################################################################################
 
@@ -71,8 +93,7 @@ class SomiBot(nextcord_C.Bot):
         if not command_name:
             return
 
-        await (await DBHandler(self.database).telemetry()).increment(command_name)
-
+        await db.Telemetry.AMOUNT.increment(command_name)
         Logger().action_log(interaction, command_name, interaction.data.get("options", []))
 
     ####################################################################################################
@@ -106,9 +127,8 @@ class SomiBot(nextcord_C.Bot):
         # api logout in case this was a restart and we didn't properly exit those API connections
         Singleton.reset(Keychain)
 
-        self.database = await PostgresDB.create("./sql/schema.sql", "./sql/queries.sql", Config().POSTGRES_POOL_MAX_SIZE)
-
-        await self._apply_missing_default_roles()
+        if not self.is_setup:
+            await self._sync_discord_and_db()
 
         self.is_setup = True
 
@@ -129,7 +149,7 @@ class SomiBot(nextcord_C.Bot):
         except requests.ConnectionError:
             pass
 
-        await self.database.close()
+        await Database().close()
 
     ####################################################################################################
 
@@ -185,9 +205,16 @@ class SomiBot(nextcord_C.Bot):
     ####################################################################################################
 
     async def on_guild_join(self, guild: nextcord.Guild) -> None:
-        """This function overwrites the build in on_guild_join function, to validate we don't have previous server data in the db"""
+        """This function overwrites the build in on_guild_join function, to add the server to the db"""
 
-        await DBHandler(self.database, server_id=guild.id).clear_data()
+        await db.Server._.add({db.Server.id: guild.id})
+
+    ####################################################################################################
+
+    async def on_guild_remove(self, guild: nextcord.Guild) -> None:
+        """This function overwrites the build in on_guild_remove function, to remove the server from the db"""
+
+        await db.Server._.delete({db.Server.id: guild.id})
 
     ####################################################################################################
 
@@ -212,10 +239,11 @@ class SomiBot(nextcord_C.Bot):
     async def on_member_join(self, member: nextcord.Member) -> None:
         """This function overwrites the build in on_member_join function, to launch the join_log and welcome"""
 
+        await db.User._.add_unique({db.User.ID: member.id}, {db.User.ID: member.id})
+
         await asyncio.gather(
             self.get_cog("JoinLog").join_log(member),
-            self.get_cog("Welcome").welcome(member),
-            DBHandler(self.database, user_id=member.id).clear_data() # we clear out potentially old user data
+            self.get_cog("Welcome").welcome(member)
         )
 
     ####################################################################################################
@@ -227,6 +255,16 @@ class SomiBot(nextcord_C.Bot):
             self.get_cog("LeaveLog").leave_log(member),
             self.get_cog("KickLog").kick_log(member)
         )
+
+        # if we share any server with the user, don't delete them from the db
+        for guild in self.guilds:
+            if not guild.chunked:
+                await guild.chunk()
+
+            if guild.get_member(member.id):
+                return
+
+        await db.User._.delete({db.User.ID: member.id})
 
     ####################################################################################################
 

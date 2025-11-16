@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
@@ -26,8 +26,9 @@ class CustomList(nextcord_C.Cog):
         """This command provides a list of all custom-commands of a guild"""
 
         await interaction.response.defer(ephemeral=True, with_message=True)
+        all_commandnames: list[str]
 
-        if not (all_commandnames := await (await DBHandler(self.client.database, server_id=interaction.guild.id).custom_command()).get_list()):
+        if not (all_commandnames := await db.CustomCommand.NAME.get_all(where={db.CustomCommand.SERVER: interaction.guild.id})):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("There are no custom-commands on this server.\nTo add a custom-command use `/custom add`."), ephemeral=True)
             return
 

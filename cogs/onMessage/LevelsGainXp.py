@@ -1,9 +1,10 @@
+import random
 import re
 
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import LevelRoles
 from lib.modules import SomiBot
 
@@ -22,7 +23,7 @@ class LevelsGainXp(nextcord_C.Cog):
             2. was not send in a levels ignore channel
             3. was send after the user's cooldown went off
 
-            afterwards the command will try to apply levelroles"""                 
+            afterwards the command will try to apply levelroles"""
 
         if not message.guild:
             return
@@ -31,18 +32,32 @@ class LevelsGainXp(nextcord_C.Cog):
         if not len(re.sub("<[^ ]+?>", "",message.content)) > 10:
             return
 
-        if message.channel.id in await (await DBHandler(self.client.database, server_id=message.guild.id).level_ignore_channel()).get_list():
+        if await db.HiddenChannel._.get_entry(message.channel.id):
             return
 
-        user_level_before, _ =  await (await DBHandler(self.client.database, server_id=message.guild.id, user_id=message.author.id).level()).get_level_and_xp_until_next()
+        entry = await db.Level._.get_entry({db.Level.SERVER: message.guild.id, db.Level.USER: message.author.id})
 
-        if not await (await DBHandler(self.client.database, server_id=message.guild.id, user_id=message.author.id).level()).increase_xp():
+        if not entry:
+            await db.Level._.add({db.Level.SERVER: message.guild.id, db.Level.USER: message.author.id})
+            entry = await db.Level._.get_entry({db.Level.SERVER: message.guild.id, db.Level.USER: message.author.id})
+
+        if db.Level.COOLDOWN.retrieve(entry) > int(message.created_at.timestamp()):
             return
 
-        user_level_after, _ =  await (await DBHandler(self.client.database, server_id=message.guild.id, user_id=message.author.id).level()).get_level_and_xp_until_next()
+        if not await db.Level._.set(
+            {
+                db.Level.SERVER: message.guild.id,
+                db.Level.USER: message.author.id
+            },
+            {
+                db.Level.COOLDOWN: int(message.created_at.timestamp()) + random.randint(55, 65),
+                db.Level.XP: (new_total := db.Level.XP.retrieve(entry) + random.randint(10, 15))
+            }
+            ):
+            return
 
-        if user_level_before < user_level_after:
-            await LevelRoles.update_users(self.client, message.guild, [[message.author.id, user_level_after]])
+        if db.Level._.get_level(db.Level.XP.retrieve(entry)) < db.Level._.get_level(new_total):
+            await LevelRoles.update_users(message.guild, [{db.Level.USER: message.author.id, db.Level.XP: new_total}])
 
 
 

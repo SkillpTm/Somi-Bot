@@ -4,7 +4,7 @@ import time
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Logger
 from lib.modules import SomiBot
@@ -24,7 +24,7 @@ class BanLog(nextcord_C.Cog):
     async def ban_log(self, guild: nextcord.Guild, user: nextcord.User) -> None:
         """A log that activates, when someone gets banned and an audit log is set"""
 
-        if not (audit_log := guild.get_channel(await (await DBHandler(self.client.database, server_id=guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := guild.get_channel(await db.Server.AUDIT_LOG.get(guild.id) or 0)):
             return
 
         entry: nextcord.AuditLogEntry = None
@@ -71,15 +71,14 @@ class BanLog(nextcord_C.Cog):
         )
 
         await audit_log.send(embed=embed)
-
-        await (await DBHandler(self.client.database).telemetry()).increment("ban log")
+        await db.Telemetry.AMOUNT.increment("ban log")
 
     ####################################################################################################
 
     async def unban_log(self, guild: nextcord.Guild, user: nextcord.User) -> None:
         """A log that activates, when someone gets unbanned and an audit log is set"""
 
-        if not (audit_log := guild.get_channel(await (await DBHandler(self.client.database, server_id=guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := guild.get_channel(await db.Server.AUDIT_LOG.get(guild.id) or 0)):
             return
 
         entry: nextcord.AuditLogEntry = None
@@ -119,8 +118,7 @@ class BanLog(nextcord_C.Cog):
         )
 
         await audit_log.send(embed=embed)
-
-        await (await DBHandler(self.client.database).telemetry()).increment("unban log")
+        await db.Telemetry.AMOUNT.increment("unban log")
 
 
 

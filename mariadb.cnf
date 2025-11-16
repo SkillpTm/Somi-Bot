@@ -1,0 +1,4 @@
+[mysqld]
+log_error = /var/log/mariadb/mariadb_error.log
+log_warnings = 2
+general_log = 0

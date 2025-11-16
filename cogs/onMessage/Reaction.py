@@ -3,7 +3,7 @@ import re
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.managers import Config, Logger
 from lib.modules import SomiBot
 
@@ -25,7 +25,7 @@ class Reactions(nextcord_C.Cog):
 
             Logger().action_log(message, "reaction ping")
 
-            await (await DBHandler(self.client.database).telemetry()).increment("reacted @ping")
+            await db.Telemetry.AMOUNT.increment("reacted @ping")
 
 
         # react to somionly
@@ -34,7 +34,7 @@ class Reactions(nextcord_C.Cog):
 
             Logger().action_log(message, "reaction somionly")
 
-            await (await DBHandler(self.client.database).telemetry()).increment("reacted somionly")
+            await db.Telemetry.AMOUNT.increment("reacted somionly")
 
 
         # react to a "f" in a message
@@ -43,7 +43,7 @@ class Reactions(nextcord_C.Cog):
 
             Logger().action_log(message, "reaction f")
 
-            await (await DBHandler(self.client.database).telemetry()).increment("reacted SomiF")
+            await db.Telemetry.AMOUNT.increment("reacted SomiF")
 
         # react to the somibestgrill emote
         if "somibestgrill" in str(message.content.lower()):
@@ -51,7 +51,7 @@ class Reactions(nextcord_C.Cog):
 
             Logger().action_log(message, "reaction bestgrill")
 
-            await (await DBHandler(self.client.database).telemetry()).increment("reacted SomiBestGrill")
+            await db.Telemetry.AMOUNT.increment("reacted SomiBestGrill")
 
 
 

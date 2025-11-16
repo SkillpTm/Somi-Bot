@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands
 from lib.modules import SomiBot
@@ -29,7 +29,7 @@ class Close(nextcord_C.Cog):
 
         roles_to_modify = [interaction.guild.default_role]
 
-        if (default_role := interaction.guild.get_role(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).default_role_get())):
+        if (default_role := interaction.guild.get_role(await db.Server.DEFAULT_ROLE.get(interaction.guild.id) or 0)):
             roles_to_modify.append(interaction.guild.get_role(default_role))
 
         permissions_to_check: list[bool] = []
@@ -56,7 +56,7 @@ class Close(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("Closed the server sucessfully.\n To re-open it use `/open`"), ephemeral=True)
 
-        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
             return
 
         embed = EmbedFunctions().builder(
@@ -90,7 +90,7 @@ class Close(nextcord_C.Cog):
 
         roles_to_modify = [interaction.guild.default_role]
 
-        if (default_role := interaction.guild.get_role(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).default_role_get())):
+        if (default_role := interaction.guild.get_role(await db.Server.DEFAULT_ROLE.get(interaction.guild.id) or 0)):
             roles_to_modify.append(default_role)
 
         permissions_to_check: list[bool] = []
@@ -118,7 +118,7 @@ class Close(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("Re-opened the server sucessfully."), ephemeral=True)
 
 
-        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
             return
 
         embed = EmbedFunctions().builder(

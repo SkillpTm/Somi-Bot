@@ -4,7 +4,7 @@ import time
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Logger
 from lib.modules import SomiBot
@@ -31,7 +31,7 @@ class MuteLog(nextcord_C.Cog):
         if member_before.communication_disabled_until == member_after.communication_disabled_until:
             return
 
-        if not (audit_log := member_before.guild.get_channel(await (await DBHandler(self.client.database, server_id=member_before.guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := member_before.guild.get_channel(await db.Server.AUDIT_LOG.get(member_before.guild.id) or 0)):
             return
 
         entry: nextcord.AuditLogEntry = None
@@ -54,8 +54,7 @@ class MuteLog(nextcord_C.Cog):
             embed = self.unmuted(entry, member_after)
 
         await audit_log.send(embed=embed)
-
-        await (await DBHandler(self.client.database).telemetry()).increment("mute log")
+        await db.Telemetry.AMOUNT.increment("mute log")
 
     ####################################################################################################
 

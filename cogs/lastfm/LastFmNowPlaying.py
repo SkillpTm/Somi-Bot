@@ -4,7 +4,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands, Config, Keychain
 from lib.modules import SomiBot
@@ -39,7 +39,7 @@ class LastFmNowPlaying(nextcord_C.Cog):
 
         user = user or interaction.user
 
-        if not (lastfm_username := await (await DBHandler(self.client.database, user_id=interaction.user.id).user()).last_fm_get()):
+        if not (lastfm_username := await db.User.LASTFM.get(interaction.user.id)):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 

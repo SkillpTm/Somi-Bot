@@ -3,7 +3,7 @@ import time
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Logger
 from lib.modules import SomiBot
@@ -30,10 +30,10 @@ class JoinLog(nextcord_C.Cog):
             {"member": str(member.id)}
         )
 
-        if not member.bot and (default_role := member.guild.get_role(await (await DBHandler(self.client.database, server_id=member.guild.id).server()).default_role_get())):
+        if not member.bot and (default_role := member.guild.get_role(await db.Server.DEFAULT_ROLE.get(member.guild.id) or 0)):
             await member.add_roles(member.guild.get_role(default_role))
 
-        if not (audit_log := member.guild.get_channel(await (await DBHandler(self.client.database, server_id=member.guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := member.guild.get_channel(await db.Server.AUDIT_LOG.get(member.guild.id) or 0)):
             return
 
         embed = EmbedFunctions().builder(
@@ -68,8 +68,7 @@ class JoinLog(nextcord_C.Cog):
         )
 
         await audit_log.send(embed=embed)
-
-        await (await DBHandler(self.client.database).telemetry()).increment("join log")
+        await db.Telemetry.AMOUNT.increment("join log")
 
 
 

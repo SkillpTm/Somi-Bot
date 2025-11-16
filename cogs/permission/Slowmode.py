@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.managers import Commands, Lists
 from lib.helpers import EmbedFunctions
 from lib.modules import SomiBot
@@ -55,7 +55,7 @@ class Slowmode(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Deactivated slowmode in {channel.mention}."), ephemeral=True)
             mod_action = f"{interaction.user.mention} deactivated slowmode in {channel.mention}"
 
-        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
             return
 
 

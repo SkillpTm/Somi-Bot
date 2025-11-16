@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions, LevelRoles
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
@@ -27,10 +27,9 @@ class LevelsOverview(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        if not (output_role_list := LevelRoles.get_level_range_with_role(await (await DBHandler(self.client.database, server_id=interaction.guild.id).level_role()).get_list())):
-            output_role_list = "`This server doesn't have any level-roles.`"
+        output_role_list = await LevelRoles.get_level_range_with_role(interaction.guild)
 
-        if not (output_ignore_channels := "".join(f"<#{channel_id}>\n" for channel_id in await (await DBHandler(self.client.database, server_id=interaction.guild.id).level_ignore_channel()).get_list())):
+        if not (output_ignore_channels := "".join(f"<#{channel}>\n" async for channel in db.LevelIgnoreChannel.ID.get_multiple(where={db.LevelIgnoreChannel.SERVER: interaction.guild.id}))):
             output_ignore_channels = "`In this server you can earn XP in all channels`"
 
         embed = EmbedFunctions().builder(
@@ -39,7 +38,7 @@ class LevelsOverview(nextcord_C.Cog):
             fields = [
                 [
                     "What are levels?",
-                    "If you send a message you receive a few xp points. These xp points will eventually make you level up. You can see your level by using `/levels rank`",
+                    "For every message you send you earn experience (xp). These xp points will make you level up. The more you chat, the more xp you earn and the higher your level gets. You can see your level by using `/levels info`.",
                     False
                 ],
 

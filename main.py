@@ -6,22 +6,7 @@ import requests
 from lib.managers.Keychain import Keychain
 from lib.modules.SomiBot import SomiBot
 
-####################################################################################################
 
-def load_dotenv(file_path: str) -> None:
-    """loades the provided env into the environment"""
-
-    with open(file_path, encoding="UTF-8") as file:
-        for line in file:
-            line = line.strip()
-
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-
-            key, value = line.split("=", 1)
-            os.environ[key.strip()] = value.strip().strip("\"'")
-
-####################################################################################################
 
 def load_cogs(client: SomiBot) -> None:
     """loads all cogs onto the client"""
@@ -61,8 +46,6 @@ def start(client: SomiBot) -> None:
 ####################################################################################################
 
 if __name__ == "__main__":
-    load_dotenv("./.env")
-
     somi = SomiBot()
 
     load_cogs(somi)

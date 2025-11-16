@@ -731,7 +731,7 @@
 		"description": "Allows you to set the LastFm profile, used to display your data",
 		"example": "/lf [Somi-LastFm]",
 		"parameters": {
-			"lastfmname": {
+			"lastfm_username": {
 				"name": "lastfm-username",
 				"description": "Your username on LastFm (Your profile needs to be public, for bot to be able to dispaly your data)",
 				"type": "Text between 2 to 100 Characters",

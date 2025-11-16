@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
@@ -37,9 +37,6 @@ class ConfigDefaultRole(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        # just gets set to the default_role so we don't error on stuff later
-        role = role or interaction.guild.default_role
-
         if action == "Set":
             if not await self._set_role(interaction, role):
                 return
@@ -47,8 +44,13 @@ class ConfigDefaultRole(nextcord_C.Cog):
             mod_action = f"{interaction.user.mention} set: {role.mention} as the new default-role."
 
         elif action == "Reset":
-            if role.id == interaction.guild.default_role.id:
-                role = interaction.guild.get_role(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).default_role_get())
+            if not (role := role or interaction.guild.get_role(await db.Server.DEFAULT_ROLE.get(interaction.guild.id) or 0)):
+                await interaction.followup.send(embed=EmbedFunctions().get_error_message("This server doesn't have a default-role to reset."), ephemeral=True)
+                return
+
+            if role != await db.Server.DEFAULT_ROLE.get(interaction.guild.id):
+                await interaction.followup.send(embed=EmbedFunctions().get_error_message("The role you provided is not this server's default-role."), ephemeral=True)
+                return
 
             if not await self._reset_role(interaction, role):
                 return
@@ -56,7 +58,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
             mod_action = f"{interaction.user.mention} reset: {role.mention} as the default-role."
 
 
-        if not (audit_log := interaction.guild.get_channel(await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
             return
 
         embed = EmbedFunctions().builder(
@@ -84,7 +86,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
         "sets or doesn't set the role indicated by the output bool"
 
         # check if an actual role was provided
-        if role.id == interaction.guild.default_role.id:
+        if not role:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("To set a new default-role you need to provide a role in the command."), ephemeral=True)
             return False
 
@@ -92,8 +94,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only make role the default-role, if the role is below your current top role!"), ephemeral=True)
             return False
 
-        await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).default_role_set(role.id)
-
+        await db.Server.DEFAULT_ROLE.set(interaction.guild.id, role.id)
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{role.mention} is from now on this server's default-role.\nThe role is being applied to users now, this can take a few minutes."), ephemeral=True)
 
         #apply the role to all users
@@ -116,10 +117,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only make role the default-role, if the role is below your current top role!"), ephemeral=True)
             return False
 
-        if not (deleted := await (await DBHandler(self.client.database, server_id=interaction.guild.id).server()).default_role_reset()):
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("This server doesn't have a default-role."), ephemeral=True)
-            return deleted
-
+        await db.Server.DEFAULT_ROLE.set(interaction.guild.id, None)
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("This server now doesn't have a default-role anymore.\nThe role is being removed from all users, this may take a few minutes."), ephemeral=True)
 
         # remove the role from all users
@@ -127,7 +125,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
             if role in member.roles:
                 await member.remove_roles(role)
 
-        return deleted
+        return True
 
 
 

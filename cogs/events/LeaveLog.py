@@ -4,7 +4,7 @@ import time
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Logger
 from lib.modules import SomiBot
@@ -34,7 +34,7 @@ class LeaveLog(nextcord_C.Cog):
             {"member": str(member.id)}
         )
 
-        if not (audit_log := member.guild.get_channel(await (await DBHandler(self.client.database, server_id=member.guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := member.guild.get_channel(await db.Server.AUDIT_LOG.get(member.guild.id) or 0)):
             return
 
         # check the last audit log entry for bans, to see if this was a ban (bans get handled by BanLog)
@@ -87,8 +87,7 @@ class LeaveLog(nextcord_C.Cog):
         )
 
         await audit_log.send(embed=embed)
-
-        await (await DBHandler(self.client.database).telemetry()).increment("leave log")
+        await db.Telemetry.AMOUNT.increment("leave log")
 
 
 

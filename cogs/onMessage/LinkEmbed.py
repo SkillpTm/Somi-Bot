@@ -3,7 +3,7 @@ import re
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Config
 from lib.modules import SomiBot
@@ -37,7 +37,7 @@ class LinkEmbed(nextcord_C.Cog):
         if not original_message:
             return
 
-        if original_message.channel.id in await (await DBHandler(self.client.database, server_id=message.guild.id).hidden_channel()).get_list():
+        if await db.HiddenChannel._.get_entry(original_message.channel.id):
             return
 
         # this happens, if the original message is just an embed
@@ -69,7 +69,7 @@ class LinkEmbed(nextcord_C.Cog):
         embed, _ = EmbedFunctions.get_or_add_attachments(original_message.attachments, embed, limit = 1)
         await message.reply(embed=embed, mention_author=False)
 
-        await (await DBHandler(self.client.database).telemetry()).increment("link embed")
+        await db.Telemetry.AMOUNT.increment("link embed")
 
 
 

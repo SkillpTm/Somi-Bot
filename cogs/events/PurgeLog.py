@@ -5,7 +5,7 @@ import time
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions, Misc
 from lib.managers import Logger
 from lib.modules import SomiBot
@@ -25,10 +25,10 @@ class PurgeLog(nextcord_C.Cog):
     async def purge_log(self, messages: list[nextcord.Message]) -> None:
         """A log that activates, when someone gets purged without using the bot"""
 
-        if not (audit_log := messages[0].guild.get_channel(await (await DBHandler(self.client.database, server_id=messages[0].guild.id).server()).audit_log_get() or 0)):
+        if not (audit_log := messages[0].guild.get_channel(await db.Server.AUDIT_LOG.get(messages[0].guild.id) or 0)):
             return
 
-        if messages[0].channel.id in await (await DBHandler(self.client.database, server_id=messages[0].guild.id).hidden_channel()).get_list():
+        if await db.HiddenChannel._.get_entry(messages[0].channel.id):
             return
 
         entry: nextcord.AuditLogEntry = None
@@ -71,9 +71,8 @@ class PurgeLog(nextcord_C.Cog):
         )
 
         await (await audit_log.send(embed=embed)).reply(file=nextcord.File(csv_name), mention_author=False)
+        await db.Telemetry.AMOUNT.increment("purge log")
         os.remove(csv_name)
-
-        await (await DBHandler(self.client.database).telemetry()).increment("purge log")
 
 
 

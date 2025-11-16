@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
@@ -21,21 +21,16 @@ class ReminderList(nextcord_C.Cog):
     async def reminder_list(self, interaction: nextcord.Interaction) -> None:
         """This command will list all reminders of a user"""
 
-        if not (user_reminders := await (await DBHandler(self.client.database, user_id=interaction.user.id).reminder()).get_list()):
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You don't have any reminders.\nTo add a reminder use `/reminder add`."), ephemeral=True)
-            return
-
-        await interaction.response.defer(with_message=True)
-
         output = ""
 
-        for reminder in user_reminders:
-            output += f"<t:{reminder[0]}:F> // ID: {reminder[2]} - [Link]({reminder[1]})\nReminder: `{reminder[3][:30]}"
+        async for entry in db.Reminder._.get_multiple(where={db.Reminder.USER: interaction.user.id}, order_by=db.Reminder.TIME):
+            reminder_text: str = db.Reminder.MESSAGE.retrieve(entry)
+            reminder_text = f"{reminder_text[:30]}..." if len(reminder_text) > 30 else reminder_text
+            output += f"<t:{db.Reminder.TIME.retrieve(entry)}:F> // ID: {db.Reminder.ID.retrieve(entry)} - [Link]({db.Reminder.LINK.retrieve(entry)})\nReminder: `{reminder_text}`\n\n"
 
-            if len(reminder[3]) > 30:
-                output += "..."
-
-            output += "`\n\n"
+        if not output:
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You don't have any reminders.\nTo add a reminder use `/reminder add`."), ephemeral=True)
+            return
 
         embed = EmbedFunctions().builder(
             color = Config().BOT_COLOR,
@@ -44,7 +39,7 @@ class ReminderList(nextcord_C.Cog):
             description = output
         )
 
-        await interaction.followup.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
 
 

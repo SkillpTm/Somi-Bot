@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
@@ -57,14 +57,14 @@ class About(nextcord_C.Cog):
                 ],
 
                 [
-                    "Visible Users:",
-                    f"`{len(self.client.visible_users())}`",
+                    "Users:",
+                    f"`{len(self.client.users)}`",
                     True
                 ],
 
                 [
                     "Global Command Executions:",
-                    f"`{await (await DBHandler(self.client.database).telemetry()).get_total_amount()}`",
+                    f"`{sum(await db.Telemetry.AMOUNT.get_all())}`",
                     True
                 ],
 

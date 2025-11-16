@@ -4,7 +4,7 @@ import time
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import Database
 from lib.managers import Commands
 from lib.modules import SomiBot
 
@@ -37,7 +37,7 @@ class Ping(nextcord_C.Cog):
                 f"Up since: <t:{self.client.start_time}:R>\n" +
                 f"Discord latency: `{round(self.client.latency * 1000)}ms`\n" +
                 f"Response time: `{round((end-start) * 1000)}ms`\n" +
-                f"Database latency: `{await DBHandler(self.client.database).get_latency()}ms`\n" +
+                f"Database latency: `{await Database().get_latency()}ms`\n" +
                 f"CPU usage: `{cpu_usage}%`\n" +
                 f"RAM usage: `{mem_usage}%`\n"
         )

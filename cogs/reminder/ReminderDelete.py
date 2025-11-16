@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db, Order
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands
 from lib.modules import SomiBot, YesNoButtons
@@ -32,10 +32,9 @@ class ReminderDelete(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        if not await (await DBHandler(self.client.database, user_id=interaction.user.id).reminder()).get_list():
+        if not await db.Reminder._.get_all(where={db.Reminder.USER: interaction.user.id}):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You don't have any reminders to be deleted!"), ephemeral=True)
             return
-
 
         if reminder_id == "DELETE_ALL":
             self.delete_all(interaction)
@@ -46,38 +45,11 @@ class ReminderDelete(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{reminder_id}` isn't a valid reminder id."), ephemeral=True)
             return
 
-        if not await (await DBHandler(self.client.database, user_id=interaction.user.id).reminder()).delete():
+        if not await db.Reminder._.delete({db.Reminder.ID: reminder_id, db.Reminder.USER: interaction.user.id}):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"You don't have a reminder with the ID `{reminder_id}`.\nTo get a list of your reminders use `/reminder list`."), ephemeral=True)
             return
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Your reminder `{reminder_id}` has been deleted."), ephemeral=True)
-
-    ####################################################################################################
-
-    @reminder_delete.on_autocomplete("reminder_id")
-    async def reminder_delete_autocomplete_reminder_id(
-        self,
-        interaction: nextcord.Interaction,
-        reminder_id: str
-    ) -> None:
-        """provides autocomplete suggestions to discord"""
-
-        valid_ids = {}
-
-        for reminder in await (await DBHandler(self.client.database, user_id=interaction.user.id).reminder()).get_list():
-            reminder_text = f"{reminder[3][:30]}"
-
-            if len(reminder[3]) > 30:
-                reminder_text += "..."
-
-            valid_ids.update({f"{reminder[2]}: {reminder_text}" : reminder[2]})
-
-        await interaction.response.send_autocomplete(
-            Get.autocomplete_dict_from_search_string(
-                reminder_id,
-                valid_ids
-            )
-        )
 
     ####################################################################################################
 
@@ -92,10 +64,35 @@ class ReminderDelete(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("Your reminders have **not** been deleted!"), ephemeral=True)
             return
 
-        await (await DBHandler(self.client.database, user_id=interaction.user.id).reminder()).delete_all()
+        await db.Reminder._.delete({db.Reminder.USER: interaction.user.id})
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("**ALL** your reminders have been deleted!"))
         return
+
+    ####################################################################################################
+
+    @reminder_delete.on_autocomplete("reminder_id")
+    async def reminder_delete_autocomplete_reminder_id(
+        self,
+        interaction: nextcord.Interaction,
+        reminder_id: str
+    ) -> None:
+        """provides autocomplete suggestions to discord"""
+
+        reminders = {}
+
+        async for entry in db.Reminder._.get_multiple(where={db.Reminder.USER: interaction.user.id}, order_by=db.Reminder.TIME, order=Order.ASCENDING):
+            reminder_text: str = db.Reminder.MESSAGE.retrieve(entry)
+            reminder_text = f"{reminder_text[:30]}..." if len(reminder_text) > 30 else reminder_text
+
+            reminders.update({f"{db.Reminder.ID.retrieve(entry)}: {reminder_text}" : db.Reminder.ID.retrieve(entry)})
+
+        await interaction.response.send_autocomplete(
+            Get.autocomplete_dict_from_search_string(
+                reminder_id,
+                reminders
+            )
+        )
 
 
 

@@ -1,7 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.dbModules import DBHandler
+from lib.database import db
 from lib.modules import SomiBot
 
 
@@ -13,29 +13,25 @@ class ConfigValidate(nextcord_C.Cog):
 
     ####################################################################################################
 
-    async def on_delete(self, input: nextcord.abc.GuildChannel | nextcord.Role) -> None:
+    async def on_delete(self, subject: nextcord.abc.GuildChannel | nextcord.Thread | nextcord.Role) -> None:
         """removes a channel/role from the Config, if it got deleted"""
 
-        # check that the input was actually a channel/role
-        if not isinstance(input, nextcord.TextChannel) and not isinstance(input, nextcord.Thread) and not isinstance(input, nextcord.Role):
-            return
+        if isinstance(subject, nextcord.abc.GuildChannel) or isinstance(subject, nextcord.Thread):
+            if subject.id == await db.Server.AUDIT_LOG.get(subject.guild.id):
+                await db.Server.AUDIT_LOG.set(subject.guild.id, None)
 
-        if isinstance(input, nextcord.TextChannel) and isinstance(input, nextcord.Thread):
-            if input.id == await (await DBHandler(self.client.database, server_id=input.guild.id).server()).audit_log_get():
-                await (await DBHandler(self.client.database, server_id=input.guild.id).server()).audit_log_reset()
+            if await db.HiddenChannel._.get_entry(subject.id):
+                await db.HiddenChannel._.delete(subject.id)
 
-            if input.id in await (await DBHandler(self.client.database, server_id=input.guild.id).hidden_channel()).get_list():
-                await (await DBHandler(self.client.database, server_id=input.guild.id).hidden_channel()).delete(input.id)
+            if await db.LevelIgnoreChannel._.get_entry(subject.id):
+                await db.LevelIgnoreChannel._.delete(subject.id)
 
-            if input.id in await (await DBHandler(self.client.database, server_id=input.guild.id).level_ignore_channel()).get_list():
-                await (await DBHandler(self.client.database, server_id=input.guild.id).level_ignore_channel()).delete(input.id)
-    
-        elif isinstance(input, nextcord.Role):
-            if input.id == await (await DBHandler(self.client.database, server_id=input.guild.id).server()).default_role_get():
-                await (await DBHandler(self.client.database, server_id=input.guild.id).server()).default_role_reset()
+        elif isinstance(subject, nextcord.Role):
+            if subject.id == await db.Server.DEFAULT_ROLE.get(subject.guild.id):
+                await db.Server.DEFAULT_ROLE.set(subject.guild.id, None)
 
-            if [input.id == level_role[0] for level_role in await (await DBHandler(self.client.database, server_id=input.guild.id).level_role()).get_list()]:
-                (await DBHandler(self.client.database, server_id=input.guild.id).level_role()).delete(input.id)
+            if await db.LevelRole._.get_entry(subject.id):
+                await db.LevelRole._.delete(subject.id)
 
 
 

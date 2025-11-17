@@ -190,9 +190,14 @@ class SomiBot(nextcord_C.Bot):
     async def on_guild_channel_delete(self, channel: nextcord.abc.GuildChannel) -> None:
         """This function overwrites the build in on_guild_channel_delete function, to remove channels from the ConfigDB"""
 
-        await asyncio.gather(
-            self.get_cog("ConfigValidate").on_delete(channel)
-        )
+        if channel.id == await db.Server.AUDIT_LOG.get(channel.guild.id):
+            await db.Server.AUDIT_LOG.set(channel.guild.id, None)
+
+        if await db.HiddenChannel._.get_entry(channel.id):
+            await db.HiddenChannel._.delete(channel.id)
+
+        if await db.LevelIgnoreChannel._.get_entry(channel.id):
+            await db.LevelIgnoreChannel._.delete(channel.id)
 
 
     async def on_guild_join(self, guild: nextcord.Guild) -> None:
@@ -210,9 +215,11 @@ class SomiBot(nextcord_C.Bot):
     async def on_guild_role_delete(self, role: nextcord.Role) -> None:
         """This function overwrites the build in on_guild_role_delete function, to remove threads from the ConfigDB"""
 
-        await asyncio.gather(
-            self.get_cog("ConfigValidate").on_delete(role)
-        )
+        if role.id == await db.Server.DEFAULT_ROLE.get(role.guild.id):
+            await db.Server.DEFAULT_ROLE.set(role.guild.id, None)
+
+        if await db.LevelRole._.get_entry(role.id):
+            await db.LevelRole._.delete(role.id)
 
 
     async def on_member_ban(self, guild: nextcord.Guild,user: nextcord.User) -> None:
@@ -303,9 +310,14 @@ class SomiBot(nextcord_C.Bot):
     async def on_thread_delete(self, thread: nextcord.Thread) -> None:
         """This function overwrites the build in on_thread_delete function, to remove threads from the ConfigDB"""
 
-        await asyncio.gather(
-            self.get_cog("ConfigValidate").on_delete(thread)
-        )
+        if thread.id == await db.Server.AUDIT_LOG.get(thread.guild.id):
+            await db.Server.AUDIT_LOG.set(thread.guild.id, None)
+
+        if await db.HiddenChannel._.get_entry(thread.id):
+            await db.HiddenChannel._.delete(thread.id)
+
+        if await db.LevelIgnoreChannel._.get_entry(thread.id):
+            await db.LevelIgnoreChannel._.delete(thread.id)
 
 
     async def get_message_from_link(self, link: str) -> nextcord.Message | None:

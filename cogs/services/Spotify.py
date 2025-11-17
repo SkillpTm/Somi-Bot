@@ -132,7 +132,7 @@ class Spotify(nextcord_C.Cog):
         output_data["track_name"] = track_data["name"]
         output_data["track_url"] = track_data["external_urls"]["spotify"]
 
-        if details:
+        if details == "Yes":
             output_data["artist_genres"] = ", ".join(artist_data["genres"])
             output_data["artist_followers"] = f"{int(artist_data["followers"]["total"]):,}"
             output_data["artist_popularity"] = f"`{int(artist_data['popularity'])}/100`"

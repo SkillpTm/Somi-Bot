@@ -28,17 +28,29 @@ class KeywordDelete(nextcord_C.Cog):
             required = True,
             min_length = 2,
             max_length = 50
+        ),
+        delete_all: str = nextcord.SlashOption(
+            Commands().data["keyword delete"].parameters["delete_all"].name,
+            Commands().data["keyword delete"].parameters["delete_all"].description,
+            required = False,
+            choices = ["Yes"],
+            min_length = 2,
+            max_length = 50
         )
     ) -> None:
         """This command let's you delete a keyword by it's name or all keywords with 'ALL'"""
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
+        if not keyword and not delete_all:
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("Please either provide a keyword or choose to delete all your keywords."), ephemeral=True)
+            return
+
         if not await db.Keyword._.get_all(where={db.Keyword.SERVER: interaction.guild.id, db.Keyword.USER: interaction.user.id}):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You don't have any keywords.\nTo add a keyword use `/keyword add`."), ephemeral=True)
             return
 
-        if keyword == "DELETE_ALL":
+        if delete_all == "Yes":
             await self.delete_all(interaction)
             return
 
@@ -63,7 +75,7 @@ class KeywordDelete(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("Your keywords have **not** been deleted!"), ephemeral=True)
             return
 
-        await db.Keyword._.delete(where={db.Keyword.SERVER: interaction.guild.id, db.Keyword.USER: interaction.user.id})
+        await db.Keyword._.delete(where={db.Keyword.SERVER: interaction.guild.id, db.Keyword.USER: interaction.user.id}, limit=1_000_000)
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("**ALL** your keywords have been deleted!"), ephemeral=True)
 

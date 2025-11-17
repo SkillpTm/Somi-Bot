@@ -23,20 +23,32 @@ class ReminderDelete(nextcord_C.Cog):
         reminder_id: str = nextcord.SlashOption(
             Commands().data["reminder delete"].parameters["reminder_id"].name,
             Commands().data["reminder delete"].parameters["reminder_id"].description,
-            required = True,
+            required = False,
             min_length = 9,
             max_length = 9
+        ),
+        delete_all: str = nextcord.SlashOption(
+            Commands().data["reminder delete"].parameters["delete_all"].name,
+            Commands().data["reminder delete"].parameters["delete_all"].description,
+            required = False,
+            choices = ["Yes"],
+            min_length = 2,
+            max_length = 50
         )
     ) -> None:
         """This command let's you delete a reminder with it's ID or all reminders with 'ALL'"""
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
+        if not reminder_id and not delete_all:
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("Please either provide an ID or choose to delete all your reminders."), ephemeral=True)
+            return
+
         if not await db.Reminder._.get_all(where={db.Reminder.USER: interaction.user.id}):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You don't have any reminders to be deleted!"), ephemeral=True)
             return
 
-        if reminder_id == "DELETE_ALL":
+        if delete_all == "Yes":
             self.delete_all(interaction)
             return
 
@@ -64,7 +76,7 @@ class ReminderDelete(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("Your reminders have **not** been deleted!"), ephemeral=True)
             return
 
-        await db.Reminder._.delete({db.Reminder.USER: interaction.user.id})
+        await db.Reminder._.delete({db.Reminder.USER: interaction.user.id}, limit=1_000_000)
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("**ALL** your reminders have been deleted!"))
         return

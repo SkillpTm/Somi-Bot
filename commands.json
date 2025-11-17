@@ -342,6 +342,13 @@
 				"type": "Text between 2 to 50 Characters or DELETE_ALL",
 				"required": true,
 				"default": ""
+			},
+			"delete_all": {
+				"name": "delete-all",
+				"description": "Whether to delete all your custom commands. Will ask for confirmation",
+				"type": "Set Choice",
+				"required": false,
+				"default": ""
 			}
 		},
 		"permissions": [
@@ -510,9 +517,16 @@
 		"parameters": {
 			"keyword": {
 				"name": "keyword",
-				"description": ". Delete all keywords with 'DELETE_ALL'",
-				"type": "Text between 2 to 50 Characters or DELETE_ALL",
-				"required": true,
+				"description": "The keyword you want to delete",
+				"type": "Text between 2 to 50 Characters",
+				"required": false,
+				"default": ""
+			},
+			"delete_all": {
+				"name": "delete-all",
+				"description": "Whether to delete all your keywords. Will ask for confirmation",
+				"type": "Set Choice",
+				"required": false,
 				"default": ""
 			}
 		},
@@ -1008,9 +1022,16 @@
 		"parameters": {
 			"reminder_id": {
 				"name": "reminder-id",
-				"description": "The time to to be reminded in, in [y]ears & [w]eeks & [d]ays & [h]ours & [m]inutes & [s]econds)",
+				"description": "The ID of the reminder you want to delete. You can find a list of your IDs in /reminder list",
 				"type": "Set Choice or Integer between 100000000 to 999999999",
-				"required": true,
+				"required": false,
+				"default": ""
+			},
+			"delete_all": {
+				"name": "delete-all",
+				"description": "Whether to delete all your reminders. Will ask for confirmation",
+				"type": "Set Choice",
+				"required": false,
 				"default": ""
 			}
 		},

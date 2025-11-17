@@ -1,6 +1,7 @@
 import asyncio
 import time
 
+import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
 
@@ -62,10 +63,10 @@ class ReminderSend(nextcord_C.Cog):
                 description = db.Reminder.MESSAGE.retrieve(entry)
             )
 
-            if db.Reminder.USER.retrieve(entry) in self.client.visible_users():
+            try:
                 user = await self.client.fetch_user(db.Reminder.USER.retrieve(entry))
                 await user.send(embed=embed)
-            else:
+            except (nextcord.NotFound, nextcord.Forbidden):
                 Logger().action_warning(f"reminder send: {db.Reminder.USER.retrieve(entry)} couldn't be reminded, because their pms aren't open to the client")
 
             await db.Reminder._.delete(db.Reminder.ID.retrieve(entry))

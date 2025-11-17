@@ -347,20 +347,6 @@ class SomiBot(nextcord_C.Bot):
 
     ####################################################################################################
 
-    def visible_users(self) -> set[int]:
-        """Gets a set of all unique user ids, the client can see"""
-
-        unique_users: set[int] = set()
-
-        for guild in self.guilds:
-            for member in guild.members:
-                if not member.bot:
-                    unique_users.add(member.id)
-
-        return unique_users
-
-    ####################################################################################################
-
     @staticmethod
     async def on_thread_join(thread: nextcord.Thread):
         """This function overwrites the build in on_thread_join, so that the client automatically joins all new threads."""

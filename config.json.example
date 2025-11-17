@@ -1,7 +1,5 @@
 {
     "ACTIVITY_NAME": "name",
-	"APPLICATION_BANNER_PATH": "./assets/icon/bot/banner.png",
-	"APPLICATION_ICON_PATH": "./assets/icon/bot/icon.png",
 	"APPLICATION_ID": 000000000000000000,
 	"APPLICATION_NAME": "name",
     "MAX_MESSAGES_CACHE": 0,
@@ -42,6 +40,12 @@
         "SPOTIFY_ICON": "https://example.com/name.ext",
 		"SUPPORT_SERVER_INVITE": "https://example.com/name.ext"
     },
+	"PATHS": {
+		"APPLICATION_BANNER": "./assets/icon/bot/banner.png",
+		"APPLICATION_ICON": "./assets/icon/bot/icon.png",
+		"QUERIES": "./sql/queries.sql",
+		"SCHEMA": "./sql/schema.sql"
+	},
     "SOMICORD": {
         "MODMAIL_SERVER_ID": 000000000000000000,
         "MODMAIL_CHANNEL_ID": 000000000000000000,

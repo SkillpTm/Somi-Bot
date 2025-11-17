@@ -15,6 +15,7 @@ class LevelRole(DataAccessMixin, Table, enum.Enum):
 
         return "level_role"
 
+
     @staticmethod
     def make_primary_key(key: int | str) -> dict["LevelRole", int | str]:
         """creates a primary key dict from the primary key value"""

@@ -15,6 +15,7 @@ class Server(DataAccessMixin, Table, enum.Enum):
 
         return "server"
 
+
     @staticmethod
     def make_primary_key(key: int | str) -> dict["Server", int | str]:
         """creates a primary key dict from the primary key value"""

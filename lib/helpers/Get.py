@@ -8,8 +8,6 @@ import nextcord.ext.application_checks as nextcord_AC
 class Get():
     """Helper class holding methodes to get data"""
 
-    ####################################################################################################
-
     @staticmethod
     def autocomplete_dict_from_search_string(search_string: str, autocomplete_dict: dict) -> dict[str, str]:
         """Takes a string and a dict and filters for matching results, between the two. The results are sorted form most to least relevant."""
@@ -56,7 +54,6 @@ class Get():
 
         return {key: value for index, (key, value) in enumerate(output.items()) if index < 25} # discord limits autocomplete suggestions to 25
 
-    ####################################################################################################
 
     @staticmethod
     def clean_input_command(commandname: str) -> str:
@@ -64,7 +61,6 @@ class Get():
 
         return commandname.replace(" ", "").replace("/", "").lower()
 
-    ####################################################################################################
 
     @staticmethod
     def interaction_by_owner() -> bool:
@@ -75,7 +71,6 @@ class Get():
 
         return nextcord_AC.check(predicate)
 
-    ####################################################################################################
 
     @staticmethod
     def markdown_safe(input_string: str) -> str:
@@ -102,7 +97,6 @@ class Get():
 
         return input_string
 
-    ####################################################################################################
 
     @staticmethod
     def rid_of_whitespace(string: str) -> str:
@@ -112,7 +106,6 @@ class Get():
 
         return string
 
-    ####################################################################################################
 
     @staticmethod
     def seconds_from_time(time: str) -> int:

@@ -10,8 +10,6 @@ from lib.helpers import Get
 class Webscrape():
     """Helper class to make webscraping lastfm at a higher level easier"""
 
-    ####################################################################################################
-
     @staticmethod
     def _type_name(soup: BeautifulSoup, type_flag: str) -> str:
         """Webscrapes the artist/album/track name"""
@@ -27,7 +25,6 @@ class Webscrape():
 
         return Get.markdown_safe(type_name)
 
-    ####################################################################################################
 
     @staticmethod
     def _artist_name(soup: BeautifulSoup) -> str:
@@ -37,7 +34,6 @@ class Webscrape():
 
         return Get.markdown_safe(artist_name)
 
-    ####################################################################################################
 
     @staticmethod
     def _type_image(soup: BeautifulSoup, type_flag: str) -> str:
@@ -52,7 +48,6 @@ class Webscrape():
 
         return cover_image_url
 
-    ####################################################################################################
 
     @staticmethod
     def _type_metadata(soup: BeautifulSoup) -> list[str]:
@@ -63,7 +58,6 @@ class Webscrape():
 
         return metadata_list # has 3 elements for artist, otherwise 1
 
-    ####################################################################################################
 
     @staticmethod
     def _type_element_positions(soup: BeautifulSoup) -> list[str]:
@@ -74,7 +68,6 @@ class Webscrape():
 
         return positions_list
 
-    ####################################################################################################
 
     @staticmethod
     def _type_list(soup: BeautifulSoup) -> tuple[list[str], list[str]]:
@@ -88,7 +81,6 @@ class Webscrape():
 
         return names_list, scorbbles_list
 
-    ####################################################################################################
 
     @staticmethod
     def _output_lists(
@@ -125,7 +117,6 @@ class Webscrape():
 
         return track_output, album_output
 
-    ####################################################################################################
 
     @staticmethod
     def library_subpage(

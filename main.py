@@ -22,7 +22,6 @@ def load_cogs(client: SomiBot) -> None:
 
             client.load_extension(f"cogs.{folder}.{file[:-3]}")
 
-####################################################################################################
 
 def start(client: SomiBot) -> None:
     """starts the bot indefinitly"""
@@ -43,7 +42,6 @@ def start(client: SomiBot) -> None:
             time.sleep(10)
             client.restart()
 
-####################################################################################################
 
 if __name__ == "__main__":
     somi = SomiBot()

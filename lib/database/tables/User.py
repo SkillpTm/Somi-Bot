@@ -16,6 +16,7 @@ class User(DataAccessMixin, Table, enum.Enum):
 
         return "user"
 
+
     @staticmethod
     def make_primary_key(key: int | str) -> dict["User", int | str]:
         """creates a primary key dict from the primary key value"""

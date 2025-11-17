@@ -16,7 +16,6 @@ class CustomAdd(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.custom.subcommand(Commands().data["custom add"].name, Commands().data["custom add"].description)
     async def custom_add(

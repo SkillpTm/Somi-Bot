@@ -15,15 +15,16 @@ class Table():
     @abc.abstractmethod
     def get_table() -> str:
         """returns the table name"""
-        pass
+
 
     @staticmethod
     @abc.abstractmethod
     def make_primary_key(key: int | str) -> dict["Table", int | str]:
         """creates a primary key dict from the primary key value"""
-        pass
+
 
 class DataAccessMixin():
+
     async def add(self: Table, data: dict[Table, int | str | None]) -> bool:
         """adds a new entry into the table"""
 
@@ -32,6 +33,7 @@ class DataAccessMixin():
             Query.INSERT,
             data = {key.value: value for key, value in data.items()}
         )
+
 
     async def add_unique(
         self: Table,
@@ -50,6 +52,7 @@ class DataAccessMixin():
             where = {key.value: value for key, value in where.items()}
         )
 
+
     async def delete(self: Table, where: dict[Table, int | str | None] | int | str, limit: int = 1) -> bool:
         """deletes an entry from the table"""
 
@@ -62,6 +65,7 @@ class DataAccessMixin():
             where = {key.value: value for key, value in where.items()},
             limit = limit
         )
+
 
     async def get(self: Table, where: dict[Table, int | str | None] | int | str) -> int | str | None:
         """gets a singular value from the table"""
@@ -76,6 +80,7 @@ class DataAccessMixin():
             where = {key.value: value for key, value in where.items()}
         )
 
+
     async def get_entry(self: Table, where: dict[Table, int | str | None] | int | str) -> dict[str, str | int | None] | None:
         """gets an entire entry from the table"""
 
@@ -87,6 +92,7 @@ class DataAccessMixin():
             Query.SELECT,
             where = {key.value: value for key, value in where.items()}
         )
+
 
     async def get_multiple(
         self: Table,
@@ -114,6 +120,7 @@ class DataAccessMixin():
             limit = limit
         ):
             yield entry
+
 
     async def get_all(
         self: Union[Table, "DataAccessMixin"],
@@ -143,6 +150,7 @@ class DataAccessMixin():
 
         return output
 
+
     async def set(self: Table, where: dict[Table, int | str | None] | int | str, data: dict[Table, int | str | None] | int | str) -> bool:
         """sets a singular value in the table"""
 
@@ -158,6 +166,7 @@ class DataAccessMixin():
             data = {key.value: value for key, value in data.items()},
             where = {key.value: value for key, value in where.items()}
         )
+
 
     def retrieve(self: Table, entry: dict[Table, int | str | None]) -> int | str | None:
         """retrieves the value from a result dict"""

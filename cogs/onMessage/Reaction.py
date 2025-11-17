@@ -14,7 +14,6 @@ class Reactions(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     async def reaction(self, message: nextcord.Message) -> None:
         """makes the bot react to certain message contents"""               

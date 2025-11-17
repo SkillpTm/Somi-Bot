@@ -26,6 +26,7 @@ class FeedbackModal(nextcord.ui.Modal):
 
         self.add_item(self.feedback)
 
+
     async def callback(
         self,
         interaction: nextcord.Interaction
@@ -65,7 +66,6 @@ class Feedback(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(Commands().data["feedback"].name, Commands().data["about"].description)
     async def feedback(self, interaction: nextcord.Interaction) -> None:

@@ -11,7 +11,6 @@ class Bam(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(Commands().data["bam"].name, Commands().data["avatar"].description)
     async def bam(self, interaction: nextcord.Interaction) -> None:

@@ -15,7 +15,6 @@ class Database(metaclass=Singleton):
         self._queries: dict[str, str] = {}
         self._set_queries(Config().QUERIES_PATH)
 
-    ####################################################################################################
 
     async def _set_pool(self, schema_path: str, max_pool_size: int) -> None:
         """sets up the db with the provided schema and sets the pool"""
@@ -42,7 +41,6 @@ class Database(metaclass=Singleton):
             async with con.cursor() as cur:
                 await cur.execute(schema)
 
-    ####################################################################################################
 
     def _set_queries(self, queries_path: str) -> dict[str, str]:
         """sets the queries from the provided .sql file"""
@@ -57,7 +55,6 @@ class Database(metaclass=Singleton):
             lines = part.strip().split("\n", 1)
             self._queries[lines[0].strip()] = lines[1].strip()
 
-    ####################################################################################################
 
     async def close(self) -> None:
         """closes all pool connections to the db"""
@@ -66,7 +63,6 @@ class Database(metaclass=Singleton):
         await self._pool.wait_closed()
         Singleton.reset(Database)
 
-    ####################################################################################################
 
     async def get_latency(self) -> int:
         """gets the latency of the db in milliseconds"""
@@ -81,7 +77,6 @@ class Database(metaclass=Singleton):
 
         return round((end-start) * 1000, 2)
 
-    ####################################################################################################
 
     async def execute(
         self,
@@ -130,7 +125,6 @@ class Database(metaclass=Singleton):
 
         return False
 
-    ####################################################################################################
 
     async def fetch_val(
         self,
@@ -164,7 +158,6 @@ class Database(metaclass=Singleton):
 
         return result
 
-    ####################################################################################################
 
     async def fetch_row(
         self,
@@ -198,7 +191,6 @@ class Database(metaclass=Singleton):
 
         return result
 
-    ####################################################################################################
 
     async def fetch_many(
         self,

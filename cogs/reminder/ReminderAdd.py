@@ -18,7 +18,6 @@ class ReminderAdd(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.reminder.subcommand(Commands().data["reminder add"].name, Commands().data["reminder add"].description)
     async def reminder_add(

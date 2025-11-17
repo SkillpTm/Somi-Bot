@@ -12,7 +12,6 @@ class Avatar(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(Commands().data["avatar"].name, Commands().data["avatar"].description)
     async def avatar(

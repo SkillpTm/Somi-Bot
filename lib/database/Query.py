@@ -7,6 +7,7 @@ class Order(enum.Enum):
     DESCENDING = "DESC"
     NONE = ""
 
+
 class Query(enum.Enum):
     DELETE = "delete_where"
     INSERT = "insert"

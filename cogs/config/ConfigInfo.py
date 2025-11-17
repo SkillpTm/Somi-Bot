@@ -20,7 +20,6 @@ class ConfigInfo(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.config.subcommand(Commands().data["config info"].name, Commands().data["config info"].description)
     async def config_info(self, interaction: nextcord.Interaction) -> None:
@@ -68,7 +67,6 @@ class ConfigInfo(nextcord_C.Cog):
 
         await interaction.followup.send(embed=embed, ephemeral=True)
 
-    ####################################################################################################
 
     async def get_config_data(self, interaction: nextcord.Interaction) -> tuple[str, str, str, str, str]:
         """This function gets all the data that can be configured and if there is none, it just replaces with a default text.

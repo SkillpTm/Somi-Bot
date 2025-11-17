@@ -13,7 +13,6 @@ class ReminderDelete(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.reminder.subcommand(Commands().data["reminder delete"].name, Commands().data["reminder delete"].description)
     async def reminder_delete(
@@ -63,7 +62,6 @@ class ReminderDelete(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Your reminder `{reminder_id}` has been deleted."), ephemeral=True)
 
-    ####################################################################################################
 
     async def delete_all(self, interaction: nextcord.Interaction) -> None:
         """asks the user if they want to delete all their reminders and does as answered"""
@@ -81,7 +79,6 @@ class ReminderDelete(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("**ALL** your reminders have been deleted!"))
         return
 
-    ####################################################################################################
 
     @reminder_delete.on_autocomplete("reminder_id")
     async def reminder_delete_autocomplete_reminder_id(

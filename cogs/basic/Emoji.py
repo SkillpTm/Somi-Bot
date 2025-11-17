@@ -13,7 +13,6 @@ class Emoji(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         Commands().data["emoji"].alias,

@@ -66,7 +66,6 @@ class Logger(metaclass=Singleton):
 
         return ouput
 
-    ####################################################################################################
 
     def action_log(
         self,
@@ -77,13 +76,11 @@ class Logger(metaclass=Singleton):
         """Formats and logs a bot action"""
         self.action_logger.info(Logger.get_log_message(data_provider, action_name, action_inputs))
 
-    ####################################################################################################
 
     def action_warning(self, action: str) -> None:
         """Formats and logs a bot warning"""
         self.action_logger.warning(action)
 
-    ####################################################################################################
 
     def application_command_error(self, **kwargs) -> None:
         """Formats and logs a bot error"""
@@ -94,7 +91,6 @@ class Logger(metaclass=Singleton):
 
         self.error_logger.error(error)
 
-    ####################################################################################################
 
     def bot_status(self, status: str) -> None:
         """Formats and logs a bot debug message"""

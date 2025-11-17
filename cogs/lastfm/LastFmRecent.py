@@ -18,7 +18,6 @@ class LastFmRecent(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.lastfm.subcommand(
         Commands().data["lf recent"].alias,
@@ -48,7 +47,6 @@ class LastFmRecent(nextcord_C.Cog):
 
         await self.lastfm_recent_rec(interaction, user, lastfm_username, page_number = 1)
 
-    ####################################################################################################
 
     async def lastfm_recent_rec(
         self,

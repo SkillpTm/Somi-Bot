@@ -17,6 +17,7 @@ class Feedback(DataAccessMixin, Table, enum.Enum):
 
         return "feedback"
 
+
     @staticmethod
     def make_primary_key(key: int | str) -> dict["Feedback", int | str]:
         """creates a primary key dict from the primary key value"""

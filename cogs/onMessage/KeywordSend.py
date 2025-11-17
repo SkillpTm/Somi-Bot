@@ -14,7 +14,6 @@ class KeywordSend(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     async def keyword_send(self, message: nextcord.Message) -> None:
         """

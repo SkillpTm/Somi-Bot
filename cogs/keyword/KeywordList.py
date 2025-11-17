@@ -15,7 +15,6 @@ class KeywordList(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.keyword.subcommand(Commands().data["keyword list"].name, Commands().data["keyword list"].description)
     async def keyword_list(self, interaction: nextcord.Interaction) -> None:

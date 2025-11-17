@@ -13,7 +13,6 @@ class EditLog(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     async def edit_log(
         self,
@@ -62,7 +61,6 @@ class EditLog(nextcord_C.Cog):
 
         await db.Telemetry.AMOUNT.increment("edit log")
 
-    ####################################################################################################
 
     @staticmethod
     def single_response(
@@ -94,7 +92,6 @@ class EditLog(nextcord_C.Cog):
         embed, file_urls = EmbedFunctions.get_or_add_attachments(message_before.attachments, embed)
         return embed, file_urls
 
-    ####################################################################################################
 
     @staticmethod
     def multi_response(

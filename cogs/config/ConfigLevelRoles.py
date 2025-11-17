@@ -14,7 +14,6 @@ class ConfigLevelRoles(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.config.subcommand(
         Commands().data["config level-roles"].alias,
@@ -84,8 +83,6 @@ class ConfigLevelRoles(nextcord_C.Cog):
         await audit_log.send(embed=embed)
 
 
-    ####################################################################################################
-
     async def _add_role(
         self,
         interaction: nextcord.Interaction,
@@ -108,7 +105,6 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
         return added
 
-    ####################################################################################################
 
     async def _remove_role(
         self,
@@ -126,6 +122,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
         await LevelRoles.update_users(interaction.guild)
 
         return deleted
+
 
 
 def setup(client: SomiBot) -> None:

@@ -10,7 +10,6 @@ class ParentCommand(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         name = "manage",
@@ -22,7 +21,6 @@ class ParentCommand(nextcord_C.Cog):
     async def config(self, _interaction: nextcord.Interaction) -> None:
         """Main command that does nothing for /config subcommands"""
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         name = "custom",
@@ -32,8 +30,6 @@ class ParentCommand(nextcord_C.Cog):
     )
     async def custom(self, _interaction: nextcord.Interaction) -> None:
         """Main command that does nothing for /custom subcommands"""
-
-    ####################################################################################################
 
 
     @nextcord.slash_command(
@@ -45,7 +41,6 @@ class ParentCommand(nextcord_C.Cog):
     async def keyword(self, _interaction: nextcord.Interaction) -> None:
         """Main command that does nothing for /keyword subcommands"""
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         name = "xp",
@@ -56,7 +51,6 @@ class ParentCommand(nextcord_C.Cog):
     async def levels(self, _interaction: nextcord.Interaction) -> None:
         """Main command that does nothing for /levels subcommands"""
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         name = "lastfm",
@@ -65,7 +59,6 @@ class ParentCommand(nextcord_C.Cog):
     async def lastfm(self, _interaction: nextcord.Interaction) -> None:
         """Main command that does nothing for /lf subcommands"""
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         name = "alarm",

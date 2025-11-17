@@ -14,7 +14,6 @@ class PageButtons(nextcord.ui.View):
         self.value = None
         super().__init__(timeout=60)
 
-    ####################################################################################################
 
     @nextcord.ui.button(label="start", style=nextcord.ButtonStyle.green)
     async def start(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
@@ -28,6 +27,7 @@ class PageButtons(nextcord.ui.View):
         self.value = True
         self.stop()
 
+
     @nextcord.ui.button(label="<<", style=nextcord.ButtonStyle.green)
     async def left(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
         """goes back one page, without wrapping back to the end"""
@@ -40,9 +40,11 @@ class PageButtons(nextcord.ui.View):
         self.value = True
         self.stop()
 
+
     @nextcord.ui.button(label="/", style=nextcord.ButtonStyle.gray, disabled=True)
     async def page_button(self, _button: nextcord.ui.Button, _interaction: nextcord.Interaction) -> None:
         """does nothing, just displays the page numbers"""
+
 
     @nextcord.ui.button(label=">>", style=nextcord.ButtonStyle.red)
     async def right(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -68,7 +70,6 @@ class PageButtons(nextcord.ui.View):
         self.value = True
         self.stop()
 
-    ####################################################################################################
 
     async def update_buttons(self) -> None:
         """changes the page button numbers and checks, if the buttons should be disabled or nor"""
@@ -76,7 +77,6 @@ class PageButtons(nextcord.ui.View):
         await self._change_page_button()
         await self._check_page_for_button_deactivation()
 
-    ####################################################################################################
 
     async def _change_page_button(self) -> None:
         """changes the number on the page button"""
@@ -86,7 +86,6 @@ class PageButtons(nextcord.ui.View):
                 child.label = f"{self.page}/{self.last_page}"
         await self.interaction.edit_original_message(view=self)
 
-    ####################################################################################################
 
     async def _check_page_for_button_deactivation(self) -> None:
         """disables buttons (all but the page button) in case they should be turned off"""
@@ -105,7 +104,6 @@ class PageButtons(nextcord.ui.View):
 
         await self.interaction.edit_original_message(view=self)
 
-    ####################################################################################################
 
     async def on_timeout(self) -> None:
         """overwrites the internal on_timeout to disable all buttons on timeout"""

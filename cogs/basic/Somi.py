@@ -11,7 +11,6 @@ class Somi(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(Commands().data["somi"].name, Commands().data["somi"].description)
     async def somi(self,interaction: nextcord.Interaction) -> None:

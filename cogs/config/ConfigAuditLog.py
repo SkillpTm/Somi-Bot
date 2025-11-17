@@ -14,7 +14,6 @@ class ConfigAuditLog(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.config.subcommand(Commands().data["config audit-log"].name, Commands().data["config audit-log"].description)
     async def config_audit_log(

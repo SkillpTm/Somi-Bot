@@ -16,7 +16,6 @@ class Time(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(Commands().data["time"].name, Commands().data["time"].description)
     async def time(
@@ -63,7 +62,6 @@ class Time(nextcord_C.Cog):
 
         await interaction.followup.send(embed=embed)
 
-    ####################################################################################################
 
     @time.on_autocomplete("timezone")
     async def time_autocomplete_timezone(

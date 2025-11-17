@@ -13,7 +13,6 @@ class About(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(Commands().data["about"].name, Commands().data["about"].description)
     async def about(self, interaction: nextcord.Interaction) -> None:

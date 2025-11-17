@@ -15,7 +15,6 @@ class Mute(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         Commands().data["mute"].name,
@@ -70,7 +69,6 @@ class Mute(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Succesfully muted {member.mention}."), ephemeral=True)
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         Commands().data["unmute"].name,

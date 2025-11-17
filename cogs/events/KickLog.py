@@ -19,7 +19,6 @@ class KickLog(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     async def kick_log(self, member: nextcord.Member) -> None:
         """A log that activates, when someone gets kicked and an audit log is set"""

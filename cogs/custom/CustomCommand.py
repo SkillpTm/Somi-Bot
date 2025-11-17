@@ -13,7 +13,6 @@ class CustomCommand(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         Commands().data["custom-command"].alias,
@@ -42,7 +41,6 @@ class CustomCommand(nextcord_C.Cog):
 
         await interaction.response.send_message(commandtext)
 
-    ####################################################################################################
 
     @customcommand.on_autocomplete("name")
     async def customcommand_autocomplete_name(

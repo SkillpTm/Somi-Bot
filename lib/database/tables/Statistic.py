@@ -24,6 +24,7 @@ class Statistic(DataAccessMixin, Table, enum.Enum):
 
         return "statistic"
 
+
     @staticmethod
     def make_primary_key(key: int | str) -> dict["Statistic", int | str]:
         """creates a primary key dict from the primary key value"""

@@ -14,6 +14,7 @@ class LevelIgnoreChannel(DataAccessMixin, Table, enum.Enum):
 
         return "level_ignore_channel"
 
+
     @staticmethod
     def make_primary_key(key: int | str) -> dict["LevelIgnoreChannel", int | str]:
         """creates a primary key dict from the primary key value"""

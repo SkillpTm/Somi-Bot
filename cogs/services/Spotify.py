@@ -13,7 +13,6 @@ class Spotify(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         Commands().data["spotify"].alias,
@@ -110,7 +109,6 @@ class Spotify(nextcord_C.Cog):
 
         await interaction.followup.send(embed=embed)
 
-    ####################################################################################################
 
     async def get_output_data(
         self,

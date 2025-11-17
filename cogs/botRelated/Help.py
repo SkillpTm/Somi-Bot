@@ -13,7 +13,6 @@ class Help(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(Commands().data["help"].name, Commands().data["help"].description)
     async def help(
@@ -79,7 +78,6 @@ class Help(nextcord_C.Cog):
         await interaction.followup.send(embed=embed, ephemeral=True)
         await db.Telemetry.AMOUNT.increment(f"help selection: {name[1:]}")
 
-    ####################################################################################################
 
     @help.on_autocomplete("name")
     async def help_autocomplete_name(

@@ -13,7 +13,6 @@ class Modmail(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     async def modmail(self, message: nextcord.Message) -> None:
         """

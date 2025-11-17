@@ -12,7 +12,6 @@ class YouTube(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         Commands().data["youtube"].alias,
@@ -46,7 +45,6 @@ class YouTube(nextcord_C.Cog):
 
         await self.youtube_rec(interaction=interaction, results=results, page_number=1)
 
-    ####################################################################################################
 
     async def youtube_rec(
         self,

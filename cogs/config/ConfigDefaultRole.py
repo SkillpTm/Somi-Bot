@@ -14,7 +14,6 @@ class ConfigDefaultRole(nextcord_C.Cog):
     def __init__(self, client) ->  None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.config.subcommand(Commands().data["config default-role"].name, Commands().data["config default-role"].description)
     async def config_default_role(
@@ -76,7 +75,6 @@ class ConfigDefaultRole(nextcord_C.Cog):
 
         await audit_log.send(embed=embed)
 
-    ####################################################################################################
 
     async def _set_role(
         self,
@@ -104,7 +102,6 @@ class ConfigDefaultRole(nextcord_C.Cog):
 
         return True
 
-    ####################################################################################################
 
     async def _reset_role(
         self,

@@ -19,7 +19,6 @@ class DeleteLog(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     async def message_delete_log(self, message: nextcord.Message) -> None:
         """This function will create a delete-log message, if a guild has an audit-log-channel and if the message wasn't in a hidden-channel."""
@@ -48,7 +47,6 @@ class DeleteLog(nextcord_C.Cog):
 
         await self.delete_log(message, audit_log)
 
-    ####################################################################################################
 
     async def delete_log(
         self,
@@ -78,7 +76,6 @@ class DeleteLog(nextcord_C.Cog):
 
         await db.Telemetry.AMOUNT.increment("delete log")
 
-    ####################################################################################################
 
     async def remove_log(
         self,

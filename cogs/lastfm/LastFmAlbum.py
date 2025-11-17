@@ -19,7 +19,6 @@ class LastFmAlbum(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.lastfm.subcommand(Commands().data["lf album"].name, Commands().data["lf album"].description)
     async def lastfm_album(

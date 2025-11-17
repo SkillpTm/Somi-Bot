@@ -15,7 +15,6 @@ class KeywordDelete(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.keyword.subcommand(Commands().data["keyword delete"].name, Commands().data["keyword delete"].description)
     async def keyword_delete(
@@ -62,7 +61,6 @@ class KeywordDelete(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"`{keyword}` has been deleted from your keywords."), ephemeral=True)
 
-    ####################################################################################################
 
     async def delete_all(self, interaction: nextcord.Interaction) -> None:
         """asks the user if they want to delete all their keywords and does as answered"""
@@ -79,7 +77,6 @@ class KeywordDelete(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("**ALL** your keywords have been deleted!"), ephemeral=True)
 
-    ####################################################################################################
 
     @keyword_delete.on_autocomplete("keyword")
     async def keyword_delete_autocomplete_keyword(

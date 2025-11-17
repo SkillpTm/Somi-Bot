@@ -15,7 +15,6 @@ class LevelsGainXp(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     async def levels_gain_xp(self, message: nextcord.Message) -> None:
         """This command gives xp to a user on the server the message was send, if the message:

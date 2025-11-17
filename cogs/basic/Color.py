@@ -19,7 +19,6 @@ class Color(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(Commands().data["color"].name, Commands().data["color"].description)
     async def color(
@@ -51,7 +50,6 @@ class Color(nextcord_C.Cog):
 
         os.remove(f"./debug/temp/{hexcode}.png")
 
-    ####################################################################################################
 
     @staticmethod
     def generate_image(hexcode: str) -> None:

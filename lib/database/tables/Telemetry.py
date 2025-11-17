@@ -16,11 +16,13 @@ class Telemetry(DataAccessMixin, Table, enum.Enum):
 
         return "telemetry"
 
+
     @staticmethod
     def make_primary_key(key: int | str) -> dict["Telemetry", int | str]:
         """creates a primary key dict from the primary key value"""
 
         return {Telemetry.NAME: key}
+
 
     @staticmethod
     async def increment(event: str) -> None:

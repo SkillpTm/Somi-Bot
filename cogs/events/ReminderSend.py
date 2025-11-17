@@ -17,7 +17,6 @@ class ReminderSend(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     async def infinite_reminder_loop(self) -> None:
         """infinite loop that will check every second all reminders, if they need to be send out and does so if they do"""
@@ -35,7 +34,6 @@ class ReminderSend(nextcord_C.Cog):
             except (requests.ConnectionError, asyncio.CancelledError):
                 self.client.restart()
 
-    ####################################################################################################
 
     async def reminder_send(self) -> None:
         """

@@ -15,7 +15,6 @@ class JoinLog(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     async def join_log(self, member: nextcord.Member) -> None:
         """

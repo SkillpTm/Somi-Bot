@@ -16,7 +16,6 @@ class LastFmTopTracks(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.lastfm.subcommand(
         Commands().data["lf top-tracks"].alias,
@@ -52,7 +51,6 @@ class LastFmTopTracks(nextcord_C.Cog):
 
         await self.lastfm_top_tracks_rec(interaction, user, lastfm_username, timeframe, page_number = 1)
 
-    ####################################################################################################
 
     async def lastfm_top_tracks_rec(
         self,

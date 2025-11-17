@@ -14,7 +14,6 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.config.subcommand(
         Commands().data["config level-ignore-channels"].alias,
@@ -73,7 +72,6 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
 
         await audit_log.send(embed=embed)
 
-    ####################################################################################################
 
     async def _add_channel(
         self,
@@ -89,7 +87,6 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{channel.mention} has been added to the level-ignore-channels.\nThere won't be any XP gain in there anymore."), ephemeral=True)
         return added
 
-    ####################################################################################################
 
     async def _remove_channel(
         self,

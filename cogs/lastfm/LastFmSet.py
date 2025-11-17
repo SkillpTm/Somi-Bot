@@ -16,7 +16,6 @@ class LastFmSet(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.lastfm.subcommand(Commands().data["lf set"].name, Commands().data["lf set"].description)
     async def lastfm_set(
@@ -47,7 +46,6 @@ class LastFmSet(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"You were succesfully connected with the LastFm user `{username_response}`"), ephemeral=True)
 
-    ####################################################################################################
 
     @ParentCommand.lastfm.subcommand(Commands().data["lf reset"].name, Commands().data["lf reset"].description)
     async def lastfm_reset(self, interaction: nextcord.Interaction) -> None:

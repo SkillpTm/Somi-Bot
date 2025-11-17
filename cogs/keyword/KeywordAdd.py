@@ -17,7 +17,6 @@ class KeywordAdd(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.keyword.subcommand(Commands().data["keyword add"].name, Commands().data["keyword add"].description)
     async def keyword_add(

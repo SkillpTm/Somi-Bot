@@ -6,7 +6,6 @@ import nextcord
 class Misc():
     """Helper class with misc methodes"""
 
-    ####################################################################################################
 
     @staticmethod
     async def deactivate_view_children(button_view: nextcord.ui.View) -> None:
@@ -25,7 +24,6 @@ class Misc():
         elif interaction:
             await interaction.edit_original_message(view=button_view)
 
-    ####################################################################################################
 
     @staticmethod
     def make_bulk_messages_csv(messages: list[nextcord.Message]) -> str:

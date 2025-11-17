@@ -15,7 +15,6 @@ class ReminderList(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.reminder.subcommand(Commands().data["reminder list"].name, Commands().data["reminder list"].description)
     async def reminder_list(self, interaction: nextcord.Interaction) -> None:

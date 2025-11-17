@@ -11,7 +11,6 @@ class ConfigValidate(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     async def on_delete(self, subject: nextcord.abc.GuildChannel | nextcord.Thread | nextcord.Role) -> None:
         """removes a channel/role from the Config, if it got deleted"""

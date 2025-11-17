@@ -10,7 +10,6 @@ from lib.managers.Config import Config
 class EmbedFunctions():
     """Helper class for embed related functions"""
 
-    ####################################################################################################
 
     @staticmethod
     def get_critical_error_message(response: str) -> nextcord.Embed:
@@ -23,7 +22,6 @@ class EmbedFunctions():
 
         return embed
 
-    ####################################################################################################
 
     @staticmethod
     def get_error_message(response: str) -> nextcord.Embed:
@@ -36,7 +34,6 @@ class EmbedFunctions():
 
         return embed
 
-    ####################################################################################################
 
     @staticmethod
     def get_info_message(repsonse: str) -> nextcord.Embed:
@@ -49,7 +46,6 @@ class EmbedFunctions():
 
         return embed
 
-    ####################################################################################################
 
     @staticmethod
     def get_success_message(repsonse: str) -> nextcord.Embed:
@@ -62,7 +58,6 @@ class EmbedFunctions():
 
         return embed
 
-    ####################################################################################################
 
     @staticmethod
     def builder(
@@ -119,7 +114,6 @@ class EmbedFunctions():
 
         return embed
 
-    ####################################################################################################
 
     @staticmethod
     def get_or_add_attachments(

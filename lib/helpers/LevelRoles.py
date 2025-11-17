@@ -6,8 +6,6 @@ from lib.database import db, Order, Table
 class LevelRoles():
     """Helper class holding level role related methodes"""
 
-    ####################################################################################################
-
     @staticmethod
     async def update_users(
         server: nextcord.Guild,
@@ -69,7 +67,6 @@ class LevelRoles():
             if not [new_role_id == role.id for role in member.roles]:
                 await member.add_roles(server.get_role(new_role_id))
 
-    ####################################################################################################
 
     @staticmethod
     async def get_level_range_with_role(guild: nextcord.Guild) -> str:

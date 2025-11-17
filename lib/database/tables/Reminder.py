@@ -17,6 +17,7 @@ class Reminder(DataAccessMixin, Table, enum.Enum):
 
         return "reminder"
 
+
     @staticmethod
     def make_primary_key(key: int | str) -> dict["Reminder", int | str]:
         """creates a primary key dict from the primary key value"""

@@ -19,7 +19,6 @@ class BanLog(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     async def ban_log(self, guild: nextcord.Guild, user: nextcord.User) -> None:
         """A log that activates, when someone gets banned and an audit log is set"""
@@ -73,7 +72,6 @@ class BanLog(nextcord_C.Cog):
         await audit_log.send(embed=embed)
         await db.Telemetry.AMOUNT.increment("ban log")
 
-    ####################################################################################################
 
     async def unban_log(self, guild: nextcord.Guild, user: nextcord.User) -> None:
         """A log that activates, when someone gets unbanned and an audit log is set"""

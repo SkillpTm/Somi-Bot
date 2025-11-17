@@ -12,7 +12,6 @@ class Ban(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         Commands().data["ban"].name,
@@ -70,7 +69,6 @@ class Ban(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Succesfully banned {member.mention}."), ephemeral=True)
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         Commands().data["unban"].name,
@@ -114,7 +112,6 @@ class Ban(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{user.mention} wasn't unbanned."), ephemeral=True)
             return
 
-    ####################################################################################################
 
     @unban.on_autocomplete("user_id")
     async def unban_autocomplete_user_id(

@@ -13,7 +13,6 @@ class Close(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         Commands().data["close"].name,
@@ -74,7 +73,6 @@ class Close(nextcord_C.Cog):
 
         await audit_log.send(embed=embed)
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         Commands().data["open"].name,

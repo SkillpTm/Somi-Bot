@@ -16,6 +16,7 @@ class CustomCommand(DataAccessMixin, Table, enum.Enum):
 
         return "custom_command"
 
+
     @staticmethod
     def make_primary_key(key: int | str) -> dict["CustomCommand", int | str]:
         """creates a primary key dict from the primary key value"""

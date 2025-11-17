@@ -12,7 +12,6 @@ class Welcome(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     async def welcome(self, member: nextcord.Member) -> None:
         """welcomes a user on the server"""

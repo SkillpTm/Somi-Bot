@@ -14,6 +14,7 @@ class HiddenChannel(DataAccessMixin, Table, enum.Enum):
 
         return "hidden_channel"
 
+
     @staticmethod
     def make_primary_key(key: int | str) -> dict["HiddenChannel", int | str]:
         """creates a primary key dict from the primary key value"""

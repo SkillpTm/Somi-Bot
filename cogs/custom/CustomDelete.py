@@ -14,7 +14,6 @@ class CustomDelete(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.custom.subcommand(Commands().data["custom delete"].name, Commands().data["custom delete"].description)
     async def custom_delete(
@@ -83,7 +82,6 @@ class CustomDelete(nextcord_C.Cog):
 
         await audit_log.send(embed=embed)
 
-    ####################################################################################################
 
     async def delete_all(self, interaction: nextcord.Interaction) -> None:
         """asks the user if they want to delete all their custom commands and does as answered"""
@@ -119,7 +117,6 @@ class CustomDelete(nextcord_C.Cog):
 
         await audit_log.send(embed=embed)
 
-    ####################################################################################################
 
     @custom_delete.on_autocomplete("name")
     async def custom_delete_autocomplete_name(

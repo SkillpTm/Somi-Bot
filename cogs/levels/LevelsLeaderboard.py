@@ -15,7 +15,6 @@ class LevelsLeaderboard(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @ParentCommand.levels.subcommand(
         Commands().data["levels leaderboard"].alias,

@@ -19,7 +19,6 @@ class MuteLog(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     async def mute_log(
         self,
@@ -56,7 +55,6 @@ class MuteLog(nextcord_C.Cog):
         await audit_log.send(embed=embed)
         await db.Telemetry.AMOUNT.increment("mute log")
 
-    ####################################################################################################
 
     def muted(
         self,
@@ -96,7 +94,6 @@ class MuteLog(nextcord_C.Cog):
 
         return embed
 
-    ####################################################################################################
 
     def unmuted(
         self,

@@ -12,7 +12,6 @@ class Banner(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(Commands().data["banner"].name, Commands().data["avatar"].description)
     async def banner(

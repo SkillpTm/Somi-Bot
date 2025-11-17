@@ -13,7 +13,6 @@ class YesNoButtons(nextcord.ui.View):
         self.value: bool = None
         super().__init__(timeout=60)
 
-    ####################################################################################################
 
     @nextcord.ui.button(label="Yes", style=nextcord.ButtonStyle.green)
     async def yes(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
@@ -29,6 +28,7 @@ class YesNoButtons(nextcord.ui.View):
         self.stop()
         await Misc.deactivate_view_children(self)
 
+
     @nextcord.ui.button(label="No", style=nextcord.ButtonStyle.red)
     async def no(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
         """set the value to false when pressed"""
@@ -43,7 +43,6 @@ class YesNoButtons(nextcord.ui.View):
         self.stop()
         await Misc.deactivate_view_children(self)
 
-    ####################################################################################################
 
     async def on_timeout(self) -> None:
         """overwrites the internal on_timeout to disable all buttons on timeout"""

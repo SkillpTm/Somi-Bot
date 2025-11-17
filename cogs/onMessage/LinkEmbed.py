@@ -15,7 +15,6 @@ class LinkEmbed(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     async def link_embed(self, message: nextcord.Message) -> None:
         """This function will automatically create an embed for a message form a link, in the same server, if the message doesn't originate form a hidden-channel."""

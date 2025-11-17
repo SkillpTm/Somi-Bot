@@ -35,7 +35,6 @@ class SomiBot(nextcord_C.Bot):
         self.add_check(self._global_command_checks)
         self.application_command_before_invoke(self._before_command)
 
-    ####################################################################################################
 
     async def _sync_discord_and_db(self) -> None:
         """This function syncs the discord servers and users with the database and applies missing default roles"""
@@ -77,7 +76,6 @@ class SomiBot(nextcord_C.Bot):
         for user_id in unique_users - all_db_users:
             await db.User._.add({db.User.ID: user_id})
 
-    ####################################################################################################
 
     async def _before_command(self, interaction: nextcord.Interaction) -> None:
         command_name: str = ""
@@ -97,7 +95,6 @@ class SomiBot(nextcord_C.Bot):
         await db.Telemetry.AMOUNT.increment(command_name)
         Logger().action_log(interaction, command_name, interaction.data.get("options", []))
 
-    ####################################################################################################
 
     async def _global_command_checks(self, interaction: nextcord.Interaction) -> bool:
         """checks on all commands for: if the bot is properly setup and if the interaction wasn't created by a bot"""
@@ -111,7 +108,6 @@ class SomiBot(nextcord_C.Bot):
 
         return True
 
-    ####################################################################################################
 
     async def _start_infinite_loops(self) -> None:
         """This function starts an infinite loop for the ReminderSend cog, which continues until the bot loses internet or gets shutdown"""
@@ -120,7 +116,6 @@ class SomiBot(nextcord_C.Bot):
             self.get_cog("ReminderSend").infinite_reminder_loop()
         )
 
-    ####################################################################################################
 
     async def on_ready(self) -> None:
         """This function overwrites the build in on_ready function, to login for our APIs and to start all infinite loops"""
@@ -136,7 +131,6 @@ class SomiBot(nextcord_C.Bot):
         Logger().bot_status(f"{self.user}: ready and logged in")
         await self._start_infinite_loops()
 
-    ####################################################################################################
 
     async def on_close(self) -> None:
         """This function overwrites the build in on_close function, to logout from our APIs"""
@@ -152,7 +146,6 @@ class SomiBot(nextcord_C.Bot):
 
         await Database().close()
 
-    ####################################################################################################
 
     async def on_application_command_error(
         self,
@@ -185,7 +178,6 @@ class SomiBot(nextcord_C.Bot):
 
         return await super().on_application_command_error(interaction, exception)
 
-    ####################################################################################################
 
     async def on_bulk_message_delete(self, messages: list[nextcord.Message]) -> None:
         """This function overwrites the build in on_bulk_message_delete function, to launch the purge_log"""
@@ -194,7 +186,6 @@ class SomiBot(nextcord_C.Bot):
             self.get_cog("PurgeLog").purge_log(messages)
         )
 
-    ####################################################################################################
 
     async def on_guild_channel_delete(self, channel: nextcord.abc.GuildChannel) -> None:
         """This function overwrites the build in on_guild_channel_delete function, to remove channels from the ConfigDB"""
@@ -203,21 +194,18 @@ class SomiBot(nextcord_C.Bot):
             self.get_cog("ConfigValidate").on_delete(channel)
         )
 
-    ####################################################################################################
 
     async def on_guild_join(self, guild: nextcord.Guild) -> None:
         """This function overwrites the build in on_guild_join function, to add the server to the db"""
 
         await db.Server._.add({db.Server.id: guild.id})
 
-    ####################################################################################################
 
     async def on_guild_remove(self, guild: nextcord.Guild) -> None:
         """This function overwrites the build in on_guild_remove function, to remove the server from the db"""
 
         await db.Server._.delete({db.Server.id: guild.id})
 
-    ####################################################################################################
 
     async def on_guild_role_delete(self, role: nextcord.Role) -> None:
         """This function overwrites the build in on_guild_role_delete function, to remove threads from the ConfigDB"""
@@ -226,7 +214,6 @@ class SomiBot(nextcord_C.Bot):
             self.get_cog("ConfigValidate").on_delete(role)
         )
 
-    ####################################################################################################
 
     async def on_member_ban(self, guild: nextcord.Guild,user: nextcord.User) -> None:
         """This function overwrites the build in on_member_ban function, to launch the ban_log"""
@@ -235,7 +222,6 @@ class SomiBot(nextcord_C.Bot):
             self.get_cog("BanLog").ban_log(guild, user),
         )
 
-    ####################################################################################################
 
     async def on_member_join(self, member: nextcord.Member) -> None:
         """This function overwrites the build in on_member_join function, to launch the join_log and welcome"""
@@ -247,7 +233,6 @@ class SomiBot(nextcord_C.Bot):
             self.get_cog("Welcome").welcome(member)
         )
 
-    ####################################################################################################
 
     async def on_member_remove(self, member: nextcord.Member) -> None:
         """This function overwrites the build in on_member_remove function, to launch the leave_log and the kick_log"""
@@ -267,7 +252,6 @@ class SomiBot(nextcord_C.Bot):
 
         await db.User._.delete({db.User.ID: member.id})
 
-    ####################################################################################################
 
     async def on_member_unban(self, guild: nextcord.Guild, user: nextcord.User) -> None:
         """This function overwrites the build in on_member_unban function, to launch the unban_log"""
@@ -276,7 +260,6 @@ class SomiBot(nextcord_C.Bot):
             self.get_cog("BanLog").unban_log(guild, user)
         )
 
-    ####################################################################################################
 
     async def on_member_update(self, before: nextcord.Member, after: nextcord.Member) -> None:
         """This function overwrites the build in on_member_update function, to launch the name_log and the mute_log"""
@@ -286,7 +269,6 @@ class SomiBot(nextcord_C.Bot):
             self.get_cog("MuteLog").mute_log(before, after)
         )
 
-    ####################################################################################################
 
     async def on_message(self, message: nextcord.Message) -> None:
         """This function overwrites the build in on_message function, to launch keyword_send, levels_gain_xp, link_embed, modmail and reaction"""
@@ -301,7 +283,6 @@ class SomiBot(nextcord_C.Bot):
 
         return await super().on_message(message)
 
-    ####################################################################################################
 
     async def on_message_delete(self, message: nextcord.Message) -> None:
         """This function overwrites the build in on_message_delete function, to launch the message_delete_log"""
@@ -310,7 +291,6 @@ class SomiBot(nextcord_C.Bot):
             self.get_cog("DeleteLog").message_delete_log(message)
         )
 
-    ####################################################################################################
 
     async def on_message_edit(self, before: nextcord.Message, after: nextcord.Message) -> None:
         """This function overwrites the build in on_message_edit function, to launch the edit_log"""
@@ -319,7 +299,6 @@ class SomiBot(nextcord_C.Bot):
             self.get_cog("EditLog").edit_log(before, after)
         )
 
-    ####################################################################################################
 
     async def on_thread_delete(self, thread: nextcord.Thread) -> None:
         """This function overwrites the build in on_thread_delete function, to remove threads from the ConfigDB"""
@@ -328,7 +307,6 @@ class SomiBot(nextcord_C.Bot):
             self.get_cog("ConfigValidate").on_delete(thread)
         )
 
-    ####################################################################################################
 
     async def get_message_from_link(self, link: str) -> nextcord.Message | None:
         """Generates a message object from a discord message link input"""
@@ -345,7 +323,6 @@ class SomiBot(nextcord_C.Bot):
 
         return message
 
-    ####################################################################################################
 
     @staticmethod
     async def on_thread_join(thread: nextcord.Thread):
@@ -356,7 +333,6 @@ class SomiBot(nextcord_C.Bot):
         except nextcord.Forbidden:
             pass
 
-    ####################################################################################################
 
     @staticmethod
     def restart() -> None:

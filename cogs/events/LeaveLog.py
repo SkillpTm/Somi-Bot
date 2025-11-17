@@ -19,7 +19,6 @@ class LeaveLog(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     async def leave_log(self, member: nextcord.Member) -> None:
         """

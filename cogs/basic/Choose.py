@@ -26,6 +26,7 @@ class ChooseModal(nextcord.ui.Modal):
 
         self.add_item(self.choose)
 
+
     async def callback(self, interaction: nextcord.Interaction) -> None:
         """chooses an option and displays it"""
 
@@ -70,7 +71,6 @@ class Choose(nextcord_C.Cog):
     def __init__(self, client) -> None:
         self.client: SomiBot = client
 
-    ####################################################################################################
 
     @nextcord.slash_command(
         Commands().data["choose"].alias,

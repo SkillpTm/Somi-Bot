@@ -12,7 +12,7 @@ def load_cogs(client: SomiBot) -> None:
     """loads all cogs onto the client"""
 
     # crawl through ./cogs/ 's subfolders to load all cogs
-    for folder in sorted(os.listdir("./cogs/")):
+    for folder in os.listdir("./cogs/"):
         if not os.path.isdir(f"./cogs/{folder}/"):
             continue
 

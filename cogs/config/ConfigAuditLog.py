@@ -1,9 +1,11 @@
+import typing
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
 from lib.database import db
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Commands, Config, Lists
 from lib.modules import SomiBot
 
@@ -11,16 +13,16 @@ from lib.modules import SomiBot
 
 class ConfigAuditLog(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.config.subcommand(Commands().data["config audit-log"].name, Commands().data["config audit-log"].description)
     async def config_audit_log(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
-        action: str = nextcord.SlashOption(
+        action: typing.Literal["Set", "Reset"] = nextcord.SlashOption(
             Commands().data["config audit-log"].parameters["action"].name,
             Commands().data["config audit-log"].parameters["action"].description,
             required = True,
@@ -61,11 +63,11 @@ class ConfigAuditLog(nextcord_C.Cog):
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [
-                [
+                EmbedField(
                     "/config audit-log:",
                     mod_action,
                     False
-                ]
+                )
             ]
         )
 

@@ -12,8 +12,8 @@ from lib.modules import SomiBot
 
 class Mute(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -25,7 +25,7 @@ class Mute(nextcord_C.Cog):
     )
     async def mute(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         member: nextcord.Member = nextcord.SlashOption(
             Commands().data["mute"].parameters["member"].name,
@@ -55,7 +55,7 @@ class Mute(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can't mute yourself!"), ephemeral=True)
             return
 
-        if interaction.user.top_role.position < member.top_role.position and interaction.user != interaction.guild.owner:
+        if interaction.user.top_role.position < member.top_role.position and interaction.user != interaction.guild.owner: # type: ignore
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only mute a member, if your current top-role is above their current top-role!"), ephemeral=True)
             return
 
@@ -79,7 +79,7 @@ class Mute(nextcord_C.Cog):
     )
     async def unmute(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         member: nextcord.Member = nextcord.SlashOption(
             Commands().data["unmute"].parameters["member"].name,

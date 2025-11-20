@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
 
@@ -12,8 +12,8 @@ class LevelsInfo(nextcord_C.Cog):
 
     from cogs.basic.ParentCommand import ParentCommand
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.levels.subcommand(
@@ -23,7 +23,7 @@ class LevelsInfo(nextcord_C.Cog):
     )
     async def levels_info(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         member: nextcord.Member = nextcord.SlashOption(
             Commands().data["levels info"].parameters["member"].name,
@@ -35,7 +35,7 @@ class LevelsInfo(nextcord_C.Cog):
 
         member = member or interaction.guild.get_member(interaction.user.id)
 
-        if not (total_xp := await db.Level.XP.get({db.Level.SERVER: interaction.guild.id, db.Level.USER: interaction.user.id})):
+        if not (total_xp := int(await db.Level.XP.get({db.Level.SERVER: interaction.guild.id, db.Level.USER: interaction.user.id}) or 0)):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{member.mention} hasn't earned any XP yet."), ephemeral=True)
             return
 
@@ -55,29 +55,26 @@ class LevelsInfo(nextcord_C.Cog):
             thumbnail = member.display_avatar.url,
             title = f"Levels information for `{member.display_name}` on `{interaction.guild.name}`",
             fields = [
-                [
+                EmbedField(
                     "Level:",
                     f"`{user_level}`",
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Rank:",
                     f"`{f"{await db.Level._.get_user_rank({db.Level.SERVER: interaction.guild.id, db.Level.USER: interaction.user.id}):,}/{member.guild.member_count:,}"}`",
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Total XP:",
                     f"`{f"{total_xp:,}"}`",
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Level Progress:",
                     f"{percent_bar}\n{f"{xp_progress_to_next_level:,}"}/{f"{next_level_xp:,}"} ({output_percentage}%)",
                     False
-                ]
+                )
             ]
         )
 

@@ -2,6 +2,8 @@ import enum
 
 from lib.database.DataAccess import DataAccessMixin, Table
 
+
+
 class Server(DataAccessMixin, Table, enum.Enum):
     ID = "id"
     AUDIT_LOG = "audit_log_id"
@@ -17,7 +19,7 @@ class Server(DataAccessMixin, Table, enum.Enum):
 
 
     @staticmethod
-    def make_primary_key(key: int | str) -> dict["Server", int | str]:
+    def make_primary_key(key: int | str | None) -> dict[Table, int | str | None]:
         """creates a primary key dict from the primary key value"""
 
         return {Server.ID: key}

@@ -1,6 +1,7 @@
 import re
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
 
@@ -9,7 +10,7 @@ class Get():
     """Helper class holding methodes to get data"""
 
     @staticmethod
-    def autocomplete_dict_from_search_string(search_string: str, autocomplete_dict: dict) -> dict[str, str]:
+    def autocomplete_dict_from_search_string(search_string: str, autocomplete_dict: dict[str, str]) -> dict[str, str]:
         """Takes a string and a dict and filters for matching results, between the two. The results are sorted form most to least relevant."""
 
         search_string = search_string.lower()
@@ -63,10 +64,10 @@ class Get():
 
 
     @staticmethod
-    def interaction_by_owner() -> bool:
+    def interaction_by_owner(): # type: ignore -> there doesn't seem to be a good type to hint this with?
         """This function checks, if an interaction was made by the owner"""
 
-        def predicate(interaction: nextcord.Interaction) -> bool:
+        def predicate(interaction: nextcord.Interaction[nextcord_C.Bot]) -> bool:
             return interaction.user.id == interaction.client.owner_id
 
         return nextcord_AC.check(predicate)
@@ -91,9 +92,8 @@ class Get():
             "-": "−",
         }
 
-        for index, char in enumerate(input_string):
-            if char in CHAR_AND_REPLACMENT:
-                input_string[index] = CHAR_AND_REPLACMENT[char]
+        for char, replacement in CHAR_AND_REPLACMENT.items():
+            input_string.replace(char, replacement)
 
         return input_string
 
@@ -114,4 +114,4 @@ class Get():
         time_in_seconds = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800, "y": 31536000}
         timeframes = re.findall(r"[0-9]+[smhdwy]", time.replace(" ", "").lower())
 
-        return sum([int(timeframe[:-1]) * time_in_seconds[timeframe[-1]] for timeframe in timeframes])
+        return sum(int(timeframe[:-1]) * time_in_seconds[timeframe[-1]] for timeframe in timeframes)

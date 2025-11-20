@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Commands
 from lib.modules import SomiBot
 
@@ -10,8 +10,8 @@ from lib.modules import SomiBot
 
 class Close(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -21,20 +21,20 @@ class Close(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    async def close(self, interaction: nextcord.Interaction) -> None:
+    async def close(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command takes the send-messages permission from the default-role away, effectifly closing down the server. Additionally it sets invites_disabled = True"""
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         roles_to_modify = [interaction.guild.default_role]
 
-        if (default_role := interaction.guild.get_role(await db.Server.DEFAULT_ROLE.get(interaction.guild.id) or 0)):
-            roles_to_modify.append(interaction.guild.get_role(default_role))
+        if (default_role := interaction.guild.get_role(int(await db.Server.DEFAULT_ROLE.get(interaction.guild.id) or 0))):
+            roles_to_modify.append(default_role)
 
         permissions_to_check: list[bool] = []
 
         for role in roles_to_modify:
-            permissions_to_check = (role.permissions.send_messages, role.permissions.send_messages_in_threads, role.permissions.add_reactions)
+            permissions_to_check = [role.permissions.send_messages, role.permissions.send_messages_in_threads, role.permissions.add_reactions]
 
         # if all relevant permissions are already turned off, the server is already closed
         if all(not permission for permission in permissions_to_check):
@@ -55,7 +55,7 @@ class Close(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("Closed the server sucessfully.\n To re-open it use `/open`"), ephemeral=True)
 
-        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
+        if not (audit_log := interaction.guild.get_channel(int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0))):
             return
 
         embed = EmbedFunctions().builder(
@@ -63,15 +63,15 @@ class Close(nextcord_C.Cog):
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [
-                [
+                EmbedField(
                     "/close:",
                     f"{interaction.user.mention} closed the server!",
                     False
-                ]
+                )
             ]
         )
 
-        await audit_log.send(embed=embed)
+        await audit_log.send(embed=embed) # type: ignore
 
 
     @nextcord.slash_command(
@@ -81,20 +81,20 @@ class Close(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    async def open(self, interaction: nextcord.Interaction) -> None:
+    async def open(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command gives the send-messages permission back to the default-role, effectifly opening the server back up."""
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         roles_to_modify = [interaction.guild.default_role]
 
-        if (default_role := interaction.guild.get_role(await db.Server.DEFAULT_ROLE.get(interaction.guild.id) or 0)):
+        if (default_role := interaction.guild.get_role(int(await db.Server.DEFAULT_ROLE.get(interaction.guild.id) or 0))):
             roles_to_modify.append(default_role)
 
         permissions_to_check: list[bool] = []
 
         for role in roles_to_modify:
-            permissions_to_check = (role.permissions.send_messages, role.permissions.send_messages_in_threads, role.permissions.add_reactions)
+            permissions_to_check = [role.permissions.send_messages, role.permissions.send_messages_in_threads, role.permissions.add_reactions]
 
         # if all relevant permissions are already turned on, the server is already open
         if all(permission for permission in permissions_to_check):
@@ -116,7 +116,7 @@ class Close(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("Re-opened the server sucessfully."), ephemeral=True)
 
 
-        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
+        if not (audit_log := interaction.guild.get_channel(int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0))):
             return
 
         embed = EmbedFunctions().builder(
@@ -124,15 +124,15 @@ class Close(nextcord_C.Cog):
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [
-                [
+                EmbedField(
                     "/open:",
                     f"{interaction.user.mention} re-opened the server!",
                     False
-                ]
+                )
             ]
         )
 
-        await audit_log.send(embed=embed)
+        await audit_log.send(embed=embed) # type: ignore
 
 
 

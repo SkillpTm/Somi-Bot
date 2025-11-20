@@ -10,8 +10,8 @@ from lib.modules import SomiBot
 
 class Emoji(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -21,7 +21,7 @@ class Emoji(nextcord_C.Cog):
     )
     async def emoji(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         emoji: str = nextcord.SlashOption(
             Commands().data["emoji"].parameters["emoji"].name,
@@ -46,7 +46,7 @@ class Emoji(nextcord_C.Cog):
             emoji_name, _, emoji_id = emoji[2:-1].partition(":")
             emote_animated = False
 
-        partial_emoji_object = nextcord.PartialEmoji(name = emoji_name, id = emoji_id, animated = emote_animated)
+        partial_emoji_object = nextcord.PartialEmoji(name = emoji_name, animated = emote_animated, id = int(emoji_id))
 
         # check via the cdn if what we got was actually a valid emote
         if not requests.get(partial_emoji_object.url, timeout=10).status_code == 200:

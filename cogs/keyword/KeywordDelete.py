@@ -1,3 +1,5 @@
+import typing
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
@@ -12,14 +14,14 @@ class KeywordDelete(nextcord_C.Cog):
 
     from cogs.basic.ParentCommand import ParentCommand
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.keyword.subcommand(Commands().data["keyword delete"].name, Commands().data["keyword delete"].description)
     async def keyword_delete(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         keyword: str = nextcord.SlashOption(
             Commands().data["keyword delete"].parameters["keyword"].name,
@@ -28,13 +30,14 @@ class KeywordDelete(nextcord_C.Cog):
             min_length = 2,
             max_length = 50
         ),
-        delete_all: str = nextcord.SlashOption(
+        delete_all: typing.Literal["Yes", ""] = nextcord.SlashOption(
             Commands().data["keyword delete"].parameters["delete_all"].name,
             Commands().data["keyword delete"].parameters["delete_all"].description,
             required = False,
             choices = ["Yes"],
             min_length = 2,
-            max_length = 50
+            max_length = 50,
+            default = ""
         )
     ) -> None:
         """This command let's you delete a keyword by it's name or all keywords with 'ALL'"""
@@ -62,10 +65,10 @@ class KeywordDelete(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"`{keyword}` has been deleted from your keywords."), ephemeral=True)
 
 
-    async def delete_all(self, interaction: nextcord.Interaction) -> None:
+    async def delete_all(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """asks the user if they want to delete all their keywords and does as answered"""
 
-        view = YesNoButtons(interaction=interaction)
+        view = YesNoButtons(interaction=interaction) # type: ignore
         await interaction.followup.send(embed=EmbedFunctions().get_info_message("Do you really want to delete **ALL** your keywords __**(they can't be recovered)**__?"), view=view, ephemeral=True)
         await view.wait()
 
@@ -81,7 +84,7 @@ class KeywordDelete(nextcord_C.Cog):
     @keyword_delete.on_autocomplete("keyword")
     async def keyword_delete_autocomplete_keyword(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         keyword: str
     ) -> None:
         """provides autocomplete suggestions to discord"""
@@ -89,7 +92,7 @@ class KeywordDelete(nextcord_C.Cog):
         await interaction.response.send_autocomplete(
             Get.autocomplete_dict_from_search_string(
                 keyword,
-                {db.Keyword.KEYWORD.retrieve(entry): db.Keyword.KEYWORD.retrieve(entry) async for entry in db.Keyword.KEYWORD.get_multiple(where={db.Keyword.SERVER: interaction.guild.id, db.Keyword.USER: interaction.user.id})}
+                {str(db.Keyword.KEYWORD.retrieve(entry)): str(db.Keyword.KEYWORD.retrieve(entry)) async for entry in db.Keyword.KEYWORD.get_multiple(where={db.Keyword.SERVER: interaction.guild.id, db.Keyword.USER: interaction.user.id})}
             )
         )
 

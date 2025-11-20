@@ -1,4 +1,5 @@
 import nextcord
+import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions, Misc
 
@@ -7,15 +8,15 @@ from lib.helpers import EmbedFunctions, Misc
 class YesNoButtons(nextcord.ui.View):
     """Buttons that say yes/no, self.value is true on yes and false on no"""
 
-    def __init__(self, *, interaction: nextcord.Interaction = None, response: nextcord.Message = None) -> None:
+    def __init__(self, *, interaction: nextcord.Interaction[nextcord_C.Bot] | None = None, response: nextcord.Message | None = None) -> None:
         self.response = response
         self.interaction = interaction
-        self.value: bool = None
+        self.value: bool | None = None
         super().__init__(timeout=60)
 
 
     @nextcord.ui.button(label="Yes", style=nextcord.ButtonStyle.green)
-    async def yes(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
+    async def yes(self, _button: nextcord.ui.Button[nextcord.ui.View], interaction: nextcord.Interaction[nextcord_C.Bot]) -> None:
         """set the value to true when pressed"""
 
         original_user = self.interaction.user if self.interaction else self.response.author
@@ -30,7 +31,7 @@ class YesNoButtons(nextcord.ui.View):
 
 
     @nextcord.ui.button(label="No", style=nextcord.ButtonStyle.red)
-    async def no(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
+    async def no(self, _button: nextcord.ui.Button[nextcord.ui.View], interaction: nextcord.Interaction[nextcord_C.Bot]) -> None:
         """set the value to false when pressed"""
 
         original_user = self.interaction.user if self.interaction else self.response.author

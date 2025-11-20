@@ -5,7 +5,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Logger
 from lib.modules import SomiBot
 
@@ -16,8 +16,8 @@ class LeaveLog(nextcord_C.Cog):
     MAX_AUDIT_ENTIRES_LIMIT = 10
     MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     async def leave_log(self, member: nextcord.Member) -> None:
@@ -33,7 +33,7 @@ class LeaveLog(nextcord_C.Cog):
             {"member": str(member.id)}
         )
 
-        if not (audit_log := member.guild.get_channel(await db.Server.AUDIT_LOG.get(member.guild.id) or 0)):
+        if not (audit_log := member.guild.get_channel(int(await db.Server.AUDIT_LOG.get(member.guild.id) or 0))):
             return
 
         # check the last audit log entry for bans, to see if this was a ban (bans get handled by BanLog)
@@ -59,33 +59,30 @@ class LeaveLog(nextcord_C.Cog):
             thumbnail = member.display_avatar.url,
             title = f"Member Left: `{member.display_name}`",
             fields = [
-                [
+                EmbedField(
                     "ID:",
-                    member.id,
+                    str(member.id),
                     False
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Name:",
                     member.mention,
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Created at:",
                     f"<t:{int(time.mktime(member.created_at.timetuple()))}>",
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Joined at",
                     f"<t:{int(time.mktime(member.joined_at.timetuple()))}>",
                     True
-                ]
+                ),
             ]
         )
 
-        await audit_log.send(embed=embed)
+        await audit_log.send(embed=embed) # type: ignore
         await db.Telemetry.AMOUNT.increment("leave log")
 
 

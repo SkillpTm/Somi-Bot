@@ -1,4 +1,5 @@
 import nextcord
+import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions, Misc
 
@@ -7,16 +8,16 @@ from lib.helpers import EmbedFunctions, Misc
 class PageButtons(nextcord.ui.View):
     """Buttons that can flip through pages [start][<<<][current/max][>>>][end]"""
 
-    def __init__(self, page: int, last_page: int, interaction: nextcord.Interaction) -> None:
+    def __init__(self, page: int, last_page: int, interaction: nextcord.Interaction[nextcord_C.Bot]) -> None:
         self.page: int = page
         self.last_page: int = last_page
-        self.interaction: nextcord.Interaction = interaction
+        self.interaction: nextcord.Interaction[nextcord_C.Bot] = interaction
         self.value = None
         super().__init__(timeout=60)
 
 
     @nextcord.ui.button(label="start", style=nextcord.ButtonStyle.green)
-    async def start(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
+    async def start(self, _button: nextcord.ui.Button[nextcord.ui.View], interaction: nextcord.Interaction[nextcord_C.Bot]) -> None:
         """returns to the first page"""
 
         if self.interaction.user.id != interaction.user.id:
@@ -29,7 +30,7 @@ class PageButtons(nextcord.ui.View):
 
 
     @nextcord.ui.button(label="<<", style=nextcord.ButtonStyle.green)
-    async def left(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
+    async def left(self, _button: nextcord.ui.Button[nextcord.ui.View], interaction: nextcord.Interaction[nextcord_C.Bot]) -> None:
         """goes back one page, without wrapping back to the end"""
 
         if self.interaction.user.id != interaction.user.id:
@@ -42,12 +43,12 @@ class PageButtons(nextcord.ui.View):
 
 
     @nextcord.ui.button(label="/", style=nextcord.ButtonStyle.gray, disabled=True)
-    async def page_button(self, _button: nextcord.ui.Button, _interaction: nextcord.Interaction) -> None:
+    async def page_button(self, _button: nextcord.ui.Button[nextcord.ui.View], _interaction: nextcord.Interaction[nextcord_C.Bot]) -> None:
         """does nothing, just displays the page numbers"""
 
 
     @nextcord.ui.button(label=">>", style=nextcord.ButtonStyle.red)
-    async def right(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    async def right(self, _button: nextcord.ui.Button[nextcord.ui.View], interaction: nextcord.Interaction[nextcord_C.Bot]):
         """goes forward one page, without wrapping back to the start"""
 
         if self.interaction.user.id != interaction.user.id:
@@ -59,7 +60,7 @@ class PageButtons(nextcord.ui.View):
         self.stop()
 
     @nextcord.ui.button(label="end", style=nextcord.ButtonStyle.red)
-    async def end(self, _button: nextcord.ui.Button, interaction: nextcord.Interaction) -> None:
+    async def end(self, _button: nextcord.ui.Button[nextcord.ui.View], interaction: nextcord.Interaction[nextcord_C.Bot]) -> None:
         """jumps to the last page"""
 
         if self.interaction.user.id != interaction.user.id:
@@ -82,8 +83,8 @@ class PageButtons(nextcord.ui.View):
         """changes the number on the page button"""
 
         for child in self.children:
-            if "/" in child.label:
-                child.label = f"{self.page}/{self.last_page}"
+            if "/" in child.label: # type: ignore
+                child.label = f"{self.page}/{self.last_page}" # type: ignore
         await self.interaction.edit_original_message(view=self)
 
 
@@ -93,14 +94,14 @@ class PageButtons(nextcord.ui.View):
         # on the first page turn off the buttons that make you move back
         if self.page == 1:
             for child in self.children:
-                if any(button_name in child.label for button_name in ["start", "<<"]):
-                    child.disabled = True
+                if any(button_name in child.label for button_name in ["start", "<<"]): # type: ignore
+                    child.disabled = True # type: ignore
 
         # on the last page turn off the buttons that make you move forward
         if self.page == self.last_page:
             for child in self.children:
-                if any(button_name in child.label for button_name in [">>", "end"]):
-                    child.disabled = True
+                if any(button_name in child.label for button_name in [">>", "end"]): # type: ignore
+                    child.disabled = True # type: ignore
 
         await self.interaction.edit_original_message(view=self)
 

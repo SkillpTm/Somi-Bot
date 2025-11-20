@@ -9,8 +9,8 @@ from lib.modules import SomiBot
 
 class Kick(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -22,7 +22,7 @@ class Kick(nextcord_C.Cog):
     )
     async def kick(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         member: nextcord.Member = nextcord.SlashOption(
             Commands().data["kick"].parameters["member"].name,
@@ -45,7 +45,7 @@ class Kick(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can't ban yourself!"), ephemeral=True)
             return
 
-        if interaction.user.top_role.position < member.top_role.position and interaction.user != interaction.guild.owner:
+        if interaction.user.top_role.position < member.top_role.position and interaction.user != interaction.guild.owner: # type: ignore
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only kick a member, if your current top-role is above their current top-role!"), ephemeral=True)
             return
 

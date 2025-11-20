@@ -1,8 +1,8 @@
-import enum
-
 from lib.database.DataAccess import DataAccessMixin, Table
 
-class LevelRole(DataAccessMixin, Table, enum.Enum):
+
+
+class LevelRole(DataAccessMixin):
     ID = "id"
     SERVER = "server"
     LEVEL = "level"
@@ -17,7 +17,7 @@ class LevelRole(DataAccessMixin, Table, enum.Enum):
 
 
     @staticmethod
-    def make_primary_key(key: int | str) -> dict["LevelRole", int | str]:
+    def make_primary_key(key: int | str | None) -> dict[Table, int | str | None]:
         """creates a primary key dict from the primary key value"""
 
         return {LevelRole.ID: key}

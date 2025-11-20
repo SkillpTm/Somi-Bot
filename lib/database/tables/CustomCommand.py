@@ -1,8 +1,8 @@
-import enum
-
 from lib.database.DataAccess import DataAccessMixin, Table
 
-class CustomCommand(DataAccessMixin, Table, enum.Enum):
+
+
+class CustomCommand(DataAccessMixin):
     ID = "id"
     SERVER = "server"
     NAME = "name"
@@ -18,7 +18,7 @@ class CustomCommand(DataAccessMixin, Table, enum.Enum):
 
 
     @staticmethod
-    def make_primary_key(key: int | str) -> dict["CustomCommand", int | str]:
+    def make_primary_key(key: int | str | None) -> dict[Table, int | str | None]:
         """creates a primary key dict from the primary key value"""
 
         return {CustomCommand.ID: key}

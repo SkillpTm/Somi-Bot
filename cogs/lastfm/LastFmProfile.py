@@ -5,7 +5,7 @@ import nextcord.ext.commands as nextcord_C
 import requests
 
 from lib.database import db
-from lib.helpers import EmbedFunctions, Get
+from lib.helpers import EmbedField, EmbedFunctions, Get
 from lib.managers import Commands, Config, Keychain
 from lib.modules import SomiBot
 
@@ -15,14 +15,14 @@ class LastFmProfile(nextcord_C.Cog):
 
     from cogs.basic.ParentCommand import ParentCommand
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.lastfm.subcommand(Commands().data["lf profile"].name, Commands().data["lf profile"].description)
     async def lastfm_profile(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         user: nextcord.User = nextcord.SlashOption(
             Commands().data["lf profile"].parameters["user"].name,
@@ -60,49 +60,43 @@ class LastFmProfile(nextcord_C.Cog):
             color = Config().LASTFM_COLOR,
             thumbnail = lastfm_user_pfp,
             author = f"{user.display_name} LastFm User Data",
-            author_icon = self.client.LASTFM_ICON,
+            author_icon = Config().LASTFM_ICON,
             fields = [
-                [
+                EmbedField(
                     "LastFm name:",
                     f"[{Get.markdown_safe(profile_user_data['user']['name'])}]({profile_user_data['user']['url']})",
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Total Plays:",
                     f"__**{profile_user_data['user']['playcount']}**__",
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Average Plays/Day:",
                     f"{days_plays_ratio}",
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Registered at:",
                     f"<t:{int(profile_user_data['user']['registered']['unixtime'])}>",
                     False
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Unique Artists:",
                     profile_user_data["user"]["artist_count"],
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Unique Albums:",
                     profile_user_data["user"]["album_count"],
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Unique Tracks:",
                     profile_user_data["user"]["track_count"],
                     True
-                ]
+                )
             ]
         )
 

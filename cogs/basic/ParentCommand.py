@@ -7,8 +7,8 @@ from lib.modules import SomiBot
 
 class ParentCommand(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -18,7 +18,7 @@ class ParentCommand(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    async def config(self, _interaction: nextcord.Interaction) -> None:
+    async def config(self, _interaction: nextcord.Interaction[SomiBot]) -> None:
         """Main command that does nothing for /config subcommands"""
 
 
@@ -28,7 +28,7 @@ class ParentCommand(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    async def custom(self, _interaction: nextcord.Interaction) -> None:
+    async def custom(self, _interaction: nextcord.Interaction[SomiBot]) -> None:
         """Main command that does nothing for /custom subcommands"""
 
 
@@ -38,7 +38,7 @@ class ParentCommand(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    async def keyword(self, _interaction: nextcord.Interaction) -> None:
+    async def keyword(self, _interaction: nextcord.Interaction[SomiBot]) -> None:
         """Main command that does nothing for /keyword subcommands"""
 
 
@@ -48,7 +48,7 @@ class ParentCommand(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    async def levels(self, _interaction: nextcord.Interaction) -> None:
+    async def levels(self, _interaction: nextcord.Interaction[SomiBot]) -> None:
         """Main command that does nothing for /levels subcommands"""
 
 
@@ -56,7 +56,7 @@ class ParentCommand(nextcord_C.Cog):
         name = "lastfm",
         name_localizations = {country_tag:"lf" for country_tag in nextcord.Locale},
     )
-    async def lastfm(self, _interaction: nextcord.Interaction) -> None:
+    async def lastfm(self, _interaction: nextcord.Interaction[SomiBot]) -> None:
         """Main command that does nothing for /lf subcommands"""
 
 
@@ -64,7 +64,7 @@ class ParentCommand(nextcord_C.Cog):
         name = "alarm",
         name_localizations = {country_tag:"reminder" for country_tag in nextcord.Locale}
     )
-    async def reminder(self, _interaction: nextcord.Interaction) -> None:
+    async def reminder(self, _interaction: nextcord.Interaction[SomiBot]) -> None:
         """Main command that does nothing for /reminder subcommands"""
 
 

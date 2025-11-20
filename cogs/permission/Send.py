@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Commands, Config, Lists
 from lib.modules import SomiBot
 
@@ -10,8 +10,8 @@ from lib.modules import SomiBot
 
 class Send(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -24,7 +24,7 @@ class Send(nextcord_C.Cog):
     )
     async def send(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         message: str = nextcord.SlashOption(
             Commands().data["send"].parameters["message"].name,
@@ -49,7 +49,7 @@ class Send(nextcord_C.Cog):
         message_object: nextcord.Message = await channel.send(message)
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Message sent in: {channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
 
-        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
+        if not (audit_log := interaction.guild.get_channel(int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0))):
             return
 
         embed = EmbedFunctions().builder(
@@ -58,15 +58,15 @@ class Send(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             description = f"{interaction.user.mention} sent a bot message in: {channel.mention} - [Link]({message_object.jump_url})",
             fields = [
-                [
+                EmbedField(
                     "Message:",
                     message,
                     False
-                ]
+                )
             ]
         )
 
-        await audit_log.send(embed=embed)
+        await audit_log.send(embed=embed) # type: ignore
 
 
     @nextcord.slash_command(
@@ -78,7 +78,7 @@ class Send(nextcord_C.Cog):
     )
     async def edit(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         link: str = nextcord.SlashOption(
             Commands().data["edit"].parameters["link"].name,
@@ -108,32 +108,31 @@ class Send(nextcord_C.Cog):
             return
 
         await message_object.edit(content=message)
-        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Message edited in: {message_object.channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Message edited in: {message_object.channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True) # type: ignore
 
-        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
+        if not (audit_log := interaction.guild.get_channel(int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0))):
             return
 
         embed = EmbedFunctions().builder(
             color = Config().PERMISSION_COLOR,
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
-            description = f"{interaction.user.mention} edited a bot message in: {message_object.chann.mention} - [Link]({message_object.jump_url})",
+            description = f"{interaction.user.mention} edited a bot message in: {message_object.channel.mention} - [Link]({message_object.jump_url})", # type: ignore
             fields = [
-                [
+                EmbedField(
                     "Before:",
                     message_object.content,
                     False
-                ],
-
-                [
+                ),
+                EmbedField(
                     "After:",
                     message,
                     False
-                ]
+                )
             ]
         )
 
-        await audit_log.send(embed=embed)
+        await audit_log.send(embed=embed) # type: ignore
 
 
 

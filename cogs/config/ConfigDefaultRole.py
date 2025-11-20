@@ -1,9 +1,11 @@
+import typing
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
 from lib.database import db
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
 
@@ -11,16 +13,16 @@ from lib.modules import SomiBot
 
 class ConfigDefaultRole(nextcord_C.Cog):
 
-    def __init__(self, client) ->  None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.config.subcommand(Commands().data["config default-role"].name, Commands().data["config default-role"].description)
     async def config_default_role(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
-        action: str = nextcord.SlashOption(
+        action: typing.Literal["Set", "Reset"] = nextcord.SlashOption(
             Commands().data["config default-role"].parameters["action"].name,
             Commands().data["config default-role"].parameters["action"].description,
             required = True,
@@ -56,8 +58,8 @@ class ConfigDefaultRole(nextcord_C.Cog):
 
             mod_action = f"{interaction.user.mention} reset: {role.mention} as the default-role."
 
-
-        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
+        audit_log: nextcord.TextChannel
+        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)): # type: ignore
             return
 
         embed = EmbedFunctions().builder(
@@ -65,11 +67,11 @@ class ConfigDefaultRole(nextcord_C.Cog):
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [
-                [
+                EmbedField(
                     "/config default-role:",
                     mod_action,
                     False
-                ]
+                )
             ]
         )
 
@@ -78,7 +80,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
 
     async def _set_role(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         role: nextcord.Role
     ) -> bool:
         "sets or doesn't set the role indicated by the output bool"
@@ -88,7 +90,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("To set a new default-role you need to provide a role in the command."), ephemeral=True)
             return False
 
-        if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner:
+        if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner:  # type: ignore
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only make role the default-role, if the role is below your current top role!"), ephemeral=True)
             return False
 
@@ -105,12 +107,12 @@ class ConfigDefaultRole(nextcord_C.Cog):
 
     async def _reset_role(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         role: nextcord.Role
     ) -> bool:
         "resets or doesn't reset the role indicated by the output bool"
 
-        if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner:
+        if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner: # type: ignore
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only make role the default-role, if the role is below your current top role!"), ephemeral=True)
             return False
 

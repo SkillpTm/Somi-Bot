@@ -1,5 +1,7 @@
 import csv
+
 import nextcord
+import nextcord.ext.commands as nextcord_C
 
 
 
@@ -13,10 +15,10 @@ class Misc():
 
         # disable all buttons from this view
         for child in button_view.children:
-            child.disabled = True
+            child.disabled = True # type: ignore
 
         response: nextcord.Message = getattr(button_view, "response")
-        interaction: nextcord.Interaction = getattr(button_view, "interaction")
+        interaction: nextcord.Interaction[nextcord_C.Bot] = getattr(button_view, "interaction")
 
         # edit the original class to have its buttons deactivated
         if response:

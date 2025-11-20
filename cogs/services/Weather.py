@@ -1,4 +1,5 @@
 import datetime
+import typing
 import urllib.parse
 
 import nextcord
@@ -14,14 +15,14 @@ from lib.modules import SomiBot
 
 class Weather(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(Commands().data["weather"].name, Commands().data["weather"].description)
     async def weather(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         location: str = nextcord.SlashOption(
             Commands().data["weather"].parameters["location"].name,
@@ -35,7 +36,8 @@ class Weather(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        location = location or (db_location := await db.User.WEATHER.get(interaction.user.id))
+        db_location = str(await db.User.WEATHER.get(interaction.user.id))
+        location = location or db_location
         response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={Keychain().WEATHER_API_KEY}&q={urllib.parse.quote_plus(location)}&units=metric", timeout=10)
 
         if response.status_code != 200:
@@ -45,7 +47,7 @@ class Weather(nextcord_C.Cog):
         if location != db_location:
             await db.User.WEATHER.set(interaction.user.id, location)
 
-        response_json: dict = response.json()
+        response_json: dict[str, typing.Any] = response.json()
         output_data: dict[str, str] = {}
 
         # pull all the data we need from the json (and potentially format it, ready for the output)

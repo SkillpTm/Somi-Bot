@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Config, Logger
 from lib.modules import SomiBot, YesNoButtons
 
@@ -10,8 +10,8 @@ from lib.modules import SomiBot, YesNoButtons
 
 class Modmail(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     async def modmail(self, message: nextcord.Message) -> None:
@@ -45,8 +45,8 @@ class Modmail(nextcord_C.Cog):
 
         Logger().action_log(message, "modmail", {"message": message.content})
 
-        modmail_channel: nextcord.TextChannel = self.client.get_channel(Config().MODMAIL_CHANNEL_ID)
-        user_thread: nextcord.Thread = None
+        modmail_channel: nextcord.TextChannel = self.client.get_channel(Config().MODMAIL_CHANNEL_ID) # type: ignore
+        user_thread: nextcord.Thread | None = None
 
         # check if the user already has a thread
         for thread in modmail_channel.threads:
@@ -80,17 +80,16 @@ class Modmail(nextcord_C.Cog):
             footer_icon = Config().CLOCK_ICON,
             footer_timestamp = message.created_at,
             fields = [
-                [
+                EmbedField(
                     "ID:",
-                    message.author.id,
+                    str(message.author.id),
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Member:",
                     f"{message.author.mention}",
                     True
-                ]
+                )
             ]
         )
 

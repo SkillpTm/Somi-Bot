@@ -12,12 +12,12 @@ from lib.modules import SomiBot
 
 class Ping(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(Commands().data["ping"].name, Commands().data["ping"].description)
-    async def ping(self, interaction: nextcord.Interaction) -> None:
+    async def ping(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command shows the ping and some general stats about the bot"""
 
         start = time.perf_counter()

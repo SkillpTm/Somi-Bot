@@ -5,7 +5,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Logger
 from lib.modules import SomiBot
 
@@ -16,17 +16,17 @@ class BanLog(nextcord_C.Cog):
     MAX_AUDIT_ENTIRES_LIMIT = 10
     MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     async def ban_log(self, guild: nextcord.Guild, user: nextcord.User) -> None:
         """A log that activates, when someone gets banned and an audit log is set"""
 
-        if not (audit_log := guild.get_channel(await db.Server.AUDIT_LOG.get(guild.id) or 0)):
+        if not (audit_log := guild.get_channel(int(await db.Server.AUDIT_LOG.get(guild.id) or 0))):
             return
 
-        entry: nextcord.AuditLogEntry = None
+        entry: nextcord.AuditLogEntry | None = None
         entry_count = 0
 
         # check the last audit log entry for bans, to see make sure this was a ban
@@ -47,7 +47,7 @@ class BanLog(nextcord_C.Cog):
         Logger().action_log(
             user,
             "ban log",
-            {"guild": str(guild.id), "banned by": str(entry.user.id), "reason": entry.reason}
+            {"guild": str(guild.id), "banned by": str(entry.user.id), "reason": entry.reason or ""}
         )
 
         embed = EmbedFunctions().builder(
@@ -55,31 +55,30 @@ class BanLog(nextcord_C.Cog):
             author = "Mod Activity",
             author_icon = entry.user.display_avatar.url,
             fields = [
-                [
+                EmbedField(
                     "Ban Log:",
-                    f"{entry.user.mention} banned: {entry.target.mention}",
+                    f"{entry.user.mention} banned: {entry.target.mention}", # type: ignore
                     False
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Reason:",
-                    entry.reason,
+                    entry.reason or "",
                     False
-                ]
+                )
             ]
         )
 
-        await audit_log.send(embed=embed)
+        await audit_log.send(embed=embed) # type: ignore
         await db.Telemetry.AMOUNT.increment("ban log")
 
 
     async def unban_log(self, guild: nextcord.Guild, user: nextcord.User) -> None:
         """A log that activates, when someone gets unbanned and an audit log is set"""
 
-        if not (audit_log := guild.get_channel(await db.Server.AUDIT_LOG.get(guild.id) or 0)):
+        if not (audit_log := guild.get_channel(int(await db.Server.AUDIT_LOG.get(guild.id) or 0))):
             return
 
-        entry: nextcord.AuditLogEntry = None
+        entry: nextcord.AuditLogEntry | None = None
         entry_count = 0
 
         async for entry in guild.audit_logs(
@@ -107,15 +106,15 @@ class BanLog(nextcord_C.Cog):
             author = "Mod Activity",
             author_icon = entry.user.display_avatar.url,
             fields = [
-                [
+                EmbedField(
                     "Unban Log:",
-                    f"{entry.user.mention} unbanned: `{entry.target.name}` | `({entry.target.id})`",
+                    f"{entry.user.mention} unbanned: `{entry.target.name}` | `({entry.target.id})`", # type: ignore
                     False
-                ]
+                )
             ]
         )
 
-        await audit_log.send(embed=embed)
+        await audit_log.send(embed=embed) # type: ignore
         await db.Telemetry.AMOUNT.increment("unban log")
 
 

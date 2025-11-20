@@ -16,14 +16,14 @@ class LastFmTrack(nextcord_C.Cog):
 
     from cogs.basic.ParentCommand import ParentCommand
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.lastfm.subcommand(Commands().data["lf track"].name, Commands().data["lf track"].description)
     async def lastfm_track(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         artist: str = nextcord.SlashOption(
             Commands().data["lf track"].parameters["artist"].name,
@@ -61,7 +61,7 @@ class LastFmTrack(nextcord_C.Cog):
         user = user or interaction.user
         timeframe = timeframe or "ALL"
 
-        if not (lastfm_username := await db.User.LASTFM.get(interaction.user.id)):
+        if not (lastfm_username := str(await db.User.LASTFM.get(interaction.user.id) or "")):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
@@ -83,8 +83,8 @@ class LastFmTrack(nextcord_C.Cog):
         track_for_url = urllib.parse.quote_plus(track)
         track_response = requests.get(
             f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}",
-            cookies = Keychain().LAST_FM_COOKIES,
-            headers = Keychain().LAST_FM_HEADERS,
+            cookies = Keychain().LAST_FM_COOKIES, # type: ignore
+            headers = Keychain().LAST_FM_HEADERS, # type: ignore
             timeout = 10
         )
 

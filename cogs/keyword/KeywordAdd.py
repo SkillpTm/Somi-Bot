@@ -14,14 +14,14 @@ class KeywordAdd(nextcord_C.Cog):
 
     from cogs.basic.ParentCommand import ParentCommand
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.keyword.subcommand(Commands().data["keyword add"].name, Commands().data["keyword add"].description)
     async def keyword_add(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         keyword: str = nextcord.SlashOption(
             Commands().data["keyword add"].parameters["keyword"].name,

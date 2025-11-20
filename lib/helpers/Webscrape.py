@@ -19,8 +19,8 @@ class Webscrape():
         else:
             found_type_name = str(soup.find("h2", class_="library-header-title"))
             found_type_name_list = found_type_name.split("<span class=")
-            type_name: list[str] = found_type_name_list[0].split('<h2 class="library-header-title">')
-            type_name: str = type_name[1].replace("</h2>", "")
+            type_name_temp: list[str] = found_type_name_list[0].split('<h2 class="library-header-title">')
+            type_name: str = type_name_temp[1].replace("</h2>", "")
             type_name = re.sub("\n", "", type_name.strip())
 
         return Get.markdown_safe(type_name)
@@ -41,10 +41,10 @@ class Webscrape():
 
         if not type_flag == "track":
             found_image = soup.find("span", class_="library-header-image")
-            cover_image_url: str = str(found_image.img["src"]) # URL for Artist image or album cover
+            cover_image_url: str = str(found_image.img["src"]) # type: ignore -> URL for Artist image or album cover
         else:
             found_image = soup.find("div", class_="library-header-image library-header-image--playlink")
-            cover_image_url: str = str(found_image.span.img["src"]) # URL track cover
+            cover_image_url: str = str(found_image.span.img["src"]) # type: ignore -> URL track cover
 
         return cover_image_url
 

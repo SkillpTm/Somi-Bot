@@ -3,7 +3,7 @@ import time
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Commands
 from lib.modules import SomiBot
 
@@ -11,8 +11,8 @@ from lib.modules import SomiBot
 
 class Userinfo(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -22,7 +22,7 @@ class Userinfo(nextcord_C.Cog):
     )
     async def userinfo(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         user: nextcord.User = nextcord.SlashOption(
             Commands().data["userinfo"].parameters["user"].name,
@@ -40,9 +40,7 @@ class Userinfo(nextcord_C.Cog):
         booster, joined_time, status, top_role = "", "", "", ""
 
         # if the command was made in a guild also add data regarding the guild
-        if interaction.guild:
-            member = interaction.guild.get_member(user.id)
-
+        if interaction.guild and (member := interaction.guild.get_member(user.id)):
             status = str(member.status)
             top_role = member.top_role.mention
             booster = "Yes" if member.premium_since else "No"
@@ -53,59 +51,51 @@ class Userinfo(nextcord_C.Cog):
             thumbnail = user.display_avatar.url,
             title = f"User Information: `{user.display_name}`",
             fields = [
-                [
+                EmbedField(
                     "ID:",
-                    user.id,
+                    str(user.id),
                     False
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Username:",
                     user.name,
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Display Name:",
                     user.display_name,
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Status:",
                     status,
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Top role:",
                     top_role,
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Booster:",
                     booster,
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Joined Discord:",
                     f"<t:{int(time.mktime(user.created_at.timetuple()))}>",
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Joined Server:",
                     joined_time,
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Public Flags:",
                     ", ".join(flag.name for flag in user.public_flags.all()),
                     False
-                ]
+                )
             ]
         )
 

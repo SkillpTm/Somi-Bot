@@ -25,8 +25,8 @@ class Query(enum.Enum):
         *,
         data: dict[str, int | str | None] = {},
         select: list[str] = [],
-        where: dict[str, int | str | None] = [],
-        order_by: str = None,
+        where: dict[str, int | str | None] = {},
+        order_by: str = "",
         order: Order = Order.NONE,
         limit: int = 1
     ) -> str:

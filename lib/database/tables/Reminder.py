@@ -1,8 +1,8 @@
-import enum
-
 from lib.database.DataAccess import DataAccessMixin, Table
 
-class Reminder(DataAccessMixin, Table, enum.Enum):
+
+
+class Reminder(DataAccessMixin):
     ID = "id"
     USER = "user"
     TIME = "reminder_time"
@@ -19,7 +19,7 @@ class Reminder(DataAccessMixin, Table, enum.Enum):
 
 
     @staticmethod
-    def make_primary_key(key: int | str) -> dict["Reminder", int | str]:
+    def make_primary_key(key: int | str | None) -> dict[Table, int | str | None]:
         """creates a primary key dict from the primary key value"""
 
         return {Reminder.ID: key}

@@ -16,14 +16,14 @@ class LastFmArtist(nextcord_C.Cog):
 
     from cogs.basic.ParentCommand import ParentCommand
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.lastfm.subcommand(Commands().data["lf artist"].name, Commands().data["lf artist"].description)
     async def lastfm_artist(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         artist: str = nextcord.SlashOption(
             Commands().data["lf artist"].parameters["artist"].name,
@@ -69,8 +69,8 @@ class LastFmArtist(nextcord_C.Cog):
         artist_for_url = urllib.parse.quote_plus(artist)
         artist_response = requests.get(
             f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}?date_preset={timeframe}",
-            cookies = Keychain().LAST_FM_COOKIES,
-            headers = Keychain().LAST_FM_HEADERS,
+            cookies = Keychain().LAST_FM_COOKIES, # type: ignore
+            headers = Keychain().LAST_FM_HEADERS, # type: ignore
             timeout = 10
         )
 

@@ -9,8 +9,8 @@ from lib.modules import SomiBot
 
 class Purge(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -23,7 +23,7 @@ class Purge(nextcord_C.Cog):
     )
     async def purge(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         amount: int = nextcord.SlashOption(
             Commands().data["purge"].parameters["amount"].name,
@@ -36,8 +36,8 @@ class Purge(nextcord_C.Cog):
         """This command removes the given amount of last messages from a channel."""
 
         await interaction.response.defer(ephemeral=True, with_message=True)
-        await interaction.channel.purge(limit=amount)
-        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Succesfully purged the last `{amount}` messages from {interaction.channel.mention}."), ephemeral=True)
+        await interaction.channel.purge(limit=amount) # type: ignore
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Succesfully purged the last `{amount}` messages from {interaction.channel.mention}."), ephemeral=True) # type: ignore
 
 
 

@@ -9,8 +9,8 @@ from lib.modules import SomiBot
 
 class Welcome(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     async def welcome(self, member: nextcord.Member) -> None:
@@ -25,7 +25,7 @@ class Welcome(nextcord_C.Cog):
             image = Config().SOMICORD_WELCOME_GIF
         )
 
-        sent_message = await member.guild.get_channel(Config().WELCOME_CHANNEL_ID).send(embed=embed)
+        sent_message = await member.guild.get_channel(Config().WELCOME_CHANNEL_ID).send(embed=embed) # type: ignore
         await sent_message.add_reaction(Config().SOMI_WELCOME_EMOTE)
 
 

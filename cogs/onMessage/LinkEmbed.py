@@ -4,7 +4,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
-from lib.helpers import EmbedFunctions, Get
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Config
 from lib.modules import SomiBot
 
@@ -12,8 +12,8 @@ from lib.modules import SomiBot
 
 class LinkEmbed(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     async def link_embed(self, message: nextcord.Message) -> None:
@@ -31,9 +31,8 @@ class LinkEmbed(nextcord_C.Cog):
 
         # gets the link from a message (works for both discord.com and canary.discord.com)
         link = re.search(fr"https?://(canary\.)?discord\.com/channels/{message.guild.id}\S+", message.content).group()
-        original_message = await Get.message_object_from_link(link, self.client)
 
-        if not original_message:
+        if not (original_message := await self.client.get_message_from_link(link)):
             return
 
         if await db.HiddenChannel._.get_entry(original_message.channel.id):
@@ -53,15 +52,15 @@ class LinkEmbed(nextcord_C.Cog):
             color = Config().BOT_COLOR,
             author = "Message Embed",
             author_icon = original_message.author.display_avatar.url,
-            description = f"{original_message.channel.mention} - [Link]({link})",
+            description = f"{original_message.channel.mention} - [Link]({link})", # type: ignore
             footer_timestamp = original_message.created_at,
             footer_icon = Config().LINK_EMBED_ICON,
             fields = [
-                [
+                EmbedField(
                     f"{original_message.author.display_name} said:",
                     message_content[:1024],
                     False
-                ]
+                )
             ]
         )
 

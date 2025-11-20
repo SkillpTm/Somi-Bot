@@ -9,14 +9,14 @@ from lib.modules import SomiBot
 
 class Avatar(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(Commands().data["avatar"].name, Commands().data["avatar"].description)
     async def avatar(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         user: nextcord.User = nextcord.SlashOption(
             Commands().data["avatar"].parameters["user"].name,

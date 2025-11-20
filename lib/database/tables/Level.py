@@ -1,11 +1,13 @@
-import enum
 import math
+import typing
 
 from lib.database.DataAccess import DataAccessMixin, Table
 from lib.database.Database import Database
 from lib.database.Query import Query
 
-class Level(DataAccessMixin, Table, enum.Enum):
+
+
+class Level(DataAccessMixin):
     ID = "id"
     USER = "user"
     SERVER = "server"
@@ -22,7 +24,7 @@ class Level(DataAccessMixin, Table, enum.Enum):
 
 
     @staticmethod
-    def make_primary_key(key: int | str) -> dict["Level", int | str]:
+    def make_primary_key(key: int | str | None) -> dict[Table, int | str | None]:
         """creates a primary key dict from the primary key value"""
 
         return {Level.ID: key}
@@ -68,9 +70,9 @@ class Level(DataAccessMixin, Table, enum.Enum):
     async def get_user_rank(where: dict[Table, int | str | None]) -> int:
         """gets the rank of a user in a server"""
 
-        return await Database().fetch_val(
+        return typing.cast(int, await Database().fetch_val(
             Level.get_table(),
             Query.USER_RANK,
             select = "rank",
             where = {key.value: value for key, value in {Level.SERVER: where[Level.SERVER], Level.USER: where[Level.USER]}.items()} # The order here matters, because of how custom the query is, it can't be properly templated
-        )
+        ))

@@ -10,8 +10,8 @@ from lib.modules import SomiBot
 
 class CustomCommand(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -21,7 +21,7 @@ class CustomCommand(nextcord_C.Cog):
     )
     async def customcommand(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         name: str = nextcord.SlashOption(
             Commands().data["custom-command"].parameters["name"].name,
@@ -45,7 +45,7 @@ class CustomCommand(nextcord_C.Cog):
     @customcommand.on_autocomplete("name")
     async def customcommand_autocomplete_name(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         name: str
     ) -> None:
         """provides autocomplete suggestions to discord"""
@@ -53,7 +53,7 @@ class CustomCommand(nextcord_C.Cog):
         await interaction.response.send_autocomplete(
             Get.autocomplete_dict_from_search_string(
                 name,
-                {db.CustomCommand.NAME.retrieve(entry): db.CustomCommand.NAME.retrieve(entry) async for entry in db.CustomCommand.NAME.get_multiple(where={db.CustomCommand.SERVER: interaction.guild.id})}
+                {str(db.CustomCommand.NAME.retrieve(entry)): str(db.CustomCommand.NAME.retrieve(entry)) async for entry in db.CustomCommand.NAME.get_multiple(where={db.CustomCommand.SERVER: interaction.guild.id})}
             )
         )
 

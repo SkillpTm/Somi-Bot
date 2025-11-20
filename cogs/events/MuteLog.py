@@ -5,7 +5,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Logger
 from lib.modules import SomiBot
 
@@ -16,8 +16,8 @@ class MuteLog(nextcord_C.Cog):
     MAX_AUDIT_ENTIRES_LIMIT = 10
     MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     async def mute_log(
@@ -30,10 +30,10 @@ class MuteLog(nextcord_C.Cog):
         if member_before.communication_disabled_until == member_after.communication_disabled_until:
             return
 
-        if not (audit_log := member_before.guild.get_channel(await db.Server.AUDIT_LOG.get(member_before.guild.id) or 0)):
+        if not (audit_log := member_before.guild.get_channel(int(await db.Server.AUDIT_LOG.get(member_before.guild.id) or 0))):
             return
 
-        entry: nextcord.AuditLogEntry = None
+        entry: nextcord.AuditLogEntry | None = None
         entry_count = 0
 
         async for entry in member_before.guild.audit_logs(
@@ -47,12 +47,15 @@ class MuteLog(nextcord_C.Cog):
             if (entry_count := entry_count + 1) == MuteLog.MAX_AUDIT_ENTIRES_LIMIT:
                 return
 
+        if not entry:
+            return
+
         if member_after.communication_disabled_until:
             embed = self.muted(entry, member_after)
         else:
             embed = self.unmuted(entry, member_after)
 
-        await audit_log.send(embed=embed)
+        await audit_log.send(embed=embed) # type: ignore
         await db.Telemetry.AMOUNT.increment("mute log")
 
 
@@ -60,7 +63,7 @@ class MuteLog(nextcord_C.Cog):
         self,
         entry: nextcord.AuditLogEntry,
         member_after: nextcord.Member
-    ) -> None:
+    ) -> nextcord.Embed:
         """creates the embed, for if the user was muted"""
 
         Logger().action_log(
@@ -69,7 +72,7 @@ class MuteLog(nextcord_C.Cog):
             {
                 "muted by": str(entry.user.id),
                 "until": str(int(time.mktime(member_after.communication_disabled_until.timetuple()))),
-                "reason": entry.reason
+                "reason": entry.reason or ""
             }
         )
 
@@ -78,17 +81,16 @@ class MuteLog(nextcord_C.Cog):
             author = "Mod Activity",
             author_icon = entry.user.display_avatar.url,
             fields = [
-                [
+                EmbedField(
                     "Mute Log:",
                     f"{entry.user.mention} muted: {member_after.mention} until: <t:{int(time.mktime(member_after.communication_disabled_until.timetuple()))}:F>",
                     False
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Reason:",
-                    entry.reason,
+                    entry.reason or "",
                     False
-                ]
+                )
             ]
         )
 
@@ -99,7 +101,7 @@ class MuteLog(nextcord_C.Cog):
         self,
         entry: nextcord.AuditLogEntry,
         member_after: nextcord.Member,
-    ) -> None:
+    ) -> nextcord.Embed:
         """creates the embed, for if the user was unmuted"""
 
         Logger().action_log(
@@ -113,11 +115,11 @@ class MuteLog(nextcord_C.Cog):
             author = "Mod Activity",
             author_icon = entry.user.display_avatar.url,
             fields = [
-                [
+                EmbedField(
                     "Unmute Log:",
                     f"{entry.user.mention} unmuted: {member_after.mention}",
                     False
-                ]
+                )
             ]
         )
 

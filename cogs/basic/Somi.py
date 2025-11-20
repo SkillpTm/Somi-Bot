@@ -8,12 +8,12 @@ from lib.modules import SomiBot
 
 class Somi(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(Commands().data["somi"].name, Commands().data["somi"].description)
-    async def somi(self,interaction: nextcord.Interaction) -> None:
+    async def somi(self,interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command tells you the truth"""
 
         await interaction.response.send_message(f"Somi best grill!\n{Config().SOMI_BEST_GRILL_IMAGE}")

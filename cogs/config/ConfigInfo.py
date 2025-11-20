@@ -1,9 +1,11 @@
+import typing
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
 from lib.database import db
-from lib.helpers import EmbedFunctions, LevelRoles
+from lib.helpers import EmbedField, EmbedFunctions, LevelRoles
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
 
@@ -17,12 +19,12 @@ class ConfigInfo(nextcord_C.Cog):
     LEVEL_IGNORE_CHANNELS_INFO = "In a level-ignore-channel no one can earn any XP for levels."
     LEVEL_ROLES_INFO = "A level-role is a role a user will get as soon as they reach a certain level. Their previous level-role will get removed from them."
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.config.subcommand(Commands().data["config info"].name, Commands().data["config info"].description)
-    async def config_info(self, interaction: nextcord.Interaction) -> None:
+    async def config_info(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command outputs a server's configuration info and some explanations."""
 
         await interaction.response.defer(ephemeral=True, with_message=True)
@@ -33,48 +35,44 @@ class ConfigInfo(nextcord_C.Cog):
             color = Config().PERMISSION_COLOR,
             title = f"Configuration of: `{interaction.guild.name}`",
             fields = [
-                [
+                EmbedField(
                     "Audit Log:",
                     f"{ConfigInfo.AUDIT_LOG_INFO}\n\n{audit_log_output}",
                     False
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Default Role:",
                     f"{ConfigInfo.DEFAULT_ROLE_INFO}\n\n{default_role_output}",
                     False
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Hidden Channels:",
                     f"{ConfigInfo.HIDDEN_CHANNELS_INFO}\n\n{hidden_channels_output}",
                     False
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Level Ignore Channels:",
                     f"{ConfigInfo.LEVEL_IGNORE_CHANNELS_INFO}\n\n{level_ignore_channels_output}",
                     False
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Level Roles:",
                     f"{ConfigInfo.LEVEL_ROLES_INFO}\n\n{level_roles_output}",
                     False
-                ]
+                )
             ]
         )
 
         await interaction.followup.send(embed=embed, ephemeral=True)
 
 
-    async def get_config_data(self, interaction: nextcord.Interaction) -> tuple[str, str, str, str, str]:
+    async def get_config_data(self, interaction: nextcord.Interaction[SomiBot]) -> tuple[str, str, str, str, str]:
         """This function gets all the data that can be configured and if there is none, it just replaces with a default text.
            It also validates that all channels/roles still exist and if not cleans up the db"""
 
         audit_log_output = ""
 
-        if (audit_log_id := await db.Server.AUDIT_LOG.get(interaction.guild.id)):
+        if (audit_log_id := int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
             if interaction.guild.get_channel(audit_log_id):
                 audit_log_output = f"<#{audit_log_id}>"
             else:
@@ -85,7 +83,7 @@ class ConfigInfo(nextcord_C.Cog):
 
         default_role_output = ""
 
-        if (default_role_id := await db.Server.DEFAULT_ROLE.get(interaction.guild.id)):
+        if (default_role_id := int(await db.Server.DEFAULT_ROLE.get(interaction.guild.id) or 0)):
             if interaction.guild.get_role(default_role_id):
                 default_role_output = f"<#{default_role_id}>"
             else:
@@ -98,8 +96,8 @@ class ConfigInfo(nextcord_C.Cog):
 
         # check if all hidden channels still exits, the ones that do, get added to the output
         async for entry in db.HiddenChannel.ID.get_multiple(where=interaction.guild.id):
-            hidden_channel_id: int = db.HiddenChannel.ID.retrieve(entry)
-            if not interaction.guild.get_channel(hidden_channel_id or 0):
+            hidden_channel_id = int(db.HiddenChannel.ID.retrieve(entry) or 0)
+            if not interaction.guild.get_channel(hidden_channel_id):
                 await db.HiddenChannel._.delete(hidden_channel_id)
                 continue
 
@@ -112,8 +110,8 @@ class ConfigInfo(nextcord_C.Cog):
 
         # check if all level ignore channels still exits, the ones that do, get added to the output
         async for entry in db.LevelIgnoreChannel.ID.get_multiple(where=interaction.guild.id):
-            level_ignore_channel_id: int = db.LevelIgnoreChannel.ID.retrieve(entry)
-            if not interaction.guild.get_channel(level_ignore_channel_id or 0):
+            level_ignore_channel_id = int(db.LevelIgnoreChannel.ID.retrieve(entry) or 0)
+            if not interaction.guild.get_channel(level_ignore_channel_id):
                 await db.LevelIgnoreChannel._.delete(level_ignore_channel_id)
                 continue
 
@@ -126,17 +124,17 @@ class ConfigInfo(nextcord_C.Cog):
 
         # check if all level roles still exits, the ones that do, get added to the output
         async for entry in db.LevelRole._.get_multiple([db.LevelRole.ID, db.LevelRole.LEVEL], interaction.guild.id):
-            level_role = db.LevelRole.ID.retrieve(entry)
-            if not interaction.guild.get_role(level_role or 0):
+            level_role = int(db.LevelRole.ID.retrieve(entry) or 0)
+            if not interaction.guild.get_role(level_role):
                 removed_role = True
                 await db.LevelRole._.delete(level_role)
 
-            level_roles.append(entry)
+            level_roles.append(typing.cast(dict[str, int], entry))
 
         if removed_role:
-            await LevelRoles.update_users(interaction.guild)
+            await LevelRoles.update_users(interaction.guild) # type: ignore
 
-        level_roles_output = await LevelRoles.get_level_range_with_role(interaction.guild)
+        level_roles_output = await LevelRoles.get_level_range_with_role(interaction.guild) # type: ignore
 
 
         return audit_log_output, default_role_output, hidden_channels_output, level_ignore_channels_output, level_roles_output

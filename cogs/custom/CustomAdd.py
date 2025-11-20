@@ -5,7 +5,7 @@ import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
 from lib.database import db
-from lib.helpers import EmbedFunctions, Get
+from lib.helpers import EmbedField, EmbedFunctions, Get
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
 
@@ -13,14 +13,14 @@ from lib.modules import SomiBot
 
 class CustomAdd(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.custom.subcommand(Commands().data["custom add"].name, Commands().data["custom add"].description)
     async def custom_add(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         name: str = nextcord.SlashOption(
             Commands().data["custom add"].parameters["name"].name,
@@ -55,7 +55,7 @@ class CustomAdd(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Your custom-command with the name `{name}` has been created."), ephemeral=True)
 
 
-        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
+        if not (audit_log := interaction.guild.get_channel(int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0))):
             return
 
         embed = EmbedFunctions().builder(
@@ -63,21 +63,20 @@ class CustomAdd(nextcord_C.Cog):
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [
-                [
+                EmbedField(
                     "/custom add:",
                     f"{interaction.user.mention} added: `{name}` as a custom-command.",
                     False
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Command text:",
                     f"`{text}`",
                     False
-                ]
+                )
             ]
         )
 
-        await audit_log.send(embed=embed)
+        await audit_log.send(embed=embed) # type: ignore
 
 
 

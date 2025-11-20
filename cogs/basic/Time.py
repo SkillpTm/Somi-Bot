@@ -13,14 +13,14 @@ from lib.modules import SomiBot
 
 class Time(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(Commands().data["time"].name, Commands().data["time"].description)
     async def time(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         timezone: str = nextcord.SlashOption(
             Commands().data["time"].parameters["timezone"].name,
@@ -32,7 +32,8 @@ class Time(nextcord_C.Cog):
     ) -> None:
         """This command will display the current date and time in any timezone"""
 
-        timezone = timezone or (db_tz := await db.User.TIMEZONE.get(interaction.user.id))
+        db_timezone = str(await db.User.TIMEZONE.get(interaction.user.id))
+        timezone = timezone or db_timezone
 
         if timezone and timezone not in zoneinfo.available_timezones():
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("Please input a valid IANA timezone code."), ephemeral=True)
@@ -40,7 +41,7 @@ class Time(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        if timezone != db_tz:
+        if timezone != db_timezone:
             await db.User.TIMEZONE.set(interaction.user.id, timezone)
 
         current_time = datetime.datetime.now(zoneinfo.ZoneInfo(timezone))
@@ -66,7 +67,7 @@ class Time(nextcord_C.Cog):
     @time.on_autocomplete("timezone")
     async def time_autocomplete_timezone(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         timezone: str
     ) -> None:
         """provides autocomplete suggestions to discord"""

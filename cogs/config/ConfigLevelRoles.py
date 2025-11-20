@@ -1,9 +1,11 @@
+import typing
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
 from lib.database import db
-from lib.helpers import EmbedFunctions, LevelRoles
+from lib.helpers import EmbedField, EmbedFunctions, LevelRoles
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
 
@@ -11,8 +13,8 @@ from lib.modules import SomiBot
 
 class ConfigLevelRoles(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.config.subcommand(
@@ -22,9 +24,9 @@ class ConfigLevelRoles(nextcord_C.Cog):
     )
     async def config_level_roles(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
-        action: str = nextcord.SlashOption(
+        action: typing.Literal["Add", "Remove"] = nextcord.SlashOption(
             Commands().data["config level-roles"].parameters["action"].name,
             Commands().data["config level-roles"].parameters["action"].description,
             required = True,
@@ -47,7 +49,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner:
+        if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner:  # type: ignore
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only add/remove a role as a level-role, if the role is below your current top role!"), ephemeral=True)
             return
 
@@ -64,7 +66,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
             mod_action = f"{interaction.user.mention} removed: {role.mention} from the level-roles."
 
 
-        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
+        if not (audit_log := interaction.guild.get_channel(int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0))):
             return
 
         embed = EmbedFunctions().builder(
@@ -72,20 +74,20 @@ class ConfigLevelRoles(nextcord_C.Cog):
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [
-                [
+                EmbedField(
                     "/config level-roles:",
                     mod_action,
                     False
-                ]
+                )
             ]
         )
 
-        await audit_log.send(embed=embed)
+        await audit_log.send(embed=embed) # type: ignore
 
 
     async def _add_role(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         role: nextcord.Role,
         level: int
     ) -> bool:
@@ -101,14 +103,14 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{role.mention} has been added to the level-roles.\nThe role is being applied to users now, this can take a few minutes."), ephemeral=True)
 
-        await LevelRoles.update_users(interaction.guild)
+        await LevelRoles.update_users(interaction.guild) # type: ignore
 
         return added
 
 
     async def _remove_role(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         role: nextcord.Role
     ) -> bool:
         "removes or doesn't remove the role indicated by the output bool"
@@ -119,7 +121,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{role.mention} has been removed from the level-roles.\nThe level-roles are being re-applied to users now, this can take a few minutes."), ephemeral=True)
 
-        await LevelRoles.update_users(interaction.guild)
+        await LevelRoles.update_users(interaction.guild) # type: ignore
 
         return deleted
 

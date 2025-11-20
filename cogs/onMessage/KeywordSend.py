@@ -11,8 +11,8 @@ from lib.modules import SomiBot
 
 class KeywordSend(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     async def keyword_send(self, message: nextcord.Message) -> None:
@@ -37,10 +37,10 @@ class KeywordSend(nextcord_C.Cog):
             if message.author.id == db.Keyword.USER.retrieve(entry):
                 return
 
-            if not users_keywords.get(db.Keyword.USER.retrieve(entry), None):
-                users_keywords[db.Keyword.USER.retrieve(entry)] = []
+            if not users_keywords.get(int(db.Keyword.USER.retrieve(entry) or 0), None):
+                users_keywords[int(db.Keyword.USER.retrieve(entry) or 0)] = []
 
-            users_keywords[db.Keyword.USER.retrieve(entry)].append(db.Keyword.KEYWORD.retrieve(entry).lower())
+            users_keywords[int(db.Keyword.USER.retrieve(entry) or 0)].append(str(db.Keyword.KEYWORD.retrieve(entry)))
 
         for user_id, user_keywords in users_keywords.items():
             user_keywords_in_content: list[str] = []
@@ -63,7 +63,7 @@ class KeywordSend(nextcord_C.Cog):
                 output_keywords = f"{user_keywords_in_content[0]}"
                 keywords_info = f"{output_keywords} has"
 
-            keywords_info += f"{keywords_info} been mentioned in {message.channel.mention} by {message.author.mention}:"
+            keywords_info += f"{keywords_info} been mentioned in {message.channel.mention} by {message.author.mention}:" # type: ignore
 
             embed = EmbedFunctions().builder(
                 color = Config().BOT_COLOR,
@@ -75,7 +75,7 @@ class KeywordSend(nextcord_C.Cog):
             embed, _ = EmbedFunctions.get_or_add_attachments(message.attachments, embed, limit = 1)
 
             try:
-                await self.client.fetch_user(user_id).send(embed=embed)
+                await self.client.fetch_user(user_id).send(embed=embed) # type: ignore
             except nextcord.Forbidden:
                 Logger().action_warning(f"keyword send ~ User: {user_id} couldn't be notified, because their pms aren't open to the client")
 

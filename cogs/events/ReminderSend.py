@@ -14,8 +14,8 @@ from lib.modules import SomiBot
 
 class ReminderSend(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     async def infinite_reminder_loop(self) -> None:
@@ -42,27 +42,27 @@ class ReminderSend(nextcord_C.Cog):
         """
 
         async for entry in db.Reminder._.get_multiple(order_by=db.Reminder.TIME, order=Order.ASCENDING):
-            if db.Reminder.TIME.retrieve(entry) > int(time.time()):
+            if int(db.Reminder.TIME.retrieve(entry) or 0) > int(time.time()):
                 return
 
             Logger().action_log(
-                self.client.get_user(db.Reminder.USER.retrieve(entry)),
+                self.client.get_user(int(db.Reminder.USER.retrieve(entry) or 0)), # type: ignore
                 "reminder send",
                 {
                     "reminder id": str(db.Reminder.ID.retrieve(entry)),
-                    "reminder text": db.Reminder.MESSAGE.retrieve(entry)
+                    "reminder text": str(db.Reminder.MESSAGE.retrieve(entry))
                 }
             )
 
             embed = EmbedFunctions().builder(
                 color = Config().BOT_COLOR,
                 title = "Reminder Notification",
-                title_url = db.Reminder.LINK.retrieve(entry),
-                description = db.Reminder.MESSAGE.retrieve(entry)
+                title_url = str(db.Reminder.LINK.retrieve(entry) or ""),
+                description = str(db.Reminder.MESSAGE.retrieve(entry) or "")
             )
 
             try:
-                user = await self.client.fetch_user(db.Reminder.USER.retrieve(entry))
+                user = await self.client.fetch_user(int(db.Reminder.USER.retrieve(entry) or 0))
                 await user.send(embed=embed)
             except (nextcord.NotFound, nextcord.Forbidden):
                 Logger().action_warning(f"reminder send: {db.Reminder.USER.retrieve(entry)} couldn't be reminded, because their pms aren't open to the client")

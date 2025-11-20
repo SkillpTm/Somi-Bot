@@ -1,6 +1,7 @@
 import logging
 
 import nextcord
+import nextcord.ext.commands as nextcord_C
 
 from lib.managers.Singleton import Singleton
 
@@ -29,9 +30,9 @@ class Logger(metaclass=Singleton):
 
     @staticmethod
     def get_log_message(
-        data_provider: nextcord.Interaction | nextcord.Member | nextcord.User | nextcord.Message,
+        data_provider: nextcord.Interaction[nextcord_C.Bot] | nextcord.Member | nextcord.User | nextcord.Message,
         action_name: str,
-        action_inputs: list[dict] | list | dict | str = []
+        action_inputs: list[dict[str, str]] | list[str] | dict[str, str] | str = []
     ) -> str:
         """makes the log message for an interaction, member event, user event or message event"""
 
@@ -44,22 +45,22 @@ class Logger(metaclass=Singleton):
             aggregator_id = data_provider.id
         elif isinstance(data_provider, nextcord.User):
             aggregator_id = data_provider.id
-        elif isinstance(data_provider, nextcord.Message):
+        else:
             aggregator_id = data_provider.author.id
 
         ouput = f"{action_name} ~ User: {aggregator_id} "
 
         # check if the interaction was in a guild or dm
         if hasattr(data_provider, "guild"):
-            if data_provider.guild:
-                ouput += f"~ Guild: {data_provider.guild.id} "
+            if data_provider.guild: # type: ignore
+                ouput += f"~ Guild: {data_provider.guild.id} " # type: ignore
 
             if hasattr(data_provider, "channel"):
-                if data_provider.channel:
-                    ouput += f"~ Channel: {data_provider.channel.id} "
+                if data_provider.channel: # type: ignore
+                    ouput += f"~ Channel: {data_provider.channel.id} " # type: ignore
         elif hasattr(data_provider, "channel"):
-            if data_provider.channel:
-                if data_provider.channel.type == nextcord.ChannelType.private:
+            if data_provider.channel: # type: ignore
+                if data_provider.channel.type == nextcord.ChannelType.private: # type: ignore
                     ouput += "~ Guild: DM channel "
 
         ouput += f"~ inputs: {action_inputs}"
@@ -69,9 +70,9 @@ class Logger(metaclass=Singleton):
 
     def action_log(
         self,
-        data_provider: nextcord.Interaction | nextcord.Member | nextcord.User | nextcord.Message,
+        data_provider: nextcord.Interaction[nextcord_C.Bot] | nextcord.Member | nextcord.User | nextcord.Message,
         action_name: str,
-        action_inputs: list[dict] | list | dict | str = []
+        action_inputs: list[dict[str, str]] | list[str] | dict[str, str] | str = []
     )-> None:
         """Formats and logs a bot action"""
         self.action_logger.info(Logger.get_log_message(data_provider, action_name, action_inputs))
@@ -82,7 +83,7 @@ class Logger(metaclass=Singleton):
         self.action_logger.warning(action)
 
 
-    def application_command_error(self, **kwargs) -> None:
+    def application_command_error(self, **kwargs) -> None: # type: ignore
         """Formats and logs a bot error"""
         error = ""
 

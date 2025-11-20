@@ -1,8 +1,8 @@
-import enum
-
 from lib.database.DataAccess import DataAccessMixin, Table
 
-class HiddenChannel(DataAccessMixin, Table, enum.Enum):
+
+
+class HiddenChannel(DataAccessMixin):
     ID = "id"
     SERVER = "server"
 
@@ -16,7 +16,7 @@ class HiddenChannel(DataAccessMixin, Table, enum.Enum):
 
 
     @staticmethod
-    def make_primary_key(key: int | str) -> dict["HiddenChannel", int | str]:
+    def make_primary_key(key: int | str | None) -> dict[Table, int | str | None]:
         """creates a primary key dict from the primary key value"""
 
         return {HiddenChannel.ID: key}

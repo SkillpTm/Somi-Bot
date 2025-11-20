@@ -5,7 +5,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
-from lib.helpers import EmbedFunctions, Get
+from lib.helpers import EmbedField, EmbedFunctions, Get
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
 
@@ -15,14 +15,14 @@ class ReminderAdd(nextcord_C.Cog):
 
     from cogs.basic.ParentCommand import ParentCommand
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.reminder.subcommand(Commands().data["reminder add"].name, Commands().data["reminder add"].description)
     async def reminder_add(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         reminder_time: str = nextcord.SlashOption(
             Commands().data["reminder add"].parameters["reminder_time"].name,
@@ -51,7 +51,7 @@ class ReminderAdd(nextcord_C.Cog):
 
         await interaction.response.defer(with_message=True)
 
-        reminder_time = int(time.time()) + total_seconds
+        reminder_timestamp = int(time.time()) + total_seconds
 
         while True:
             reminder_id = random.randint(10**9, 10**10 - 1) # get a random 9 digit number
@@ -66,17 +66,16 @@ class ReminderAdd(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             description = reminder,
             fields = [
-                [
+                EmbedField(
                     "Time:",
-                    f"<t:{reminder_time}:F>",
+                    f"<t:{reminder_timestamp}:F>",
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Reminder ID:",
                     f"`{reminder_id}`",
                     True
-                ]
+                )
             ]
         )
 
@@ -87,7 +86,7 @@ class ReminderAdd(nextcord_C.Cog):
         await db.Reminder._.add({
             db.Reminder.ID: reminder_id,
             db.Reminder.USER: interaction.user.id,
-            db.Reminder.TIME: reminder_time,
+            db.Reminder.TIME: reminder_timestamp,
             db.Reminder.LINK: bot_reply.jump_url,
             db.Reminder.MESSAGE: reminder
         })

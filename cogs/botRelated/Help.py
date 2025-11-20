@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
-from lib.helpers import EmbedFunctions, Get
+from lib.helpers import EmbedField, EmbedFunctions, Get
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
 
@@ -10,14 +10,14 @@ from lib.modules import SomiBot
 
 class Help(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(Commands().data["help"].name, Commands().data["help"].description)
     async def help(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         name: str = nextcord.SlashOption(
             Commands().data["help"].parameters["name"].name,
@@ -51,14 +51,14 @@ class Help(nextcord_C.Cog):
         else:
             permission_line = ""
 
-        parameter_fields: list[list[str | bool]] = []
+        parameter_fields: list[EmbedField] = []
 
         for parameter in Commands().data[name].parameters.values():
-            new_field = []
-            new_field.append(f"`{parameter.name}` - ({'required' if parameter.required else 'optional'})")
-            new_field.append(f"{parameter.description}\n`Type:` {parameter.type}\n{'`Default:` ' + parameter.default if parameter.default else ''}")
-            new_field.append(False)
-            parameter_fields.append(new_field)
+            parameter_fields.append(EmbedField(
+                f"`{parameter.name}` - ({'required' if parameter.required else 'optional'})",
+                f"{parameter.description}\n`Type:` {parameter.type}\n{'`Default:` ' + parameter.default if parameter.default else ''}",
+                False
+            ))
 
         embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
@@ -66,11 +66,11 @@ class Help(nextcord_C.Cog):
             description = f"{Commands().data[name].description}\n" + alias_line + permission_line,
             footer = f"Example: {Commands().data[name].example}",
             fields = [
-                [
+                EmbedField(
                     "Structure:",
                     f"```{Commands().data[name].structure}```",
                     False
-                ],
+                ),
                 *parameter_fields
             ]
         )
@@ -82,7 +82,7 @@ class Help(nextcord_C.Cog):
     @help.on_autocomplete("name")
     async def help_autocomplete_name(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         name: str
     ) -> None:
         """provides autocomplete suggestions to discord"""

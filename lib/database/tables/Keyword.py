@@ -1,8 +1,8 @@
-import enum
-
 from lib.database.DataAccess import DataAccessMixin, Table
 
-class Keyword(DataAccessMixin, Table, enum.Enum):
+
+
+class Keyword(DataAccessMixin):
     ID = "id"
     USER = "user"
     SERVER = "server"
@@ -18,7 +18,7 @@ class Keyword(DataAccessMixin, Table, enum.Enum):
 
 
     @staticmethod
-    def make_primary_key(key: int | str) -> dict["Keyword", int | str]:
+    def make_primary_key(key: int | str | None) -> dict[Table, int | str | None]:
         """creates a primary key dict from the primary key value"""
 
         return {Keyword.ID: key}

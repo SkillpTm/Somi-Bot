@@ -5,7 +5,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Logger
 from lib.modules import SomiBot
 
@@ -16,17 +16,17 @@ class KickLog(nextcord_C.Cog):
     MAX_AUDIT_ENTIRES_LIMIT = 10
     MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     async def kick_log(self, member: nextcord.Member) -> None:
         """A log that activates, when someone gets kicked and an audit log is set"""
 
-        if not (audit_log := member.guild.get_channel(await db.Server.AUDIT_LOG.get(member.guild.id) or 0)):
+        if not (audit_log := member.guild.get_channel(int(await db.Server.AUDIT_LOG.get(member.guild.id) or 0))):
             return
 
-        entry: nextcord.AuditLogEntry = None
+        entry: nextcord.AuditLogEntry | None = None
         entry_count = 0
 
         async for entry in member.guild.audit_logs(
@@ -43,11 +43,10 @@ class KickLog(nextcord_C.Cog):
         if not entry:
             return
 
-
         Logger().action_log(
             member,
             "kick log",
-            {"kicked by": str(entry.user.id), "reason": entry.reason}
+            {"kicked by": str(entry.user.id), "reason": entry.reason or ""}
         )
 
         embed = EmbedFunctions().builder(
@@ -55,21 +54,20 @@ class KickLog(nextcord_C.Cog):
             author = "Mod Activity",
             author_icon = entry.user.display_avatar.url,
             fields = [
-                [
+                EmbedField(
                     "Kick Log:",
-                    f"{entry.user.mention} kicked: {entry.target.mention}",
+                    f"{entry.user.mention} kicked: {entry.target.mention}", # type: ignore
                     False
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Reason:",
-                    entry.reason,
+                    entry.reason or "",
                     False
-                ]
+                )
             ]
         )
 
-        await audit_log.send(embed=embed)
+        await audit_log.send(embed=embed) # type: ignore
         await db.Telemetry.AMOUNT.increment("kick log")
 
 

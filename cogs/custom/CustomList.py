@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
 
@@ -10,8 +10,8 @@ from lib.modules import SomiBot
 
 class CustomList(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -21,11 +21,10 @@ class CustomList(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    async def custom_list(self, interaction: nextcord.Interaction) -> None:
+    async def custom_list(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command provides a list of all custom-commands of a guild"""
 
         await interaction.response.defer(ephemeral=True, with_message=True)
-        all_commandnames: list[str]
 
         if not (all_commandnames := await db.CustomCommand.NAME.get_all(where={db.CustomCommand.SERVER: interaction.guild.id})):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("There are no custom-commands on this server.\nTo add a custom-command use `/custom add`."), ephemeral=True)
@@ -46,11 +45,11 @@ class CustomList(nextcord_C.Cog):
             author = f"custom-command list for {interaction.guild.name}",
             author_icon = server_icon_url,
             fields = [
-                [
+                EmbedField(
                     "custom-commands:",
                     output,
                     False
-                ]
+                )
             ]
         )
 

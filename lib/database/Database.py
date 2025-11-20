@@ -1,7 +1,7 @@
 import time
-from typing import AsyncIterator
+import typing
 
-import aiomysql
+import aiomysql # type: ignore
 
 from lib.database.Query import Order, Query
 from lib.managers import Config, Keychain, Singleton
@@ -11,7 +11,7 @@ from lib.managers import Config, Keychain, Singleton
 class Database(metaclass=Singleton):
 
     def __init__(self) -> None:
-        self._pool: aiomysql.Pool = None
+        self._pool: aiomysql.Pool | None = None
         self._queries: dict[str, str] = {}
         self._set_queries(Config().QUERIES_PATH)
 
@@ -19,7 +19,7 @@ class Database(metaclass=Singleton):
     async def _set_pool(self, schema_path: str, max_pool_size: int) -> None:
         """sets up the db with the provided schema and sets the pool"""
 
-        self._pool: aiomysql.Pool = await aiomysql.create_pool(
+        self._pool = await aiomysql.create_pool(
             host = Keychain().DB_HOST,
             port = Keychain().DB_PORT,
             user = Keychain().DB_USER,
@@ -42,7 +42,7 @@ class Database(metaclass=Singleton):
                 await cur.execute(schema)
 
 
-    def _set_queries(self, queries_path: str) -> dict[str, str]:
+    def _set_queries(self, queries_path: str) -> None:
         """sets the queries from the provided .sql file"""
 
         self._queries: dict[str, str] = {}
@@ -64,7 +64,7 @@ class Database(metaclass=Singleton):
         Singleton.reset(Database)
 
 
-    async def get_latency(self) -> int:
+    async def get_latency(self) -> float:
         """gets the latency of the db in milliseconds"""
 
         start = time.perf_counter()
@@ -199,10 +199,10 @@ class Database(metaclass=Singleton):
         *,
         select: list[str] = ["*"],
         where: dict[str, int | str | None],
-        order_by: str = None,
+        order_by: str = "",
         order: Order = Order.NONE,
         limit: int = 1_000_000
-    ) -> AsyncIterator[dict[str, str | int | None]]:
+    ) -> typing.AsyncIterator[dict[str, str | int | None]]:
         """fetches many rows"""
 
         if not self._pool:

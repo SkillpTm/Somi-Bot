@@ -1,4 +1,5 @@
 import datetime
+import typing
 
 import nextcord
 import nextcord.ext.commands as nextcord_C
@@ -11,11 +12,11 @@ from lib.modules import SomiBot
 
 class FeedbackModal(nextcord.ui.Modal):
 
-    def __init__(self, client) -> None:
+    def __init__(self, client: SomiBot) -> None:
         super().__init__("Please submit your feedback down below!", timeout=None)
-        self.client: SomiBot = client
+        self.client = client
 
-        self.feedback = nextcord.ui.TextInput(
+        self.feedback: nextcord.ui.TextInput[typing.Any] = nextcord.ui.TextInput(
             label = "Feedback:",
             style = nextcord.TextInputStyle.paragraph,
             min_length = 1,
@@ -29,11 +30,14 @@ class FeedbackModal(nextcord.ui.Modal):
 
     async def callback(
         self,
-        interaction: nextcord.Interaction
+        interaction: nextcord.Interaction[SomiBot]
     ) -> None:
         """Submits the feedback to the db"""
 
-        Logger().action_log(interaction, "/feedback", {"submission": self.feedback.value})
+        if not interaction.user:
+            return
+
+        Logger().action_log(interaction, "/feedback", {"submission": self.feedback.value or ""}) # type: ignore
 
         if interaction.guild:
             server_id = interaction.guild.id
@@ -56,19 +60,19 @@ class FeedbackModal(nextcord.ui.Modal):
             description = f"{origin_text}\n{self.feedback.value}"
         )
 
-        await self.client.get_channel(Config().SUPPORT_SERVER_FEEDBACK_ID).send(embed=embed)
+        await self.client.get_channel(Config().SUPPORT_SERVER_FEEDBACK_ID).send(embed=embed) # type: ignore
         await interaction.response.send_message(embed=EmbedFunctions().get_success_message("Your feedback has been submitted!"), ephemeral=True)
 
 
 
 class Feedback(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(Commands().data["feedback"].name, Commands().data["about"].description)
-    async def feedback(self, interaction: nextcord.Interaction) -> None:
+    async def feedback(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """Sends out a modal to receive feedback"""
 
         await interaction.response.send_modal(FeedbackModal(self.client))

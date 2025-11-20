@@ -9,8 +9,8 @@ from lib.modules import SomiBot
 
 class Rules(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -23,7 +23,7 @@ class Rules(nextcord_C.Cog):
     )
     async def rules(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         rule: str = nextcord.SlashOption(
             Commands().data["rules"].parameters["rule"].name,

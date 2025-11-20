@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Logger
 from lib.modules import SomiBot
 
@@ -10,8 +10,8 @@ from lib.modules import SomiBot
 
 class EditLog(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     async def edit_log(
@@ -27,7 +27,7 @@ class EditLog(nextcord_C.Cog):
         if message_before.author.id == self.client.user.id:
             return
 
-        if not (audit_log := message_before.guild.get_channel(await db.Server.AUDIT_LOG.get(message_before.guild.id) or 0)):
+        if not (audit_log := message_before.guild.get_channel(int(await db.Server.AUDIT_LOG.get(message_before.guild.id) or 0))):
             return
 
         if await db.HiddenChannel._.get_entry(message_before.channel.id):
@@ -43,14 +43,14 @@ class EditLog(nextcord_C.Cog):
             {"message_before": message_before.content, "message_after": message_after.content}
         )
 
-        second_embed: nextcord.Embed = None
+        second_embed: nextcord.Embed | None = None
 
         if len(message_before.content) < 1024 and len(message_after.content) < 1024:
             first_embed, file_urls = self.single_response(message_before, message_after)
         else:
             first_embed, second_embed, file_urls = self.multi_response(message_before, message_after)
 
-        inital_response = await audit_log.send(embed=first_embed)
+        inital_response = await audit_log.send(embed=first_embed) # type: ignore
 
         # there is only a second embed for larger message edits
         if second_embed:
@@ -73,19 +73,18 @@ class EditLog(nextcord_C.Cog):
             color = nextcord.Color.yellow(),
             author = "Message Edited",
             author_icon = message_before.author.display_avatar.url,
-            description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})",
+            description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})", # type: ignore
             fields = [
-                [
+                EmbedField(
                     "Before:",
                     message_before.content,
                     False
-                ],
-
-                [
+                ),
+                EmbedField(
                     "After:",
                     message_after.content,
                     False
-                ]
+                )
             ]
         )
 
@@ -104,7 +103,7 @@ class EditLog(nextcord_C.Cog):
             color = nextcord.Color.yellow(),
             author = "Message Edited",
             author_icon = message_before.author.display_avatar.url,
-            description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})\n**Before:**\n{message_before.content}"[:4095]
+            description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})\n**Before:**\n{message_before.content}" # type: ignore
         )
 
         embed_after = EmbedFunctions().builder(

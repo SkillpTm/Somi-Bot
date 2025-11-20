@@ -1,8 +1,8 @@
-import enum
-
 from lib.database.DataAccess import DataAccessMixin, Table
 
-class LevelIgnoreChannel(DataAccessMixin, Table, enum.Enum):
+
+
+class LevelIgnoreChannel(DataAccessMixin):
     ID = "id"
     SERVER = "server"
 
@@ -16,7 +16,7 @@ class LevelIgnoreChannel(DataAccessMixin, Table, enum.Enum):
 
 
     @staticmethod
-    def make_primary_key(key: int | str) -> dict["LevelIgnoreChannel", int | str]:
+    def make_primary_key(key: int | str | None) -> dict[Table, int | str | None]:
         """creates a primary key dict from the primary key value"""
 
         return {LevelIgnoreChannel.ID: key}

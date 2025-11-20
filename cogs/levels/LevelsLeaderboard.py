@@ -12,8 +12,8 @@ class LevelsLeaderboard(nextcord_C.Cog):
 
     from cogs.basic.ParentCommand import ParentCommand
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.levels.subcommand(
@@ -21,7 +21,7 @@ class LevelsLeaderboard(nextcord_C.Cog):
         Commands().data["levels leaderboard"].description,
         name_localizations = {country_tag: Commands().data["levels leaderboard"].name for country_tag in nextcord.Locale}
     )
-    async def levels_leaderboard(self, interaction: nextcord.Interaction) -> None:
+    async def levels_leaderboard(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """Displays the top 10 (or less, if there isn't 10 users in the levels table) users by XP"""
 
         await interaction.response.defer(with_message=True)
@@ -39,13 +39,13 @@ class LevelsLeaderboard(nextcord_C.Cog):
             name = f"[Deleted User] - ({db.Level.USER.retrieve(entry)})" # default value for, if the user's account doesn't exit anymore
 
             # check if the user is still in the server
-            if (member := interaction.guild.get_member(db.Level.USER.retrieve(entry))):
+            if (member := interaction.guild.get_member(int(db.Level.USER.retrieve(entry) or 0))):
                 name = member.mention
             # check if the user's account still exists
-            elif not member and (user := self.client.get_user(db.Level.USER.retrieve(entry))):
+            elif not member and (user := self.client.get_user(int(db.Level.USER.retrieve(entry) or 0))):
                 name = user.display_name
 
-            output += f"**{rank}. {name}** - Level: __`{db.Level._.get_level(db.Level.XP.retrieve(entry))}`__\n"
+            output += f"**{rank}. {name}** - Level: __`{db.Level._.get_level(int(db.Level.XP.retrieve(entry) or 0))}`__\n"
             rank += 1
 
         output = output or "`No users have earned any XP on this server yet.`"

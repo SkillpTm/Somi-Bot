@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Logger
 from lib.modules import SomiBot
 
@@ -10,8 +10,8 @@ from lib.modules import SomiBot
 
 class NameLog(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     async def name_log(
@@ -25,7 +25,7 @@ class NameLog(nextcord_C.Cog):
         if (member_before.display_name == member_after.display_name) and (member_before.global_name == member_after.global_name) and (member_before.name == member_after.name):
             return
 
-        if not (audit_log := member_before.guild.get_channel(await db.Server.AUDIT_LOG.get(member_before.guild.id) or 0)):
+        if not (audit_log := member_before.guild.get_channel(int(await db.Server.AUDIT_LOG.get(member_before.guild.id) or 0))):
             return
 
         if member_before.name != member_after.name:
@@ -40,8 +40,8 @@ class NameLog(nextcord_C.Cog):
 
         else:
             name_type = "Server Nickname"
-            previous_name = member_before.display_name if any(member_before.display_name in [member_before.global_name, member_before.name]) else "`None`"
-            current_name = member_after.display_name if any(member_after.display_name in [member_after.global_name, member_after.name]) else "`None`"
+            previous_name = member_before.display_name if member_before.display_name in [member_before.global_name, member_before.name] else "`None`"
+            current_name = member_after.display_name if member_after.display_name in [member_after.global_name, member_after.name] else "`None`"
 
         Logger().action_log(
             member_before,
@@ -58,21 +58,20 @@ class NameLog(nextcord_C.Cog):
             thumbnail = member_before.display_avatar.url,
             title = f"`{member_before.id}` Changed Their {name_type}",
             fields = [
-                [
+                EmbedField(
                     f"{name_type} Before:",
                     previous_name,
                     False
-                ],
-
-                [
+                ),
+                EmbedField(
                     f"{name_type} After:",
                     current_name,
                     False
-                ]
+                )
             ]
         )
 
-        await audit_log.send(embed=embed)
+        await audit_log.send(embed=embed) # type: ignore
         await db.Telemetry.AMOUNT.increment("name log")
 
 

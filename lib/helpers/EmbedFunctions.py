@@ -7,6 +7,14 @@ from lib.managers.Config import Config
 
 
 
+class EmbedField:
+
+    def __init__(self, name: str, value: str, inline: bool = True) -> None:
+        self.name = name
+        self.value = value
+        self.inline = inline
+
+
 class EmbedFunctions():
     """Helper class for embed related functions"""
 
@@ -78,7 +86,7 @@ class EmbedFunctions():
         footer_icon: str = "",
         footer_timestamp: datetime.datetime | None = None,
 
-        fields: list[list[tuple[str, str, bool]]] = []
+        fields: list[EmbedField] = []
     ) -> nextcord.Embed:
         """This function builds an embed"""
 
@@ -96,20 +104,13 @@ class EmbedFunctions():
         embed.set_footer(text=Get.rid_of_whitespace(f"{footer[:2048-3]}..." if len(footer) > 2048 else footer), icon_url = footer_icon)  # 2048 is Discord's footer char limit
 
         for field in fields[:25]:  # 25 is Discord's field limit
-            if not field[0]:
+            if not field.name or not field.value:
                 break
-
-            if not field[1]:
-                break
-
-            # fail save, should never have to happen
-            if field[2] is None:
-                field[2] = True
 
             embed.add_field(
-                name = Get.rid_of_whitespace(f"{field[0][:256-3]}..." if len(field[0]) > 256 else field[0]),  # 256 is Discord's field name char limit
-                value = Get.rid_of_whitespace(f"{field[1][:1024-3]}..." if len(field[1]) > 1024 else field[1]),  # 1024 is Discord's field value char limit
-                inline = field[2]
+                name = Get.rid_of_whitespace(f"{field.name[:256-3]}..." if len(field.name) > 256 else field.name),  # 256 is Discord's field name char limit
+                value = Get.rid_of_whitespace(f"{field.value[:1024-3]}..." if len(field.value) > 1024 else field.value),  # 1024 is Discord's field value char limit
+                inline = field.inline
             )
 
         return embed
@@ -127,7 +128,7 @@ class EmbedFunctions():
         images: list[nextcord.Attachment] = []
 
         for attachment in attachments_list:
-            if "image" in attachments_list[0].content_type:
+            if attachments_list[0].content_type and "image" in attachments_list[0].content_type:
                 images.append(attachment)
 
         # if we only have 1 image or a limit of 1 embed the first image

@@ -13,14 +13,14 @@ class LastFmSet(nextcord_C.Cog):
 
     from cogs.basic.ParentCommand import ParentCommand
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.lastfm.subcommand(Commands().data["lf set"].name, Commands().data["lf set"].description)
     async def lastfm_set(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         lastfm_username: str = nextcord.SlashOption(
             Commands().data["lf set"].parameters["lastfm_username"].name,
@@ -48,13 +48,13 @@ class LastFmSet(nextcord_C.Cog):
 
 
     @ParentCommand.lastfm.subcommand(Commands().data["lf reset"].name, Commands().data["lf reset"].description)
-    async def lastfm_reset(self, interaction: nextcord.Interaction) -> None:
+    async def lastfm_reset(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command deletes the user's connection from the db"""
 
         if not await db.User.LASTFM.get(interaction.user.id):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You don't have a LastFm account setup."), ephemeral=True)
             return
-        
+
         await db.User.LASTFM.set(interaction.user.id, None)
 
         await interaction.response.send_message(embed=EmbedFunctions().get_success_message("You succesfully reset your LastFm account."), ephemeral=True)

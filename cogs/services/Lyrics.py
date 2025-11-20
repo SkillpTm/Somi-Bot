@@ -12,8 +12,8 @@ from lib.modules import SomiBot
 
 class Lyrics(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -23,7 +23,7 @@ class Lyrics(nextcord_C.Cog):
     )
     async def lyrics(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         artist: str = nextcord.SlashOption(
             Commands().data["lyrics"].parameters["artist"].name,

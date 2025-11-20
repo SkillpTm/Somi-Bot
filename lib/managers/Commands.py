@@ -1,4 +1,5 @@
 import json
+import typing
 
 from lib.managers.Config import Config
 from lib.managers.Singleton import Singleton
@@ -21,7 +22,7 @@ class Commands(metaclass=Singleton):
             self.overview[f"/{new_command.full_name}"] = new_command.full_name
 
 class Command():
-    def __init__(self, data: dict[str, str | dict[str, str] | dict[str, str | bool | list[str]]]):
+    def __init__(self, data: dict[str, typing.Any]) -> None:
         self.parent: CommandParent = CommandParent(data["parent"])
         self.name: str = data["name"]
         self.alias: str = data["alias"]
@@ -37,12 +38,12 @@ class Command():
             self.structure = f"/{self.full_name} (no parameters)"
 
 class CommandParent():
-    def __init__(self, data: dict[str, str]):
+    def __init__(self, data: dict[str, str]) -> None:
         self.name: str = data.get("name", "")
         self.alias: str = data.get("alias", "")
 
 class CommandParameter():
-    def __init__(self, data: dict[str, str | bool]):
+    def __init__(self, data: dict[str, typing.Any]) -> None:
         self.name: str = data["name"]
         self.description: str = data["description"]
         self.type: str = data["type"]

@@ -9,8 +9,8 @@ from lib.modules import PageButtons, SomiBot
 
 class YouTube(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -20,7 +20,7 @@ class YouTube(nextcord_C.Cog):
     )
     async def youtube(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         query: str = nextcord.SlashOption(
             Commands().data["youtube"].parameters["query"].name,
@@ -48,13 +48,13 @@ class YouTube(nextcord_C.Cog):
 
     async def youtube_rec(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         results: list[str],
         page_number: int
     ) -> None:
         """This function recurses on button press and flips through the results gained earlier"""
 
-        view = PageButtons(page = page_number, last_page = len(results), interaction = interaction)
+        view = PageButtons(page = page_number, last_page = len(results), interaction = interaction) # type: ignore
 
         await interaction.edit_original_message(content=results[page_number-1], view=view)
 

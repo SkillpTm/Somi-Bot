@@ -3,7 +3,7 @@ import time
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
 
@@ -11,8 +11,8 @@ from lib.modules import SomiBot
 
 class Severinfo(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -22,8 +22,11 @@ class Severinfo(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    async def serverinfo(self, interaction: nextcord.Interaction) -> None:
+    async def serverinfo(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command gives you infomration about a server"""
+
+        if not interaction.guild:
+            return
 
         await interaction.response.defer(with_message=True)
 
@@ -34,53 +37,46 @@ class Severinfo(nextcord_C.Cog):
             thumbnail = interaction.guild.icon.url if interaction.guild.icon else Config().DEFAULT_PFP,
             title = f"Server Information: `{interaction.guild.name}`",
             fields = [
-                [
+                EmbedField(
                     "ID:",
-                    interaction.guild.id,
+                    str(interaction.guild.id),
                     False
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Owner:",
                     interaction.guild.owner.mention,
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Members:",
                     f"Total: `{guild_with_counts.approximate_member_count}`\nOnline: `{guild_with_counts.approximate_presence_count}`",
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Channels:",
                     f"Text: `{len(interaction.guild.text_channels)}`\nVoice: `{len(interaction.guild.voice_channels)}`",
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Created at:",
                     f"<t:{int(time.mktime(interaction.guild.created_at.timetuple()))}>",
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Boost Level:",
                     f"Level: `{interaction.guild.premium_tier}`\nBoosters: `{interaction.guild.premium_subscription_count}`",
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Vanity Invite:",
-                    (await interaction.guild.vanity_invite()).url if "VANITY_URL" in interaction.guild.features else "",
+                    vanity.url if (vanity := await interaction.guild.vanity_invite()) else "",
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Description:",
-                    interaction.guild.description,
+                    interaction.guild.description or "",
                     False
-                ]
+                )
             ]
         )
 

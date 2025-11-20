@@ -16,14 +16,14 @@ class Color(nextcord_C.Cog):
     WIDTH = 300
     HEIGHT = 300
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(Commands().data["color"].name, Commands().data["color"].description)
     async def color(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         hexcode: str = nextcord.SlashOption(
             Commands().data["color"].parameters["hexcode"].name,

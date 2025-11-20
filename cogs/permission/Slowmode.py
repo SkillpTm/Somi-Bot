@@ -3,15 +3,15 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
 from lib.managers import Commands, Lists
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.modules import SomiBot
 
 
 
 class Slowmode(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -23,7 +23,7 @@ class Slowmode(nextcord_C.Cog):
     )
     async def slowmode(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         delay: int = nextcord.SlashOption(
             Commands().data["slowmode"].parameters["delay"].name,
@@ -54,7 +54,7 @@ class Slowmode(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Deactivated slowmode in {channel.mention}."), ephemeral=True)
             mod_action = f"{interaction.user.mention} deactivated slowmode in {channel.mention}"
 
-        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
+        if not (audit_log := interaction.guild.get_channel(int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0))):
             return
 
 
@@ -63,15 +63,15 @@ class Slowmode(nextcord_C.Cog):
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [
-                [
+                EmbedField(
                     "/slowmode:",
                     mod_action,
                     False
-                ]
+                )
             ]
         )
 
-        await audit_log.send(embed=embed)
+        await audit_log.send(embed=embed) # type: ignore
 
 
 

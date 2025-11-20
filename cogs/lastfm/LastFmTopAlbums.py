@@ -13,8 +13,8 @@ class LastFmTopAlbums(nextcord_C.Cog):
 
     from cogs.basic.ParentCommand import ParentCommand
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.lastfm.subcommand(
@@ -24,7 +24,7 @@ class LastFmTopAlbums(nextcord_C.Cog):
     )
     async def lastfm_top_albums(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         user: nextcord.User = nextcord.SlashOption(
             Commands().data["lf top-albums"].parameters["user"].name,
@@ -43,7 +43,7 @@ class LastFmTopAlbums(nextcord_C.Cog):
         user = user or interaction.user
         timeframe = timeframe or "overall"
 
-        if not (lastfm_username := await db.User.LASTFM.get(interaction.user.id)):
+        if not (lastfm_username := str(await db.User.LASTFM.get(interaction.user.id) or "")):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
@@ -55,7 +55,7 @@ class LastFmTopAlbums(nextcord_C.Cog):
 
     async def lastfm_top_albums_rec(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         user: nextcord.User,
         lastfm_username: str,
         timeframe: str,
@@ -88,7 +88,7 @@ class LastFmTopAlbums(nextcord_C.Cog):
             description = output
         )
 
-        view = PageButtons(page = page_number, last_page = last_page, interaction = interaction)
+        view = PageButtons(page = page_number, last_page = last_page, interaction = interaction) # type: ignore
 
         await interaction.edit_original_message(embed=embed, view=view)
         await view.update_buttons()

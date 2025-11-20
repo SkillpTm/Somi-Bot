@@ -16,8 +16,8 @@ class DeleteLog(nextcord_C.Cog):
     MAX_AUDIT_ENTIRES_LIMIT = 10
     MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     async def message_delete_log(self, message: nextcord.Message) -> None:
@@ -29,7 +29,7 @@ class DeleteLog(nextcord_C.Cog):
         if not message.content and len(message.attachments) < 1:
             return
 
-        if not (audit_log := message.guild.get_channel(await db.Server.AUDIT_LOG.get(message.guild.id) or 0)):
+        if not (audit_log := message.guild.get_channel(int(await db.Server.AUDIT_LOG.get(message.guild.id) or 0))):
             return
 
         if await db.HiddenChannel._.get_entry(message.channel.id):
@@ -42,10 +42,10 @@ class DeleteLog(nextcord_C.Cog):
             action=nextcord.AuditLogAction.message_delete
         ):
             if message.author.id == entry.target.id:
-                await self.remove_log(message, audit_log, entry)
+                await self.remove_log(message, audit_log, entry) # type: ignore
                 return
 
-        await self.delete_log(message, audit_log)
+        await self.delete_log(message, audit_log) # type: ignore
 
 
     async def delete_log(
@@ -65,7 +65,7 @@ class DeleteLog(nextcord_C.Cog):
             color = nextcord.Color.brand_red(),
             author = "Message Deleted",
             author_icon = message.author.display_avatar.url,
-            description = f"{message.author.mention} deleted a message in: {message.channel.mention}\n\n{message.content}",
+            description = f"{message.author.mention} deleted a message in: {message.channel.mention}\n\n{message.content}", # type: ignore
         )
 
         embed, file_urls = EmbedFunctions.get_or_add_attachments(message.attachments, embed)
@@ -95,7 +95,7 @@ class DeleteLog(nextcord_C.Cog):
             color = nextcord.Color.brand_red(),
             author = "Message Removed",
             author_icon = entry.user.display_avatar.url,
-            description = f"{entry.user.mention} removed a message from {message.author.mention} in: {message.channel.mention}\n\n{message.content}"
+            description = f"{entry.user.mention} removed a message from {message.author.mention} in: {message.channel.mention}\n\n{message.content}" # type: ignore
         )
 
         embed, file_urls = EmbedFunctions.get_or_add_attachments(message.attachments, embed)

@@ -1,8 +1,10 @@
+import typing
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import spotipy
+import spotipy # type: ignore
 
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Commands, Config, Keychain
 from lib.modules import SomiBot
 
@@ -10,8 +12,8 @@ from lib.modules import SomiBot
 
 class Spotify(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -23,18 +25,19 @@ class Spotify(nextcord_C.Cog):
     )
     async def spotify(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         member: nextcord.Member = nextcord.SlashOption(
             Commands().data["spotify"].parameters["member"].name,
             Commands().data["spotify"].parameters["member"].description,
             required = False
         ),
-        details: str = nextcord.SlashOption(
+        details: typing.Literal["Yes", ""] = nextcord.SlashOption(
             Commands().data["spotify"].parameters["details"].name,
             Commands().data["spotify"].parameters["details"].description,
             required = False,
-            choices = ["Yes"]
+            choices = ["Yes"],
+            default = ""
         )
     ) -> None:
         """
@@ -43,7 +46,7 @@ class Spotify(nextcord_C.Cog):
         """
 
         member = member or interaction.guild.get_member(interaction.user.id)
-        member_activity: nextcord.Spotify = None
+        member_activity: nextcord.Spotify | None = None
 
         # check the members activities for Spotify
         for activity in member.activities:
@@ -69,41 +72,36 @@ class Spotify(nextcord_C.Cog):
             footer = "Now Playing",
             footer_icon = Config().HEADPHONES_ICON,
             fields = [
-                [
+                EmbedField(
                     "Track Duration:",
                     output_data["track_duration"],
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Track Explicit:",
                     output_data["track_explicit"],
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Track Popularity:",
                     output_data["track_popularity"],
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Artist Followers:",
                     output_data["artist_followers"],
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Artist Popularity:",
                     output_data["artist_popularity"],
                     True
-                ],
-
-                [
+                ),
+                EmbedField(
                     "Artist Genres:",
                     output_data["artist_genres"],
                     False
-                ]
+                )
             ]
         )
 
@@ -113,13 +111,13 @@ class Spotify(nextcord_C.Cog):
     async def get_output_data(
         self,
         member_activity: nextcord.Spotify,
-        details: str
+        details: typing.Literal["Yes", ""]
     ) -> dict[str, str]:
         """uses the Spotify API to get the output data (potentially with details, if specified)"""
 
-        spotify_object = spotipy.Spotify(auth=Keychain().spotify_oauth.get_cached_token()["access_token"])
-        track_data = spotify_object.track(f"spotify:track:{member_activity.track_id}")
-        artist_data = spotify_object.artist(f"spotify:artist:{track_data['artists'][0]['id']}")
+        spotify_object = spotipy.Spotify(auth=Keychain().spotify_oauth.get_cached_token()["access_token"]) # type: ignore
+        track_data: dict[str, typing.Any] = spotify_object.track(f"spotify:track:{member_activity.track_id}") # type: ignore
+        artist_data: dict[str, typing.Any] = spotify_object.artist(f"spotify:artist:{track_data['artists'][0]['id']}") # type: ignore
         output_data: dict[str, str] = {}
 
         # the artists are seperated by commas and have a markdown link to their SF page on them: [name](link), [name2](link2)...

@@ -11,8 +11,8 @@ from lib.modules import SomiBot
 
 class Reactions(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     async def reaction(self, message: nextcord.Message) -> None:

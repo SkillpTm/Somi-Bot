@@ -3,6 +3,7 @@ import os
 import re
 import sys
 import time
+import typing
 
 import nextcord
 import nextcord.ext.commands as nextcord_C
@@ -18,6 +19,9 @@ class SomiBot(nextcord_C.Bot):
     """Extended Bot class with overwritten methodes and custom attributes"""
 
     def __init__(self) -> None:
+        self.owner_id: int
+        self.user: nextcord.ClientUser
+
         self.is_setup = False
         self.start_time = int(time.time())
 
@@ -32,7 +36,7 @@ class SomiBot(nextcord_C.Bot):
             owner_id = Config().OWNER_ID
         )
 
-        self.add_check(self._global_command_checks)
+        self.add_check(self._global_command_checks) # type: ignore
         self.application_command_before_invoke(self._before_command)
 
 
@@ -48,7 +52,7 @@ class SomiBot(nextcord_C.Bot):
             if not guild.chunked:
                 await guild.chunk()
 
-            default_role = guild.get_role(await db.Server.DEFAULT_ROLE.get(guild.id) or 0)
+            default_role = guild.get_role(int(await db.Server.DEFAULT_ROLE.get(guild.id) or 0))
             difference = len(guild.humans) - len(default_role.members) if default_role else 0
 
             for member in guild.humans:
@@ -57,12 +61,12 @@ class SomiBot(nextcord_C.Bot):
                 if not difference:
                     continue
 
-                if default_role not in member.roles:
+                if default_role and default_role not in member.roles:
                     await member.add_roles(default_role)
                     difference -= 1
 
-        all_db_guilds: set[int] = set(await db.Server.ID.get_all())
-        all_db_users: set[int] = set(await db.User.ID.get_all())
+        all_db_guilds: set[int] = set(typing.cast(list[int], await db.Server.ID.get_all()))
+        all_db_users: set[int] = set(typing.cast(list[int], await db.User.ID.get_all()))
 
         for guild_id in all_db_guilds - unique_servers:
             await db.Server._.delete(guild_id)
@@ -77,14 +81,14 @@ class SomiBot(nextcord_C.Bot):
             await db.User._.add({db.User.ID: user_id})
 
 
-    async def _before_command(self, interaction: nextcord.Interaction) -> None:
+    async def _before_command(self, interaction: nextcord.Interaction["SomiBot"]) -> None:
         command_name: str = ""
 
         if not hasattr(interaction, "application_command"):
             return
 
         if hasattr(interaction.application_command, "parent_cmd"):
-            command_name += f"{interaction.application_command.parent_cmd.name} "
+            command_name += f"{interaction.application_command.parent_cmd.name} " # type: ignore
 
         if hasattr(interaction.application_command, "name"):
             command_name += f"{interaction.application_command.name}"
@@ -93,10 +97,10 @@ class SomiBot(nextcord_C.Bot):
             return
 
         await db.Telemetry.AMOUNT.increment(command_name)
-        Logger().action_log(interaction, command_name, interaction.data.get("options", []))
+        Logger().action_log(interaction, command_name, interaction.data.get("options", [])) # type: ignore
 
 
-    async def _global_command_checks(self, interaction: nextcord.Interaction) -> bool:
+    async def _global_command_checks(self, interaction: nextcord.Interaction["SomiBot"]) -> bool:
         """checks on all commands for: if the bot is properly setup and if the interaction wasn't created by a bot"""
 
         if not self.is_setup:
@@ -113,7 +117,7 @@ class SomiBot(nextcord_C.Bot):
         """This function starts an infinite loop for the ReminderSend cog, which continues until the bot loses internet or gets shutdown"""
 
         await asyncio.gather(
-            self.get_cog("ReminderSend").infinite_reminder_loop()
+            self.get_cog("ReminderSend").infinite_reminder_loop() # type: ignore
         )
 
 
@@ -149,9 +153,9 @@ class SomiBot(nextcord_C.Bot):
 
     async def on_application_command_error(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction["SomiBot"],
         exception: nextcord.ApplicationError
-    ) -> tuple[nextcord.Interaction, nextcord.ApplicationError]:
+    ) -> None:
         """This function overwrites the build in on_application_command_error function, to create a global error log and exception handler."""
 
         Logger().application_command_error(
@@ -161,7 +165,7 @@ class SomiBot(nextcord_C.Bot):
             expires_at = interaction.expires_at,
             type = interaction.type._name_,
             file = interaction.application_command.parent_cog,
-            meta_data = Logger.get_log_message(interaction, "error"),
+            meta_data = Logger.get_log_message(interaction, "error"), # type: ignore
             data = interaction.data,
             app_permissions = interaction.app_permissions.value,
             user_permissions = interaction.permissions.value,
@@ -174,7 +178,7 @@ class SomiBot(nextcord_C.Bot):
         else:
             await interaction.response.send_message(embed=EmbedFunctions().get_critical_error_message(erroe_message), ephemeral=True)
 
-        await self.get_guild(Config().SUPPORT_SERVER_ID).get_channel(Config().SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().get_critical_error_message(f"```{exception}```"))
+        await self.get_guild(Config().SUPPORT_SERVER_ID).get_channel(Config().SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().get_critical_error_message(f"```{exception}```")) # type: ignore
 
         return await super().on_application_command_error(interaction, exception)
 
@@ -183,7 +187,7 @@ class SomiBot(nextcord_C.Bot):
         """This function overwrites the build in on_bulk_message_delete function, to launch the purge_log"""
 
         await asyncio.gather(
-            self.get_cog("PurgeLog").purge_log(messages)
+            self.get_cog("PurgeLog").purge_log(messages) # type: ignore
         )
 
 
@@ -203,13 +207,13 @@ class SomiBot(nextcord_C.Bot):
     async def on_guild_join(self, guild: nextcord.Guild) -> None:
         """This function overwrites the build in on_guild_join function, to add the server to the db"""
 
-        await db.Server._.add({db.Server.id: guild.id})
+        await db.Server._.add({db.Server.ID: guild.id})
 
 
     async def on_guild_remove(self, guild: nextcord.Guild) -> None:
         """This function overwrites the build in on_guild_remove function, to remove the server from the db"""
 
-        await db.Server._.delete({db.Server.id: guild.id})
+        await db.Server._.delete({db.Server.ID: guild.id})
 
 
     async def on_guild_role_delete(self, role: nextcord.Role) -> None:
@@ -226,7 +230,7 @@ class SomiBot(nextcord_C.Bot):
         """This function overwrites the build in on_member_ban function, to launch the ban_log"""
 
         await asyncio.gather(
-            self.get_cog("BanLog").ban_log(guild, user),
+            self.get_cog("BanLog").ban_log(guild, user) # type: ignore
         )
 
 
@@ -236,8 +240,8 @@ class SomiBot(nextcord_C.Bot):
         await db.User._.add_unique({db.User.ID: member.id}, {db.User.ID: member.id})
 
         await asyncio.gather(
-            self.get_cog("JoinLog").join_log(member),
-            self.get_cog("Welcome").welcome(member)
+            self.get_cog("JoinLog").join_log(member), # type: ignore
+            self.get_cog("Welcome").welcome(member) # type: ignore
         )
 
 
@@ -245,8 +249,8 @@ class SomiBot(nextcord_C.Bot):
         """This function overwrites the build in on_member_remove function, to launch the leave_log and the kick_log"""
 
         await asyncio.gather(
-            self.get_cog("LeaveLog").leave_log(member),
-            self.get_cog("KickLog").kick_log(member)
+            self.get_cog("LeaveLog").leave_log(member), # type: ignore
+            self.get_cog("KickLog").kick_log(member) # type: ignore
         )
 
         # if we share any server with the user, don't delete them from the db
@@ -264,7 +268,7 @@ class SomiBot(nextcord_C.Bot):
         """This function overwrites the build in on_member_unban function, to launch the unban_log"""
 
         await asyncio.gather(
-            self.get_cog("BanLog").unban_log(guild, user)
+            self.get_cog("BanLog").unban_log(guild, user) # type: ignore
         )
 
 
@@ -272,8 +276,8 @@ class SomiBot(nextcord_C.Bot):
         """This function overwrites the build in on_member_update function, to launch the name_log and the mute_log"""
 
         await asyncio.gather(
-            self.get_cog("NameLog").name_log(before, after),
-            self.get_cog("MuteLog").mute_log(before, after)
+            self.get_cog("NameLog").name_log(before, after), # type: ignore
+            self.get_cog("MuteLog").mute_log(before, after) # type: ignore
         )
 
 
@@ -281,11 +285,11 @@ class SomiBot(nextcord_C.Bot):
         """This function overwrites the build in on_message function, to launch keyword_send, levels_gain_xp, link_embed, modmail and reaction"""
 
         await asyncio.gather(
-            self.get_cog("KeywordSend").keyword_send(message),
-            self.get_cog("LevelsGainXp").levels_gain_xp(message),
-            self.get_cog("LinkEmbed").link_embed(message),
-            self.get_cog("Modmail").modmail(message),
-            self.get_cog("Reactions").reaction(message)
+            self.get_cog("KeywordSend").keyword_send(message), # type: ignore
+            self.get_cog("LevelsGainXp").levels_gain_xp(message), # type: ignore
+            self.get_cog("LinkEmbed").link_embed(message), # type: ignore
+            self.get_cog("Modmail").modmail(message), # type: ignore
+            self.get_cog("Reactions").reaction(message) # type: ignore
         )
 
         return await super().on_message(message)
@@ -295,7 +299,7 @@ class SomiBot(nextcord_C.Bot):
         """This function overwrites the build in on_message_delete function, to launch the message_delete_log"""
 
         await asyncio.gather(
-            self.get_cog("DeleteLog").message_delete_log(message)
+            self.get_cog("DeleteLog").message_delete_log(message) # type: ignore
         )
 
 
@@ -303,7 +307,7 @@ class SomiBot(nextcord_C.Bot):
         """This function overwrites the build in on_message_edit function, to launch the edit_log"""
 
         await asyncio.gather(
-            self.get_cog("EditLog").edit_log(before, after)
+            self.get_cog("EditLog").edit_log(before, after) # type: ignore
         )
 
 
@@ -329,7 +333,7 @@ class SomiBot(nextcord_C.Bot):
             return None
 
         try:
-            message = await (await self.fetch_channel(channel_id)).fetch_message(message_id)
+            message = await (await self.fetch_channel(int(channel_id))).fetch_message(int(message_id)) # type: ignore
         except (nextcord.NotFound, nextcord.Forbidden):
             message = None
 

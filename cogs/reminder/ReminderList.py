@@ -12,18 +12,18 @@ class ReminderList(nextcord_C.Cog):
 
     from cogs.basic.ParentCommand import ParentCommand
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.reminder.subcommand(Commands().data["reminder list"].name, Commands().data["reminder list"].description)
-    async def reminder_list(self, interaction: nextcord.Interaction) -> None:
+    async def reminder_list(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command will list all reminders of a user"""
 
         output = ""
 
         async for entry in db.Reminder._.get_multiple(where={db.Reminder.USER: interaction.user.id}, order_by=db.Reminder.TIME):
-            reminder_text: str = db.Reminder.MESSAGE.retrieve(entry)
+            reminder_text = str(db.Reminder.MESSAGE.retrieve(entry))
             reminder_text = f"{reminder_text[:30]}..." if len(reminder_text) > 30 else reminder_text
             output += f"<t:{db.Reminder.TIME.retrieve(entry)}:F> // ID: {db.Reminder.ID.retrieve(entry)} - [Link]({db.Reminder.LINK.retrieve(entry)})\nReminder: `{reminder_text}`\n\n"
 

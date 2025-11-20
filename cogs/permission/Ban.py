@@ -9,8 +9,8 @@ from lib.modules import SomiBot
 
 class Ban(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(
@@ -22,7 +22,7 @@ class Ban(nextcord_C.Cog):
     )
     async def ban(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         member: nextcord.Member = nextcord.SlashOption(
             Commands().data["ban"].parameters["member"].name,
@@ -53,7 +53,7 @@ class Ban(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can't ban yourself!"), ephemeral=True)
             return
 
-        if interaction.user.top_role.position < member.top_role.position and interaction.user != interaction.guild.owner:
+        if interaction.user.top_role.position < member.top_role.position and interaction.user != interaction.guild.owner: # type: ignore
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only ban a member, if your current top-role is above their current top-role!"), ephemeral=True)
             return
 
@@ -79,7 +79,7 @@ class Ban(nextcord_C.Cog):
     )
     async def unban(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
         user_id: str = nextcord.SlashOption(
             Commands().data["unban"].parameters["user_id"].name,
@@ -99,7 +99,7 @@ class Ban(nextcord_C.Cog):
 
         # the user_id might still not be a valid user id, it could be snowflake for something other than a user or simply a deleted user, so we test against that
         try:
-            user = await self.client.fetch_user(user_id)
+            user = await self.client.fetch_user(int(user_id))
         except nextcord.NotFound:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"`{user_id}` isn't a valid discord user id."), ephemeral=True)
             return
@@ -116,7 +116,7 @@ class Ban(nextcord_C.Cog):
     @unban.on_autocomplete("user_id")
     async def unban_autocomplete_user_id(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         user_id: str
     ) -> None:
         """provides autocomplete suggestions to discord"""
@@ -124,7 +124,7 @@ class Ban(nextcord_C.Cog):
         await interaction.response.send_autocomplete(
             Get.autocomplete_dict_from_search_string(
                 user_id,
-                {ban.user.id: ban.user.id async for ban in interaction.guild.bans(limit=None)}
+                {str(ban.user.id): str(ban.user.id) async for ban in interaction.guild.bans(limit=None)}
             )
         )
 

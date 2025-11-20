@@ -1,9 +1,11 @@
+import typing
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
 from lib.database import db
-from lib.helpers import EmbedFunctions
+from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Commands, Config, Lists
 from lib.modules import SomiBot
 
@@ -11,16 +13,16 @@ from lib.modules import SomiBot
 
 class ConfigHiddenChannels(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @ParentCommand.config.subcommand(Commands().data["config hidden-channels"].name, Commands().data["config hidden-channels"].description)
     async def config_hidden_channels(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         *,
-        action: str = nextcord.SlashOption(
+        action: typing.Literal["Add", "Remove"] = nextcord.SlashOption(
             Commands().data["config hidden-channels"].parameters["action"].name,
             Commands().data["config hidden-channels"].parameters["action"].description,
             required = True,
@@ -52,7 +54,7 @@ class ConfigHiddenChannels(nextcord_C.Cog):
             mod_action = f"{interaction.user.mention} removed: {channel.mention} from the hidden-channels."
 
 
-        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
+        if not (audit_log := interaction.guild.get_channel(int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0))):
             return
 
         embed = EmbedFunctions().builder(
@@ -60,20 +62,20 @@ class ConfigHiddenChannels(nextcord_C.Cog):
             author = "Mod Activity",
             author_icon = interaction.user.display_avatar.url,
             fields = [
-                [
+                EmbedField(
                     "/config hidden-channels:",
                     mod_action,
                     False
-                ]
+                )
             ]
         )
 
-        await audit_log.send(embed=embed)
+        await audit_log.send(embed=embed) # type: ignore
 
 
     async def _add_channel(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         channel: nextcord.TextChannel | nextcord.Thread
     ) -> bool:
         "adds or doesn't add the role indicated by the output bool"
@@ -88,7 +90,7 @@ class ConfigHiddenChannels(nextcord_C.Cog):
 
     async def _remove_channel(
         self,
-        interaction: nextcord.Interaction,
+        interaction: nextcord.Interaction[SomiBot],
         channel: nextcord.TextChannel | nextcord.Thread
     ) -> bool:
         "removes or doesn't remove the channel indicated by the output bool"

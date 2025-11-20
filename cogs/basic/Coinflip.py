@@ -11,12 +11,12 @@ from lib.modules import SomiBot
 
 class Coinflip(nextcord_C.Cog):
 
-    def __init__(self, client) -> None:
-        self.client: SomiBot = client
+    def __init__(self, client: SomiBot) -> None:
+        self.client = client
 
 
     @nextcord.slash_command(Commands().data["coinflip"].name, Commands().data["coinflip"].description)
-    async def coinflip(self, interaction: nextcord.Interaction) -> None:
+    async def coinflip(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command does a coinflip with a small animation"""
 
         await interaction.response.defer(with_message=True)
@@ -25,8 +25,10 @@ class Coinflip(nextcord_C.Cog):
 
         await interaction.followup.send(side1)
 
+        animation: list[tuple[float, str]] = [(0.2, side2), (0.2, side1), (0.2, side2), (0.4, side1), (0.8, side2), (1.0, f"Result:\n{random.choice([side1, side2])}")]
+
         # the first value in coin_animation's lists, is how long it is dispalyed and the 2nd which icon is shown
-        for step in [[0.2, side2], [0.2, side1], [0.2, side2], [0.4, side1], [0.8, side2], [1, f"Result:\n{random.choice([side1, side2])}"]]:
+        for step in animation:
             await asyncio.sleep(step[0])
             await interaction.edit_original_message(content = step[1])
 

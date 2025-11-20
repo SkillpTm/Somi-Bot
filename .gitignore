@@ -1,8 +1,11 @@
 __pycache__/
+debug/backups/*
 
 .cache
 .env
 config.json
 
 *.code-workspace
+*.gz
 *.log
+*.md5

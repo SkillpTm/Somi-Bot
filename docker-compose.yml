@@ -19,6 +19,38 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - somi-network
+    profiles:
+      - dev
+      - prod
+
+  bot-backup:
+    container_name: somi-bot-backup
+    image: tiredofit/db-backup
+    restart: unless-stopped
+    volumes:
+      - ./debug/backups:/backup
+    environment:
+      - TIMEZONE=Etc/UTC
+      - CONTAINER_ENABLE_MONITORING=FALSE
+
+      - DB01_TYPE=mariadb
+      - DB01_HOST=${DB_HOST}
+      - DB01_NAME=${DB_NAME}
+      - DB01_USER=root
+      - DB01_PASS=${DB_ROOT_PASSWORD}
+
+      - DB01_BACKUP_BEGIN=0500
+      - DB01_BACKUP_INTERVAL=1440 # 24 hours in minutes
+      - DB01_CLEANUP_TIME=44640 # 31 days in minutes
+      - DB01_COMPRESSION=GZ
+    networks:
+      - somi-network
+    depends_on:
+      - bot-db
+    profiles:
+      - prod
 
   bot-dev:
     build: .
@@ -30,6 +62,8 @@ services:
       - .env
     volumes:
       - .:/app
+    networks:
+      - somi-network
     profiles:
       - dev
 
@@ -44,8 +78,14 @@ services:
       - .env
     volumes:
       - ./debug/logs:/app/debug/logs
+    networks:
+      - somi-network
     profiles:
       - prod
+
+networks:
+  somi-network:
+    driver: bridge
 
 volumes:
   mariadb_data:

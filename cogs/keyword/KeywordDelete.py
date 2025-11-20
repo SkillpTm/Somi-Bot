@@ -3,7 +3,7 @@ import typing
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.database import db
+from lib.database import db, Order
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands
 from lib.modules import SomiBot, YesNoButtons
@@ -90,9 +90,9 @@ class KeywordDelete(nextcord_C.Cog):
         """provides autocomplete suggestions to discord"""
 
         await interaction.response.send_autocomplete(
-            Get.autocomplete_dict_from_search_string(
+            Get.autocomplete(
                 keyword,
-                {str(db.Keyword.KEYWORD.retrieve(entry)): str(db.Keyword.KEYWORD.retrieve(entry)) async for entry in db.Keyword.KEYWORD.get_multiple(where={db.Keyword.SERVER: interaction.guild.id, db.Keyword.USER: interaction.user.id})}
+                typing.cast(list[str], await db.Keyword.KEYWORD.get_all(where={db.Keyword.SERVER: interaction.guild.id, db.Keyword.USER: interaction.user.id}, order_by=db.Keyword.KEYWORD, order=Order.ASCENDING))
             )
         )
 

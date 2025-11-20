@@ -88,7 +88,7 @@ class Help(nextcord_C.Cog):
         """provides autocomplete suggestions to discord"""
 
         await interaction.response.send_autocomplete(
-            Get.autocomplete_dict_from_search_string(
+            Get.autocomplete(
                 name,
                 Commands().overview
             )

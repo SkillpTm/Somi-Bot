@@ -94,13 +94,10 @@ class ReminderDelete(nextcord_C.Cog):
         reminders = {}
 
         async for entry in db.Reminder._.get_multiple(where={db.Reminder.USER: interaction.user.id}, order_by=db.Reminder.TIME, order=Order.ASCENDING):
-            reminder_text: str = str(db.Reminder.MESSAGE.retrieve(entry))
-            reminder_text = f"{reminder_text[:30]}..." if len(reminder_text) > 30 else reminder_text
-
-            reminders.update({f"{db.Reminder.ID.retrieve(entry)}: {reminder_text}" : db.Reminder.ID.retrieve(entry)})
+            reminders.update({f"{db.Reminder.ID.retrieve(entry)}: {db.Reminder.MESSAGE.retrieve(entry)}" : db.Reminder.ID.retrieve(entry)})
 
         await interaction.response.send_autocomplete(
-            Get.autocomplete_dict_from_search_string(
+            Get.autocomplete(
                 reminder_id,
                 reminders
             )

@@ -122,9 +122,9 @@ class Ban(nextcord_C.Cog):
         """provides autocomplete suggestions to discord"""
 
         await interaction.response.send_autocomplete(
-            Get.autocomplete_dict_from_search_string(
+            Get.autocomplete(
                 user_id,
-                {str(ban.user.id): str(ban.user.id) async for ban in interaction.guild.bans(limit=None)}
+                [str(ban.user.id) async for ban in interaction.guild.bans()]
             )
         )
 

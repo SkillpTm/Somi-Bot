@@ -4,7 +4,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
-from lib.database import db
+from lib.database import db, Order
 from lib.helpers import EmbedField, EmbedFunctions, Get
 from lib.managers import Commands, Config
 from lib.modules import SomiBot, YesNoButtons
@@ -128,10 +128,15 @@ class CustomDelete(nextcord_C.Cog):
     ) -> None:
         """provides autocomplete suggestions to discord"""
 
+        commands = {}
+
+        async for entry in db.CustomCommand._.get_multiple(where={db.CustomCommand.SERVER: interaction.guild.id}, order_by=db.CustomCommand.NAME, order=Order.ASCENDING):
+            commands.update({f"{db.CustomCommand.NAME.retrieve(entry)}: {db.CustomCommand.TEXT.retrieve(entry)}" : db.CustomCommand.NAME.retrieve(entry)})
+
         await interaction.response.send_autocomplete(
-            Get.autocomplete_dict_from_search_string(
+            Get.autocomplete(
                 name,
-                {str(db.CustomCommand.NAME.retrieve(entry)): str(db.CustomCommand.NAME.retrieve(entry)) async for entry in db.CustomCommand.NAME.get_multiple(where={db.CustomCommand.SERVER: interaction.guild.id})}
+                commands
             )
         )
 

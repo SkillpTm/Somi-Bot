@@ -10,10 +10,16 @@ class Get():
     """Helper class holding methodes to get data"""
 
     @staticmethod
-    def autocomplete_dict_from_search_string(search_string: str, autocomplete_dict: dict[str, str]) -> dict[str, str]:
+    def autocomplete(neddle: str, haystack: dict[str, str] | list[str] | set[str]) -> dict[str, str]:
         """Takes a string and a dict and filters for matching results, between the two. The results are sorted form most to least relevant."""
 
-        search_string = search_string.lower()
+        CHAR_LIMIT = 100
+        AMOUNT_LIMIT = 25
+
+        if not isinstance(haystack, dict):
+            haystack = {item: item for item in haystack}
+
+        neddle = neddle.lower()
         # dict[priority, dict[key, value]]
         priority_dict: dict[int, dict[str, str]] = {
             0: {},
@@ -24,36 +30,36 @@ class Get():
 
         # the key is what discord will display and the value what is actually behind it:
         # key: "50 Minutes" value: "50m"
-        for key, value in autocomplete_dict.items():
+        for key, value in haystack.items():
             key, value = str(key), str(value)
 
-            # prority 0: search_string is the beginning of value
-            if value.lower().startswith(search_string):
-                priority_dict[0][key] = value
-                continue
+            # neddle is the beginning of value
+            if value.lower().startswith(neddle):
+                priority = 0
+            # neddle in the value
+            elif neddle in value.lower():
+                priority = 1
+            # neddle is the beginning of the key
+            elif key.lower().startswith(neddle):
+                priority = 2
+            # neddle in the key
+            elif neddle in key.lower():
+                priority = 3
+            # neddle is not found
+            else:
+                priority = None
 
-            # prority 1: search_string in the value
-            if search_string in value.lower():
-                priority_dict[1][key] = value
-                continue
-
-            # prority 2: search_string is the beginning of the key
-            if key.lower().startswith(search_string):
-                priority_dict[2][key] = value
-                continue
-
-            # prority 3: search_string in the key
-            if search_string in key.lower():
-                priority_dict[3][key] = value
-                continue
+            if priority is not None:
+                key = f"{key[:CHAR_LIMIT-3]}..." if len(key) > CHAR_LIMIT else key
+                priority_dict[priority][key] = value[:CHAR_LIMIT]
 
         output: dict[str, str] = {}
 
-        # merge the priority dicts, with higher priority results tkaing precedence over lower priority results
+        # merge the priority dicts, with higher priority results taking precedence over lower priority results
         for value in priority_dict.values():
             output |= value
 
-        return {key: value for index, (key, value) in enumerate(output.items()) if index < 25} # discord limits autocomplete suggestions to 25
+        return {key: value for index, (key, value) in enumerate(output.items()) if index < AMOUNT_LIMIT}
 
 
     @staticmethod

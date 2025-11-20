@@ -21,6 +21,8 @@ class Commands(metaclass=Singleton):
             self.data[new_command.full_name] = new_command
             self.overview[f"/{new_command.full_name}"] = new_command.full_name
 
+        self.overview = dict(sorted(self.overview.items()))
+
 class Command():
     def __init__(self, data: dict[str, typing.Any]) -> None:
         self.parent: CommandParent = CommandParent(data["parent"])

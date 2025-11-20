@@ -47,7 +47,7 @@ class LastFmArtist(nextcord_C.Cog):
         """This command webscrapes the data of a user from LastFm to get their top tracks and top albums for a certain artist"""
 
         user = user or interaction.user
-        timeframe = timeframe or "ALL"
+        timeframe = timeframe or Lists().LASTFM_TIMEFRAMES_WEBSCRAPING["All Time"]
 
         if not (lastfm_username := await db.User.LASTFM.get(interaction.user.id)):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)

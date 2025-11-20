@@ -41,7 +41,7 @@ class LastFmTopArtists(nextcord_C.Cog):
         """This command shows someone's top artists"""
 
         user = user or interaction.user
-        timeframe = timeframe or "overall"
+        timeframe = timeframe or Lists().LASTFM_TIMEFRAMES["All Time"]
 
         if not (lastfm_username := str(await db.User.LASTFM.get(interaction.user.id) or "")):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)

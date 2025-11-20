@@ -59,7 +59,7 @@ class LastFmTrack(nextcord_C.Cog):
             return
 
         user = user or interaction.user
-        timeframe = timeframe or "ALL"
+        timeframe = timeframe or Lists().LASTFM_TIMEFRAMES_WEBSCRAPING["All Time"]
 
         if not (lastfm_username := str(await db.User.LASTFM.get(interaction.user.id) or "")):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)

@@ -1,6 +1,6 @@
 services:
   bot-db:
-    container_name: somi-bot-db
+    container_name: somi-db
     image: mariadb:12.0.2-noble
     restart: unless-stopped
     volumes:
@@ -26,7 +26,7 @@ services:
       - prod
 
   bot-backup:
-    container_name: somi-bot-backup
+    container_name: somi-backup
     image: tiredofit/db-backup
     restart: unless-stopped
     volumes:
@@ -54,7 +54,7 @@ services:
 
   bot-dev:
     build: .
-    container_name: somi-bot-dev
+    container_name: somi-dev
     depends_on:
       bot-db:
         condition: service_healthy
@@ -69,7 +69,7 @@ services:
 
   bot-prod:
     build: .
-    container_name: somi-bot-prod
+    container_name: somi-prod
     restart: unless-stopped
     depends_on:
       bot-db:

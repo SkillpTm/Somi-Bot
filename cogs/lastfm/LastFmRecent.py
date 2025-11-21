@@ -91,7 +91,7 @@ class LastFmRecent(nextcord_C.Cog):
         footer = ""
 
         if (scrobbles_this_month := int(np_data["recenttracks"]["@attr"]["total"])):
-            footer = f"{scrobbles_this_month} scrobbles in the last 30 days"
+            footer = f"{scrobbles_this_month} total Scrobbles, Past Month"
 
         embed = EmbedFunctions().builder(
             color = Config().LASTFM_COLOR,

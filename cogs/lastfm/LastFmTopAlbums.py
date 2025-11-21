@@ -82,7 +82,7 @@ class LastFmTopAlbums(nextcord_C.Cog):
         footer = ""
 
         if (scrobbles_this_month := Get.lf_scrobbles_this_month(lastfm_username)) is not None:
-            footer = f"{scrobbles_this_month} scrobbles in the last 30 days"
+            footer = f"{scrobbles_this_month} total Scrobbles, Past Month"
 
         embed = EmbedFunctions().builder(
             color = Config().LASTFM_COLOR,

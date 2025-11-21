@@ -1,4 +1,5 @@
 import datetime
+import urllib.parse
 
 import nextcord
 import nextcord.ext.commands as nextcord_C
@@ -67,12 +68,15 @@ class LastFmNowPlaying(nextcord_C.Cog):
 
             break
 
-        if not timestamp:
-            footer = "Now Playing"
-            footer_icon = Config().HEADPHONES_ICON
-        else:
-            footer = "Listened:"
-            footer_icon = ""
+        # get playcount for footer
+        track_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=track.getInfo&username={lastfm_username}&artist={urllib.parse.quote_plus(artist_name)}&track={urllib.parse.quote_plus(track_name)}&api_key={Keychain().LAST_FM_API_KEY}&format=json", timeout=10)
+
+        if track_response.status_code != 200:
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
+            return
+
+        footer = f"{track_response.json()['track']['userplaycount']} Scrobbles | "
+        footer += "Now Playing" if not timestamp else "Last played"
 
         embed = EmbedFunctions().builder(
             color = Config().LASTFM_COLOR,
@@ -82,7 +86,7 @@ class LastFmNowPlaying(nextcord_C.Cog):
             author_icon = Config().LASTFM_ICON,
             description = f"on `{album_name}`",
             footer = footer,
-            footer_icon = footer_icon,
+            footer_icon = Config().HEADPHONES_ICON,
             footer_timestamp = timestamp
         )
 

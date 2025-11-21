@@ -7,7 +7,7 @@ import requests
 
 from cogs.basic.ParentCommand import ParentCommand
 from lib.database import db
-from lib.helpers import EmbedFunctions, Get, Webscrape
+from lib.helpers import EmbedFunctions, Webscrape
 from lib.managers import Commands, Config, Keychain, Lists
 from lib.modules import SomiBot
 
@@ -84,10 +84,6 @@ class LastFmArtist(nextcord_C.Cog):
             return
 
         type_name, _, cover_image_url, metadata_list, track_output, album_output = Webscrape().library_subpage(soup, artist_for_url, "artist")
-        footer = ""
-
-        if (scrobbles_this_month := Get.lf_scrobbles_this_month(lastfm_username)) is not None:
-            footer = f"{scrobbles_this_month} scrobbles in the last 30 days"
 
         embed = EmbedFunctions().builder(
             color = Config().LASTFM_COLOR,
@@ -101,11 +97,34 @@ class LastFmArtist(nextcord_C.Cog):
                           f"{album_output}\n" +
                           "**Top Tracks**\n" +
                           f"{track_output}\n",
-            footer = footer,
+            footer = self.get_footer_fount(lastfm_username, artist_for_url, timeframe),
             footer_icon = Config().HEADPHONES_ICON
         )
 
         await interaction.followup.send(embed=embed)
+
+
+    def get_footer_fount(self, lastfm_username: str, artist_for_url:str, timeframe: str) -> str:
+        """Helper function to get the playcount for the footer of the now playing command"""
+
+        if timeframe != Lists().LASTFM_TIMEFRAMES_WEBSCRAPING["Past Month"]:
+            timeframe = Lists().LASTFM_TIMEFRAMES_WEBSCRAPING["Past Month"]
+        else:
+            timeframe = Lists().LASTFM_TIMEFRAMES_WEBSCRAPING["All Time"]
+
+        count_response = requests.get(
+            f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}?date_preset={timeframe}",
+            cookies = Keychain().LAST_FM_COOKIES, # type: ignore
+            headers = Keychain().LAST_FM_HEADERS, # type: ignore
+            timeout = 10
+        )
+
+        if count_response.status_code != 200:
+            return ""
+
+        _, _, _, metadata_list, _, _ = Webscrape().library_subpage(BeautifulSoup(count_response.content, "html.parser"), artist_for_url, "artist")
+
+        return f"{metadata_list[0]} artist Scrobbles, {Lists().LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}"
 
 
 

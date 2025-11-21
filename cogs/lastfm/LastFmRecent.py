@@ -85,12 +85,11 @@ class LastFmRecent(nextcord_C.Cog):
                 if page_number == 1:
                     timestamp = "*now playing*"
 
-            if timestamp != "":
-                output += f"{index + (page_number - 1) * 10}. **[{track_name}]({track_url})** by [{artist_name}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}\n"
+            output += f"`{index + (page_number - 1) * 10}.` **[{track_name}]({track_url})** by [{artist_name}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}\n"
 
         footer = ""
 
-        if (scrobbles_this_month := int(np_data["recenttracks"]["@attr"]["total"])):
+        if (scrobbles_this_month := Get.lf_scrobbles_this_month(lastfm_username)) is not None:
             footer = f"{scrobbles_this_month} total Scrobbles, Past Month"
 
         embed = EmbedFunctions().builder(

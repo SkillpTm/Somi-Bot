@@ -24,7 +24,7 @@ class Reload(nextcord_C.Cog):
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
-    @nextcord_AC.check(Get.interaction_by_owner) # type: ignore
+    @nextcord_AC.check(Get.interaction_by_owner()) # type: ignore
     async def reload(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command reloads the bot, it can only be executed from the owner"""
 

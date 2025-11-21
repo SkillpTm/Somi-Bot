@@ -4,6 +4,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
 
+from cogs.basic.ParentCommand import ParentCommand
 from lib.database import db
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands, Config, Keychain
@@ -12,8 +13,6 @@ from lib.modules import PageButtons, SomiBot
 
 
 class LastFmRecent(nextcord_C.Cog):
-
-    from cogs.basic.ParentCommand import ParentCommand
 
     def __init__(self, client: SomiBot) -> None:
         self.client = client

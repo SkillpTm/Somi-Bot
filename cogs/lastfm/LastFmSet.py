@@ -2,6 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
 
+from cogs.basic.ParentCommand import ParentCommand
 from lib.database import db
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands, Keychain
@@ -10,8 +11,6 @@ from lib.modules import SomiBot
 
 
 class LastFmSet(nextcord_C.Cog):
-
-    from cogs.basic.ParentCommand import ParentCommand
 
     def __init__(self, client: SomiBot) -> None:
         self.client = client

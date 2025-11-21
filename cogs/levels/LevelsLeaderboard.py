@@ -1,6 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
+from cogs.basic.ParentCommand import ParentCommand
 from lib.database import db, Order
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands, Config
@@ -9,8 +10,6 @@ from lib.modules import SomiBot
 
 
 class LevelsLeaderboard(nextcord_C.Cog):
-
-    from cogs.basic.ParentCommand import ParentCommand
 
     def __init__(self, client: SomiBot) -> None:
         self.client = client

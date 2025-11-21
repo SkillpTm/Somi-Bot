@@ -83,13 +83,8 @@ class Logger(metaclass=Singleton):
         self.action_logger.warning(action)
 
 
-    def application_command_error(self, **kwargs) -> None: # type: ignore
+    def application_command_error(self, error: str) -> None:
         """Formats and logs a bot error"""
-        error = ""
-
-        for key, value in kwargs.items():
-            error += f"{key}: {value}\n"
-
         self.error_logger.error(error)
 
 

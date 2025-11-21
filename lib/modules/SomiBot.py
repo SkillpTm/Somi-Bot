@@ -158,27 +158,28 @@ class SomiBot(nextcord_C.Bot):
     ) -> None:
         """This function overwrites the build in on_application_command_error function, to create a global error log and exception handler."""
 
-        Logger().application_command_error(
-            exception = exception,
-            context = interaction.context,
-            created_at = interaction.created_at,
-            expires_at = interaction.expires_at,
-            type = interaction.type._name_,
-            file = interaction.application_command.parent_cog,
-            meta_data = Logger.get_log_message(interaction, "error"), # type: ignore
-            data = interaction.data,
-            app_permissions = interaction.app_permissions.value,
-            user_permissions = interaction.permissions.value,
-        )
+        meta_data = Logger.get_log_message(interaction, "error") # type: ignore
 
-        erroe_message = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions. (this includes her role being above others)\n```{exception}```\nA bug-report has been send to the developer."
+        Logger().application_command_error(log_context := f"""
+            exception: {exception}
+            context: {interaction.context}
+            created_at: {interaction.created_at}
+            expires_at: {interaction.expires_at}
+            type: {interaction.type._name_}
+            file: {interaction.application_command.parent_cog}
+            meta_data: {meta_data}
+            app_permissions: {interaction.app_permissions.value}
+            user_permissions: {interaction.permissions.value}
+        """)
+
+        error_message = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions. (this includes her role being above others)\n```{exception}```\nA bug-report has been send to the developer."
 
         if interaction.response.is_done():
-            await interaction.followup.send(embed=EmbedFunctions().get_critical_error_message(erroe_message), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_critical_error_message(error_message), ephemeral=True)
         else:
-            await interaction.response.send_message(embed=EmbedFunctions().get_critical_error_message(erroe_message), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions().get_critical_error_message(error_message), ephemeral=True)
 
-        await self.get_guild(Config().SUPPORT_SERVER_ID).get_channel(Config().SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().get_critical_error_message(f"```{exception}```")) # type: ignore
+        await self.get_guild(Config().SUPPORT_SERVER_ID).get_channel(Config().SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().get_critical_error_message(f"{log_context}\n\n```{exception}```")) # type: ignore
 
         return await super().on_application_command_error(interaction, exception)
 

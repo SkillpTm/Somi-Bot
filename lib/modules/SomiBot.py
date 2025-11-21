@@ -36,7 +36,7 @@ class SomiBot(nextcord_C.Bot):
             owner_id = Config().OWNER_ID
         )
 
-        self.add_check(self._global_command_checks) # type: ignore
+        self.add_application_command_check(self._global_command_checks)
         self.application_command_before_invoke(self._before_command)
 
 
@@ -110,6 +110,14 @@ class SomiBot(nextcord_C.Bot):
         if interaction.user.bot:
             return False
 
+        if (
+            interaction.authorizing_integration_owners
+            and not interaction.authorizing_integration_owners.get(nextcord.IntegrationType.user_install, None)
+            and not self.get_guild(interaction.authorizing_integration_owners.get(nextcord.IntegrationType.guild_install, 0)) # the bot can only get guilds it is in
+        ): # type: ignore
+            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"This command can only be user in servers with {self.user.name}."), ephemeral=True)
+            return False
+
         return True
 
 
@@ -158,19 +166,21 @@ class SomiBot(nextcord_C.Bot):
     ) -> None:
         """This function overwrites the build in on_application_command_error function, to create a global error log and exception handler."""
 
+        if isinstance(exception, nextcord.ApplicationCheckFailure):
+            return
+
         meta_data = Logger.get_log_message(interaction, "error") # type: ignore
 
-        Logger().application_command_error(log_context := f"""
-            exception: {exception}
-            context: {interaction.context}
-            created_at: {interaction.created_at}
-            expires_at: {interaction.expires_at}
-            type: {interaction.type._name_}
-            file: {interaction.application_command.parent_cog}
-            meta_data: {meta_data}
-            app_permissions: {interaction.app_permissions.value}
-            user_permissions: {interaction.permissions.value}
-        """)
+        Logger().application_command_error(f"- exception: `{exception}`" + (log_context := f"""
+    - context: `{interaction.context}`
+    - created_at: `{interaction.created_at}`
+    - expires_at: `{interaction.expires_at}`
+    - type: `{interaction.type._name_}`
+    - file: `{interaction.application_command.parent_cog}`
+    - meta_data: `{meta_data}`
+    - app_permissions: `{interaction.app_permissions.value}`
+    - user_permissions: `{interaction.permissions.value}`
+        """))
 
         error_message = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions. (this includes her role being above others)\n```{exception}```\nA bug-report has been send to the developer."
 
@@ -179,7 +189,7 @@ class SomiBot(nextcord_C.Bot):
         else:
             await interaction.response.send_message(embed=EmbedFunctions().get_critical_error_message(error_message), ephemeral=True)
 
-        await self.get_guild(Config().SUPPORT_SERVER_ID).get_channel(Config().SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().get_critical_error_message(f"{log_context}\n\n```{exception}```")) # type: ignore
+        await self.get_guild(Config().SUPPORT_SERVER_ID).get_channel(Config().SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().get_critical_error_message(f"{log_context}\n```{exception}```")) # type: ignore
 
         return await super().on_application_command_error(interaction, exception)
 

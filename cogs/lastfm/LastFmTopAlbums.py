@@ -77,7 +77,7 @@ class LastFmTopAlbums(nextcord_C.Cog):
 
             album_name = Get.markdown_safe(album["name"])
             artist_name = Get.markdown_safe(album["artist"]["name"])
-            output += f"{album['@attr']['rank']}. **[{album_name}]({album_url})** by [{artist_name}]({artist_url}) - *({album['playcount']} plays)*\n"
+            output += f"`{album['@attr']['rank']}.` **[{album_name}]({album_url})** by [{artist_name}]({artist_url}) - *({album['playcount']} plays)*\n"
 
         footer = ""
 

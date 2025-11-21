@@ -75,7 +75,7 @@ class LastFmTopArtists(nextcord_C.Cog):
             artist_url = artist["url"]
 
             artist_name = Get.markdown_safe(artist["name"])
-            output += f"{artist['@attr']['rank']}. **[{artist_name}]({artist_url})** - *({artist['playcount']} plays)*\n"
+            output += f"`{artist['@attr']['rank']}.` **[{artist_name}]({artist_url})** - *({artist['playcount']} plays)*\n"
 
         footer = ""
 

@@ -19,7 +19,19 @@ class Weather(nextcord_C.Cog):
         self.client = client
 
 
-    @nextcord.slash_command(Commands().data["weather"].name, Commands().data["weather"].description)
+    @nextcord.slash_command(
+        Commands().data["weather"].name,
+        Commands().data["weather"].description,
+        integration_types=[
+            nextcord.IntegrationType.user_install,
+            nextcord.IntegrationType.guild_install,
+        ],
+        contexts=[
+            nextcord.InteractionContextType.guild,
+            nextcord.InteractionContextType.bot_dm,
+            nextcord.InteractionContextType.private_channel,
+        ]
+    )
     async def weather(
         self,
         interaction: nextcord.Interaction[SomiBot],

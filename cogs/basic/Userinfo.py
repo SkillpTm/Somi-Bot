@@ -18,7 +18,16 @@ class Userinfo(nextcord_C.Cog):
     @nextcord.slash_command(
         Commands().data["userinfo"].alias,
         Commands().data["userinfo"].description,
-        name_localizations = {country_tag: Commands().data["userinfo"].name for country_tag in nextcord.Locale}
+        name_localizations = {country_tag: Commands().data["userinfo"].name for country_tag in nextcord.Locale},
+        integration_types=[
+            nextcord.IntegrationType.user_install,
+            nextcord.IntegrationType.guild_install,
+        ],
+        contexts=[
+            nextcord.InteractionContextType.guild,
+            nextcord.InteractionContextType.bot_dm,
+            nextcord.InteractionContextType.private_channel,
+        ]
     )
     async def userinfo(
         self,

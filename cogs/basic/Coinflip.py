@@ -15,7 +15,19 @@ class Coinflip(nextcord_C.Cog):
         self.client = client
 
 
-    @nextcord.slash_command(Commands().data["coinflip"].name, Commands().data["coinflip"].description)
+    @nextcord.slash_command(
+        Commands().data["coinflip"].name,
+        Commands().data["coinflip"].description,
+        integration_types=[
+            nextcord.IntegrationType.user_install,
+            nextcord.IntegrationType.guild_install,
+        ],
+        contexts=[
+            nextcord.InteractionContextType.guild,
+            nextcord.InteractionContextType.bot_dm,
+            nextcord.InteractionContextType.private_channel,
+        ]
+    )
     async def coinflip(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command does a coinflip with a small animation"""
 

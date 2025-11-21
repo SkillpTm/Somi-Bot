@@ -55,6 +55,15 @@ class ParentCommand(nextcord_C.Cog):
     @nextcord.slash_command(
         name = "lastfm",
         name_localizations = {country_tag:"lf" for country_tag in nextcord.Locale},
+        integration_types=[
+            nextcord.IntegrationType.user_install,
+            nextcord.IntegrationType.guild_install,
+        ],
+        contexts=[
+            nextcord.InteractionContextType.guild,
+            nextcord.InteractionContextType.bot_dm,
+            nextcord.InteractionContextType.private_channel,
+        ]
     )
     async def lastfm(self, _interaction: nextcord.Interaction[SomiBot]) -> None:
         """Main command that does nothing for /lf subcommands"""
@@ -62,7 +71,16 @@ class ParentCommand(nextcord_C.Cog):
 
     @nextcord.slash_command(
         name = "alarm",
-        name_localizations = {country_tag:"reminder" for country_tag in nextcord.Locale}
+        name_localizations = {country_tag:"reminder" for country_tag in nextcord.Locale},
+        integration_types=[
+            nextcord.IntegrationType.user_install,
+            nextcord.IntegrationType.guild_install,
+        ],
+        contexts=[
+            nextcord.InteractionContextType.guild,
+            nextcord.InteractionContextType.bot_dm,
+            nextcord.InteractionContextType.private_channel,
+        ]
     )
     async def reminder(self, _interaction: nextcord.Interaction[SomiBot]) -> None:
         """Main command that does nothing for /reminder subcommands"""

@@ -12,7 +12,19 @@ class Invite(nextcord_C.Cog):
         self.client = client
 
 
-    @nextcord.slash_command(Commands().data["invite"].name, Commands().data["invite"].description)
+    @nextcord.slash_command(
+        Commands().data["invite"].name,
+        Commands().data["invite"].description,
+        integration_types=[
+            nextcord.IntegrationType.user_install,
+            nextcord.IntegrationType.guild_install,
+        ],
+        contexts=[
+            nextcord.InteractionContextType.guild,
+            nextcord.InteractionContextType.bot_dm,
+            nextcord.InteractionContextType.private_channel,
+        ]
+    )
     async def invite(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command posts the invite link for the bot"""
 

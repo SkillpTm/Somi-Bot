@@ -75,7 +75,16 @@ class Choose(nextcord_C.Cog):
     @nextcord.slash_command(
         Commands().data["choose"].alias,
         Commands().data["choose"].description,
-        name_localizations = {country_tag: Commands().data["choose"].name for country_tag in nextcord.Locale}
+        name_localizations = {country_tag: Commands().data["choose"].name for country_tag in nextcord.Locale},
+        integration_types=[
+            nextcord.IntegrationType.user_install,
+            nextcord.IntegrationType.guild_install,
+        ],
+        contexts=[
+            nextcord.InteractionContextType.guild,
+            nextcord.InteractionContextType.bot_dm,
+            nextcord.InteractionContextType.private_channel,
+        ]
     )
     async def choose(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command randomly chooses between any of the options"""

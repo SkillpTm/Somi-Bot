@@ -17,7 +17,9 @@ class CustomCommand(nextcord_C.Cog):
     @nextcord.slash_command(
         Commands().data["custom-command"].alias,
         Commands().data["custom-command"].description,
-        name_localizations = {country_tag: Commands().data["custom-command"].name for country_tag in nextcord.Locale}
+        name_localizations = {country_tag: Commands().data["custom-command"].name for country_tag in nextcord.Locale},
+        integration_types = [nextcord.IntegrationType.guild_install],
+        contexts = [nextcord.InteractionContextType.guild]
     )
     async def customcommand(
         self,

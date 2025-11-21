@@ -17,7 +17,19 @@ class Time(nextcord_C.Cog):
         self.client = client
 
 
-    @nextcord.slash_command(Commands().data["time"].name, Commands().data["time"].description)
+    @nextcord.slash_command(
+        Commands().data["time"].name,
+        Commands().data["time"].description,
+        integration_types=[
+            nextcord.IntegrationType.user_install,
+            nextcord.IntegrationType.guild_install,
+        ],
+        contexts=[
+            nextcord.InteractionContextType.guild,
+            nextcord.InteractionContextType.bot_dm,
+            nextcord.InteractionContextType.private_channel,
+        ]
+    )
     async def time(
         self,
         interaction: nextcord.Interaction[SomiBot],

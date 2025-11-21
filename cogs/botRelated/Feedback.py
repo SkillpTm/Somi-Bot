@@ -71,7 +71,19 @@ class Feedback(nextcord_C.Cog):
         self.client = client
 
 
-    @nextcord.slash_command(Commands().data["feedback"].name, Commands().data["about"].description)
+    @nextcord.slash_command(
+        Commands().data["feedback"].name,
+        Commands().data["about"].description,
+        integration_types=[
+            nextcord.IntegrationType.user_install,
+            nextcord.IntegrationType.guild_install,
+        ],
+        contexts=[
+            nextcord.InteractionContextType.guild,
+            nextcord.InteractionContextType.bot_dm,
+            nextcord.InteractionContextType.private_channel,
+        ]
+    )
     async def feedback(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """Sends out a modal to receive feedback"""
 

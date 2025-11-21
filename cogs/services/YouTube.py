@@ -16,7 +16,16 @@ class YouTube(nextcord_C.Cog):
     @nextcord.slash_command(
         Commands().data["youtube"].alias,
         Commands().data["youtube"].description,
-        name_localizations = {country_tag: Commands().data["youtube"].name for country_tag in nextcord.Locale}
+        name_localizations = {country_tag: Commands().data["youtube"].name for country_tag in nextcord.Locale},
+        integration_types=[
+            nextcord.IntegrationType.user_install,
+            nextcord.IntegrationType.guild_install,
+        ],
+        contexts=[
+            nextcord.InteractionContextType.guild,
+            nextcord.InteractionContextType.bot_dm,
+            nextcord.InteractionContextType.private_channel,
+        ]
     )
     async def youtube(
         self,

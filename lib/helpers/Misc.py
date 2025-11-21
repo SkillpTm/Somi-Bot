@@ -1,7 +1,6 @@
 import csv
 
 import nextcord
-import nextcord.ext.commands as nextcord_C
 
 
 
@@ -17,13 +16,10 @@ class Misc():
         for child in button_view.children:
             child.disabled = True # type: ignore
 
-        response: nextcord.Message = getattr(button_view, "response")
-        interaction: nextcord.Interaction[nextcord_C.Bot] = getattr(button_view, "interaction")
-
         # edit the original class to have its buttons deactivated
-        if response:
+        if (response := getattr(button_view, "response", None)):
             await response.edit(view=button_view)
-        elif interaction:
+        elif (interaction := getattr(button_view, "interaction", None)):
             await interaction.edit_original_message(view=button_view)
 
 

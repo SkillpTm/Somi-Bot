@@ -60,6 +60,8 @@ class LastFmProfile(nextcord_C.Cog):
         if (scrobbles_this_month := Get.lf_scrobbles_this_month(lastfm_username)) is not None:
             footer = f"{scrobbles_this_month} scrobbles in the last 30 days"
 
+        top_artists, top_albums, top_tracks = self.get_top_data(lastfm_username)
+
         embed = EmbedFunctions().builder(
             color = Config().LASTFM_COLOR,
             thumbnail = lastfm_user_pfp,
@@ -86,7 +88,7 @@ class LastFmProfile(nextcord_C.Cog):
                 EmbedField(
                     "Registered at:",
                     f"<t:{int(profile_user_data['user']['registered']['unixtime'])}>",
-                    False
+                    True
                 ),
                 EmbedField(
                     "Unique Artists:",
@@ -102,12 +104,65 @@ class LastFmProfile(nextcord_C.Cog):
                     "Unique Tracks:",
                     profile_user_data["user"]["track_count"],
                     True
+                ),
+                EmbedField(
+                    "Top Artists:",
+                    top_artists,
+                    False
+                ),
+                EmbedField(
+                    "Top Albums:",
+                    top_albums,
+                    False
+                ),
+                EmbedField(
+                    "Top Tracks:",
+                    top_tracks,
+                    False
                 )
             ]
         )
 
         await interaction.followup.send(embed=embed)
 
+
+    def get_top_data(self, lastfm_username: str) -> tuple[str, str, str]:
+        """This function gets the top 3 albums, artists and tracks of a user from LastFm"""
+
+        top_albums_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&username={lastfm_username}&limit=3&page=1&period=overall&api_key={Keychain().LAST_FM_API_KEY}&format=json", timeout=10)
+        top_artists_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&username={lastfm_username}&limit=3&page=1&period=overall&api_key={Keychain().LAST_FM_API_KEY}&format=json", timeout=10)
+        top_tarcks_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.gettoptracks&username={lastfm_username}&limit=3&page=1&period=overall&api_key={Keychain().LAST_FM_API_KEY}&format=json", timeout=10)
+
+        if top_albums_response.status_code != 200 or top_artists_response.status_code != 200 or top_tarcks_response.status_code != 200:
+            return "", "", ""
+
+        top_albums_output = ""
+        top_artists_output = ""
+        top_tarcks_output = ""
+
+        for track in top_tarcks_response.json()["toptracks"]["track"]:
+            track_url = track["url"]
+            artist_url = track["artist"]["url"]
+
+            track_name = Get.markdown_safe(track["name"])
+            artist_name = Get.markdown_safe(track["artist"]["name"])
+            top_tarcks_output += f"`{track['@attr']['rank']}.` **[{track_name}]({track_url})** by [{artist_name}]({artist_url}) - *({track['playcount']} plays)*\n"
+
+        for artist in top_artists_response.json()["topartists"]["artist"]:
+            artist_url = artist["url"]
+
+            artist_name = Get.markdown_safe(artist["name"])
+            top_artists_output += f"`{artist['@attr']['rank']}.` **[{artist_name}]({artist_url})** - *({artist['playcount']} plays)*\n"
+
+        for album in top_albums_response.json()["topalbums"]["album"]:
+            album_url = album["url"]
+            artist_url = album["artist"]["url"]
+
+            album_name = Get.markdown_safe(album["name"])
+            artist_name = Get.markdown_safe(album["artist"]["name"])
+            top_albums_output += f"`{album['@attr']['rank']}.` **[{album_name}]({album_url})** by [{artist_name}]({artist_url}) - *({album['playcount']} plays)*\n"
+
+        return top_artists_output, top_albums_output, top_tarcks_output
 
 
 def setup(client: SomiBot) -> None:

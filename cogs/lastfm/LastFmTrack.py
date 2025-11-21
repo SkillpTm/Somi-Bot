@@ -6,7 +6,7 @@ import nextcord.ext.commands as nextcord_C
 import requests
 
 from lib.database import db
-from lib.helpers import EmbedFunctions, Webscrape
+from lib.helpers import EmbedFunctions, Get, Webscrape
 from lib.managers import Commands, Config, Keychain, Lists
 from lib.modules import SomiBot
 
@@ -99,6 +99,10 @@ class LastFmTrack(nextcord_C.Cog):
             return
 
         type_name, artist_name, cover_image_url, metadata_list, _, _ = Webscrape().library_subpage(soup, artist_for_url, "track")
+        footer = ""
+
+        if (scrobbles_this_month := Get.lf_scrobbles_this_month(lastfm_username)) is not None:
+            footer = f"{scrobbles_this_month} scrobbles in the last 30 days"
 
         embed = EmbedFunctions().builder(
             color = Config().LASTFM_COLOR,
@@ -107,7 +111,9 @@ class LastFmTrack(nextcord_C.Cog):
             author_url = f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}",
             author_icon = Config().LASTFM_ICON,
             description = f"Total plays: __**{metadata_list[0]}**__\n" +
-                          f"[{type_name}](https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}) by [{artist_name}](https://www.last.fm/music/{artist_for_url})"
+                          f"[{type_name}](https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/_/{track_for_url}?date_preset={timeframe}) by [{artist_name}](https://www.last.fm/music/{artist_for_url})",
+            footer = footer,
+            footer_icon = Config().HEADPHONES_ICON
         )
 
         await interaction.followup.send(embed=embed)

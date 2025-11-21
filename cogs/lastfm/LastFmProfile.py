@@ -34,7 +34,7 @@ class LastFmProfile(nextcord_C.Cog):
 
         user = user or interaction.user
 
-        if not (lastfm_username := await db.User.LASTFM.get(interaction.user.id)):
+        if not (lastfm_username := str(await db.User.LASTFM.get(interaction.user.id) or "")):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
@@ -56,11 +56,18 @@ class LastFmProfile(nextcord_C.Cog):
 
         days_plays_ratio = round(int(profile_user_data["user"]["playcount"]) / (int((int(time.time()) - int(profile_user_data["user"]["registered"]["unixtime"])) / 60 / 60 / 24)), 2)
 
+        footer = ""
+
+        if (scrobbles_this_month := Get.lf_scrobbles_this_month(lastfm_username)) is not None:
+            footer = f"{scrobbles_this_month} scrobbles in the last 30 days"
+
         embed = EmbedFunctions().builder(
             color = Config().LASTFM_COLOR,
             thumbnail = lastfm_user_pfp,
             author = f"{user.display_name} LastFm User Data",
             author_icon = Config().LASTFM_ICON,
+            footer = footer,
+            footer_icon = Config().HEADPHONES_ICON,
             fields = [
                 EmbedField(
                     "LastFm name:",

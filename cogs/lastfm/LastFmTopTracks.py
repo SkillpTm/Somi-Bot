@@ -80,11 +80,18 @@ class LastFmTopTracks(nextcord_C.Cog):
             artist_name = Get.markdown_safe(track["artist"]["name"])
             output += f"{track['@attr']['rank']}. **[{track_name}]({track_url})** by [{artist_name}]({artist_url}) - *({track['playcount']} plays)*\n"
 
+        footer = ""
+
+        if (scrobbles_this_month := Get.lf_scrobbles_this_month(lastfm_username)) is not None:
+            footer = f"{scrobbles_this_month} scrobbles in the last 30 days"
+
         embed = EmbedFunctions().builder(
             color = Config().LASTFM_COLOR,
             author = f"{user.display_name} Top Tracks: {Lists().LASTFM_TIMEFRAMES_TEXT[timeframe]}",
             author_icon = Config().LASTFM_ICON,
-            description = output
+            description = output,
+            footer = footer,
+            footer_icon = Config().HEADPHONES_ICON
         )
 
         view = PageButtons(page=page_number, last_page=last_page, interaction=interaction) # type: ignore

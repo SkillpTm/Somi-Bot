@@ -38,7 +38,7 @@ class LastFmNowPlaying(nextcord_C.Cog):
 
         user = user or interaction.user
 
-        if not (lastfm_username := await db.User.LASTFM.get(interaction.user.id)):
+        if not (lastfm_username := str(await db.User.LASTFM.get(interaction.user.id) or "")):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
@@ -49,7 +49,7 @@ class LastFmNowPlaying(nextcord_C.Cog):
         if np_response.status_code != 200:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
             return
-        
+
         album_name, artist_name, cover_url, track_name, track_url, timestamp = "", "", "", "", "", None
 
         # lastfm will respond with 2 tracks, if the user is listening to a song right now, otherwise just one

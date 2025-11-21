@@ -1,8 +1,12 @@
 import re
+import time
+
+from lib.managers import Keychain
 
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
+import requests
 
 
 
@@ -80,6 +84,20 @@ class Get():
 
 
     @staticmethod
+    def lf_scrobbles_this_month(lastfm_username: str) -> int | None:
+        """Gets the amount of scrobbles a user has this month from LastFm, returns None on failure"""
+
+        now_last_month = int(time.time()) - 60 * 60* 24 * 30
+
+        np_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&username={lastfm_username}&limit=1&page=1&from={now_last_month}&api_key={Keychain().LAST_FM_API_KEY}&format=json", timeout=10)
+
+        if np_response.status_code != 200:
+            return None
+
+        return int(np_response.json()["recenttracks"]["@attr"]["total"])
+
+
+    @staticmethod
     def markdown_safe(input_string: str) -> str:
         """Replaces markdown relevant characters with similar unicode chars to avoid issues, in places like embeds"""
 
@@ -114,10 +132,10 @@ class Get():
 
 
     @staticmethod
-    def seconds_from_time(time: str) -> int:
+    def seconds_from_time(input_time: str) -> int:
         """Converts a humanreadable time input into seconds: 4h4s = 14404"""
 
         time_in_seconds = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800, "y": 31536000}
-        timeframes = re.findall(r"[0-9]+[smhdwy]", time.replace(" ", "").lower())
+        timeframes = re.findall(r"[0-9]+[smhdwy]", input_time.replace(" ", "").lower())
 
         return sum(int(timeframe[:-1]) * time_in_seconds[timeframe[-1]] for timeframe in timeframes)

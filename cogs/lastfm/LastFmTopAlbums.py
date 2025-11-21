@@ -47,8 +47,7 @@ class LastFmTopAlbums(nextcord_C.Cog):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
-        # send a dummy respone to be updated in the recursive function
-        await interaction.response.send_message(embed=EmbedFunctions().builder(title=" "))
+        await interaction.response.defer(with_message=True)
 
         await self.lastfm_top_albums_rec(interaction, user, lastfm_username, timeframe, page_number = 1)
 
@@ -81,11 +80,18 @@ class LastFmTopAlbums(nextcord_C.Cog):
             artist_name = Get.markdown_safe(album["artist"]["name"])
             output += f"{album['@attr']['rank']}. **[{album_name}]({album_url})** by [{artist_name}]({artist_url}) - *({album['playcount']} plays)*\n"
 
+        footer = ""
+
+        if (scrobbles_this_month := Get.lf_scrobbles_this_month(lastfm_username)) is not None:
+            footer = f"{scrobbles_this_month} scrobbles in the last 30 days"
+
         embed = EmbedFunctions().builder(
             color = Config().LASTFM_COLOR,
             author = f"{user.display_name} Top Albums: {Lists().LASTFM_TIMEFRAMES_TEXT[timeframe]}",
             author_icon = Config().LASTFM_ICON,
-            description = output
+            description = output,
+            footer = footer,
+            footer_icon = Config().HEADPHONES_ICON
         )
 
         view = PageButtons(page = page_number, last_page = last_page, interaction = interaction) # type: ignore

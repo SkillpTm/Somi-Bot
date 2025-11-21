@@ -42,8 +42,7 @@ class LastFmRecent(nextcord_C.Cog):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
-        # send a dummy respone to be updated in the recursive function
-        await interaction.response.send_message(embed=EmbedFunctions().builder(title=" "))
+        await interaction.response.defer(with_message=True)
 
         await self.lastfm_recent_rec(interaction, user, lastfm_username, page_number = 1)
 
@@ -90,11 +89,18 @@ class LastFmRecent(nextcord_C.Cog):
             if timestamp != "":
                 output += f"{index + (page_number - 1) * 10}. **[{track_name}]({track_url})** by [{artist_name}](https://www.last.fm/music/{artist_name_for_url}/) - {timestamp}\n"
 
+        footer = ""
+
+        if (scrobbles_this_month := int(np_data["recenttracks"]["@attr"]["total"])):
+            footer = f"{scrobbles_this_month} scrobbles in the last 30 days"
+
         embed = EmbedFunctions().builder(
             color = Config().LASTFM_COLOR,
             author = f"{user.display_name} recently played:",
             author_icon = Config().LASTFM_ICON,
-            description = output
+            description = output,
+            footer = footer,
+            footer_icon = Config().HEADPHONES_ICON
         )
 
         view = PageButtons(page=page_number, last_page=last_page, interaction=interaction) # type: ignore

@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import os
 import re
 import sys
@@ -82,6 +83,8 @@ class SomiBot(nextcord_C.Bot):
 
 
     async def _before_command(self, interaction: nextcord.Interaction["SomiBot"]) -> None:
+        """This function is called before any application command is executed, to log the command usage and increase statistics"""
+
         command_name: str = ""
 
         if not hasattr(interaction, "application_command"):
@@ -95,6 +98,9 @@ class SomiBot(nextcord_C.Bot):
 
         if not command_name:
             return
+
+        if not interaction.user.bot and interaction.guild and interaction.guild in self.guilds:
+            await db.Statistic.COMMANDS.increase({db.Statistic.SERVER: interaction.guild.id, db.Statistic.USER: interaction.user.id}, 1)
 
         await db.Telemetry.AMOUNT.increment(command_name)
         Logger().action_log(interaction, command_name, interaction.data.get("options", [])) # type: ignore
@@ -294,14 +300,15 @@ class SomiBot(nextcord_C.Bot):
 
 
     async def on_message(self, message: nextcord.Message) -> None:
-        """This function overwrites the build in on_message function, to launch keyword_send, levels_gain_xp, link_embed, modmail and reaction"""
+        """This function overwrites the build in on_message function, to launch keyword_send, levels_gain_xp, link_embed, modmail, reaction and reaction_counter"""
 
         await asyncio.gather(
             self.get_cog("KeywordSend").keyword_send(message), # type: ignore
             self.get_cog("LevelsGainXp").levels_gain_xp(message), # type: ignore
             self.get_cog("LinkEmbed").link_embed(message), # type: ignore
             self.get_cog("Modmail").modmail(message), # type: ignore
-            self.get_cog("Reactions").reaction(message) # type: ignore
+            self.get_cog("Reactions").reaction(message), # type: ignore
+            self.get_cog("StatisticCounter").statistic_counter(message) # type: ignore
         )
 
         return await super().on_message(message)
@@ -314,6 +321,22 @@ class SomiBot(nextcord_C.Bot):
             self.get_cog("DeleteLog").message_delete_log(message) # type: ignore
         )
 
+        if not message.guild or message.author.bot:
+            return
+
+        MAX_AUDIT_ENTIRES_LIMIT = 10
+        MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
+
+        # check the last audit log entry for message removals, to see make sure this was a deletion or removal
+        async for entry in message.guild.audit_logs(
+            limit=MAX_AUDIT_ENTIRES_LIMIT,
+            after=datetime.datetime.fromtimestamp(time.time() - MAY_AUDIT_ENTRY_TIME_VARIANCE),
+            action=nextcord.AuditLogAction.message_delete
+        ):
+            if message.author.id == entry.target.id and message.author.id == entry.target.id:
+                await db.Statistic.DELETES.increase({db.Statistic.SERVER: message.guild.id, db.Statistic.USER: message.author.id}, 1)
+                return
+
 
     async def on_message_edit(self, before: nextcord.Message, after: nextcord.Message) -> None:
         """This function overwrites the build in on_message_edit function, to launch the edit_log"""
@@ -321,6 +344,19 @@ class SomiBot(nextcord_C.Bot):
         await asyncio.gather(
             self.get_cog("EditLog").edit_log(before, after) # type: ignore
         )
+
+        if not before.guild or before.author.bot:
+            return
+
+        await db.Statistic.EDITS.increase({db.Statistic.SERVER: before.guild.id, db.Statistic.USER: before.author.id}, 1)
+
+    async def on_raw_reaction_add(self, payload: nextcord.RawReactionActionEvent) -> None:
+        """This function overwrites the build in on_raw_reaction_add function, to increase the reaction statistic"""
+
+        if not payload.guild_id or not payload.member or payload.member.bot:
+            return
+
+        await db.Statistic.REACTIONS.increase({db.Statistic.SERVER: payload.guild_id, db.Statistic.USER: payload.user_id}, 1)
 
 
     async def on_thread_delete(self, thread: nextcord.Thread) -> None:

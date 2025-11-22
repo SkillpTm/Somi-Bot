@@ -22,15 +22,15 @@ class LinkEmbed(nextcord_C.Cog):
         if not message.guild or message.author.bot:
             return
 
-        if f"discord.com/channels/{message.guild.id}" not in str(message.content):
+        # gets the link from a message (works for both discord.com and canary.discord.com)
+        if not (result := re.search(fr"https?://(ptb\.|canary\.)?discord\.com/channels/{message.guild.id}/[0-9/]\S+", message.content)):
             return
 
         # if the message link is surrounded by <> it won't embed
-        if re.search(fr"<https?://(canary\.)?discord\.com/channels/{message.guild.id}\S+>", message.content).group():
+        if re.search(fr"https?://(ptb\.|canary\.)?discord\.com/channels/{message.guild.id}/[0-9/]\S+", message.content):
             return
 
-        # gets the link from a message (works for both discord.com and canary.discord.com)
-        link = re.search(fr"https?://(canary\.)?discord\.com/channels/{message.guild.id}\S+", message.content).group()
+        link = result.group()
 
         if not (original_message := await self.client.get_message_from_link(link)):
             return

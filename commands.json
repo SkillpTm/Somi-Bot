@@ -1186,6 +1186,30 @@
 	},
 	{
 		"parent": {},
+		"name": "statistics",
+		"alias": "stats",
+		"description": "Shows general staticts of yours on this server",
+		"example": "/statistics [Yes] [No]",
+		"parameters": {
+			"details": {
+				"name": "more-details",
+				"description": "Whether to show more details, for your statistics on this server",
+				"type": "Set Choice",
+				"required": false,
+				"default": ""
+			},
+			"hidden": {
+				"name": "hidden-response",
+				"description": "Whether to show publicly, or only to you",
+				"type": "Set Choice",
+				"required": false,
+				"default": ""
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
 		"name": "time",
 		"alias": "",
 		"description": "Shows the time in any timezone right now.",

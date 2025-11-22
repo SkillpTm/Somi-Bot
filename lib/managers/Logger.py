@@ -85,7 +85,13 @@ class Logger(metaclass=Singleton):
 
     def application_command_error(self, error: str) -> None:
         """Formats and logs a bot error"""
-        self.error_logger.error(error)
+
+        output = ""
+
+        for row in error.splitlines():
+            output += row.strip()
+
+        self.error_logger.error(output)
 
 
     def bot_status(self, status: str) -> None:

@@ -172,15 +172,15 @@ class SomiBot(nextcord_C.Bot):
         meta_data = Logger.get_log_message(interaction, "error") # type: ignore
 
         Logger().application_command_error(f"- exception: `{exception}`" + (log_context := f"""
-    - authorizing_integration_owners: `{interaction.authorizing_integration_owners}`
-    - context: `{interaction.context}`
-    - created_at: `{interaction.created_at}`
-    - expires_at: `{interaction.expires_at}`
-    - type: `{interaction.type._name_}`
-    - file: `{interaction.application_command.parent_cog}`
-    - meta_data: `{meta_data}`
-    - app_permissions: `{interaction.app_permissions.value}`
-    - user_permissions: `{interaction.permissions.value}`
+            - authorizing_integration_owners: `{interaction.authorizing_integration_owners}`
+            - context: `{interaction.context}`
+            - created_at: `{interaction.created_at}`
+            - expires_at: `{interaction.expires_at}`
+            - type: `{interaction.type._name_}`
+            - file: `{interaction.application_command.parent_cog}`
+            - meta_data: `{meta_data}`
+            - app_permissions: `{interaction.app_permissions.value}`
+            - user_permissions: `{interaction.permissions.value}`
         """))
 
         error_message = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions. (this includes her role being above others)\n```{exception}```\nA bug-report has been send to the developer."

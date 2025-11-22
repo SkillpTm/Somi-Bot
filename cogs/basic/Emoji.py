@@ -1,3 +1,5 @@
+import re
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 import requests
@@ -42,18 +44,13 @@ class Emoji(nextcord_C.Cog):
     ) -> None:
         """This command reposts the original url of any custom emoji"""
 
-        # check if basic syntax for an emoji is met
-        if not emoji.startswith("<") and not emoji.endswith(">"):
+        # re checks if it's a valid custom emoji format
+        if not re.search(r"<(a:|:)[a-z0-9_]*:[0-9]*>", emoji, re.IGNORECASE):
             await interaction.response.send_message(embed=EmbedFunctions().get_error_message("Please select a custom emoji."), ephemeral=True)
             return
 
-        # check if the emoji is animated or not
-        if emoji.startswith("<a:"):
-            emoji_name, _, emoji_id = emoji[3:-1].partition(":")
-            emote_animated = True
-        else:
-            emoji_name, _, emoji_id = emoji[2:-1].partition(":")
-            emote_animated = False
+        emote_animated = emoji.startswith("<a:")
+        emoji_name, _, emoji_id = emoji.replace("<a:", "").replace("<:", "").replace(">", "").partition(":")
 
         partial_emoji_object = nextcord.PartialEmoji(name = emoji_name, animated = emote_animated, id = int(emoji_id))
 

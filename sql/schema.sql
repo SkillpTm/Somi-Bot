@@ -54,7 +54,8 @@ CREATE TABLE IF NOT EXISTS custom_command (
     name VARCHAR(64) NOT NULL,
     text VARCHAR(1023) NOT NULL,
 
-	FOREIGN KEY (server) REFERENCES server(id) ON DELETE CASCADE
+	FOREIGN KEY (server) REFERENCES server(id) ON DELETE CASCADE,
+	UNIQUE KEY unique_server_name (server, name)
 );
 
 CREATE TABLE IF NOT EXISTS keyword (
@@ -82,7 +83,8 @@ CREATE TABLE IF NOT EXISTS level (
     cooldown BIGINT NOT NULL DEFAULT 0,
     xp BIGINT NOT NULL DEFAULT 0,
 
-	FOREIGN KEY (server) REFERENCES server(id) ON DELETE CASCADE
+	FOREIGN KEY (server) REFERENCES server(id) ON DELETE CASCADE,
+	UNIQUE KEY unique_user_server (user, server)
 );
 
 CREATE TABLE IF NOT EXISTS statistic (
@@ -90,15 +92,19 @@ CREATE TABLE IF NOT EXISTS statistic (
 	user BIGINT NOT NULL,
     server BIGINT NOT NULL,
     attachment_count BIGINT NOT NULL DEFAULT 0,
+	bot_command_count BIGINT NOT NULL DEFAULT 0,
     char_count BIGINT NOT NULL DEFAULT 0,
-    client_command_count BIGINT NOT NULL DEFAULT 0,
+	delete_count BIGINT NOT NULL DEFAULT 0,
+	edit_count BIGINT NOT NULL DEFAULT 0,
     emote_count BIGINT NOT NULL DEFAULT 0,
     link_count BIGINT NOT NULL DEFAULT 0,
     message_count BIGINT NOT NULL DEFAULT 0,
+	reaction_count BIGINT NOT NULL DEFAULT 0,
     reply_count BIGINT NOT NULL DEFAULT 0,
     sticker_count BIGINT NOT NULL DEFAULT 0,
     word_count BIGINT NOT NULL DEFAULT 0,
 
 	FOREIGN KEY (user) REFERENCES user(id) ON DELETE CASCADE,
-	FOREIGN KEY (server) REFERENCES server(id) ON DELETE CASCADE
+	FOREIGN KEY (server) REFERENCES server(id) ON DELETE CASCADE,
+	UNIQUE KEY unique_user_server (user, server)
 );

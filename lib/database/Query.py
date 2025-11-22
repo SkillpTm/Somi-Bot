@@ -15,6 +15,7 @@ class Query(enum.Enum):
     UPDATE = "update_where"
 
     INSERT_UNIQUE = "insert_unique"
+    STATISTIC_INCREASE = "statistic_increase"
     TELENETRY_INCREMENT = "telemetry_increment"
     USER_RANK = "user_rank"
 
@@ -36,9 +37,10 @@ class Query(enum.Enum):
         query = query.replace(":_table", table)
         query = query.replace(":_columns", ", ".join(data.keys()))
         query = query.replace(":_values", ", ".join(["%s"] * len(data)))
-        query = query.replace(":_set", " , ".join([f"{key} = %s"for key in data.keys()]))
+        query = query.replace(":_set", " , ".join([f"{key} = %s" for key in data.keys()]))
+        query = query.replace(":_statistic_increase", " , ".join([f"{key} = {key} + %s" for key in data.keys()]))
         query = query.replace(":_selects", ", ".join(select))
-        query = query.replace(":_where", " AND ".join([f"{key} = %s"for key in where.keys()]))
+        query = query.replace(":_where", " AND ".join([f"{key} = %s" for key in where.keys()]))
         query = query.replace(":_order", f"{order_by or '(SELECT NULL)'} {order.value}")
         query = query.replace(":_limit", str(limit))
 

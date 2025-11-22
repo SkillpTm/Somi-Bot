@@ -30,8 +30,14 @@ WHERE NOT EXISTS (
     WHERE :_where
 );
 
+-- name: statistic_increase
+UPDATE :_table
+SET :_statistic_increase
+WHERE :_where
+LIMIT :_limit;
+
 -- name: telemetry_increment
-INSERT INTO :_table (:_columns) 
+INSERT INTO :_table (:_columns)
 VALUES (:_values)
 ON DUPLICATE KEY UPDATE amount = amount + 1;
 

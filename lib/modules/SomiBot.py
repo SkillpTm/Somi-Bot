@@ -36,8 +36,8 @@ class SomiBot(nextcord_C.Bot):
             owner_id = Config().OWNER_ID
         )
 
-        self.add_application_command_check(self._global_command_checks)
         self.application_command_before_invoke(self._before_command)
+        self.add_application_command_check(self._global_command_checks)
 
 
     async def _sync_discord_and_db(self) -> None:
@@ -172,6 +172,7 @@ class SomiBot(nextcord_C.Bot):
         meta_data = Logger.get_log_message(interaction, "error") # type: ignore
 
         Logger().application_command_error(f"- exception: `{exception}`" + (log_context := f"""
+    - authorizing_integration_owners: `{interaction.authorizing_integration_owners}`
     - context: `{interaction.context}`
     - created_at: `{interaction.created_at}`
     - expires_at: `{interaction.expires_at}`

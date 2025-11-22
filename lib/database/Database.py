@@ -118,8 +118,7 @@ class Database(metaclass=Singleton):
                     if cur.rowcount:
                         return True
 
-                except aiomysql.Error as e:
-                    print(e)
+                except aiomysql.Error:
                     await con.rollback()
                     return False
 
@@ -165,7 +164,7 @@ class Database(metaclass=Singleton):
         query: Query,
         *,
         select: list[str] = ["*"],
-        where: dict[str, int | str | None]
+        where: dict[str, int | str | None] = {}
     ) -> dict[str, str | int | None] | None:
         """fetches a singular row"""
 
@@ -198,7 +197,7 @@ class Database(metaclass=Singleton):
         query: Query,
         *,
         select: list[str] = ["*"],
-        where: dict[str, int | str | None],
+        where: dict[str, int | str | None] = {},
         order_by: str = "",
         order: Order = Order.NONE,
         limit: int = 1_000_000

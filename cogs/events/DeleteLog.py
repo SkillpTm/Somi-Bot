@@ -41,7 +41,7 @@ class DeleteLog(nextcord_C.Cog):
             after=datetime.datetime.fromtimestamp(time.time() - DeleteLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
             action=nextcord.AuditLogAction.message_delete
         ):
-            if message.author.id == entry.target.id:
+            if message.author.id == entry.target.id and message.author.id != entry.user.id:
                 await self.remove_log(message, audit_log, entry) # type: ignore
                 return
 

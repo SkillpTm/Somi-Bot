@@ -25,7 +25,7 @@ class LevelsGainXp(nextcord_C.Cog):
 
             afterwards the command will try to apply levelroles"""
 
-        if not message.guild:
+        if not message.guild or message.author.bot:
             return
 
         # re removes emotes, make sure messages are above 10 chars

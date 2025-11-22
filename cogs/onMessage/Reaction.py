@@ -18,6 +18,9 @@ class Reactions(nextcord_C.Cog):
     async def reaction(self, message: nextcord.Message) -> None:
         """makes the bot react to certain message contents"""               
 
+        if message.author.bot:
+            return
+
         # react to pings
         if self.client.user.mentioned_in(message):
             await message.add_reaction(Config().REACTION_EMOTE)

@@ -19,7 +19,7 @@ class LinkEmbed(nextcord_C.Cog):
     async def link_embed(self, message: nextcord.Message) -> None:
         """This function will automatically create an embed for a message form a link, in the same server, if the message doesn't originate form a hidden-channel."""
 
-        if not message.guild:
+        if not message.guild or message.author.bot:
             return
 
         if f"discord.com/channels/{message.guild.id}" not in str(message.content):

@@ -29,7 +29,7 @@ class LevelsGainXp(nextcord_C.Cog):
             return
 
         # re removes emotes, make sure messages are above 10 chars
-        if not len(re.sub("<[^ ]+?>", "",message.content)) > 10:
+        if not len(re.sub("<(a:|:)[a-z0-9_]*:[0-9]*>", "_",message.content)) > 10:
             return
 
         if await db.HiddenChannel._.get_entry(message.channel.id):

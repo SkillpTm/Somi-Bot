@@ -13,7 +13,6 @@ from lib.modules import SomiBot
 
 class KickLog(nextcord_C.Cog):
 
-    MAX_AUDIT_ENTIRES_LIMIT = 10
     MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
 
     def __init__(self, client: SomiBot) -> None:
@@ -30,14 +29,13 @@ class KickLog(nextcord_C.Cog):
         entry_count = 0
 
         async for entry in member.guild.audit_logs(
-            limit=KickLog.MAX_AUDIT_ENTIRES_LIMIT,
             after=datetime.datetime.fromtimestamp(time.time() - KickLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
             action=nextcord.AuditLogAction.kick
         ):
             if member.id == entry.target.id:
                 break
 
-            if (entry_count := entry_count + 1) == KickLog.MAX_AUDIT_ENTIRES_LIMIT:
+            if (entry_count := entry_count + 1) ==  100: # 100 is the default limit
                 return
 
         if not entry:

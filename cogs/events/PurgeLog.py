@@ -14,7 +14,6 @@ from lib.modules import SomiBot
 
 class PurgeLog(nextcord_C.Cog):
 
-    MAX_AUDIT_ENTIRES_LIMIT = 10
     MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
 
     def __init__(self, client: SomiBot) -> None:
@@ -34,14 +33,13 @@ class PurgeLog(nextcord_C.Cog):
         entry_count = 0
 
         async for entry in messages[0].guild.audit_logs(
-            limit=PurgeLog.MAX_AUDIT_ENTIRES_LIMIT,
             after=datetime.datetime.fromtimestamp(time.time() - PurgeLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
             action=nextcord.AuditLogAction.message_bulk_delete
         ):
             if entry.user:
                 break
 
-            if (entry_count := entry_count + 1) == PurgeLog.MAX_AUDIT_ENTIRES_LIMIT:
+            if (entry_count := entry_count + 1) ==  100: # 100 is the default limit
                 return
 
         if not entry:

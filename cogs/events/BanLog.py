@@ -13,7 +13,6 @@ from lib.modules import SomiBot
 
 class BanLog(nextcord_C.Cog):
 
-    MAX_AUDIT_ENTIRES_LIMIT = 10
     MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
 
     def __init__(self, client: SomiBot) -> None:
@@ -31,14 +30,13 @@ class BanLog(nextcord_C.Cog):
 
         # check the last audit log entry for bans, to see make sure this was a ban
         async for entry in guild.audit_logs(
-            limit=BanLog.MAX_AUDIT_ENTIRES_LIMIT,
             after=datetime.datetime.fromtimestamp(time.time() - BanLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
             action=nextcord.AuditLogAction.ban
         ):
             if user.id == entry.target.id:
                 break
 
-            if (entry_count := entry_count + 1) == BanLog.MAX_AUDIT_ENTIRES_LIMIT:
+            if (entry_count := entry_count + 1) == 100: # 100 is the default limit
                 return
 
         if not entry:
@@ -82,14 +80,13 @@ class BanLog(nextcord_C.Cog):
         entry_count = 0
 
         async for entry in guild.audit_logs(
-            limit=BanLog.MAX_AUDIT_ENTIRES_LIMIT,
             after=datetime.datetime.fromtimestamp(time.time() - BanLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
             action=nextcord.AuditLogAction.unban
         ):
             if user.id == entry.target.id:
                 break
 
-            if (entry_count := entry_count + 1) == BanLog.MAX_AUDIT_ENTIRES_LIMIT:
+            if (entry_count := entry_count + 1) ==  100: # 100 is the default limit
                 return
 
         if not entry:

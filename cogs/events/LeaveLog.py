@@ -13,7 +13,6 @@ from lib.modules import SomiBot
 
 class LeaveLog(nextcord_C.Cog):
 
-    MAX_AUDIT_ENTIRES_LIMIT = 10
     MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
 
     def __init__(self, client: SomiBot) -> None:
@@ -38,7 +37,6 @@ class LeaveLog(nextcord_C.Cog):
 
         # check the last audit log entry for bans, to see if this was a ban (bans get handled by BanLog)
         async for entry in member.guild.audit_logs(
-            limit=LeaveLog.MAX_AUDIT_ENTIRES_LIMIT,
             after=datetime.datetime.fromtimestamp(time.time() - LeaveLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
             action=nextcord.AuditLogAction.ban
         ):
@@ -47,7 +45,6 @@ class LeaveLog(nextcord_C.Cog):
 
         # check the last audit log entry for kicks, to see if this was a kick (kicks get handled by KickLog)
         async for entry in member.guild.audit_logs(
-            limit=LeaveLog.MAX_AUDIT_ENTIRES_LIMIT,
             after=datetime.datetime.fromtimestamp(time.time() - LeaveLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
             action=nextcord.AuditLogAction.kick
         ):

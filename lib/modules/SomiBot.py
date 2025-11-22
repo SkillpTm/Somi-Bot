@@ -324,12 +324,10 @@ class SomiBot(nextcord_C.Bot):
         if not message.guild or message.author.bot:
             return
 
-        MAX_AUDIT_ENTIRES_LIMIT = 10
         MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
 
         # check the last audit log entry for message removals, to see make sure this was a deletion or removal
         async for entry in message.guild.audit_logs(
-            limit=MAX_AUDIT_ENTIRES_LIMIT,
             after=datetime.datetime.fromtimestamp(time.time() - MAY_AUDIT_ENTRY_TIME_VARIANCE),
             action=nextcord.AuditLogAction.message_delete
         ):

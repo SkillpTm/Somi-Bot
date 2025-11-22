@@ -13,7 +13,6 @@ from lib.modules import SomiBot
 
 class DeleteLog(nextcord_C.Cog):
 
-    MAX_AUDIT_ENTIRES_LIMIT = 10
     MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
 
     def __init__(self, client: SomiBot) -> None:
@@ -37,7 +36,6 @@ class DeleteLog(nextcord_C.Cog):
 
         # check the last audit log entry for message removals, to see make sure this was a deletion or removal
         async for entry in message.guild.audit_logs(
-            limit=DeleteLog.MAX_AUDIT_ENTIRES_LIMIT,
             after=datetime.datetime.fromtimestamp(time.time() - DeleteLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
             action=nextcord.AuditLogAction.message_delete
         ):

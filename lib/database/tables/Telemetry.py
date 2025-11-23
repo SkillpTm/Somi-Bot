@@ -31,8 +31,6 @@ class Telemetry(DataAccessMixin):
         return await Database().execute(
             Telemetry.get_table(),
             Query.TELENETRY_INCREMENT,
-            data = {
-                Telemetry.NAME.value: event,
-                Telemetry.AMOUNT.value: 1
-            }
+            data = {Telemetry.NAME.value: event},
+            limit = 2 # ON DUPLICATE KEY UPDATE causes a rowcount of 2
         )

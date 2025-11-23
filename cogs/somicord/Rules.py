@@ -60,7 +60,7 @@ class Rules(nextcord_C.Cog):
         if rule:
             embed = EmbedFunctions().builder(
                 color = Lists().SOMICORD_RULES[rule][0],
-                author = f"Rule {rule}",
+                author = f"Rule: {rule}",
                 author_icon = interaction.guild.icon.url,
                 description = Lists().SOMICORD_RULES[rule][1],
                 footer = Lists().SOMICORD_RULES[rule][2]
@@ -74,7 +74,7 @@ class Rules(nextcord_C.Cog):
         for key, val in Lists().SOMICORD_RULES.items():
             embed = EmbedFunctions().builder(
                 color = val[0],
-                author = f"Rule {key}",
+                author = f"Rule: {key}",
                 author_icon = interaction.guild.icon.url,
                 description = val[1],
                 footer = val[2]

@@ -1,11 +1,14 @@
+import math
+import typing
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from cogs.basic.ParentCommand import ParentCommand
-from lib.database import db
+from lib.database import db, Order
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands, Config
-from lib.modules import SomiBot
+from lib.modules import PageButtons, SomiBot
 
 
 
@@ -19,25 +22,53 @@ class ReminderList(nextcord_C.Cog):
     async def reminder_list(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command will list all reminders of a user"""
 
-        output = ""
+        await interaction.response.defer(ephemeral=True, with_message=True)
 
-        async for entry in db.Reminder._.get_multiple(where={db.Reminder.USER: interaction.user.id}, order_by=db.Reminder.TIME):
-            reminder_text = str(db.Reminder.MESSAGE.retrieve(entry))
-            reminder_text = f"{reminder_text[:30]}..." if len(reminder_text) > 30 else reminder_text
-            output += f"<t:{db.Reminder.TIME.retrieve(entry)}:F> // ID: {db.Reminder.ID.retrieve(entry)} - [Link]({db.Reminder.LINK.retrieve(entry)})\nReminder: `{reminder_text}`\n\n"
-
-        if not output:
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You don't have any reminders.\nTo add a reminder use `/reminder add`."), ephemeral=True)
+        if not (all_reminders := typing.cast(list[dict[str, int | str]], await db.Reminder._.get_all(
+            [db.Reminder.ID, db.Reminder.MESSAGE, db.Reminder.LINK, db.Reminder.TIME],
+            {db.Reminder.USER: interaction.user.id},
+            db.Reminder.TIME,
+            Order.ASCENDING
+        ))):
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You don't have any keywords.\nTo add a keyword use `/keyword add`."), ephemeral=True)
             return
+
+        #     output += f"<t:{db.Reminder.TIME.retrieve(entry)}:F> // ID: {db.Reminder.ID.retrieve(entry)} - [Link]({db.Reminder.LINK.retrieve(entry)})\nReminder: `{reminder_text}`\n\n"
+
+        await self.reminder_list_rec(interaction, all_reminders, 1)
+
+
+    async def reminder_list_rec(self, interaction: nextcord.Interaction[SomiBot], all_reminders: list[dict[str, int | str]], page: int) -> None:
+        """This function is used to paginate through the reminder list"""
+
+        output: list[str] = []
+
+        for index, entry in enumerate(all_reminders[10*(page-1):]):
+            if len(output) >= 10:
+                break
+
+            text = str(db.Reminder.MESSAGE.retrieve(entry))
+            text = f"{text[:100]}..." if len(text) > 100 else text
+
+            output.append(f"`{index+1 + 10*(page-1)}.` [{db.Reminder.ID.retrieve(entry)}]({db.Reminder.LINK.retrieve(entry)}): <t:{db.Reminder.TIME.retrieve(entry)}:f>\n{text}")
 
         embed = EmbedFunctions().builder(
             color = Config().BOT_COLOR,
-            author = f"Reminder List for {interaction.user.display_name}",
-            author_icon = interaction.user.display_avatar.url,
-            description = output
+            author = f"Reminders for {interaction.user.display_name}",
+            author_icon = interaction.guild.icon.url if interaction.guild.icon else Config().DEFAULT_PFP,
+            description = "\n\n".join(output)
         )
 
-        await interaction.response.send_message(embed=embed)
+        view = PageButtons(page, math.ceil(len(all_reminders)/10), interaction) # type: ignore
+
+        await interaction.edit_original_message(embed=embed, view=view)
+        await view.update_buttons()
+        await view.wait()
+
+        if not view.value:
+            return
+
+        await self.reminder_list_rec(interaction, all_reminders, view.page)
 
 
 

@@ -1,10 +1,13 @@
+import math
+import typing
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
-from lib.database import db
-from lib.helpers import EmbedField, EmbedFunctions
+from lib.database import db, Order
+from lib.helpers import EmbedFunctions
 from lib.managers import Commands, Config
-from lib.modules import SomiBot
+from lib.modules import PageButtons, SomiBot
 
 
 
@@ -26,34 +29,49 @@ class CustomList(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        if not (all_commandnames := await db.CustomCommand.NAME.get_all(where={db.CustomCommand.SERVER: interaction.guild.id})):
+        if not (all_commandnames := typing.cast(list[dict[str, str]], await db.CustomCommand._.get_all(
+            [db.CustomCommand.NAME, db.CustomCommand.TEXT],
+            {db.CustomCommand.SERVER: interaction.guild.id},
+            db.CustomCommand.NAME,
+            Order.ASCENDING)
+        )):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("There are no custom-commands on this server.\nTo add a custom-command use `/custom add`."), ephemeral=True)
             return
 
-        output = ""
+        await self.custom_list_rec(interaction, all_commandnames, 1)
 
-        for commandname in all_commandnames:
-            output += f"/cc `{commandname}`\n"
 
-        if interaction.guild.icon:
-            server_icon_url = interaction.guild.icon.url
-        else:
-            server_icon_url = Config().DEFAULT_PFP
+    async def custom_list_rec(self, interaction: nextcord.Interaction[SomiBot], all_commandnames: list[dict[str, str]], page: int) -> None:
+        """This function is used to paginate through the custom-command list"""
+
+        output: list[str] = []
+
+        for index, entry in enumerate(all_commandnames[10*(page-1):]):
+            if len(output) >= 10:
+                break
+
+            text = str(db.CustomCommand.TEXT.retrieve(entry))
+            text = f"{text[:100]}..." if len(text) > 100 else text
+
+            output.append(f"`{index+1 + 10*(page-1)}.` /cc [{db.CustomCommand.NAME.retrieve(entry)}]: {text}")
 
         embed = EmbedFunctions().builder(
             color = Config().BOT_COLOR,
-            author = f"custom-command list for {interaction.guild.name}",
-            author_icon = server_icon_url,
-            fields = [
-                EmbedField(
-                    "custom-commands:",
-                    output,
-                    False
-                )
-            ]
+            author = f"Custom Commands on {interaction.guild.name}",
+            author_icon = interaction.guild.icon.url if interaction.guild.icon else Config().DEFAULT_PFP,
+            description = "\n".join(output)
         )
 
-        await interaction.followup.send(embed=embed, ephemeral=True)
+        view = PageButtons(page, math.ceil(len(all_commandnames)/10), interaction) # type: ignore
+
+        await interaction.edit_original_message(embed=embed, view=view)
+        await view.update_buttons()
+        await view.wait()
+
+        if not view.value:
+            return
+
+        await self.custom_list_rec(interaction, all_commandnames, view.page)
 
 
 

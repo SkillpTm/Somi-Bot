@@ -64,7 +64,7 @@ class CustomAdd(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    "/custom add:",
+                    f"/{Commands().data["custom add"].name}:",
                     f"{interaction.user.mention} added: `{name}` as a custom-command.",
                     False
                 ),

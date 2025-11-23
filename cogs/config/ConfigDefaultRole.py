@@ -68,7 +68,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    "/config default-role:",
+                    f"/{Commands().data["config default-role"].name}:",
                     mod_action,
                     False
                 )

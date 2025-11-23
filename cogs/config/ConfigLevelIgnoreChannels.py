@@ -65,7 +65,7 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    "/config level-ignore-channels:",
+                    f"/{Commands().data["config level-ignore-channels"].name}:",
                     mod_action,
                     False
                 )

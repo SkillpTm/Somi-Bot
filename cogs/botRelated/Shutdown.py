@@ -39,7 +39,7 @@ class Shutdown(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    "/shutdown:",
+                    f"/{Commands().data["sudo shutdown"].name}:",
                     f"{interaction.user.mention} shutdown the bot",
                     False
                 )

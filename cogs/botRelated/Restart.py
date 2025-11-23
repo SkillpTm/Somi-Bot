@@ -28,7 +28,7 @@ class Restart(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    "/restart:",
+                    f"/{Commands().data["sudo restart"].name}:",
                     f"{interaction.user.mention} restarted the bot.",
                     True
                 )

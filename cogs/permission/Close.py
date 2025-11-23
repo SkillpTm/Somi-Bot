@@ -64,7 +64,7 @@ class Close(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    "/close:",
+                    f"/{Commands().data["close"].name}:",
                     f"{interaction.user.mention} closed the server!",
                     False
                 )
@@ -125,7 +125,7 @@ class Close(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    "/open:",
+                    f"/{Commands().data["open"].name}:",
                     f"{interaction.user.mention} re-opened the server!",
                     False
                 )

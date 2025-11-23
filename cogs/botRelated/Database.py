@@ -50,8 +50,8 @@ class Database(nextcord_C.Cog):
             default = ""
         ),
         order: str = nextcord.SlashOption(
-            Commands().data["sudo database"].parameters["order_by"].name,
-            Commands().data["sudo database"].parameters["order_by"].description,
+            Commands().data["sudo database"].parameters["order"].name,
+            Commands().data["sudo database"].parameters["order"].description,
             required = False,
             choices = ["ASC", "DESC"],
             default = ""
@@ -59,7 +59,7 @@ class Database(nextcord_C.Cog):
     ) -> None:
         """This command reloads the bot, it can only be executed from the owner"""
 
-        where_query, order_by = where_query.lower() or "", order_by.lower() or ""
+        where_query, order_by = where_query.lower(), order_by.lower()
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 

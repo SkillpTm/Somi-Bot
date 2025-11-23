@@ -53,8 +53,9 @@ class LinkEmbed(nextcord_C.Cog):
             author = "Message Embed",
             author_icon = original_message.author.display_avatar.url,
             description = f"{original_message.channel.mention} - [Link]({link})", # type: ignore
+            footer = "Originally sent:",
             footer_timestamp = original_message.created_at,
-            footer_icon = Config().LINK_EMBED_ICON,
+            footer_icon = Config().CLOCK_ICON,
             fields = [
                 EmbedField(
                     f"{original_message.author.display_name} said:",

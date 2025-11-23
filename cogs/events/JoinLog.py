@@ -1,11 +1,9 @@
-import time
-
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
 from lib.helpers import EmbedField, EmbedFunctions
-from lib.managers import Logger
+from lib.managers import Config, Logger
 from lib.modules import SomiBot
 
 
@@ -39,6 +37,9 @@ class JoinLog(nextcord_C.Cog):
             color = nextcord.Color.green(),
             thumbnail = member.display_avatar.url,
             title = f"New Member Joined: `{member.display_name}`",
+            footer = "Joined Discord:",
+            footer_icon = Config().CLOCK_ICON,
+            footer_timestamp = member.created_at,
             fields = [
                 EmbedField(
                     "ID:",
@@ -48,11 +49,6 @@ class JoinLog(nextcord_C.Cog):
                 EmbedField(
                     "Username:",
                     member.name,
-                    True
-                ),
-                EmbedField(
-                    "Created at:",
-                    f"<t:{int(time.mktime(member.created_at.timetuple()))}>",
                     True
                 ),
                 EmbedField(

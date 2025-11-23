@@ -1,3 +1,4 @@
+import datetime
 import random
 import time
 
@@ -64,12 +65,10 @@ class ReminderAdd(nextcord_C.Cog):
             author = f"Reminder Set for {interaction.user.display_name}",
             author_icon = interaction.user.display_avatar.url,
             description = reminder,
+            footer = "You'll be reminded:",
+            footer_icon = Config().CLOCK_ICON,
+            footer_timestamp = datetime.datetime.fromtimestamp(reminder_timestamp),
             fields = [
-                EmbedField(
-                    "Time:",
-                    f"<t:{reminder_timestamp}:F>",
-                    True
-                ),
                 EmbedField(
                     "Reminder ID:",
                     f"`{reminder_id}`",

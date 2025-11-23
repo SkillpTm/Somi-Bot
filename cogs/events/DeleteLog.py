@@ -6,7 +6,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
 from lib.helpers import EmbedFunctions
-from lib.managers import Logger
+from lib.managers import Config, Logger
 from lib.modules import SomiBot
 
 
@@ -64,6 +64,9 @@ class DeleteLog(nextcord_C.Cog):
             author = "Message Deleted",
             author_icon = message.author.display_avatar.url,
             description = f"{message.author.mention} deleted a message in: {message.channel.mention}\n\n{message.content}", # type: ignore
+            footer = "Originally sent:",
+            footer_icon = Config().CLOCK_ICON,
+            footer_timestamp = message.created_at
         )
 
         embed, file_urls = EmbedFunctions.get_or_add_attachments(message.attachments, embed)

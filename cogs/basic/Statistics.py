@@ -49,15 +49,8 @@ class Statistics(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=bool(not hidden), with_message=True)
 
         entry = typing.cast(dict[str, int | str | None], await db.Statistic._.get_entry({db.Statistic.SERVER: interaction.guild.id, db.Statistic.USER: interaction.user.id}))
-
         days_since_joined = math.ceil((datetime.datetime.now(datetime.timezone.utc) - interaction.user.joined_at).total_seconds() / 86400) # type: ignore
-
-        if interaction.user.joined_at > interaction.guild.get_member(self.client.user.id).joined_at: # type: ignore
-            footer = "Data since you joined the server:"
-            footer_time = typing.cast(nextcord.Member, interaction.user).joined_at
-        else:
-            footer_time = interaction.guild.get_member(self.client.user.id).joined_at
-            footer = f"Data since {self.client.user.name} joined the server:"
+        footer, footer_time = self.client.joined_time_footer(interaction)
 
         embed = EmbedFunctions().builder(
             color = Config().BOT_COLOR,

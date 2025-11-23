@@ -49,10 +49,15 @@ class LevelsInfo(nextcord_C.Cog):
         percent = 20 * (float(xp_progress_to_next_level) / float(next_level_xp))
         percent_bar = "[" + "█" * int(percent) + " -" * (20 - int(percent)) + "]"
 
+        footer, footer_time = self.client.joined_time_footer(interaction)
+
         embed = EmbedFunctions().builder(
             color = Config().BOT_COLOR,
             thumbnail = member.display_avatar.url,
             title = f"Levels information for `{member.display_name}` on `{interaction.guild.name}`",
+            footer = footer,
+            footer_icon = Config().CLOCK_ICON,
+            footer_timestamp = footer_time,
             fields = [
                 EmbedField(
                     "Level:",

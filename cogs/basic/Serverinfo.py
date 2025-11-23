@@ -1,5 +1,3 @@
-import time
-
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
@@ -36,6 +34,9 @@ class Severinfo(nextcord_C.Cog):
             color = Config().BOT_COLOR,
             thumbnail = interaction.guild.icon.url if interaction.guild.icon else Config().DEFAULT_PFP,
             title = f"Server Information: `{interaction.guild.name}`",
+            footer = "Created:",
+            footer_icon = Config().CLOCK_ICON,
+            footer_timestamp = interaction.guild.created_at,
             fields = [
                 EmbedField(
                     "ID:",
@@ -55,11 +56,6 @@ class Severinfo(nextcord_C.Cog):
                 EmbedField(
                     "Channels:",
                     f"Text: `{len(interaction.guild.text_channels)}`\nVoice: `{len(interaction.guild.voice_channels)}`",
-                    True
-                ),
-                EmbedField(
-                    "Created at:",
-                    f"<t:{int(time.mktime(interaction.guild.created_at.timetuple()))}>",
                     True
                 ),
                 EmbedField(

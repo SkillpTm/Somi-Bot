@@ -6,7 +6,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
 from lib.helpers import EmbedField, EmbedFunctions
-from lib.managers import Logger
+from lib.managers import Config, Logger
 from lib.modules import SomiBot
 
 
@@ -78,10 +78,13 @@ class MuteLog(nextcord_C.Cog):
             color = nextcord.Color.yellow(),
             author = "Mod Activity",
             author_icon = entry.user.display_avatar.url,
+            footer = "Muted until:",
+            footer_icon = Config().CLOCK_ICON,
+            footer_timestamp = member_after.communication_disabled_until,
             fields = [
                 EmbedField(
                     "Mute Log:",
-                    f"{entry.user.mention} muted: {member_after.mention} until: <t:{int(time.mktime(member_after.communication_disabled_until.timetuple()))}:F>",
+                    f"{entry.user.mention} muted: {member_after.mention}",
                     False
                 ),
                 EmbedField(

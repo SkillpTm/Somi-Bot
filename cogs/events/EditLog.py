@@ -3,7 +3,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
 from lib.helpers import EmbedField, EmbedFunctions
-from lib.managers import Logger
+from lib.managers import Config, Logger
 from lib.modules import SomiBot
 
 
@@ -74,6 +74,9 @@ class EditLog(nextcord_C.Cog):
             author = "Message Edited",
             author_icon = message_before.author.display_avatar.url,
             description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})", # type: ignore
+            footer = "Originally sent at:",
+            footer_icon = Config().CLOCK_ICON,
+            footer_timestamp = message_before.created_at,
             fields = [
                 EmbedField(
                     "Before:",
@@ -103,7 +106,10 @@ class EditLog(nextcord_C.Cog):
             color = nextcord.Color.yellow(),
             author = "Message Edited",
             author_icon = message_before.author.display_avatar.url,
-            description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})\n**Before:**\n{message_before.content}" # type: ignore
+            description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})\n**Before:**\n{message_before.content}", # type: ignore
+            footer = "Originally sent:",
+            footer_icon = Config().CLOCK_ICON,
+            footer_timestamp = message_before.created_at
         )
 
         embed_after = EmbedFunctions().builder(

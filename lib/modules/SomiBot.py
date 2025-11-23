@@ -386,6 +386,19 @@ class SomiBot(nextcord_C.Bot):
         return message
 
 
+    def joined_time_footer(self, interaction: nextcord.Interaction["SomiBot"]) -> tuple[str, datetime.datetime | None]:
+        """Returns the footer info for an embed, showing since when data has been displayed"""
+
+        if interaction.user.joined_at > interaction.guild.get_member(self.user.id).joined_at: # type: ignore
+            footer = "Data since you joined this server:"
+            footer_time = typing.cast(nextcord.Member, interaction.user).joined_at
+        else:
+            footer = f"Data since {self.user.name} joined this server:"
+            footer_time = interaction.guild.get_member(self.user.id).joined_at
+
+        return footer, footer_time
+
+
     @staticmethod
     async def on_thread_join(thread: nextcord.Thread):
         """This function overwrites the build in on_thread_join, so that the client automatically joins all new threads."""

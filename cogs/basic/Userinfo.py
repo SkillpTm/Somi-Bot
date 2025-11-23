@@ -4,7 +4,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedField, EmbedFunctions
-from lib.managers import Commands
+from lib.managers import Commands, Config
 from lib.modules import SomiBot
 
 
@@ -59,6 +59,9 @@ class Userinfo(nextcord_C.Cog):
             color = user.color,
             thumbnail = user.display_avatar.url,
             title = f"User Information: `{user.display_name}`",
+            footer = "Joined Discord:",
+            footer_icon = Config().CLOCK_ICON,
+            footer_timestamp = user.created_at,
             fields = [
                 EmbedField(
                     "ID:",

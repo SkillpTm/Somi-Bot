@@ -48,14 +48,17 @@ class LevelsLeaderboard(nextcord_C.Cog):
             rank += 1
 
         output = output or "`No users have earned any XP on this server yet.`"
-
         server_icon_url = interaction.guild.icon.url if interaction.guild.icon else Config().DEFAULT_PFP
+        footer, footer_time = self.client.joined_time_footer(interaction)
 
         embed = EmbedFunctions().builder(
             color = Config().BOT_COLOR,
             thumbnail = server_icon_url,
             title = f"`{interaction.guild.name}`: Top users by level",
-            description = output
+            description = output,
+            footer = footer,
+            footer_icon = Config().CLOCK_ICON,
+            footer_timestamp = footer_time
         )
 
         await interaction.followup.send(embed=embed)

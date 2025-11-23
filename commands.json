@@ -1180,6 +1180,49 @@
 			"name": "sudo",
 			"alias": ""
 		},
+		"name": "database",
+		"alias": "db",
+		"description": "Allows for a select query over the database",
+		"example": "/sudo database [",
+		"parameters": {
+			"table": {
+				"name": "table",
+				"description": "SQL table in the database to query from",
+				"type": "Set Choice",
+				"required": true,
+				"default": ""
+			},
+			"where_query": {
+				"name": "where",
+				"description": "SQL Where statement to filter results",
+				"type": "SSQL Table Column/Value Pair",
+				"required": false,
+				"default": ""
+			},
+			"order_by": {
+				"name": "order-by",
+				"description": "SQL Table column to sort results by",
+				"type": "SQL Table Column",
+				"required": false,
+				"default": ""
+			},
+			"order": {
+				"name": "order",
+				"description": "How to order the results, based on the order-by column",
+				"type": "Set Choice",
+				"required": false,
+				"default": ""
+			}
+		},
+		"permissions": [
+			"Bot Owner"
+		]
+	},
+	{
+		"parent": {
+			"name": "sudo",
+			"alias": ""
+		},
 		"name": "reload",
 		"alias": "",
 		"description": "Reloads various data on the bot without restarting it",

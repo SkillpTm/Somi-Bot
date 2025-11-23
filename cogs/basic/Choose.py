@@ -5,7 +5,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
-from lib.managers import Commands, Logger
+from lib.managers import Commands, Config, Logger
 from lib.modules import OptionsButton, SomiBot
 
 
@@ -16,6 +16,14 @@ class ChooseModal(nextcord.ui.Modal):
         super().__init__("Make Somi choose for you!", timeout=None)
         self.client = client
 
+        self.choice_text: nextcord.ui.TextInput[typing.Any] = nextcord.ui.TextInput(
+            label = "What do you need a choice for?",
+            style = nextcord.TextInputStyle.short,
+            min_length = 1,
+            max_length = 250,
+            required = False
+        )
+
         self.choose: nextcord.ui.TextInput[typing.Any] = nextcord.ui.TextInput(
             label = "Options:",
             style = nextcord.TextInputStyle.paragraph,
@@ -25,6 +33,7 @@ class ChooseModal(nextcord.ui.Modal):
             required = True
         )
 
+        self.add_item(self.choice_text)
         self.add_item(self.choose)
 
 
@@ -37,32 +46,41 @@ class ChooseModal(nextcord.ui.Modal):
             return
 
         # seperate options by new lines
-        for index, option in enumerate(self.choose.value.split("\n")):
-            options[f"{index+1}"] = option
+        for option in self.choose.value.split("\n"):
+            if option.strip():
+                options[f"{len(options)+1}"] = option.strip()
 
         Logger().action_log(interaction, "/choose", options) # type: ignore
 
         chosen_key = random.choice(list(options.keys()))
 
+        choice_text = f"```{self.choice_text.value}```" if self.choice_text.value else ""
+
         view = OptionsButton(interaction=interaction) # type: ignore
-        await interaction.response.send_message(f"I have chosen __Option {chosen_key}__:\n`{options[chosen_key]}`", view=view)
+        await interaction.response.send_message(f"{choice_text}I have chosen __Option {chosen_key}__:\n`{options[chosen_key]}`", view=view)
         await view.wait()
 
         # if the button to see all options isn't pressed return early
         if not view.value:
             return
 
-        all_options_output = ""
+        output = ""
 
         for name, value in options.items():
             # if the option is the chosen option underscore it
             if name == chosen_key:
-                all_options_output += f"__**Option {name[-1]}: {value}**__\n"
+                output += f"__**Option {name[-1]}: {value}**__\n"
                 continue
 
-            all_options_output += f"Option {name[-1]}: {value}\n"
+            output += f"Option {name[-1]}: {value}\n"
 
-        await interaction.followup.send(embed=EmbedFunctions().get_info_message(all_options_output))
+        embed = EmbedFunctions.builder(
+            color = Config().BOT_COLOR,
+            title = choice_text.strip(),
+            description = output
+        )
+
+        await interaction.followup.send(embed=embed)
 
 
 

@@ -54,7 +54,7 @@ class ReminderAdd(nextcord_C.Cog):
         reminder_timestamp = int(time.time()) + total_seconds
 
         while True:
-            reminder_id = random.randint(10**9, 10**10 - 1) # get a random 9 digit number
+            reminder_id = random.randint(10**8, 10**9 - 1) # get a random 9 digit number
 
             # check if the reminder_id has already been used for this user
             if not await db.Reminder.ID.get(reminder_id):

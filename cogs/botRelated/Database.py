@@ -124,7 +124,7 @@ class Database(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("```Empty set```"))
             return
 
-        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"```{output}```"))
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"```{output}```"[4096]))
 
 
 

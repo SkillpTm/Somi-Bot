@@ -1,6 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
+from lib.managers import Config
 from lib.modules import SomiBot
 
 
@@ -13,8 +14,8 @@ class ParentCommand(nextcord_C.Cog):
 
     @nextcord.slash_command(
         name = "manage",
-        default_member_permissions = nextcord.Permissions(manage_guild=True),
         name_localizations = {country_tag:"config" for country_tag in nextcord.Locale},
+        default_member_permissions = nextcord.Permissions(manage_guild=True),
         integration_types = [nextcord.IntegrationType.guild_install],
         contexts = [nextcord.InteractionContextType.guild]
     )
@@ -84,6 +85,17 @@ class ParentCommand(nextcord_C.Cog):
     )
     async def reminder(self, _interaction: nextcord.Interaction[SomiBot]) -> None:
         """Main command that does nothing for /reminder subcommands"""
+
+
+    @nextcord.slash_command(
+        name = "sudo",
+        guild_ids = [Config().SUPPORT_SERVER_ID],
+        default_member_permissions = nextcord.Permissions(administrator=True),
+        integration_types=[nextcord.IntegrationType.guild_install],
+        contexts=[nextcord.InteractionContextType.guild]
+    )
+    async def sudo(self, _interaction: nextcord.Interaction[SomiBot]) -> None:
+        """Main command that does nothing for /sudo subcommands"""
 
 
 

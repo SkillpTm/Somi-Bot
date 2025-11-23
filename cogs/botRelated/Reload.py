@@ -4,6 +4,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
+from cogs.basic.ParentCommand import ParentCommand
 from lib.helpers import EmbedField, EmbedFunctions, Get
 from lib.managers import Commands, Config, Singleton
 from lib.modules import SomiBot
@@ -16,14 +17,7 @@ class Reload(nextcord_C.Cog):
         self.client = client
 
 
-    @nextcord.slash_command(
-        Commands().data["reload"].name,
-        Commands().data["reload"].description,
-        guild_ids = [Config().SUPPORT_SERVER_ID],
-        default_member_permissions = nextcord.Permissions(administrator=True),
-        integration_types = [nextcord.IntegrationType.guild_install],
-        contexts = [nextcord.InteractionContextType.guild]
-    )
+    @ParentCommand.sudo.subcommand(Commands().data["sudo reload"].name, Commands().data["sudo reload"].description)
     @nextcord_AC.check(Get.interaction_by_owner()) # type: ignore
     async def reload(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command reloads the bot, it can only be executed from the owner"""

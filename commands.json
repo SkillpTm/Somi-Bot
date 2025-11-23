@@ -973,17 +973,6 @@
 		"permissions": []
 	},
 	{
-		"parent": {},
-		"name": "reload",
-		"alias": "",
-		"description": "Reloads various data on the bot without restarting it",
-		"example": "/reload",
-		"parameters": {},
-		"permissions": [
-			"Bot Owner"
-		]
-	},
-	{
 		"parent": {
 			"name": "reminder",
 			"alias": "alarm"
@@ -1051,17 +1040,6 @@
 	},
 	{
 		"parent": {},
-		"name": "restart",
-		"alias": "",
-		"description": "Shuts down and starts the bot up again",
-		"example": "/restart",
-		"parameters": {},
-		"permissions": [
-			"Bot Owner"
-		]
-	},
-	{
-		"parent": {},
 		"name": "rules",
 		"alias": "",
 		"description": "Allows you to post a full rule",
@@ -1113,17 +1091,6 @@
 		"example": "/serverinfo",
 		"parameters": {},
 		"permissions": []
-	},
-	{
-		"parent": {},
-		"name": "shutdown",
-		"alias": "",
-		"description": "Shuts down the bot, will require to manually start the bot again",
-		"example": "/shutdown",
-		"parameters": {},
-		"permissions": [
-			"Bot Owner"
-		]
 	},
 	{
 		"parent": {},
@@ -1207,6 +1174,48 @@
 			}
 		},
 		"permissions": []
+	},
+	{
+		"parent": {
+			"name": "sudo",
+			"alias": ""
+		},
+		"name": "reload",
+		"alias": "",
+		"description": "Reloads various data on the bot without restarting it",
+		"example": "/sudo reload",
+		"parameters": {},
+		"permissions": [
+			"Bot Owner"
+		]
+	},
+	{
+		"parent": {
+			"name": "sudo",
+			"alias": ""
+		},
+		"name": "restart",
+		"alias": "",
+		"description": "Shuts down and starts the bot up again",
+		"example": "/sudo restart",
+		"parameters": {},
+		"permissions": [
+			"Bot Owner"
+		]
+	},
+	{
+		"parent": {
+			"name": "sudo",
+			"alias": ""
+		},
+		"name": "shutdown",
+		"alias": "",
+		"description": "Shuts down the bot, will require to manually start the bot again",
+		"example": "/shutdown",
+		"parameters": {},
+		"permissions": [
+			"Bot Owner"
+		]
 	},
 	{
 		"parent": {},

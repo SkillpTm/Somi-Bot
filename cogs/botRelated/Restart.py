@@ -2,6 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 import nextcord.ext.application_checks as nextcord_AC
 
+from cogs.basic.ParentCommand import ParentCommand
 from lib.helpers import EmbedField, EmbedFunctions, Get
 from lib.managers import Commands, Config
 from lib.modules import SomiBot
@@ -14,14 +15,7 @@ class Restart(nextcord_C.Cog):
         self.client = client
 
 
-    @nextcord.slash_command(
-        Commands().data["restart"].name,
-        Commands().data["restart"].description,
-        guild_ids = [Config().SUPPORT_SERVER_ID],
-        default_member_permissions = nextcord.Permissions(administrator=True),
-        integration_types = [nextcord.IntegrationType.guild_install],
-        contexts = [nextcord.InteractionContextType.guild]
-    )
+    @ParentCommand.sudo.subcommand(Commands().data["sudo restart"].name, Commands().data["sudo restart"].description)
     @nextcord_AC.check(Get.interaction_by_owner()) # type: ignore
     async def restart(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command restarts the bot, it can only be executed from a moderator on Somicord"""

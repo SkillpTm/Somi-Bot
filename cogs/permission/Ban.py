@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions, Get
-from lib.managers import Commands, Logger
+from lib.managers import Commands
 from lib.modules import SomiBot
 
 
@@ -57,14 +57,6 @@ class Ban(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only ban a member, if your current top-role is above their current top-role!"), ephemeral=True)
             return
 
-        try:
-            if reason:
-                await member.send(f"You have been __**banned**__ from `{interaction.guild.name}`\nFor the reason:\n`{reason}`")
-            else:
-                await member.send(f"You have been __**banned**__ from `{interaction.guild.name}`\nThere was no provided reason.")
-        except nextcord.Forbidden:
-            Logger().action_warning(f"/ban send ~ User: {member.id} couldn't be notified, because their pms aren't open to the client")
-
         await interaction.guild.ban(user=member, reason=reason, delete_message_seconds=delete_message_hours * 60 * 60)
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Succesfully banned {member.mention}."), ephemeral=True)
@@ -87,6 +79,13 @@ class Ban(nextcord_C.Cog):
             required = True,
             min_length = 18,
             max_length = 19
+        ),
+        reason: str = nextcord.SlashOption(
+            Commands().data["unban"].parameters["reason"].name,
+            Commands().data["unban"].parameters["reason"].description,
+            required = False,
+            min_length = 2,
+            max_length = 1000
         )
     ) -> None:
         """This command unbans a user, if that user exists and was banned."""
@@ -106,7 +105,7 @@ class Ban(nextcord_C.Cog):
 
         # fail save in case for whatever reason the unban fails
         try:
-            await interaction.guild.unban(user)
+            await interaction.guild.unban(user, reason=reason)
             await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{user.mention} has been unbanned."), ephemeral=True)
         except nextcord.Forbidden:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{user.mention} wasn't unbanned."), ephemeral=True)

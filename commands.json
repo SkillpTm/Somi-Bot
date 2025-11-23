@@ -57,7 +57,7 @@
 			},
 			"reason": {
 				"name": "reason",
-				"description": "The reason why they were banned (this will be DMed to the User)",
+				"description": "The reason why they were banned",
 				"type": "Text between 2 to 1000 Characters",
 				"required": false,
 				"default": ""
@@ -1289,6 +1289,13 @@
 				"description": "The user ID of the user to be unbanned",
 				"type": "Discord User ID",
 				"required": true,
+				"default": ""
+			},
+			"reason": {
+				"name": "reason",
+				"description": "The reason why they were unbanned",
+				"type": "Text between 2 to 1000 Characters",
+				"required": false,
 				"default": ""
 			}
 		},

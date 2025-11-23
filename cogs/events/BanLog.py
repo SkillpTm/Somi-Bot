@@ -107,6 +107,11 @@ class BanLog(nextcord_C.Cog):
                     "Unban Log:",
                     f"{entry.user.mention} unbanned: `{entry.target.name}` | `({entry.target.id})`", # type: ignore
                     False
+                ),
+                EmbedField(
+                    "Reason:",
+                    entry.reason or "",
+                    False
                 )
             ]
         )

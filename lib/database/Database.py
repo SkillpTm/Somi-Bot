@@ -104,9 +104,9 @@ class Database(metaclass=Singleton):
         cur: aiomysql.Cursor
 
         async with self._pool.acquire() as con:
+            await con.begin()
             async with con.cursor() as cur:
                 try:
-                    await con.begin()
                     await cur.execute(formated_query, (*data.values(), *where.values()))
 
                     if cur.rowcount > limit:
@@ -149,11 +149,10 @@ class Database(metaclass=Singleton):
         cur: aiomysql.Cursor
 
         async with self._pool.acquire() as con:
+            await con.autocommit(True)
             async with con.cursor() as cur:
                 await cur.execute(formated_query, tuple(where.values()))
                 result = (await cur.fetchone() or {}).get(select, None)
-
-            await con.commit()
 
         return result
 
@@ -182,11 +181,10 @@ class Database(metaclass=Singleton):
         cur: aiomysql.Cursor
 
         async with self._pool.acquire() as con:
+            await con.autocommit(True)
             async with con.cursor() as cur:
                 await cur.execute(formated_query, tuple(where.values()))
                 result = await cur.fetchone()
-
-            await con.commit()
 
         return result
 
@@ -222,9 +220,8 @@ class Database(metaclass=Singleton):
         row: dict[str, str | int | None]
 
         async with self._pool.acquire() as con:
+            await con.autocommit(True)
             async with con.cursor() as cur:
                 await cur.execute(formated_query, tuple(where.values()))
                 async for row in cur:
                     yield row
-
-            await con.commit()

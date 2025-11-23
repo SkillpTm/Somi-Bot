@@ -1047,10 +1047,17 @@
 		"parameters": {
 			"rule": {
 				"name": "rule",
-				"description": "The rule you want to have posted",
+				"description": "The rule you want to have posted, if not provided, all rules will be posted",
 				"type": "Set Choice",
-				"required": true,
+				"required": false,
 				"default": ""
+			},
+			"channel": {
+				"name": "channel",
+				"description": "The channel to send the rule in",
+				"type": "Discord Text Channel or Thread",
+				"required": false,
+				"default": "Current Channel"
 			}
 		},
 		"permissions": [

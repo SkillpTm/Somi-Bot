@@ -19,7 +19,8 @@ class Commands(metaclass=Singleton):
         for command_data in commands_data:
             new_command = Command(command_data)
             self.data[new_command.full_name] = new_command
-            self.overview[f"/{new_command.full_name}"] = new_command.full_name
+            if new_command.parent.name != "sudo" and new_command.name != "rules":
+                self.overview[f"/{new_command.full_name}"] = new_command.full_name
 
         self.overview = dict(sorted(self.overview.items()))
 

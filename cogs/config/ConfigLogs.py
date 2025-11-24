@@ -80,7 +80,7 @@ class ConfigLogs(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = Config().PERMISSION_COLOR,
-            author = f"`{log_type} Log`" if self.log_types[log_type].value else "All Logs",
+            author = f"{log_type} Log" if self.log_types[log_type].value else "All Logs",
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(

@@ -41,7 +41,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
             Commands().data["config level-roles"].parameters["level"].name,
             Commands().data["config level-roles"].parameters["level"].description,
             required = False,
-            min_value = 2,
+            min_value = 1,
             max_value = 1000
         )
     ) -> None:

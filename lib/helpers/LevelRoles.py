@@ -74,21 +74,21 @@ class LevelRoles():
     async def get_level_range_with_role(guild: nextcord.Guild) -> str:
         """Makes a string of all the level-roles and their ranges, for which they apply"""
 
-        output_role_list = ""
-        level_roles = [entry async for entry in db.LevelRole._.get_multiple([db.LevelRole.ID, db.LevelRole.LEVEL], guild.id, order_by=db.LevelRole.LEVEL, order=Order.ASCENDING)]
+        output = ""
+        level_roles = [entry async for entry in db.LevelRole._.get_multiple([db.LevelRole.ID, db.LevelRole.LEVEL], {db.LevelRole.SERVER: guild.id}, order_by=db.LevelRole.LEVEL, order=Order.ASCENDING)]
 
         for index, entry in enumerate(level_roles):
-            # if the current and the next role only have a difference of 1 level display it as such
-            if db.LevelRole.LEVEL.retrieve(entry) == typing.cast(int, db.LevelRole.LEVEL.retrieve(level_roles[index+1]))-1:
-                output_role_list += f"Level {db.LevelRole.LEVEL.retrieve(entry)}: <@&{db.LevelRole.ID.retrieve(entry)}>\n"
-                continue
-
             # if the this is the last level-role add an infinity symbol
             if index+1 == len(level_roles):
-                output_role_list += f"Level {db.LevelRole.LEVEL.retrieve(entry)}-∞: <@&{db.LevelRole.ID.retrieve(entry)}>\n"
+                output += f"Level {db.LevelRole.LEVEL.retrieve(entry)}-∞: <@&{db.LevelRole.ID.retrieve(entry)}>\n"
                 break
 
-            # dispaly the range until the next level role
-            output_role_list += f"Level {db.LevelRole.LEVEL.retrieve(entry)}-{typing.cast(int,db.LevelRole.LEVEL.retrieve(level_roles[index+1]))-1}: <@&{db.LevelRole.ID.retrieve(entry)}>\n"
+            # if the current and the next role only have a difference of 1 level display it as such
+            if db.LevelRole.LEVEL.retrieve(entry) == typing.cast(int, db.LevelRole.LEVEL.retrieve(level_roles[index+1]))-1:
+                output += f"Level {db.LevelRole.LEVEL.retrieve(entry)}: <@&{db.LevelRole.ID.retrieve(entry)}>\n"
+                continue
 
-        return output_role_list or "`This server doesn't have any level-roles.`"
+            # dispaly the range until the next level role
+            output += f"Level {db.LevelRole.LEVEL.retrieve(entry)}-{typing.cast(int,db.LevelRole.LEVEL.retrieve(level_roles[index+1]))-1}: <@&{db.LevelRole.ID.retrieve(entry)}>\n"
+
+        return output or "`This server doesn't have any level-roles.`"

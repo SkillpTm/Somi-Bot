@@ -121,10 +121,10 @@ class Database(nextcord_C.Cog):
                     output += " | ".join(str(val) for val in row.values()) + "\n"
 
         if not output:
-            await interaction.send(embed=EmbedFunctions().get_error_message("```Empty set```"))
+            await interaction.send(embed=EmbedFunctions().get_error_message("```Empty set```").set_author(name=f"Database Table: {table}"))
             return
 
-        await interaction.send(embed=EmbedFunctions().get_success_message(f"```{output}```"[4096]))
+        await interaction.send(embed=EmbedFunctions().get_success_message(f"```{output}```"[:4096]).set_author(name=f"Database Table: {table}"))
 
 
 

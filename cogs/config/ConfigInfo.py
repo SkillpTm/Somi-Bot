@@ -85,7 +85,7 @@ class ConfigInfo(nextcord_C.Cog):
 
         if (default_role_id := int(await db.Server.DEFAULT_ROLE.get(interaction.guild.id) or 0)):
             if interaction.guild.get_role(default_role_id):
-                default_role_output = f"<#{default_role_id}>"
+                default_role_output = f"<@&{default_role_id}>"
             else:
                 await db.Server.DEFAULT_ROLE.set(interaction.guild.id, None)
 
@@ -95,13 +95,13 @@ class ConfigInfo(nextcord_C.Cog):
         hidden_channels_output = ""
 
         # check if all hidden channels still exits, the ones that do, get added to the output
-        async for entry in db.HiddenChannel.ID.get_multiple(where=interaction.guild.id):
+        async for entry in db.HiddenChannel.ID.get_multiple(where={db.HiddenChannel.SERVER: interaction.guild.id}):
             hidden_channel_id = int(db.HiddenChannel.ID.retrieve(entry) or 0)
             if not interaction.guild.get_channel(hidden_channel_id):
                 await db.HiddenChannel._.delete(hidden_channel_id)
                 continue
 
-            hidden_channels_output +=  f"<#{hidden_channel_id}>\n"
+            hidden_channels_output += f"<#{hidden_channel_id}>\n"
 
         hidden_channels_output = hidden_channels_output or  "`This server doesn't have any hidden-channels.`"
 
@@ -109,13 +109,13 @@ class ConfigInfo(nextcord_C.Cog):
         level_ignore_channels_output = ""
 
         # check if all level ignore channels still exits, the ones that do, get added to the output
-        async for entry in db.LevelIgnoreChannel.ID.get_multiple(where=interaction.guild.id):
+        async for entry in db.LevelIgnoreChannel.ID.get_multiple(where={db.LevelIgnoreChannel.SERVER: interaction.guild.id}):
             level_ignore_channel_id = int(db.LevelIgnoreChannel.ID.retrieve(entry) or 0)
             if not interaction.guild.get_channel(level_ignore_channel_id):
                 await db.LevelIgnoreChannel._.delete(level_ignore_channel_id)
                 continue
 
-            level_ignore_channels_output +=  f"<#{level_ignore_channel_id}>\n"
+            level_ignore_channels_output += f"<#{level_ignore_channel_id}>\n"
 
         level_ignore_channels_output = level_ignore_channels_output or "`This server doesn't have any level-ignore-channels.`"
 
@@ -123,7 +123,7 @@ class ConfigInfo(nextcord_C.Cog):
         level_roles: list[dict[str, int]] = []
 
         # check if all level roles still exits, the ones that do, get added to the output
-        async for entry in db.LevelRole._.get_multiple([db.LevelRole.ID, db.LevelRole.LEVEL], interaction.guild.id):
+        async for entry in db.LevelRole._.get_multiple([db.LevelRole.ID, db.LevelRole.LEVEL], {db.LevelRole.SERVER: interaction.guild.id}):
             level_role = int(db.LevelRole.ID.retrieve(entry) or 0)
             if not interaction.guild.get_role(level_role):
                 removed_role = True

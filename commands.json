@@ -136,42 +136,6 @@
 			"name": "config",
 			"alias": "manage"
 		},
-		"name": "logs",
-		"alias": "",
-		"description": "Allows you to setup or remove a log channel",
-		"example": "/config logs [All] [Set] [#logs]",
-		"parameters": {
-			"log_type": {
-				"name": "type",
-				"description": "What type of log channel you want to setup or remove",
-				"type": "Set Choice",
-				"required": true,
-				"default": ""
-			},
-			"action": {
-				"name": "action",
-				"description": "If you want to setup or remove the log channel",
-				"type": "Set Choice",
-				"required": true,
-				"default": ""
-			},
-			"channel": {
-				"name": "channel",
-				"description": "The channel to become or stop being a log channel. Optional on Reset",
-				"type": "Discord Text Channel or Thread",
-				"required": false,
-				"default": "Current Channel"
-			}
-		},
-		"permissions": [
-			"Manage Guild"
-		]
-	},
-	{
-		"parent": {
-			"name": "config",
-			"alias": "manage"
-		},
 		"name": "default-role",
 		"alias": "",
 		"description": "Allows you to setup or remove the bot's default role, to be applied to all members",
@@ -300,6 +264,56 @@
 				"default": "Previously set Level"
 			}
 		},
+		"permissions": [
+			"Manage Guild"
+		]
+	},
+	{
+		"parent": {
+			"name": "config",
+			"alias": "manage"
+		},
+		"name": "logs",
+		"alias": "",
+		"description": "Allows you to setup or remove a log channel",
+		"example": "/config logs [All] [Set] [#logs]",
+		"parameters": {
+			"log_type": {
+				"name": "type",
+				"description": "What type of log channel you want to setup or remove",
+				"type": "Set Choice",
+				"required": true,
+				"default": ""
+			},
+			"action": {
+				"name": "action",
+				"description": "If you want to setup or remove the log channel",
+				"type": "Set Choice",
+				"required": true,
+				"default": ""
+			},
+			"channel": {
+				"name": "channel",
+				"description": "The channel to become or stop being a log channel. Optional on Reset",
+				"type": "Discord Text Channel or Thread",
+				"required": false,
+				"default": "Current Channel"
+			}
+		},
+		"permissions": [
+			"Manage Guild"
+		]
+	},
+	{
+		"parent": {
+			"name": "config",
+			"alias": "manage"
+		},
+		"name": "reset",
+		"alias": "",
+		"description": "Allows you to reset the entire bot config for this server",
+		"example": "/config reset",
+		"parameters": {},
 		"permissions": [
 			"Manage Guild"
 		]

@@ -55,12 +55,12 @@ class Close(nextcord_C.Cog):
 
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("Closed the server sucessfully.\n To re-open it use `/open`"), ephemeral=True)
 
-        if not (audit_log := interaction.guild.get_channel(int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0))):
+        if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):
             return
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.dark_red(),
-            author = "Mod Activity",
+            author = "Bot Command Log",
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
@@ -71,7 +71,7 @@ class Close(nextcord_C.Cog):
             ]
         )
 
-        await audit_log.send(embed=embed) # type: ignore
+        await command_log.send(embed=embed) # type: ignore
 
 
     @nextcord.slash_command(
@@ -116,12 +116,12 @@ class Close(nextcord_C.Cog):
         await interaction.followup.send(embed=EmbedFunctions().get_success_message("Re-opened the server sucessfully."), ephemeral=True)
 
 
-        if not (audit_log := interaction.guild.get_channel(int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0))):
+        if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):
             return
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.dark_red(),
-            author = "Mod Activity",
+            author = "Bot Command Log",
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
@@ -132,7 +132,7 @@ class Close(nextcord_C.Cog):
             ]
         )
 
-        await audit_log.send(embed=embed) # type: ignore
+        await command_log.send(embed=embed) # type: ignore
 
 
 

@@ -58,13 +58,12 @@ class ConfigDefaultRole(nextcord_C.Cog):
 
             mod_action = f"{interaction.user.mention} reset: {role.mention} as the default-role."
 
-        audit_log: nextcord.TextChannel
-        if not (audit_log := interaction.guild.get_channel(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)): # type: ignore
+        if not (command_log := interaction.guild.get_channel(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0)): # type: ignore
             return
 
         embed = EmbedFunctions().builder(
             color = Config().PERMISSION_COLOR,
-            author = "Mod Activity",
+            author = "Bot Command Log",
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
@@ -75,7 +74,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
             ]
         )
 
-        await audit_log.send(embed=embed)
+        await command_log.send(embed=embed) # type: ignore
 
 
     async def _set_role(

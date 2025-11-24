@@ -24,12 +24,12 @@ class MuteLog(nextcord_C.Cog):
         member_before: nextcord.Member,
         member_after: nextcord.Member
     ) -> None:
-        """A log that activates, when someone gets muted and an audit log is set"""
+        """A log that activates, when someone gets muted/unmuted and a mute log is set"""
 
         if member_before.communication_disabled_until == member_after.communication_disabled_until:
             return
 
-        if not (audit_log := member_before.guild.get_channel(int(await db.Server.AUDIT_LOG.get(member_before.guild.id) or 0))):
+        if not (mute_log := member_before.guild.get_channel(int(await db.Server.MUTE_LOG.get(member_before.guild.id) or 0))):
             return
 
         entry: nextcord.AuditLogEntry | None = None
@@ -49,19 +49,24 @@ class MuteLog(nextcord_C.Cog):
             return
 
         if member_after.communication_disabled_until:
-            embed = self.muted(entry, member_after)
+            if not (mute_log := member_before.guild.get_channel(int(await db.Server.MUTE_LOG.get(member_before.guild.id) or 0))):
+                return
+
+            await self.muted(entry, member_after, mute_log) # type: ignore
         else:
-            embed = self.unmuted(entry, member_after)
+            if not (unmute_log := member_before.guild.get_channel(int(await db.Server.UNMUTE_LOG.get(member_before.guild.id) or 0))):
+                return
 
-        await audit_log.send(embed=embed) # type: ignore
-        await db.Telemetry.AMOUNT.increment("mute log")
+            await self.unmuted(entry, member_after, unmute_log) # type: ignore
 
 
-    def muted(
+
+    async def muted(
         self,
         entry: nextcord.AuditLogEntry,
-        member_after: nextcord.Member
-    ) -> nextcord.Embed:
+        member_after: nextcord.Member,
+        mute_log: nextcord.TextChannel | nextcord.Thread
+    ) -> None:
         """creates the embed, for if the user was muted"""
 
         Logger().action_log(
@@ -76,14 +81,14 @@ class MuteLog(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.yellow(),
-            author = "Mod Activity",
+            author = "Mute Log",
             author_icon = entry.user.display_avatar.url,
             footer = "Muted until:",
             footer_icon = Config().CLOCK_ICON,
             footer_timestamp = member_after.communication_disabled_until,
             fields = [
                 EmbedField(
-                    "Mute Log:",
+                    "Member muted:",
                     f"{entry.user.mention} muted: {member_after.mention}",
                     False
                 ),
@@ -95,14 +100,16 @@ class MuteLog(nextcord_C.Cog):
             ]
         )
 
-        return embed
+        await mute_log.send(embed=embed) # type: ignore
+        await db.Telemetry.AMOUNT.increment("mute log")
 
 
-    def unmuted(
+    async def unmuted(
         self,
         entry: nextcord.AuditLogEntry,
         member_after: nextcord.Member,
-    ) -> nextcord.Embed:
+        unmute_log: nextcord.TextChannel | nextcord.Thread
+    ) -> None:
         """creates the embed, for if the user was unmuted"""
 
         Logger().action_log(
@@ -113,18 +120,19 @@ class MuteLog(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.green(),
-            author = "Mod Activity",
+            author = "Unmute Log",
             author_icon = entry.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    "Unmute Log:",
+                    "Member unmuted:",
                     f"{entry.user.mention} unmuted: {member_after.mention}",
                     False
                 )
             ]
         )
 
-        return embed
+        await unmute_log.send(embed=embed) # type: ignore
+        await db.Telemetry.AMOUNT.increment("unmute log")
 
 
 

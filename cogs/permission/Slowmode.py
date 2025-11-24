@@ -54,13 +54,13 @@ class Slowmode(nextcord_C.Cog):
             await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Deactivated slowmode in {channel.mention}."), ephemeral=True)
             mod_action = f"{interaction.user.mention} deactivated slowmode in {channel.mention}"
 
-        if not (audit_log := interaction.guild.get_channel(int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0))):
+        if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):
             return
 
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.orange(),
-            author = "Mod Activity",
+            author = "Bot Command Log",
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
@@ -71,7 +71,7 @@ class Slowmode(nextcord_C.Cog):
             ]
         )
 
-        await audit_log.send(embed=embed) # type: ignore
+        await command_log.send(embed=embed) # type: ignore
 
 
 

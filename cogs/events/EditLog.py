@@ -19,7 +19,7 @@ class EditLog(nextcord_C.Cog):
         message_before: nextcord.Message,
         message_after: nextcord.Message
     ) -> None:
-        """This function will create an edit-log message, if a guild has an audit-log-channel and if the message wasn't in a hidden-channel."""
+        """This function will create an edit-log message, if a guild has an edit log and if the message wasn't in a hidden-channel."""
 
         if not message_before.guild:
             return
@@ -27,7 +27,7 @@ class EditLog(nextcord_C.Cog):
         if message_before.author.id == self.client.user.id:
             return
 
-        if not (audit_log := message_before.guild.get_channel(int(await db.Server.AUDIT_LOG.get(message_before.guild.id) or 0))):
+        if not (edit_log := message_before.guild.get_channel(int(await db.Server.EDIT_LOG.get(message_before.guild.id) or 0))):
             return
 
         if await db.HiddenChannel._.get_entry(message_before.channel.id):
@@ -50,7 +50,7 @@ class EditLog(nextcord_C.Cog):
         else:
             first_embed, second_embed, file_urls = self.multi_response(message_before, message_after)
 
-        inital_response = await audit_log.send(embed=first_embed) # type: ignore
+        inital_response = await edit_log.send(embed=first_embed) # type: ignore
 
         # there is only a second embed for larger message edits
         if second_embed:
@@ -71,7 +71,7 @@ class EditLog(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.yellow(),
-            author = "Message Edited",
+            author = "Edit Log",
             author_icon = message_before.author.display_avatar.url,
             description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})", # type: ignore
             footer = "Originally sent at:",
@@ -104,7 +104,7 @@ class EditLog(nextcord_C.Cog):
 
         embed_before = EmbedFunctions().builder(
             color = nextcord.Color.yellow(),
-            author = "Message Edited",
+            author = "Edit Log",
             author_icon = message_before.author.display_avatar.url,
             description = f"{message_before.author.mention} edited a message in: {message_before.channel.mention} - [Link]({message_before.jump_url})\n**Before:**\n{message_before.content}", # type: ignore
             footer = "Originally sent:",

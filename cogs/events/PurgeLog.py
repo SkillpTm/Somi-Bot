@@ -23,7 +23,7 @@ class PurgeLog(nextcord_C.Cog):
     async def purge_log(self, messages: list[nextcord.Message]) -> None:
         """A log that activates, when someone gets purged without using the bot"""
 
-        if not (audit_log := messages[0].guild.get_channel(int(await db.Server.AUDIT_LOG.get(messages[0].guild.id) or 0))):
+        if not (purge_log := messages[0].guild.get_channel(int(await db.Server.PURGE_LOG.get(messages[0].guild.id) or 0))):
             return
 
         if await db.HiddenChannel._.get_entry(messages[0].channel.id):
@@ -56,18 +56,18 @@ class PurgeLog(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),
-            author = "Mod Activity",
+            author = "Purge Log",
             author_icon = entry.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    "Purge Log:",
+                    "Messages Purged:",
                     f"{entry.user.mention} purged: `{len(messages)} message(s)` in {entry.target.mention}", # type: ignore
                     False
                 )
             ]
         )
 
-        await (await audit_log.send(embed=embed)).reply(file=nextcord.File(csv_name), mention_author=False) # type: ignore
+        await (await purge_log.send(embed=embed)).reply(file=nextcord.File(csv_name), mention_author=False) # type: ignore
         await db.Telemetry.AMOUNT.increment("purge log")
         os.remove(csv_name)
 

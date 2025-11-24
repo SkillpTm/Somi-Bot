@@ -212,8 +212,9 @@ class SomiBot(nextcord_C.Bot):
     async def on_guild_channel_delete(self, channel: nextcord.abc.GuildChannel) -> None:
         """This function overwrites the build in on_guild_channel_delete function, to remove channels from the ConfigDB"""
 
-        if channel.id == await db.Server.AUDIT_LOG.get(channel.guild.id):
-            await db.Server.AUDIT_LOG.set(channel.guild.id, None)
+        for key, val in (await db.Server._.get_entry(channel.guild.id)).items():
+            if val == channel.id:
+                await db.Server(key).set(channel.guild.id, None)
 
         if await db.HiddenChannel._.get_entry(channel.id):
             await db.HiddenChannel._.delete(channel.id)
@@ -256,6 +257,9 @@ class SomiBot(nextcord_C.Bot):
         """This function overwrites the build in on_member_join function, to launch the join_log and welcome"""
 
         await db.User._.add_unique({db.User.ID: member.id}, {db.User.ID: member.id})
+
+        if not member.bot and (default_role := member.guild.get_role(int(await db.Server.DEFAULT_ROLE.get(member.guild.id) or 0))):
+            await member.add_roles(default_role)
 
         await asyncio.gather(
             self.get_cog("JoinLog").join_log(member), # type: ignore
@@ -326,7 +330,7 @@ class SomiBot(nextcord_C.Bot):
 
         MAY_AUDIT_ENTRY_TIME_VARIANCE = 5
 
-        # check the last audit log entry for message removals, to see make sure this was a deletion or removal
+        # check the last log entry for message removals, to see make sure this was a deletion or removal
         async for entry in message.guild.audit_logs(
             after=datetime.datetime.fromtimestamp(time.time() - MAY_AUDIT_ENTRY_TIME_VARIANCE),
             action=nextcord.AuditLogAction.message_delete
@@ -360,8 +364,9 @@ class SomiBot(nextcord_C.Bot):
     async def on_thread_delete(self, thread: nextcord.Thread) -> None:
         """This function overwrites the build in on_thread_delete function, to remove threads from the ConfigDB"""
 
-        if thread.id == await db.Server.AUDIT_LOG.get(thread.guild.id):
-            await db.Server.AUDIT_LOG.set(thread.guild.id, None)
+        for key, val in (await db.Server._.get_entry(thread.guild.id)).items():
+            if val == thread.id:
+                await db.Server(key).set(thread.guild.id, None)
 
         if await db.HiddenChannel._.get_entry(thread.id):
             await db.HiddenChannel._.delete(thread.id)

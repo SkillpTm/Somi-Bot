@@ -56,12 +56,12 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
             mod_action = f"{interaction.user.mention} removed: {channel.mention} from the level-ignore-channels."
 
 
-        if not (audit_log := interaction.guild.get_channel(int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0))):
+        if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):
             return
 
         embed = EmbedFunctions().builder(
             color = Config().PERMISSION_COLOR,
-            author = "Mod Activity",
+            author = "Bot Command Log",
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
@@ -72,7 +72,7 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
             ]
         )
 
-        await audit_log.send(embed=embed) # type: ignore
+        await command_log.send(embed=embed) # type: ignore
 
 
     async def _add_channel(

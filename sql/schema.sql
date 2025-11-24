@@ -22,8 +22,20 @@ CREATE TABLE IF NOT EXISTS reminder (
 
 CREATE TABLE IF NOT EXISTS server (
     id BIGINT PRIMARY KEY,
-    audit_log_id BIGINT,
-    default_role_id BIGINT
+    default_role_id BIGINT,
+	ban_log BIGINT,
+	bot_command_log BIGINT,
+	delete_log BIGINT,
+	edit_log BIGINT,
+	join_log BIGINT,
+	kick_log BIGINT,
+	leave_log BIGINT,
+	mute_log BIGINT,
+	name_log BIGINT,
+	purge_log BIGINT,
+	remove_log BIGINT,
+	unban_log BIGINT,
+	unmute_log BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS hidden_channel (

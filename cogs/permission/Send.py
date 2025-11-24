@@ -49,12 +49,12 @@ class Send(nextcord_C.Cog):
         message_object: nextcord.Message = await channel.send(message)
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Message sent in: {channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True)
 
-        if not (audit_log := interaction.guild.get_channel(int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0))):
+        if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):
             return
 
         embed = EmbedFunctions().builder(
             color = Config().PERMISSION_COLOR,
-            author = "Mod Activity",
+            author = "Bot Command Log",
             author_icon = interaction.user.display_avatar.url,
             description = f"{interaction.user.mention} sent a bot message in: {channel.mention} - [Link]({message_object.jump_url})",
             fields = [
@@ -66,7 +66,7 @@ class Send(nextcord_C.Cog):
             ]
         )
 
-        await audit_log.send(embed=embed) # type: ignore
+        await command_log.send(embed=embed) # type: ignore
 
 
     @nextcord.slash_command(
@@ -110,12 +110,12 @@ class Send(nextcord_C.Cog):
         await message_object.edit(content=message)
         await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Message edited in: {message_object.channel.mention} - [Link]({message_object.jump_url})"), ephemeral=True) # type: ignore
 
-        if not (audit_log := interaction.guild.get_channel(int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0))):
+        if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):
             return
 
         embed = EmbedFunctions().builder(
             color = Config().PERMISSION_COLOR,
-            author = "Mod Activity",
+            author = "Bot Command Log",
             author_icon = interaction.user.display_avatar.url,
             description = f"{interaction.user.mention} edited a bot message in: {message_object.channel.mention} - [Link]({message_object.jump_url})", # type: ignore
             fields = [
@@ -132,7 +132,7 @@ class Send(nextcord_C.Cog):
             ]
         )
 
-        await audit_log.send(embed=embed) # type: ignore
+        await command_log.send(embed=embed) # type: ignore
 
 
 

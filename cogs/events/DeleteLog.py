@@ -20,7 +20,7 @@ class DeleteLog(nextcord_C.Cog):
 
 
     async def message_delete_log(self, message: nextcord.Message) -> None:
-        """This function will create a delete-log message, if a guild has an audit-log-channel and if the message wasn't in a hidden-channel."""
+        """This function will create a delete-log message, if a server has a delete log and if the message wasn't in a hidden-channel."""
 
         if not message.guild:
             return
@@ -28,28 +28,27 @@ class DeleteLog(nextcord_C.Cog):
         if not message.content and len(message.attachments) < 1:
             return
 
-        if not (audit_log := message.guild.get_channel(int(await db.Server.AUDIT_LOG.get(message.guild.id) or 0))):
-            return
-
         if await db.HiddenChannel._.get_entry(message.channel.id):
             return
 
-        # check the last audit log entry for message removals, to see make sure this was a deletion or removal
+        # check the last log entry for message removals, to see make sure this was a deletion or removal
         async for entry in message.guild.audit_logs(
             after=datetime.datetime.fromtimestamp(time.time() - DeleteLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
             action=nextcord.AuditLogAction.message_delete
         ):
             if message.author.id == entry.target.id and message.author.id != entry.user.id:
-                await self.remove_log(message, audit_log, entry) # type: ignore
+                if (remove_log := message.guild.get_channel(int(await db.Server.REMOVE_LOG.get(message.guild.id) or 0))):
+                    await self.remove_log(message,entry,  remove_log) # type: ignore
                 return
 
-        await self.delete_log(message, audit_log) # type: ignore
+        if (delete_log := message.guild.get_channel(int(await db.Server.DELETE_LOG.get(message.guild.id) or 0))):
+            await self.delete_log(message, delete_log) # type: ignore
 
 
     async def delete_log(
         self,
         message: nextcord.Message,
-        audit_log: nextcord.TextChannel
+        delete_log: nextcord.TextChannel | nextcord.Thread
     ) -> None:
         """logs a deleted message"""
 
@@ -61,7 +60,7 @@ class DeleteLog(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),
-            author = "Message Deleted",
+            author = "Delete Log",
             author_icon = message.author.display_avatar.url,
             description = f"{message.author.mention} deleted a message in: {message.channel.mention}\n\n{message.content}", # type: ignore
             footer = "Originally sent:",
@@ -70,7 +69,7 @@ class DeleteLog(nextcord_C.Cog):
         )
 
         embed, file_urls = EmbedFunctions.get_or_add_attachments(message.attachments, embed)
-        sent_message = await audit_log.send(embed=embed)
+        sent_message = await delete_log.send(embed=embed)
 
         if file_urls:
             await sent_message.reply(content=file_urls, mention_author=False)
@@ -81,8 +80,8 @@ class DeleteLog(nextcord_C.Cog):
     async def remove_log(
         self,
         message: nextcord.Message,
-        audit_log: nextcord.TextChannel,
-        entry: nextcord.AuditLogEntry
+        entry: nextcord.AuditLogEntry,
+        remove_log: nextcord.TextChannel | nextcord.Thread
     ) -> None:
         """logs a removed message"""
 
@@ -94,13 +93,13 @@ class DeleteLog(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),
-            author = "Message Removed",
+            author = "Remove Log",
             author_icon = entry.user.display_avatar.url,
             description = f"{entry.user.mention} removed a message from {message.author.mention} in: {message.channel.mention}\n\n{message.content}" # type: ignore
         )
 
         embed, file_urls = EmbedFunctions.get_or_add_attachments(message.attachments, embed)
-        sent_message = await audit_log.send(embed=embed)
+        sent_message = await remove_log.send(embed=embed)
 
         if file_urls:
             await sent_message.reply(content=file_urls, mention_author=False)

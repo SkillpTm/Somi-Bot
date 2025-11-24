@@ -20,9 +20,9 @@ class KickLog(nextcord_C.Cog):
 
 
     async def kick_log(self, member: nextcord.Member) -> None:
-        """A log that activates, when someone gets kicked and an audit log is set"""
+        """A log that activates, when someone gets kicked and a kick log is set"""
 
-        if not (audit_log := member.guild.get_channel(int(await db.Server.AUDIT_LOG.get(member.guild.id) or 0))):
+        if not (kick_log := member.guild.get_channel(int(await db.Server.KICK_LOG.get(member.guild.id) or 0))):
             return
 
         entry: nextcord.AuditLogEntry | None = None
@@ -49,11 +49,11 @@ class KickLog(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),
-            author = "Mod Activity",
+            author = "Kick Log",
             author_icon = entry.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    "Kick Log:",
+                    "Member kicked:",
                     f"{entry.user.mention} kicked: {entry.target.mention}", # type: ignore
                     False
                 ),
@@ -65,7 +65,7 @@ class KickLog(nextcord_C.Cog):
             ]
         )
 
-        await audit_log.send(embed=embed) # type: ignore
+        await kick_log.send(embed=embed) # type: ignore
         await db.Telemetry.AMOUNT.increment("kick log")
 
 

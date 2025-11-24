@@ -19,13 +19,13 @@ class NameLog(nextcord_C.Cog):
         member_before: nextcord.Member,
         member_after: nextcord.Member
     ) -> None:
-        """This function checks if a user changed their display name, if they did and the server has an audit-log-channel a log message will be generated."""
+        """A log that activates, when someone changes their name/display name/nickname and a name log is set"""
 
         # check if the user's display-, global- or username changed
         if (member_before.display_name == member_after.display_name) and (member_before.global_name == member_after.global_name) and (member_before.name == member_after.name):
             return
 
-        if not (audit_log := member_before.guild.get_channel(int(await db.Server.AUDIT_LOG.get(member_before.guild.id) or 0))):
+        if not (name_log := member_before.guild.get_channel(int(await db.Server.NAME_LOG.get(member_before.guild.id) or 0))):
             return
 
         if member_before.name != member_after.name:
@@ -55,9 +55,14 @@ class NameLog(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.yellow(),
-            thumbnail = member_before.display_avatar.url,
-            title = f"`{member_before.id}` Changed Their {name_type}",
+            author = "Name Log",
+            author_icon = member_before.display_avatar.url,
             fields = [
+                EmbedField(
+                    "Type:",
+                    f"`{member_before.id}` Changed Their {name_type}",
+                    False
+                ),
                 EmbedField(
                     f"{name_type} Before:",
                     previous_name,
@@ -71,7 +76,7 @@ class NameLog(nextcord_C.Cog):
             ]
         )
 
-        await audit_log.send(embed=embed) # type: ignore
+        await name_log.send(embed=embed) # type: ignore
         await db.Telemetry.AMOUNT.increment("name log")
 
 

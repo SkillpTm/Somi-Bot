@@ -13,7 +13,7 @@ from lib.modules import SomiBot
 
 class ConfigInfo(nextcord_C.Cog):
 
-    AUDIT_LOG_INFO = "In the audit-log-channel you will get all logs the bot can provide, these include: delete log, edit log, join log, leave log, rename log and all mod activity."
+    LOGS_INFO = "In the log channels you will get logs relevant to its type. You can stack multiple log types in one channel."
     DEFAULT_ROLE_INFO = "A default-role is a role every user should have. It will be given to any user (excluding bots) who joins this server."
     HIDDEN_CHANNELS_INFO = "A hidden-channel deactivates keyword notifications, link-embeds and logs from this channel."
     LEVEL_IGNORE_CHANNELS_INFO = "In a level-ignore-channel no one can earn any XP for levels."
@@ -29,15 +29,15 @@ class ConfigInfo(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        audit_log_output, default_role_output, hidden_channels_output, level_ignore_channels_output, level_roles_output = await self.get_config_data(interaction)
+        logs_output, default_role_output, hidden_channels_output, level_ignore_channels_output, level_roles_output = await self.get_config_data(interaction)
 
         embed = EmbedFunctions().builder(
             color = Config().PERMISSION_COLOR,
             title = f"Configuration of: `{interaction.guild.name}`",
             fields = [
                 EmbedField(
-                    "Audit Log:",
-                    f"{ConfigInfo.AUDIT_LOG_INFO}\n\n{audit_log_output}",
+                    "Logs:",
+                    f"{ConfigInfo.LOGS_INFO}\n\n{logs_output}",
                     False
                 ),
                 EmbedField(
@@ -70,15 +70,15 @@ class ConfigInfo(nextcord_C.Cog):
         """This function gets all the data that can be configured and if there is none, it just replaces with a default text.
            It also validates that all channels/roles still exist and if not cleans up the db"""
 
-        audit_log_output = ""
+        logs_output = ""
 
-        if (audit_log_id := int(await db.Server.AUDIT_LOG.get(interaction.guild.id) or 0)):
-            if interaction.guild.get_channel(audit_log_id):
-                audit_log_output = f"<#{audit_log_id}>"
-            else:
-                await db.Server.AUDIT_LOG.set(interaction.guild.id, None)
+        for log_type in db.Server.get_log_types():
+            log_channel_id = int(await log_type.get(interaction.guild.id) or 0)
 
-        audit_log_output = audit_log_output or "`This server doesn't have a desginated channel for audit-Log messages.`"
+            if log_channel_id and not interaction.guild.get_channel(log_channel_id):
+                await log_type.set(interaction.guild.id, None)
+
+            logs_output += f"`{log_type.name.replace('_', ' ').title()}`: " + (f"<#{log_channel_id}>\n" if log_channel_id else "not set\n")
 
 
         default_role_output = ""
@@ -137,7 +137,7 @@ class ConfigInfo(nextcord_C.Cog):
         level_roles_output = await LevelRoles.get_level_range_with_role(interaction.guild) # type: ignore
 
 
-        return audit_log_output, default_role_output, hidden_channels_output, level_ignore_channels_output, level_roles_output
+        return logs_output, default_role_output, hidden_channels_output, level_ignore_channels_output, level_roles_output
 
 
 

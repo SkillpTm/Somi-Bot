@@ -15,11 +15,7 @@ class JoinLog(nextcord_C.Cog):
 
 
     async def join_log(self, member: nextcord.Member) -> None:
-        """
-        This function will:
-        - give the new member a default role, if set
-        - create a join-log message, if the guild has the audit log setup
-        """
+        """A log that activates, when someone joins a server and a join log is set"""
 
         Logger().action_log(
             member,
@@ -27,16 +23,13 @@ class JoinLog(nextcord_C.Cog):
             {"member": str(member.id)}
         )
 
-        if not member.bot and (default_role := member.guild.get_role(int(await db.Server.DEFAULT_ROLE.get(member.guild.id) or 0))):
-            await member.add_roles(default_role)
-
-        if not (audit_log := member.guild.get_channel(int(await db.Server.AUDIT_LOG.get(member.guild.id) or 0))):
+        if not (join_log := member.guild.get_channel(int(await db.Server.JOIN_LOG.get(member.guild.id) or 0))):
             return
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.green(),
-            thumbnail = member.display_avatar.url,
-            title = f"New Member Joined: `{member.display_name}`",
+            author = "Join Log",
+            author_icon = member.display_avatar.url,
             footer = "Joined Discord:",
             footer_icon = Config().CLOCK_ICON,
             footer_timestamp = member.created_at,
@@ -59,7 +52,7 @@ class JoinLog(nextcord_C.Cog):
             ]
         )
 
-        await audit_log.send(embed=embed) # type: ignore
+        await join_log.send(embed=embed) # type: ignore
         await db.Telemetry.AMOUNT.increment("join log")
 
 

@@ -20,11 +20,7 @@ class LeaveLog(nextcord_C.Cog):
 
 
     async def leave_log(self, member: nextcord.Member) -> None:
-        """
-        This function deletes someone's keywords, if they leave a server
-        Also if the user just left the last server with Somi their reminders
-        And if a server has an audit-log-channel set it posts a log message
-        """
+        """A log that activates, when someone leaves a server and a leave log is set"""
 
         Logger().action_log(
             member,
@@ -32,10 +28,10 @@ class LeaveLog(nextcord_C.Cog):
             {"member": str(member.id)}
         )
 
-        if not (audit_log := member.guild.get_channel(int(await db.Server.AUDIT_LOG.get(member.guild.id) or 0))):
+        if not (leave_log := member.guild.get_channel(int(await db.Server.LEAVE_LOG.get(member.guild.id) or 0))):
             return
 
-        # check the last audit log entry for bans, to see if this was a ban (bans get handled by BanLog)
+        # check the last log entry for bans, to see if this was a ban (bans get handled by BanLog)
         async for entry in member.guild.audit_logs(
             after=datetime.datetime.fromtimestamp(time.time() - LeaveLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
             action=nextcord.AuditLogAction.ban
@@ -43,7 +39,7 @@ class LeaveLog(nextcord_C.Cog):
             if entry.target.id == member.id:
                 return
 
-        # check the last audit log entry for kicks, to see if this was a kick (kicks get handled by KickLog)
+        # check the last log entry for kicks, to see if this was a kick (kicks get handled by KickLog)
         async for entry in member.guild.audit_logs(
             after=datetime.datetime.fromtimestamp(time.time() - LeaveLog.MAY_AUDIT_ENTRY_TIME_VARIANCE),
             action=nextcord.AuditLogAction.kick
@@ -53,8 +49,8 @@ class LeaveLog(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),
-            thumbnail = member.display_avatar.url,
-            title = f"Member Left: `{member.display_name}`",
+            author = "Leave Log",
+            author_icon = member.display_avatar.url,
             fields = [
                 EmbedField(
                     "ID:",
@@ -79,7 +75,7 @@ class LeaveLog(nextcord_C.Cog):
             ]
         )
 
-        await audit_log.send(embed=embed) # type: ignore
+        await leave_log.send(embed=embed) # type: ignore
         await db.Telemetry.AMOUNT.increment("leave log")
 
 

@@ -81,7 +81,7 @@ class DataAccessMixin(Table):
         )
 
 
-    async def get_entry(self: Table, where: dict[Table, int | str | None] | int | str | None) -> dict[str, str | int | None] | None:
+    async def get_entry(self: Table, where: dict[Table, int | str | None] | int | str | None) -> dict[str, str | int | None]:
         """gets an entire entry from the table"""
 
         if not isinstance(where, dict):

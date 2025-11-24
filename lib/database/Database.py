@@ -164,7 +164,7 @@ class Database(metaclass=Singleton):
         *,
         select: list[str] = ["*"],
         where: dict[str, int | str | None] = {}
-    ) -> dict[str, str | int | None] | None:
+    ) -> dict[str, str | int | None]:
         """fetches a singular row"""
 
         if not self._pool:
@@ -186,7 +186,7 @@ class Database(metaclass=Singleton):
                 await cur.execute(formated_query, tuple(where.values()))
                 result = await cur.fetchone()
 
-        return result
+        return result or {}
 
 
     async def fetch_many(

@@ -45,7 +45,7 @@ class Reload(nextcord_C.Cog):
 
         self.client.is_setup = True
 
-        await interaction.followup.send(embed=EmbedFunctions().get_success_message("The bot has been reloaded."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message("The bot has been reloaded."))
 
         embed = EmbedFunctions().builder(
             color = Config().PERMISSION_COLOR,

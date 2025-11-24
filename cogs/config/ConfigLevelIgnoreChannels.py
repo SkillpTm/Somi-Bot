@@ -83,10 +83,10 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
         "adds or doesn't add the channel indicated by the output bool"
 
         if not (added := await db.LevelIgnoreChannel._.add({db.LevelIgnoreChannel.ID: channel.id, db.LevelIgnoreChannel.SERVER: interaction.guild.id})):
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{channel.mention} is already a level-ignore-channel.\nTo get a list of all the level-ignore-channels use `/config info`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{channel.mention} is already a level-ignore-channel.\nTo get a list of all the level-ignore-channels use `/config info`."))
             return added
 
-        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{channel.mention} has been added to the level-ignore-channels.\nThere won't be any XP gain in there anymore."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{channel.mention} has been added to the level-ignore-channels.\nThere won't be any XP gain in there anymore."))
         return added
 
 

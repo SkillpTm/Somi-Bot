@@ -96,7 +96,7 @@ class About(nextcord_C.Cog):
             ]
         )
 
-        await interaction.followup.send(embed=embed, ephemeral=True)
+        await interaction.followup.send(embed=embed)
 
 
 

@@ -35,7 +35,7 @@ class CustomList(nextcord_C.Cog):
             db.CustomCommand.NAME,
             Order.ASCENDING)
         )):
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("There are no custom-commands on this server.\nTo add a custom-command use `/custom add`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("There are no custom-commands on this server.\nTo add a custom-command use `/custom add`."))
             return
 
         await self.custom_list_rec(interaction, all_commandnames, 1)

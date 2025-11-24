@@ -38,7 +38,7 @@ class KeywordAdd(nextcord_C.Cog):
 
         # make sure keywords are only letters and numbers
         if not re.match(r"^[a-z0-9]+$", keyword):
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only have letters and numbers in your keywords!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only have letters and numbers in your keywords!"))
             return
 
         added = await db.Keyword._.add_unique(
@@ -47,10 +47,10 @@ class KeywordAdd(nextcord_C.Cog):
         )
 
         if not added:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"You already have `{keyword}` as a keyword.\nTo get a list of your keywords use `/keyword list`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"You already have `{keyword}` as a keyword.\nTo get a list of your keywords use `/keyword list`."))
             return
 
-        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"`{keyword}` has been added to your keywords."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"`{keyword}` has been added to your keywords."))
 
 
 

@@ -48,7 +48,7 @@ class Statistics(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=bool(not hidden), with_message=True)
 
-        entry = typing.cast(dict[str, int | str | None], await db.Statistic._.get_entry({db.Statistic.SERVER: interaction.guild.id, db.Statistic.USER: interaction.user.id}))
+        entry = await db.Statistic._.get_entry({db.Statistic.SERVER: interaction.guild.id, db.Statistic.USER: interaction.user.id})
         days_since_joined = math.ceil((datetime.datetime.now(datetime.timezone.utc) - interaction.user.joined_at).total_seconds() / 86400) # type: ignore
         footer, footer_time = self.client.joined_time_footer(interaction)
 

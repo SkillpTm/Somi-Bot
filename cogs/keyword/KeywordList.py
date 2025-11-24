@@ -29,7 +29,7 @@ class KeywordList(nextcord_C.Cog):
             order_by = db.Keyword.KEYWORD,
             order = Order.ASCENDING)
         )):
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You don't have any keywords.\nTo add a keyword use `/keyword add`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You don't have any keywords.\nTo add a keyword use `/keyword add`."))
             return
 
         await self.keyword_list_rec(interaction, all_keywords, 1)

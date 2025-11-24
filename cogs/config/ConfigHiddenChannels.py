@@ -80,10 +80,10 @@ class ConfigHiddenChannels(nextcord_C.Cog):
         "adds or doesn't add the role indicated by the output bool"
 
         if not (added := await db.HiddenChannel._.add({db.HiddenChannel.ID: channel.id, db.HiddenChannel.SERVER: interaction.guild.id})):
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{channel.mention} is already a hidden-channel.\nTo get a list of all the hidden-channels use `/config info`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{channel.mention} is already a hidden-channel.\nTo get a list of all the hidden-channels use `/config info`."))
             return added
 
-        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{channel.mention} has been added to the hidden-channels."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{channel.mention} has been added to the hidden-channels."))
         return added
 
 
@@ -95,10 +95,10 @@ class ConfigHiddenChannels(nextcord_C.Cog):
         "removes or doesn't remove the channel indicated by the output bool"
 
         if not (deleted := await db.HiddenChannel._.delete({db.HiddenChannel.ID: channel.id, db.HiddenChannel.SERVER: interaction.guild.id})):
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{channel.mention} isn't a hidden-channel.\nTo get a list of all the hidden-channels use `/config info`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{channel.mention} isn't a hidden-channel.\nTo get a list of all the hidden-channels use `/config info`."))
             return deleted
 
-        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{channel.mention} has been removed from the hidden-channels."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{channel.mention} has been removed from the hidden-channels."))
         return deleted
 
 

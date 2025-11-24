@@ -50,7 +50,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner:  # type: ignore
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only add/remove a role as a level-role, if the role is below your current top role!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only add/remove a role as a level-role, if the role is below your current top role!"))
             return
 
         if action == "Add":
@@ -94,14 +94,14 @@ class ConfigLevelRoles(nextcord_C.Cog):
         "adds or doesn't add the role indicated by the output bool"
 
         if not level:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You need to define a role **and** a level to add a new level-role."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You need to define a role **and** a level to add a new level-role."))
             return False
 
         if not (added := await db.LevelRole._.add({db.LevelRole.ID: role.id, db.LevelRole.LEVEL: level, db.LevelRole.SERVER: interaction.guild.id})):
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{role.mention} already has a level assigned or the level `{level}` already has a role assigned!\nTo get a list of all the level-roles use `/config info`."), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{role.mention} already has a level assigned or the level `{level}` already has a role assigned!\nTo get a list of all the level-roles use `/config info`."))
             return added
 
-        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{role.mention} has been added to the level-roles.\nThe role is being applied to users now, this can take a few minutes."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"{role.mention} has been added to the level-roles.\nThe role is being applied to users now, this can take a few minutes."))
 
         await LevelRoles.update_users(interaction.guild) # type: ignore
 

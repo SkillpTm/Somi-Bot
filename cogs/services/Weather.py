@@ -46,8 +46,6 @@ class Weather(nextcord_C.Cog):
     ) -> None:
         """This command outputs various statistics about the weather of any place (that's on openweathermap)"""
 
-        await interaction.response.defer(with_message=True)
-
         db_location = str(await db.User.WEATHER.get(interaction.user.id))
         location = location or db_location
         response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={Keychain().WEATHER_API_KEY}&q={urllib.parse.quote_plus(location)}&units=metric", timeout=10)
@@ -55,6 +53,8 @@ class Weather(nextcord_C.Cog):
         if response.status_code != 200:
             await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{location} couldn't be found."), ephemeral=True)
             return
+        
+        await interaction.response.defer(with_message=True)
 
         if location != db_location:
             await db.User.WEATHER.set(interaction.user.id, location)

@@ -42,11 +42,11 @@ class Kick(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if interaction.user.id == member.id:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can't ban yourself!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can't ban yourself!"))
             return
 
         if interaction.user.top_role.position < member.top_role.position and interaction.user != interaction.guild.owner: # type: ignore
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only kick a member, if your current top-role is above their current top-role!"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You can only kick a member, if your current top-role is above their current top-role!"))
             return
 
         try:
@@ -59,7 +59,7 @@ class Kick(nextcord_C.Cog):
 
         await interaction.guild.kick(user = member, reason = reason)
 
-        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Succesfully kicked {member.mention}."), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Succesfully kicked {member.mention}."))
 
 
 

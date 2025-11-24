@@ -67,7 +67,7 @@ class Rules(nextcord_C.Cog):
             )
 
             await channel.send(embed=embed) # type: ignore
-            await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Rule: `{rule}` sent in {channel.mention}"), ephemeral=True)
+            await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Rule: `{rule}` sent in {channel.mention}"))
             return
 
 
@@ -91,7 +91,7 @@ class Rules(nextcord_C.Cog):
         )
 
         await channel.send(embed=embed) # type: ignore
-        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"All rules sent in {channel.mention}"), ephemeral=True)
+        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"All rules sent in {channel.mention}"))
 
 
 

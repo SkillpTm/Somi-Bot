@@ -63,7 +63,7 @@ class ConfigInfo(nextcord_C.Cog):
             ]
         )
 
-        await interaction.followup.send(embed=embed)
+        await interaction.send(embed=embed)
 
 
     async def get_config_data(self, interaction: nextcord.Interaction[SomiBot]) -> tuple[str, str, str, str, str]:

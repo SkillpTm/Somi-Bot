@@ -41,7 +41,7 @@ class Banner(nextcord_C.Cog):
         user = user or interaction.user
 
         if not (user_banner := (await interaction.guild.fetch_member(user.id)).display_banner if interaction.guild else (await self.client.fetch_user(user.id)).banner):
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"The user {user.mention} doesn't have a banner."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message(f"The user {user.mention} doesn't have a banner."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
@@ -53,7 +53,7 @@ class Banner(nextcord_C.Cog):
             title_url = user_banner.url
         )
 
-        await interaction.followup.send(embed=embed)
+        await interaction.send(embed=embed)
 
 
 

@@ -44,7 +44,7 @@ class CustomDelete(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if not name and not delete_all:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("Please either provide a custom command name or choose to delete all your custom commands."))
+            await interaction.send(embed=EmbedFunctions().get_error_message("Please either provide a custom command name or choose to delete all your custom commands."))
             return
 
         name = Get.clean_input_command(name)
@@ -54,11 +54,11 @@ class CustomDelete(nextcord_C.Cog):
             return
 
         if not (commandtext := await db.CustomCommand.TEXT.get({db.CustomCommand.NAME: name, db.CustomCommand.SERVER: interaction.guild.id})):
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"There is no custom-command with the name `{name}`.\nTo get a list of the custom-commands use `/custom-list`."))
+            await interaction.send(embed=EmbedFunctions().get_error_message(f"There is no custom-command with the name `{name}`.\nTo get a list of the custom-commands use `/custom-list`."))
             return
 
         await db.CustomCommand._.delete(where={db.CustomCommand.NAME: name, db.CustomCommand.SERVER: interaction.guild.id})
-        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"The custom-command `{name}` has been deleted."))
+        await interaction.send(embed=EmbedFunctions().get_success_message(f"The custom-command `{name}` has been deleted."))
 
 
         if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):
@@ -89,16 +89,16 @@ class CustomDelete(nextcord_C.Cog):
         """asks the user if they want to delete all their custom commands and does as answered"""
 
         view = YesNoButtons(interaction=interaction) # type: ignore
-        await interaction.followup.send(embed=EmbedFunctions().get_info_message("Do you really want to delete **ALL** your custom commands __**(they can't be recovered)**__?"), view=view)
+        await interaction.send(embed=EmbedFunctions().get_info_message("Do you really want to delete **ALL** your custom commands __**(they can't be recovered)**__?"), view=view)
         await view.wait()
 
         if not view.value:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("Your custom commands have **not** been deleted!"))
+            await interaction.send(embed=EmbedFunctions().get_error_message("Your custom commands have **not** been deleted!"))
             return
 
         await db.CustomCommand._.delete(where={db.CustomCommand.SERVER: interaction.guild.id}, limit=1_000_000)
 
-        await interaction.followup.send(embed=EmbedFunctions().get_success_message("**ALL** your custom commands have been deleted!"))
+        await interaction.send(embed=EmbedFunctions().get_success_message("**ALL** your custom commands have been deleted!"))
 
 
         if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):

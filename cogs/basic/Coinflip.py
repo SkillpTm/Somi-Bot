@@ -35,7 +35,7 @@ class Coinflip(nextcord_C.Cog):
 
         side1, side2 = random.sample([Config().HEADS_EMOTE, Config().TAILS_EMOTE], k=2)
 
-        await interaction.followup.send(side1)
+        await interaction.send(side1)
 
         animation: list[tuple[float, str]] = [(0.2, side2), (0.2, side1), (0.2, side2), (0.4, side1), (0.8, side2), (1.0, f"Result:\n{random.choice([side1, side2])}")]
 

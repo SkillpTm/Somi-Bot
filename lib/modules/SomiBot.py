@@ -110,7 +110,7 @@ class SomiBot(nextcord_C.Bot):
         """checks on all commands for: if the bot is properly setup and if the interaction wasn't created by a bot"""
 
         if not self.is_setup:
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("The bot is still setting up, please try in a few minutes again!"), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message("The bot is still setting up, please try in a few minutes again!"), ephemeral=True)
             return False
 
         if interaction.user.bot:
@@ -121,7 +121,7 @@ class SomiBot(nextcord_C.Bot):
             and not interaction.authorizing_integration_owners.get(nextcord.IntegrationType.user_install, None)
             and not self.get_guild(interaction.authorizing_integration_owners.get(nextcord.IntegrationType.guild_install, 0)) # the bot can only get guilds it is in
         ): # type: ignore
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"This command can only be user in servers with {self.user.name}."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message(f"This command can only be used in servers with {self.user.name}."), ephemeral=True)
             return False
 
         return True
@@ -191,10 +191,7 @@ class SomiBot(nextcord_C.Bot):
 
         error_message = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions. (this includes her role being above others)\n```{exception}```\nA bug-report has been send to the developer."
 
-        if interaction.response.is_done():
-            await interaction.followup.send(embed=EmbedFunctions().get_critical_error_message(error_message), ephemeral=True)
-        else:
-            await interaction.response.send_message(embed=EmbedFunctions().get_critical_error_message(error_message), ephemeral=True)
+        await interaction.send(embed=EmbedFunctions().get_critical_error_message(error_message), ephemeral=True)
 
         await self.get_guild(Config().SUPPORT_SERVER_ID).get_channel(Config().SUPPORT_SERVER_ERRORS_ID).send(embed=EmbedFunctions().get_critical_error_message(f"{log_context}\n```{exception}```")) # type: ignore
 

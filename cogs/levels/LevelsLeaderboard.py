@@ -61,7 +61,7 @@ class LevelsLeaderboard(nextcord_C.Cog):
             footer_timestamp = footer_time
         )
 
-        await interaction.followup.send(embed=embed)
+        await interaction.send(embed=embed)
 
 
 

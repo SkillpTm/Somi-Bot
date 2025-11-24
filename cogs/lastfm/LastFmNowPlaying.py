@@ -39,7 +39,7 @@ class LastFmNowPlaying(nextcord_C.Cog):
         user = user or interaction.user
 
         if not (lastfm_username := str(await db.User.LASTFM.get(interaction.user.id) or "")):
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
@@ -47,7 +47,7 @@ class LastFmNowPlaying(nextcord_C.Cog):
         np_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&username={lastfm_username}&limit=1&api_key={Keychain().LAST_FM_API_KEY}&format=json", timeout=10)
 
         if np_response.status_code != 200:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
+            await interaction.send(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
             return
 
         album_name, artist_name, cover_url, track_name, track_url, timestamp = "", "", "", "", "", None
@@ -72,7 +72,7 @@ class LastFmNowPlaying(nextcord_C.Cog):
         track_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=track.getInfo&username={lastfm_username}&artist={urllib.parse.quote_plus(artist_name)}&track={urllib.parse.quote_plus(track_name)}&api_key={Keychain().LAST_FM_API_KEY}&format=json", timeout=10)
 
         if track_response.status_code != 200:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
+            await interaction.send(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
             return
 
         footer = f"{track_response.json()['track']['userplaycount']} Scrobbles | "
@@ -90,7 +90,7 @@ class LastFmNowPlaying(nextcord_C.Cog):
             footer_timestamp = timestamp
         )
 
-        await interaction.followup.send(embed=embed)
+        await interaction.send(embed=embed)
 
 
 

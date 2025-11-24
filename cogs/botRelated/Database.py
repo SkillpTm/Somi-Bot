@@ -70,7 +70,7 @@ class Database(nextcord_C.Cog):
                 if result:
                     allowed_columns: list[str] = list(result.keys())
                 else:
-                    await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"```Table '{table}' is empty```"))
+                    await interaction.send(embed=EmbedFunctions().get_error_message(f"```Table '{table}' is empty```"))
                     return
 
             await con.commit()
@@ -84,7 +84,7 @@ class Database(nextcord_C.Cog):
                 key, value = pair.split("=", 1) if "=" in pair else ("", "")
 
                 if not key.strip() in allowed_columns:
-                    await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"```Column '{key.strip()}' does not exist in table '{table}'```"))
+                    await interaction.send(embed=EmbedFunctions().get_error_message(f"```Column '{key.strip()}' does not exist in table '{table}'```"))
                     return
 
                 query += f"`{key.strip()}` = %s "
@@ -94,11 +94,11 @@ class Database(nextcord_C.Cog):
                 parameters.append(value.strip())
 
         if (not order_by and order) or (order_by and not order):
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("```Both 'order' and 'order-by' must be provided```"))
+            await interaction.send(embed=EmbedFunctions().get_error_message("```Both 'order' and 'order-by' must be provided```"))
             return
 
         if order_by and order_by not in allowed_columns:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"```Column '{order_by}' does not exist in table '{table}'```"))
+            await interaction.send(embed=EmbedFunctions().get_error_message(f"```Column '{order_by}' does not exist in table '{table}'```"))
             return
 
         if order_by and order and order in ["ASC", "DESC"]:
@@ -121,10 +121,10 @@ class Database(nextcord_C.Cog):
                     output += " | ".join(str(val) for val in row.values()) + "\n"
 
         if not output:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("```Empty set```"))
+            await interaction.send(embed=EmbedFunctions().get_error_message("```Empty set```"))
             return
 
-        await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"```{output}```"[4096]))
+        await interaction.send(embed=EmbedFunctions().get_success_message(f"```{output}```"[4096]))
 
 
 

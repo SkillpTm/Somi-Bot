@@ -48,10 +48,10 @@ class Slowmode(nextcord_C.Cog):
         await channel.edit(slowmode_delay=delay)
 
         if delay:
-            await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Activated slowmode in {channel.mention} with a delay of `{delay}` seconds."))
+            await interaction.send(embed=EmbedFunctions().get_success_message(f"Activated slowmode in {channel.mention} with a delay of `{delay}` seconds."))
             mod_action = f"{interaction.user.mention} activated slowmode in {channel.mention} with a delay of `{delay} seconds`"
         else:
-            await interaction.followup.send(embed=EmbedFunctions().get_success_message(f"Deactivated slowmode in {channel.mention}."))
+            await interaction.send(embed=EmbedFunctions().get_success_message(f"Deactivated slowmode in {channel.mention}."))
             mod_action = f"{interaction.user.mention} deactivated slowmode in {channel.mention}"
 
         if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):

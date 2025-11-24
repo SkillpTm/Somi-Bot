@@ -34,7 +34,7 @@ class LastFmProfile(nextcord_C.Cog):
         user = user or interaction.user
 
         if not (lastfm_username := str(await db.User.LASTFM.get(interaction.user.id) or "")):
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
@@ -42,7 +42,7 @@ class LastFmProfile(nextcord_C.Cog):
         profile_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getinfo&username={lastfm_username}&limit=1&api_key={Keychain().LAST_FM_API_KEY}&format=json", timeout=10)
 
         if profile_response.status_code != 200:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
+            await interaction.send(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
             return
 
         profile_user_data = profile_response.json()
@@ -123,7 +123,7 @@ class LastFmProfile(nextcord_C.Cog):
             ]
         )
 
-        await interaction.followup.send(embed=embed)
+        await interaction.send(embed=embed)
 
 
     def get_top_data(self, lastfm_username: str) -> tuple[str, str, str]:

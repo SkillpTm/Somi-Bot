@@ -28,7 +28,7 @@ class Bam(nextcord_C.Cog):
     async def bam(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command fake bans someone"""
 
-        await interaction.response.send_message(f"User has been bammed!\n{Config().BAN_HAMMER_GIF}")
+        await interaction.send(f"User has been bammed!\n{Config().BAN_HAMMER_GIF}")
 
 
 

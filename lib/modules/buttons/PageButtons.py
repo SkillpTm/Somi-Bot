@@ -21,7 +21,7 @@ class PageButtons(nextcord.ui.View):
         """returns to the first page"""
 
         if self.interaction.user.id != interaction.user.id:
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return
 
         self.page = 1
@@ -34,7 +34,7 @@ class PageButtons(nextcord.ui.View):
         """goes back one page, without wrapping back to the end"""
 
         if self.interaction.user.id != interaction.user.id:
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return
 
         self.page = self.page-1 if self.page-1 >= 0 else 1
@@ -52,7 +52,7 @@ class PageButtons(nextcord.ui.View):
         """goes forward one page, without wrapping back to the start"""
 
         if self.interaction.user.id != interaction.user.id:
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return
 
         self.page = self.page+1 if self.page+1 <= self.last_page else self.last_page
@@ -64,7 +64,7 @@ class PageButtons(nextcord.ui.View):
         """jumps to the last page"""
 
         if self.interaction.user.id != interaction.user.id:
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return
 
         self.page = self.last_page

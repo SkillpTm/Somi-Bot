@@ -55,7 +55,7 @@ class Spotify(nextcord_C.Cog):
                 break
 
         if not member_activity:
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{member.mention} isn't listening to anything on Spotify right now."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message(f"{member.mention} isn't listening to anything on Spotify right now."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
@@ -105,7 +105,7 @@ class Spotify(nextcord_C.Cog):
             ]
         )
 
-        await interaction.followup.send(embed=embed)
+        await interaction.send(embed=embed)
 
 
     async def get_output_data(

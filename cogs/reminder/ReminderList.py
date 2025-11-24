@@ -30,7 +30,7 @@ class ReminderList(nextcord_C.Cog):
             db.Reminder.TIME,
             Order.ASCENDING
         ))):
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("You don't have any keywords.\nTo add a keyword use `/keyword add`."))
+            await interaction.send(embed=EmbedFunctions().get_error_message("You don't have any keywords.\nTo add a keyword use `/keyword add`."))
             return
 
         #     output += f"<t:{db.Reminder.TIME.retrieve(entry)}:F> // ID: {db.Reminder.ID.retrieve(entry)} - [Link]({db.Reminder.LINK.retrieve(entry)})\nReminder: `{reminder_text}`\n\n"

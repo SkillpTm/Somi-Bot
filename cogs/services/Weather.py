@@ -51,7 +51,7 @@ class Weather(nextcord_C.Cog):
         response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={Keychain().WEATHER_API_KEY}&q={urllib.parse.quote_plus(location)}&units=metric", timeout=10)
 
         if response.status_code != 200:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"{location} couldn't be found."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message(f"{location} couldn't be found."), ephemeral=True)
             return
         
         await interaction.response.defer(with_message=True)
@@ -91,7 +91,7 @@ class Weather(nextcord_C.Cog):
             footer_icon = Config().OPENWEATHERMAP_ICON
         )
 
-        await interaction.followup.send(embed=embed)
+        await interaction.send(embed=embed)
 
 
 

@@ -48,7 +48,7 @@ class Time(nextcord_C.Cog):
         timezone = timezone or db_timezone
 
         if timezone and timezone not in zoneinfo.available_timezones():
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("Please input a valid IANA timezone code."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message("Please input a valid IANA timezone code."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
@@ -73,7 +73,7 @@ class Time(nextcord_C.Cog):
             description = current_time.strftime(f"# {clock_emoji} `%H:%M:%S`\n:calendar_spiral: `%Y/%m/%d`")
         )
 
-        await interaction.followup.send(embed=embed)
+        await interaction.send(embed=embed)
 
 
     @time.on_autocomplete("timezone")

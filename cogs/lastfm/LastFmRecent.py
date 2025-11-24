@@ -38,7 +38,7 @@ class LastFmRecent(nextcord_C.Cog):
         user = user or interaction.user
 
         if not (lastfm_username := str(await db.User.LASTFM.get(interaction.user.id) or "")):
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)

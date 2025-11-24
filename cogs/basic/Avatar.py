@@ -49,7 +49,7 @@ class Avatar(nextcord_C.Cog):
             title_url = user.display_avatar.url
         )
 
-        await interaction.followup.send(embed=embed)
+        await interaction.send(embed=embed)
 
 
 

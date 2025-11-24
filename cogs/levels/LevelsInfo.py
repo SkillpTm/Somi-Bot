@@ -35,7 +35,7 @@ class LevelsInfo(nextcord_C.Cog):
         member = member or interaction.guild.get_member(interaction.user.id)
 
         if not (total_xp := int(await db.Level.XP.get({db.Level.SERVER: interaction.guild.id, db.Level.USER: interaction.user.id}) or 0)):
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"{member.mention} hasn't earned any XP yet."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message(f"{member.mention} hasn't earned any XP yet."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
@@ -82,7 +82,7 @@ class LevelsInfo(nextcord_C.Cog):
             ]
         )
 
-        await interaction.followup.send(embed=embed)
+        await interaction.send(embed=embed)
 
 
 

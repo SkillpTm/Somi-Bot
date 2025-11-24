@@ -34,7 +34,7 @@ class Ping(nextcord_C.Cog):
 
         start = time.perf_counter()
 
-        await interaction.response.send_message(content="Pong! 🏓")
+        await interaction.send(content="Pong! 🏓")
 
         end = time.perf_counter()
 

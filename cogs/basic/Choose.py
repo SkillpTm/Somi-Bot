@@ -57,7 +57,7 @@ class ChooseModal(nextcord.ui.Modal):
         choice_text = f"```{self.choice_text.value}```" if self.choice_text.value else ""
 
         view = OptionsButton(interaction=interaction) # type: ignore
-        await interaction.response.send_message(f"{choice_text}I have chosen __Option {chosen_key}__:\n`{options[chosen_key]}`", view=view)
+        await interaction.send(f"{choice_text}I have chosen __Option {chosen_key}__:\n`{options[chosen_key]}`", view=view)
         await view.wait()
 
         # if the button to see all options isn't pressed return early
@@ -80,7 +80,7 @@ class ChooseModal(nextcord.ui.Modal):
             description = output
         )
 
-        await interaction.followup.send(embed=embed)
+        await interaction.send(embed=embed)
 
 
 

@@ -28,7 +28,7 @@ class Invite(nextcord_C.Cog):
     async def invite(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command posts the invite link for the bot"""
 
-        await interaction.response.send_message(f"<{Config().BOT_INVITE}>")
+        await interaction.send(f"<{Config().BOT_INVITE}>")
 
 
 

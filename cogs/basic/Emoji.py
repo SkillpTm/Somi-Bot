@@ -46,7 +46,7 @@ class Emoji(nextcord_C.Cog):
 
         # re checks if it's a valid custom emoji format
         if not re.search(r"<(a:|:)[a-z0-9_]*:[0-9]*>", emoji, re.IGNORECASE):
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("Please select a custom emoji."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message("Please select a custom emoji."), ephemeral=True)
             return
 
         emote_animated = emoji.startswith("<a:")
@@ -56,10 +56,10 @@ class Emoji(nextcord_C.Cog):
 
         # check via the cdn if what we got was actually a valid emote
         if not requests.get(partial_emoji_object.url, timeout=10).status_code == 200:
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message("Please select a custom emoji."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message("Please select a custom emoji."), ephemeral=True)
             return
 
-        await interaction.response.send_message(f"`Link:` [{partial_emoji_object.name}]({partial_emoji_object.url})")
+        await interaction.send(f"`Link:` [{partial_emoji_object.name}]({partial_emoji_object.url})")
 
 
 

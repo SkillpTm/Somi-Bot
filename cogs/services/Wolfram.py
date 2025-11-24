@@ -43,9 +43,9 @@ class Wolfram(nextcord_C.Cog):
         await interaction.response.defer(with_message=True)
 
         try:
-            await interaction.followup.send(f"Query: `{query}`\n```{next(Keychain().wolfram_client.query(query).results).text}```")
+            await interaction.send(f"Query: `{query}`\n```{next(Keychain().wolfram_client.query(query).results).text}```")
         except StopIteration:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message(f"Wolfram couldn't find a result for your query:\n`{query}`"))
+            await interaction.send(embed=EmbedFunctions().get_error_message(f"Wolfram couldn't find a result for your query:\n`{query}`"))
 
 
 

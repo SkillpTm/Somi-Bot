@@ -76,7 +76,7 @@ class Severinfo(nextcord_C.Cog):
             ]
         )
 
-        await interaction.followup.send(embed=embed)
+        await interaction.send(embed=embed)
 
 
 

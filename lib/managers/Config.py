@@ -30,6 +30,7 @@ class Config(metaclass=Singleton):
         self.GENIUS_COLOR = int(config_data["COLORS"]["GENIUS"], 16)
         self.LASTFM_COLOR = int(config_data["COLORS"]["LASTFM"], 16)
         self.PERMISSION_COLOR = int(config_data["COLORS"]["PERMISSION"], 16)
+        self.TRANSLATE_COLOR = int(config_data["COLORS"]["TRANSLATE"], 16)
 
         # Emotes
         self.HEADS_EMOTE: str = config_data["EMOTES"]["HEADS"]
@@ -57,6 +58,7 @@ class Config(metaclass=Singleton):
         self.SOMICORD_WELCOME_GIF: str = config_data["LINKS"]["SOMICORD_WELCOME_GIF"]
         self.SPOTIFY_ICON: str = config_data["LINKS"]["SPOTIFY_ICON"]
         self.SUPPORT_SERVER_INVITE: str = config_data["LINKS"]["SUPPORT_SERVER_INVITE"]
+        self.TRANSLATE_ICON: str = config_data["LINKS"]["TRANSLATE_ICON"]
 
         # Paths
         self.APPLICATION_BANNER_PATH: str = config_data["PATHS"]["APPLICATION_BANNER"]

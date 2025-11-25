@@ -1,6 +1,8 @@
 import json
 import os
 
+from google.oauth2 import service_account
+from google.cloud import translate_v2 as translate # type: ignore
 import googleapiclient.discovery # type: ignore
 import spotipy # type: ignore
 import wolframalpha # type: ignore
@@ -20,6 +22,10 @@ class Keychain(metaclass=Singleton):
         self.DB_USER: str = os.getenv("DB_USER") or ""
         self.DB_PASSWORD: str = os.getenv("DB_PASSWORD") or ""
         self.DB_NAME: str = os.getenv("DB_NAME") or ""
+
+        self.TRANSLATE_EMAIL: str = os.getenv("TRANSLATE_EMAIL") or ""
+        self.TRANSLATE_ID: str = os.getenv("TRANSLATE_ID") or ""
+        self.TRANSLATE_KEY: str = os.getenv("TRANSLATE_KEY") or ""
 
         self.SPOTIPY_CLIENT_ID: str = os.getenv("SPOTIPY_CLIENT_ID") or ""
         self.SPOTIPY_CLIENT_SECRET: str = os.getenv("SPOTIPY_CLIENT_SECRET") or ""
@@ -41,6 +47,16 @@ class Keychain(metaclass=Singleton):
             redirect_uri = self.SPOTIPY_REDIRECT_URI,
             scope = "user-read-currently-playing"
         )
+
+        self.translator = translate.Client(credentials=service_account.Credentials.from_service_account_info({
+            "type": "service_account",
+            "project_id": self.TRANSLATE_ID,
+            "private_key": self.TRANSLATE_KEY,
+            "client_email": self.TRANSLATE_EMAIL,
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs"
+        }))
 
         self.wolfram_client = wolframalpha.Client(self.WOLFRAM_APP_ID)
 

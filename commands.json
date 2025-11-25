@@ -1307,6 +1307,37 @@
 	},
 	{
 		"parent": {},
+		"name": "translate",
+		"alias": "",
+		"description": "Translates a provided text to a different language",
+		"example": "/translate [눈길 스쳐도 스치면 그만 춤을 췄어도 등 돌리면 돼] [English] [Korean",
+		"parameters": {
+			"text": {
+				"name": "text",
+				"description": "The text to be translated",
+				"type": "Text between 2 to 500 Characters",
+				"required": true,
+				"default": ""
+			},
+			"new_lang": {
+				"name": "new-language",
+				"description": "The language to translate the text to",
+				"type": "Set Choice",
+				"required": false,
+				"default": "English"
+			},
+			"old_lang": {
+				"name": "old-language",
+				"description": "The original language of the text, will be auto-detected if not provided",
+				"type": "Set Choice",
+				"required": false,
+				"default": "Google Translate Detect Language"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
 		"name": "unban",
 		"alias": "",
 		"description": "Unbans a user from this server",

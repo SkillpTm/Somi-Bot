@@ -83,8 +83,8 @@ class LastFmAlbum(nextcord_C.Cog):
         album_for_url = urllib.parse.quote_plus(album)
         album_response = requests.get(
             f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/{album_for_url}?date_preset={timeframe}",
-            cookies = Keychain().LAST_FM_COOKIES, # type: ignore
-            headers = Keychain().LAST_FM_HEADERS, # type: ignore
+            cookies = Keychain().LAST_FM_COOKIES,
+            headers = Keychain().LAST_FM_HEADERS,
             timeout = 10
         )
 
@@ -127,8 +127,8 @@ class LastFmAlbum(nextcord_C.Cog):
 
         count_response = requests.get(
             f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/{album_for_url}?date_preset={timeframe}",
-            cookies = Keychain().LAST_FM_COOKIES, # type: ignore
-            headers = Keychain().LAST_FM_HEADERS, # type: ignore
+            cookies = Keychain().LAST_FM_COOKIES,
+            headers = Keychain().LAST_FM_HEADERS,
             timeout = 10
         )
 

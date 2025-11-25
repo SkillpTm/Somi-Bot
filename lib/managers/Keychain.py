@@ -1,5 +1,6 @@
 import json
 import os
+import typing
 
 from google.oauth2 import service_account
 from google.cloud import translate_v2 as translate # type: ignore
@@ -38,8 +39,8 @@ class Keychain(metaclass=Singleton):
         self.YOUTUBE_API_KEY: str = os.getenv("YOUTUBE_API_KEY") or ""
 
         # Webscraping cookies/headers to get around last.fm login
-        self.LAST_FM_COOKIES: str = json.loads(os.getenv("LAST_FM_COOKIES") or "")
-        self.LAST_FM_HEADERS: str = json.loads(os.getenv("LAST_FM_HEADERS") or "")
+        self.LAST_FM_COOKIES: dict[str, typing.Any] = json.loads(os.getenv("LAST_FM_COOKIES") or "")
+        self.LAST_FM_HEADERS: dict[str, typing.Any] = json.loads(os.getenv("LAST_FM_HEADERS") or "")
 
         self.spotify_oauth = spotipy.SpotifyOAuth(
             client_id = self.SPOTIPY_CLIENT_ID,

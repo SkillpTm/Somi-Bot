@@ -51,7 +51,6 @@ class Config(metaclass=Singleton):
         self.GENIUS_ICON: str = config_data["LINKS"]["GENIUS_ICON"]
         self.HEADPHONES_ICON: str = config_data["LINKS"]["HEADPHONES_ICON"]
         self.LASTFM_ICON: str = config_data["LINKS"]["LASTFM_ICON"]
-        self.LINK_EMBED_ICON: str = config_data["LINKS"]["LINK_EMBED_ICON"]
         self.OPENWEATHERMAP_ICON: str = config_data["LINKS"]["OPENWEATHERMAP_ICON"]
         self.SOMI_BEST_GRILL_IMAGE: str = config_data["LINKS"]["SOMI_BEST_GRILL_IMAGE"]
         self.SOMICORD_INVITE: str = config_data["LINKS"]["SOMICORD_INVITE"]

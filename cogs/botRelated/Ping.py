@@ -19,11 +19,11 @@ class Ping(nextcord_C.Cog):
     @nextcord.slash_command(
         Commands().data["ping"].name,
         Commands().data["ping"].description,
-        integration_types=[
+        integration_types = [
             nextcord.IntegrationType.user_install,
             nextcord.IntegrationType.guild_install,
         ],
-        contexts=[
+        contexts = [
             nextcord.InteractionContextType.guild,
             nextcord.InteractionContextType.bot_dm,
             nextcord.InteractionContextType.private_channel,

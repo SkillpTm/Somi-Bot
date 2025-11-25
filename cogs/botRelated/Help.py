@@ -17,11 +17,11 @@ class Help(nextcord_C.Cog):
     @nextcord.slash_command(
         Commands().data["help"].name,
         Commands().data["help"].description,
-        integration_types=[
+        integration_types = [
             nextcord.IntegrationType.user_install,
             nextcord.IntegrationType.guild_install,
         ],
-        contexts=[
+        contexts = [
             nextcord.InteractionContextType.guild,
             nextcord.InteractionContextType.bot_dm,
             nextcord.InteractionContextType.private_channel,

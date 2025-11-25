@@ -56,11 +56,11 @@ class ParentCommand(nextcord_C.Cog):
     @nextcord.slash_command(
         name = "lastfm",
         name_localizations = {country_tag:"lf" for country_tag in nextcord.Locale},
-        integration_types=[
+        integration_types = [
             nextcord.IntegrationType.user_install,
             nextcord.IntegrationType.guild_install,
         ],
-        contexts=[
+        contexts = [
             nextcord.InteractionContextType.guild,
             nextcord.InteractionContextType.bot_dm,
             nextcord.InteractionContextType.private_channel,
@@ -73,11 +73,11 @@ class ParentCommand(nextcord_C.Cog):
     @nextcord.slash_command(
         name = "alarm",
         name_localizations = {country_tag:"reminder" for country_tag in nextcord.Locale},
-        integration_types=[
+        integration_types = [
             nextcord.IntegrationType.user_install,
             nextcord.IntegrationType.guild_install,
         ],
-        contexts=[
+        contexts = [
             nextcord.InteractionContextType.guild,
             nextcord.InteractionContextType.bot_dm,
             nextcord.InteractionContextType.private_channel,

@@ -80,7 +80,7 @@ class Translate(nextcord_C.Cog):
             author = f"{self.languages_key_name[old_lang]} --> {self.languages_key_name[new_lang]}",
             author_url = f"https://translate.google.com/?sl={old_lang}&tl={new_lang}",
             author_icon = Config().TRANSLATE_ICON,
-            description = f"## **Original Text ({old_lang}):**\n{text}\n**## Translated Text ({new_lang}):**```{html.unescape(result['translatedText'])}```",
+            description = f"## Original Text `{old_lang}`\n{text}\n## Translated Text `{new_lang}` ```{html.unescape(result['translatedText'])}```",
         )
 
         await interaction.send(embed=embed)

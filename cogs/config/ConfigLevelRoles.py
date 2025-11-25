@@ -81,7 +81,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    f"/{Commands().data["config level-roles"].name}:",
+                    f"/{Commands().data["config level-roles"].full_name}:",
                     mod_action,
                     False
                 )

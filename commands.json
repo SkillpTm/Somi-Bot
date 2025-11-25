@@ -496,7 +496,7 @@
 			},
 			"reason": {
 				"name": "reason",
-				"description": "The reason why they were kicked (this will be DMed to the User)",
+				"description": "The reason why they were kicked",
 				"type": "Text between 2 to 1000 Characters",
 				"required": false,
 				"default": ""

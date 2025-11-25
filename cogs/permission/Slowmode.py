@@ -64,7 +64,7 @@ class Slowmode(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    f"/{Commands().data["slowmode"].name}:",
+                    f"/{Commands().data["slowmode"].full_name}:",
                     mod_action,
                     False
                 )

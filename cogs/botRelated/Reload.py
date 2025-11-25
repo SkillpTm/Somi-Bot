@@ -53,7 +53,7 @@ class Reload(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    f"/{Commands().data["sudo reload"].name}:",
+                    f"/{Commands().data["sudo reload"].full_name}:",
                     f"{interaction.user.mention} reloaded the bot!",
                     False
                 )

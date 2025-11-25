@@ -70,7 +70,7 @@ class CustomDelete(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    f"/{Commands().data["custom delete"].name}:",
+                    f"/{Commands().data["custom delete"].full_name}:",
                     f"{interaction.user.mention} deleted: `{name}` from the custom-commands.",
                     False
                 ),
@@ -110,7 +110,7 @@ class CustomDelete(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    f"/{Commands().data["custom delete"].name}:",
+                    f"/{Commands().data["custom delete"].full_name}:",
                     f"{interaction.user.mention} deleted: all the custom-commands.",
                     False
                 )

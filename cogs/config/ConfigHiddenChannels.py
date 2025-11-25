@@ -69,7 +69,7 @@ class ConfigHiddenChannels(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    f"/{Commands().data["config hidden-channels"].name}:",
+                    f"/{Commands().data["config hidden-channels"].full_name}:",
                     mod_action,
                     False
                 )

@@ -2,7 +2,7 @@ import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
-from lib.managers import Commands, Logger
+from lib.managers import Commands
 from lib.modules import SomiBot
 
 
@@ -49,16 +49,7 @@ class Kick(nextcord_C.Cog):
             await interaction.send(embed=EmbedFunctions().get_error_message("You can only kick a member, if your current top-role is above their current top-role!"))
             return
 
-        try:
-            if reason:
-                await member.send(f"You have been __**kicked**__ from `{member.guild.name}`\nFor the reason:\n`{reason}`")
-            else:
-                await member.send(f"You have been __**kicked**__ from `{member.guild.name}`\nThere was no provided reason.")
-        except nextcord.Forbidden:
-            Logger().action_warning(f"/kick send ~ User: {member.id} couldn't be notified, because their pms aren't open to the client")
-
-        await interaction.guild.kick(user = member, reason = reason)
-
+        await interaction.guild.kick(member, reason=reason)
         await interaction.send(embed=EmbedFunctions().get_success_message(f"Succesfully kicked {member.mention}."))
 
 

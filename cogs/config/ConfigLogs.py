@@ -84,7 +84,7 @@ class ConfigLogs(nextcord_C.Cog):
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
-                    f"/{Commands().data["config logs"].name}:",
+                    f"/{Commands().data["config logs"].full_name}:",
                     mod_action,
                     False
                 )

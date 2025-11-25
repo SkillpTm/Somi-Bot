@@ -7,7 +7,7 @@ from cogs.basic.ParentCommand import ParentCommand
 from lib.database import db
 from lib.helpers import EmbedField, EmbedFunctions, LevelRoles
 from lib.managers import Commands, Config
-from lib.modules import SomiBot
+from lib.modules import SomiBot, YesNoButtons
 
 
 
@@ -26,11 +26,11 @@ class ConfigLevelRoles(nextcord_C.Cog):
         self,
         interaction: nextcord.Interaction[SomiBot],
         *,
-        action: typing.Literal["Add", "Remove"] = nextcord.SlashOption(
+        action: typing.Literal["Add", "Remove", "Remove All"] = nextcord.SlashOption(
             Commands().data["config level-roles"].parameters["action"].name,
             Commands().data["config level-roles"].parameters["action"].description,
             required = True,
-            choices = ["Add", "Remove"]
+            choices = ["Add", "Remove", "Remove All"]
         ),
         role: nextcord.Role = nextcord.SlashOption(
             Commands().data["config level-roles"].parameters["role"].name,
@@ -64,6 +64,12 @@ class ConfigLevelRoles(nextcord_C.Cog):
                 return
 
             mod_action = f"{interaction.user.mention} removed: {role.mention} from the level-roles."
+
+        elif action == "Remove All":
+            if not await self.remove_all(interaction):
+                return
+
+            mod_action = f"{interaction.user.mention} removed **ALL** level-roles."
 
 
         if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):
@@ -124,6 +130,22 @@ class ConfigLevelRoles(nextcord_C.Cog):
         await LevelRoles.update_users(interaction.guild) # type: ignore
 
         return deleted
+
+
+    async def remove_all(self, interaction: nextcord.Interaction[SomiBot]) -> bool:
+        """Removes all level-roles after user confirmation"""
+
+        view = YesNoButtons(interaction=interaction) # type: ignore
+        await interaction.send(embed=EmbedFunctions().get_info_message("Do you really want to remove **ALL** your level-roles __**(they can't be recovered)**__?"), view=view)
+        await view.wait()
+
+        if not view.value:
+            await interaction.send(embed=EmbedFunctions().get_error_message("Your level-roles have **not** been removed!"))
+            return False
+
+        await db.LevelRole._.delete(where={db.LevelRole.SERVER: interaction.guild.id}, limit=1_000_000)
+
+        return True
 
 
 

@@ -7,7 +7,7 @@ from cogs.basic.ParentCommand import ParentCommand
 from lib.database import db
 from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Commands, Config, Lists
-from lib.modules import SomiBot
+from lib.modules import SomiBot, YesNoButtons
 
 
 
@@ -25,11 +25,11 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
     async def config_level_ignore_channels(
         self,
         interaction: nextcord.Interaction[SomiBot],
-        action: typing.Literal["Add", "Remove"] = nextcord.SlashOption(
+        action: typing.Literal["Add", "Remove", "Remove All"] = nextcord.SlashOption(
             Commands().data["config level-ignore-channels"].parameters["action"].name,
             Commands().data["config level-ignore-channels"].parameters["action"].description,
             required = True,
-            choices = ["Add", "Remove"]
+            choices = ["Add", "Remove", "Remove All"]
         ),
         channel: nextcord.TextChannel | nextcord.Thread = nextcord.SlashOption(
             Commands().data["config level-ignore-channels"].parameters["channel"].name,
@@ -54,6 +54,12 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
                 return
 
             mod_action = f"{interaction.user.mention} removed: {channel.mention} from the level-ignore-channels."
+
+        elif action == "Remove All":
+            if not await self.remove_all(interaction):
+                return
+
+            mod_action = f"{interaction.user.mention} removed **ALL** level-ignore-channels."
 
 
         if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):
@@ -103,6 +109,22 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
 
         await interaction.send(embed=EmbedFunctions().get_success_message(f"{channel.mention} has been removed from the level-ignore-channels.\n You can now earn XP there again."), ephemeral=True)
         return deleted
+
+
+    async def remove_all(self, interaction: nextcord.Interaction[SomiBot]) -> bool:
+        """Removes all level-ignore-channels after user confirmation."""
+
+        view = YesNoButtons(interaction=interaction) # type: ignore
+        await interaction.send(embed=EmbedFunctions().get_info_message("Do you really want to remove **ALL** your level-ignore-channels __**(they can't be recovered)**__?"), view=view)
+        await view.wait()
+
+        if not view.value:
+            await interaction.send(embed=EmbedFunctions().get_error_message("Your level-ignore-channels have **not** been removed!"))
+            return False
+
+        await db.LevelIgnoreChannel._.delete(where={db.LevelIgnoreChannel.SERVER: interaction.guild.id}, limit=1_000_000)
+
+        return True
 
 
 

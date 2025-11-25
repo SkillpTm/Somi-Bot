@@ -1310,7 +1310,7 @@
 		"name": "translate",
 		"alias": "",
 		"description": "Translates a provided text to a different language",
-		"example": "/translate [눈길 스쳐도 스치면 그만 춤을 췄어도 등 돌리면 돼] [English] [Korean",
+		"example": "/translate [눈길 스쳐도 스치면 그만 춤을 췄어도 등 돌리면 돼] [English] [Korean]",
 		"parameters": {
 			"text": {
 				"name": "text",

@@ -32,8 +32,8 @@ class StatisticCounter(nextcord_C.Cog):
             {
                 db.Statistic.ATTACHMENTS: len(message.attachments),
                 db.Statistic.CHARS: len(re.sub(self.emoji_pattern, "_",message.content)),
-                db.Statistic.EMOTES: len(list(re.finditer(self.emoji_pattern, message.content, re.IGNORECASE))),
-                db.Statistic.LINKS: len(list(re.finditer(self.link_pattern, message.content, re.IGNORECASE))),
+                db.Statistic.EMOTES: len(list(re.finditer(self.emoji_pattern, message.content))),
+                db.Statistic.LINKS: len(list(re.finditer(self.link_pattern, message.content))),
                 db.Statistic.MESSAGES: 1,
                 db.Statistic.REPLIES: 1 if message.reference and message.reference.type == nextcord.MessageReferenceType.default else 0,
                 db.Statistic.STICKERS: len(message.stickers),

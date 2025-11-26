@@ -28,6 +28,7 @@ class Config(metaclass=Singleton):
         # Colors
         self.BOT_COLOR = int(config_data["COLORS"]["BOT"], 16)
         self.GENIUS_COLOR = int(config_data["COLORS"]["GENIUS"], 16)
+        self.ICHART_COLOR = int(config_data["COLORS"]["ICHART"], 16)
         self.LASTFM_COLOR = int(config_data["COLORS"]["LASTFM"], 16)
         self.PERMISSION_COLOR = int(config_data["COLORS"]["PERMISSION"], 16)
         self.TRANSLATE_COLOR = int(config_data["COLORS"]["TRANSLATE"], 16)
@@ -51,6 +52,7 @@ class Config(metaclass=Singleton):
         self.DEFAULT_PFP: str = config_data["LINKS"]["DEFAULT_PFP"]
         self.GENIUS_ICON: str = config_data["LINKS"]["GENIUS_ICON"]
         self.HEADPHONES_ICON: str = config_data["LINKS"]["HEADPHONES_ICON"]
+        self.ICHART_ICON: str = config_data["LINKS"]["ICHART_ICON"]
         self.LASTFM_ICON: str = config_data["LINKS"]["LASTFM_ICON"]
         self.OPENWEATHERMAP_ICON: str = config_data["LINKS"]["OPENWEATHERMAP_ICON"]
         self.SOMI_BEST_GRILL_IMAGE: str = config_data["LINKS"]["SOMI_BEST_GRILL_IMAGE"]

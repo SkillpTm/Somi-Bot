@@ -9,6 +9,7 @@
     "COLORS": {
         "BOT": "0x000000",
         "GENIUS": "0x000000",
+		"ICHART": "0x000000",
         "LASTFM": "0x000000",
         "PERMISSION": "0x000000"
 		"TRANSLATE": "0x000000"
@@ -31,7 +32,8 @@
         "CLOCK_ICON": "https://example.com/name.ext",
         "DEFAULT_PFP": "https://example.com/name.ext",
         "GENIUS_ICON": "https://example.com/name.ext",
-		"HEADPHONES_ICON": "https://example.com/name.ext", 
+		"HEADPHONES_ICON": "https://example.com/name.ext",
+		"ICHART_ICON": "https://example.com/name.ext",
         "LASTFM_ICON": "https://example.com/name.ext",
         "OPENWEATHERMAP_ICON": "https://example.com/name.ext",
         "SOMI_BEST_GRILL_IMAGE": "https://example.com/name.ext",

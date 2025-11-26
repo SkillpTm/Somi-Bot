@@ -473,6 +473,15 @@
 	},
 	{
 		"parent": {},
+		"name": "ichart",
+		"alias": "",
+		"description": "Shows the top 10 ranked songs on iChart right now",
+		"example": "/ichart",
+		"parameters": {},
+		"permissions": []
+	},
+	{
+		"parent": {},
 		"name": "invite",
 		"alias": "",
 		"description": "Posts the invite link for the bot",

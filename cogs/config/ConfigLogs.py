@@ -66,7 +66,7 @@ class ConfigLogs(nextcord_C.Cog):
                 return
 
             if not (channel_id := int(await self.log_types[log_type].get(interaction.guild.id) or 0)):
-                await interaction.send(embed=EmbedFunctions().get_error_message(f"This server has no `{log_type}` to reset."))
+                await interaction.send(embed=EmbedFunctions.get_error_message(f"This server has no `{log_type}` to reset."))
                 return
 
             channel = typing.cast(nextcord.TextChannel | nextcord.Thread | None, interaction.guild.get_channel(channel_id)) or channel
@@ -76,9 +76,9 @@ class ConfigLogs(nextcord_C.Cog):
             mod_action = f"{interaction.user.mention} {action.lower()}: <#{channel_id}> as the `{log_type}` channel."
 
         await self.log_types[log_type].set(interaction.guild.id, data)
-        await interaction.send(embed=EmbedFunctions().get_success_message(response))
+        await interaction.send(embed=EmbedFunctions.get_success_message(response))
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().PERMISSION_COLOR,
             author = log_type if self.log_types[log_type].value else "All Logs",
             author_icon = interaction.user.display_avatar.url,
@@ -110,16 +110,16 @@ class ConfigLogs(nextcord_C.Cog):
             channels[val].append(types_log[key])
 
         if not channels:
-            await interaction.send(embed=EmbedFunctions().get_error_message("This server has no log channels to reset."))
+            await interaction.send(embed=EmbedFunctions.get_error_message("This server has no log channels to reset."))
             return
 
         await self.log_types[log_type].set(interaction.guild.id, {val: None for val in self.log_types.values() if val.value})
-        await interaction.send(embed=EmbedFunctions().get_success_message("You successfully reset **all** this server's logs."))
+        await interaction.send(embed=EmbedFunctions.get_success_message("You successfully reset **all** this server's logs."))
 
         for channel_id, log_names in channels.items():
             channel = interaction.guild.get_channel(channel_id)
 
-            embed = EmbedFunctions().builder(
+            embed = EmbedFunctions.builder(
                 color = Config().PERMISSION_COLOR,
                 author = "All Logs",
                 author_icon = interaction.user.display_avatar.url,

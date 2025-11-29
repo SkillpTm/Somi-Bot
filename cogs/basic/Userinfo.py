@@ -55,7 +55,7 @@ class Userinfo(nextcord_C.Cog):
             booster = "Yes" if member.premium_since else "No"
             joined_time = f"<t:{int(time.mktime(member.joined_at.timetuple()))}>"
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = user.accent_color or Config().BOT_COLOR,
             thumbnail = user.display_avatar.url,
             image = user.banner.url if user.banner else "",

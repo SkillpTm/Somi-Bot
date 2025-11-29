@@ -47,7 +47,7 @@ class Wolfram(nextcord_C.Cog):
         try:
             result = next(Keychain().wolfram_client.query(query).results).text
         except StopIteration:
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"Wolfram couldn't find a result for your query:\n`{query}`"))
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"Wolfram couldn't find a result for your query:\n`{query}`"))
             return
 
         embed = EmbedFunctions.builder(

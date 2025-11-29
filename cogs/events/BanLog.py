@@ -58,7 +58,7 @@ class BanLog(nextcord_C.Cog):
             {"guild": str(guild.id), "banned": str(banned.id), "reason": reason or ""}
         )
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.brand_red(),
             author = "Ban Log",
             author_icon = banner.display_avatar.url,
@@ -118,7 +118,7 @@ class BanLog(nextcord_C.Cog):
             {"guild": str(guild.id), "unbanned": str(unbanned.id), "reason": reason}
         )
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.orange(),
             author = "Unban Log",
             author_icon = unbanner.display_avatar.url,

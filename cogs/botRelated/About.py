@@ -34,7 +34,7 @@ class About(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
             author = f"{self.client.user}",
             author_icon = self.client.user.display_avatar.url,

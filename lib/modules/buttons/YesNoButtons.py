@@ -22,7 +22,7 @@ class YesNoButtons(nextcord.ui.View):
         original_user = self.interaction.user if self.interaction else self.response.author
 
         if original_user.id != interaction.user.id:
-            await interaction.send(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions.get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return
 
         self.value = True
@@ -37,7 +37,7 @@ class YesNoButtons(nextcord.ui.View):
         original_user = self.interaction.user if self.interaction else self.response.author
 
         if original_user.id != interaction.user.id:
-            await interaction.send(embed=EmbedFunctions().get_error_message("You can only use buttons on your own commands."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions.get_error_message("You can only use buttons on your own commands."), ephemeral=True)
             return
 
         self.value = False

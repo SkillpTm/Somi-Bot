@@ -26,7 +26,7 @@ class JoinLog(nextcord_C.Cog):
         if not (join_log := member.guild.get_channel(int(await db.Server.JOIN_LOG.get(member.guild.id) or 0))):
             return
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.green(),
             author = "Join Log",
             author_icon = member.display_avatar.url,

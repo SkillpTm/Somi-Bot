@@ -30,7 +30,7 @@ class ReminderList(nextcord_C.Cog):
             db.Reminder.TIME,
             Order.ASCENDING
         ))):
-            await interaction.send(embed=EmbedFunctions().get_error_message("You don't have any Reminders.\nTo add a reminder use `/reminder add`."))
+            await interaction.send(embed=EmbedFunctions.get_error_message("You don't have any Reminders.\nTo add a reminder use `/reminder add`."))
             return
 
         #     output += f"<t:{db.Reminder.TIME.retrieve(entry)}:F> // ID: {db.Reminder.ID.retrieve(entry)} - [Link]({db.Reminder.LINK.retrieve(entry)})\nReminder: `{reminder_text}`\n\n"
@@ -52,7 +52,7 @@ class ReminderList(nextcord_C.Cog):
 
             output.append(f"`{index+1 + 10*(page-1)}.` [{db.Reminder.ID.retrieve(entry)}]({db.Reminder.LINK.retrieve(entry)}): <t:{db.Reminder.TIME.retrieve(entry)}:f>\n{text}")
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
             author = f"Reminders for {interaction.user.display_name}",
             author_icon = interaction.guild.icon.url if interaction.guild.icon else Config().DEFAULT_PFP,

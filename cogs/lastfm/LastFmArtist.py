@@ -49,7 +49,7 @@ class LastFmArtist(nextcord_C.Cog):
         timeframe = timeframe or Lists().LASTFM_TIMEFRAMES_WEBSCRAPING["All Time"]
 
         if not (lastfm_username := str(await db.User.LASTFM.get(interaction.user.id) or "")):
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
@@ -58,7 +58,7 @@ class LastFmArtist(nextcord_C.Cog):
             np_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&username={lastfm_username}&limit=1&api_key={Keychain().LAST_FM_API_KEY}&format=json", timeout=10)
 
             if np_response.status_code != 200:
-                await interaction.send(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
+                await interaction.send(embed=EmbedFunctions.get_error_message("LastFm didn't respond correctly, try in a few minutes again!"))
                 return
 
             # get the artist they're listening to/last listened to from the recent tracks
@@ -74,18 +74,18 @@ class LastFmArtist(nextcord_C.Cog):
         )
 
         if artist_response.status_code != 200:
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"The artist `{artist}` couldn't be found on LastFm."))
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"The artist `{artist}` couldn't be found on LastFm."))
             return
 
         soup = BeautifulSoup(artist_response.content, "html.parser")
 
         if "didn't scrobble any albums by this artist during the selected date range. Try expanding the date range or view scrobbles for " in str(soup.text):
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"{user.mention} hasn't listened to the artist `{artist}` in the timeframe: `{Lists().LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}`"))
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"{user.mention} hasn't listened to the artist `{artist}` in the timeframe: `{Lists().LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}`"))
             return
 
-        type_name, _, cover_image_url, metadata_list, track_output, album_output = Webscrape().library_subpage(soup, artist_for_url, "artist")
+        type_name, _, cover_image_url, metadata_list, track_output, album_output = Webscrape.library_subpage(soup, artist_for_url, "artist")
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().LASTFM_COLOR,
             thumbnail = cover_image_url,
             author = f"{user.display_name} × {type_name}: {Lists().LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}",
@@ -122,7 +122,7 @@ class LastFmArtist(nextcord_C.Cog):
         if count_response.status_code != 200:
             return ""
 
-        _, _, _, metadata_list, _, _ = Webscrape().library_subpage(BeautifulSoup(count_response.content, "html.parser"), artist_for_url, "artist")
+        _, _, _, metadata_list, _, _ = Webscrape.library_subpage(BeautifulSoup(count_response.content, "html.parser"), artist_for_url, "artist")
 
         return f"{metadata_list[0]} artist Scrobbles, {Lists().LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}"
 

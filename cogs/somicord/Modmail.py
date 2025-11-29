@@ -31,16 +31,16 @@ class Modmail(nextcord_C.Cog):
             return
 
         if len(message.content) < 50:
-            await message.channel.send(embed=EmbedFunctions().get_error_message("Your modmail must be longer than 50 characters! Please describe your problem precisely!"))
+            await message.channel.send(embed=EmbedFunctions.get_error_message("Your modmail must be longer than 50 characters! Please describe your problem precisely!"))
             return
 
-        response = await message.reply(embed=EmbedFunctions().get_info_message("Do you really want to submit this as a modmail?"), mention_author=False)
+        response = await message.reply(embed=EmbedFunctions.get_info_message("Do you really want to submit this as a modmail?"), mention_author=False)
         view = YesNoButtons(response=response)
         await response.edit(embed=response.embeds[0], view=view, delete_after=70)
         await view.wait()
 
         if not view.value:
-            await response.reply(embed=EmbedFunctions().get_error_message("Your modmail has **not** been submitted!"), mention_author=False)
+            await response.reply(embed=EmbedFunctions.get_error_message("Your modmail has **not** been submitted!"), mention_author=False)
             return
 
         Logger().action_log(message, "modmail", {"message": message.content})
@@ -72,7 +72,7 @@ class Modmail(nextcord_C.Cog):
                 if not member.bot and member.id != 108218817531887616: # exclude inactive owner
                     await user_thread.add_user(member)
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().PERMISSION_COLOR,
             thumbnail = message.author.display_avatar.url,
             title = f"Modmail by {message.author.display_name}",
@@ -100,7 +100,7 @@ class Modmail(nextcord_C.Cog):
         if file_urls:
             await sent_modmail.reply(content=file_urls, mention_author=False)
 
-        await message.reply(embed=EmbedFunctions().get_success_message("Your modmail has been submitted!"), mention_author=False)
+        await message.reply(embed=EmbedFunctions.get_success_message("Your modmail has been submitted!"), mention_author=False)
         await db.Telemetry.AMOUNT.increment("modmail send")
 
 

@@ -56,7 +56,7 @@ class DeleteLog(nextcord_C.Cog):
             {"message": message.content}
         )
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.brand_red(),
             author = "Delete Log",
             author_icon = message.author.display_avatar.url,
@@ -88,7 +88,7 @@ class DeleteLog(nextcord_C.Cog):
             {"message": message.content, "removed by": str(remover.id)}
         )
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.brand_red(),
             author = "Remove Log",
             author_icon = remover.display_avatar.url,

@@ -31,7 +31,7 @@ class ConfigInfo(nextcord_C.Cog):
 
         logs_output, default_role_output, hidden_channels_output, level_ignore_channels_output, level_roles_output = await self.get_config_data(interaction)
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().PERMISSION_COLOR,
             title = f"Configuration of: `{interaction.guild.name}`",
             fields = [

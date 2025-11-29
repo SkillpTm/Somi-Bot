@@ -45,20 +45,20 @@ class CustomAdd(nextcord_C.Cog):
 
         # make sure name is only letters and numbers
         if not re.match(r"^[a-z0-9]+$", name):
-            await interaction.send(embed=EmbedFunctions().get_error_message("You can only have letters and numbers in your custom-command name!"))
+            await interaction.send(embed=EmbedFunctions.get_error_message("You can only have letters and numbers in your custom-command name!"))
             return
 
         if not await db.CustomCommand._.add({db.CustomCommand.NAME: name, db.CustomCommand.TEXT: text, db.CustomCommand.SERVER: interaction.guild.id}):
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"A custom-command with the name `{name}` already exists.\nTo get a list of the custom-commands use `/custom-list`."))
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"A custom-command with the name `{name}` already exists.\nTo get a list of the custom-commands use `/custom-list`."))
             return
 
-        await interaction.send(embed=EmbedFunctions().get_success_message(f"Your custom-command with the name `{name}` has been created."))
+        await interaction.send(embed=EmbedFunctions.get_success_message(f"Your custom-command with the name `{name}` has been created."))
 
 
         if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):
             return
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().PERMISSION_COLOR,
             author = "Command Log",
             author_icon = interaction.user.display_avatar.url,

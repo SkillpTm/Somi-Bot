@@ -57,7 +57,7 @@ class KickLog(nextcord_C.Cog):
             {"kicked": str(kicked.id), "reason": reason}
         )
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.brand_red(),
             author = "Kick Log",
             author_icon = kicker.display_avatar.url,

@@ -35,7 +35,7 @@ class CustomList(nextcord_C.Cog):
             db.CustomCommand.NAME,
             Order.ASCENDING)
         )):
-            await interaction.send(embed=EmbedFunctions().get_error_message("There are no custom-commands on this server.\nTo add a custom-command use `/custom add`."))
+            await interaction.send(embed=EmbedFunctions.get_error_message("There are no custom-commands on this server.\nTo add a custom-command use `/custom add`."))
             return
 
         await self.custom_list_rec(interaction, all_commandnames, 1)
@@ -55,7 +55,7 @@ class CustomList(nextcord_C.Cog):
 
             output.append(f"`{index+1 + 10*(page-1)}.` /cc [{db.CustomCommand.NAME.retrieve(entry)}]: {text}")
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
             author = f"Custom Commands on {interaction.guild.name}",
             author_icon = interaction.guild.icon.url if interaction.guild.icon else Config().DEFAULT_PFP,

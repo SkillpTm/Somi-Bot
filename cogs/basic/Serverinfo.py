@@ -27,7 +27,7 @@ class Severinfo(nextcord_C.Cog):
 
         guild_with_counts = await self.client.fetch_guild(interaction.guild.id, with_counts=True)
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
             thumbnail = interaction.guild.icon.url if interaction.guild.icon else Config().DEFAULT_PFP,
             image = interaction.guild.banner.url if interaction.guild.banner else "",

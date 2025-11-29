@@ -51,7 +51,7 @@ class Weather(nextcord_C.Cog):
         response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?appid={Keychain().WEATHER_API_KEY}&q={urllib.parse.quote_plus(location)}&units=metric", timeout=10)
 
         if response.status_code != 200:
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"{location} couldn't be found."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"{location} couldn't be found."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
@@ -75,7 +75,7 @@ class Weather(nextcord_C.Cog):
         output_data["imperial_wind_speed"] = str(round(response_json["wind"]["speed"] * 3.6 * 1.609)) # km/h * 1,609 = mph
         output_data["name"] = str(response_json["name"])
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
             title = f"Weather in: {output_data["name"]}, {output_data["country"]}",
             title_url = f"https://openweathermap.org/city/{output_data["id"]}",

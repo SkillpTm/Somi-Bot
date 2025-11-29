@@ -20,9 +20,9 @@ class Restart(nextcord_C.Cog):
     async def restart(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command restarts the bot, it can only be executed from a moderator on Somicord"""
 
-        await interaction.send(embed=EmbedFunctions().get_success_message("Restarting bot..."), ephemeral=True)
+        await interaction.send(embed=EmbedFunctions.get_success_message("Restarting bot..."), ephemeral=True)
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().PERMISSION_COLOR,
             author = "Dev Activity",
             author_icon = interaction.user.display_avatar.url,

@@ -29,7 +29,7 @@ class KeywordList(nextcord_C.Cog):
             order_by = db.Keyword.KEYWORD,
             order = Order.ASCENDING)
         )):
-            await interaction.send(embed=EmbedFunctions().get_error_message("You don't have any keywords.\nTo add a keyword use `/keyword add`."))
+            await interaction.send(embed=EmbedFunctions.get_error_message("You don't have any keywords.\nTo add a keyword use `/keyword add`."))
             return
 
         await self.keyword_list_rec(interaction, all_keywords, 1)
@@ -46,7 +46,7 @@ class KeywordList(nextcord_C.Cog):
 
             output.append(f"`{index+1 + 10*(page-1)}.` {keyword}")
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
             author = f"Keywords for {interaction.user.display_name}",
             author_icon = interaction.user.display_avatar.url,

@@ -47,7 +47,7 @@ class LeaveLog(nextcord_C.Cog):
             if entry.target.id == member.id:
                 return
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.brand_red(),
             author = "Leave Log",
             author_icon = member.display_avatar.url,

@@ -51,7 +51,7 @@ class LevelsLeaderboard(nextcord_C.Cog):
         server_icon_url = interaction.guild.icon.url if interaction.guild.icon else Config().DEFAULT_PFP
         footer, footer_time = self.client.joined_time_footer(interaction)
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
             thumbnail = server_icon_url,
             title = f"`{interaction.guild.name}`: Top users by level",

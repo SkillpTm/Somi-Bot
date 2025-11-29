@@ -52,7 +52,7 @@ class Statistics(nextcord_C.Cog):
         days_since_joined = math.ceil((datetime.datetime.now(datetime.timezone.utc) - interaction.user.joined_at).total_seconds() / 86400) # type: ignore
         footer, footer_time = self.client.joined_time_footer(interaction)
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
             thumbnail = interaction.user.display_avatar.url,
             title = f"Server Statistics: `{interaction.user.display_name}`",

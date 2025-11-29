@@ -42,11 +42,11 @@ class ReminderDelete(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if not reminder_id and not delete_all:
-            await interaction.send(embed=EmbedFunctions().get_error_message("Please either provide an ID or choose to delete all your reminders."))
+            await interaction.send(embed=EmbedFunctions.get_error_message("Please either provide an ID or choose to delete all your reminders."))
             return
 
         if not await db.Reminder._.get_all(where={db.Reminder.USER: interaction.user.id}):
-            await interaction.send(embed=EmbedFunctions().get_error_message("You don't have any reminders to be deleted!"))
+            await interaction.send(embed=EmbedFunctions.get_error_message("You don't have any reminders to be deleted!"))
             return
 
         if delete_all == "Yes":
@@ -55,30 +55,30 @@ class ReminderDelete(nextcord_C.Cog):
 
 
         if not reminder_id.isdigit():
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"`{reminder_id}` isn't a valid reminder id."))
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"`{reminder_id}` isn't a valid reminder id."))
             return
 
         if not await db.Reminder._.delete({db.Reminder.ID: reminder_id, db.Reminder.USER: interaction.user.id}):
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"You don't have a reminder with the ID `{reminder_id}`.\nTo get a list of your reminders use `/reminder list`."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"You don't have a reminder with the ID `{reminder_id}`.\nTo get a list of your reminders use `/reminder list`."), ephemeral=True)
             return
 
-        await interaction.send(embed=EmbedFunctions().get_success_message(f"Your reminder `{reminder_id}` has been deleted."))
+        await interaction.send(embed=EmbedFunctions.get_success_message(f"Your reminder `{reminder_id}` has been deleted."))
 
 
     async def delete_all(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """asks the user if they want to delete all their reminders and does as answered"""
 
         view = YesNoButtons(interaction=interaction) # type: ignore
-        await interaction.send(embed=EmbedFunctions().get_info_message("Do you really want to delete **ALL** your reminders __**(they can't be recovered)?**__"), view=view, ephemeral=True)
+        await interaction.send(embed=EmbedFunctions.get_info_message("Do you really want to delete **ALL** your reminders __**(they can't be recovered)?**__"), view=view, ephemeral=True)
         await view.wait()
 
         if not view.value:
-            await interaction.send(embed=EmbedFunctions().get_error_message("Your reminders have **not** been deleted!"))
+            await interaction.send(embed=EmbedFunctions.get_error_message("Your reminders have **not** been deleted!"))
             return
 
         await db.Reminder._.delete({db.Reminder.USER: interaction.user.id}, limit=1_000_000)
 
-        await interaction.send(embed=EmbedFunctions().get_success_message("**ALL** your reminders have been deleted!"))
+        await interaction.send(embed=EmbedFunctions.get_success_message("**ALL** your reminders have been deleted!"))
         return
 
 

@@ -36,14 +36,14 @@ class LastFmSet(nextcord_C.Cog):
         info_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.getinfo&username={lastfm_username}&api_key={Keychain().LAST_FM_API_KEY}&format=json", timeout=10)
 
         if info_response.status_code != 200:
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"The user `{lastfm_username}` couldn't be found on LastFm."))
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"The user `{lastfm_username}` couldn't be found on LastFm."))
             return
 
         username_response = info_response.json()["user"]["name"]
 
         await db.User.LASTFM.set(interaction.user.id, username_response)
 
-        await interaction.send(embed=EmbedFunctions().get_success_message(f"You were succesfully connected with the LastFm user `{username_response}`"))
+        await interaction.send(embed=EmbedFunctions.get_success_message(f"You were succesfully connected with the LastFm user `{username_response}`"))
 
 
     @ParentCommand.lastfm.subcommand(Commands().data["lf reset"].name, Commands().data["lf reset"].description)
@@ -53,12 +53,12 @@ class LastFmSet(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if not await db.User.LASTFM.get(interaction.user.id):
-            await interaction.send(embed=EmbedFunctions().get_error_message("You don't have a LastFm account setup."))
+            await interaction.send(embed=EmbedFunctions.get_error_message("You don't have a LastFm account setup."))
             return
 
         await db.User.LASTFM.set(interaction.user.id, None)
 
-        await interaction.send(embed=EmbedFunctions().get_success_message("You succesfully reset your LastFm account."))
+        await interaction.send(embed=EmbedFunctions.get_success_message("You succesfully reset your LastFm account."))
 
 
 

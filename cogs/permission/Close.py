@@ -38,7 +38,7 @@ class Close(nextcord_C.Cog):
 
         # if all relevant permissions are already turned off, the server is already closed
         if all(not permission for permission in permissions_to_check):
-            await interaction.send(embed=EmbedFunctions().get_error_message("The server is already closed.\n To re-open it use `/open`"))
+            await interaction.send(embed=EmbedFunctions.get_error_message("The server is already closed.\n To re-open it use `/open`"))
             return
 
         await interaction.guild.edit(invites_disabled = True)
@@ -53,12 +53,12 @@ class Close(nextcord_C.Cog):
                 )
             )
 
-        await interaction.send(embed=EmbedFunctions().get_success_message("Closed the server sucessfully.\n To re-open it use `/open`"))
+        await interaction.send(embed=EmbedFunctions.get_success_message("Closed the server sucessfully.\n To re-open it use `/open`"))
 
         if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):
             return
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.dark_red(),
             author = "Command Log",
             author_icon = interaction.user.display_avatar.url,
@@ -98,7 +98,7 @@ class Close(nextcord_C.Cog):
 
         # if all relevant permissions are already turned on, the server is already open
         if all(permission for permission in permissions_to_check):
-            await interaction.send(embed=EmbedFunctions().get_error_message("The server is already open.\n To close it use `/close`"))
+            await interaction.send(embed=EmbedFunctions.get_error_message("The server is already open.\n To close it use `/close`"))
             return
 
         await interaction.guild.edit(invites_disabled = False)
@@ -113,13 +113,13 @@ class Close(nextcord_C.Cog):
                 )
             )
 
-        await interaction.send(embed=EmbedFunctions().get_success_message("Re-opened the server sucessfully."))
+        await interaction.send(embed=EmbedFunctions.get_success_message("Re-opened the server sucessfully."))
 
 
         if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):
             return
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.dark_red(),
             author = "Command Log",
             author_icon = interaction.user.display_avatar.url,

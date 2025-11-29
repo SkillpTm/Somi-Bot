@@ -54,7 +54,7 @@ class ReminderSend(nextcord_C.Cog):
                 }
             )
 
-            embed = EmbedFunctions().builder(
+            embed = EmbedFunctions.builder(
                 color = Config().BOT_COLOR,
                 title = "Reminder Notification",
                 title_url = str(db.Reminder.LINK.retrieve(entry) or ""),

@@ -30,7 +30,7 @@ class LevelsOverview(nextcord_C.Cog):
         if not (output_ignore_channels := "".join(f"<#{channel}>\n" for channel in await db.LevelIgnoreChannel.ID.get_all(where={db.LevelIgnoreChannel.SERVER: interaction.guild.id}))):
             output_ignore_channels = "`In this server you can earn XP in all channels`"
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
             title = "Levels Overview",
             fields = [

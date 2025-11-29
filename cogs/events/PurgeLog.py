@@ -64,7 +64,7 @@ class PurgeLog(nextcord_C.Cog):
         # we create the csv first to reduce delay between the inital embed and the csv response message
         csv_name = Misc.make_bulk_messages_csv(messages)
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.brand_red(),
             author = "Purge Log",
             author_icon = purger.display_avatar.url,

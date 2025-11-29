@@ -65,7 +65,7 @@ class KeywordSend(nextcord_C.Cog):
 
             keywords_info = f"{keywords_info} been mentioned in {message.channel.mention} by {message.author.mention}:" # type: ignore
 
-            embed = EmbedFunctions().builder(
+            embed = EmbedFunctions.builder(
                 color = Config().BOT_COLOR,
                 title = f"Keyword Notification: {output_keywords}",
                 title_url = message.jump_url,

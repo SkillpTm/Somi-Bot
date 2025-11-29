@@ -56,7 +56,7 @@ class NameLog(nextcord_C.Cog):
             }
         )
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.yellow(),
             author = "Name Log",
             author_icon = member_before.display_avatar.url,

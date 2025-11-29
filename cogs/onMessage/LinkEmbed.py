@@ -48,7 +48,7 @@ class LinkEmbed(nextcord_C.Cog):
             message_content = f"{message_content[:1021]}..."
 
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
             author = "Message Embed",
             author_icon = original_message.author.display_avatar.url,

@@ -63,7 +63,7 @@ class ConfigHiddenChannels(nextcord_C.Cog):
         if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):
             return
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().PERMISSION_COLOR,
             author = "Command Log",
             author_icon = interaction.user.display_avatar.url,
@@ -87,10 +87,10 @@ class ConfigHiddenChannels(nextcord_C.Cog):
         "adds or doesn't add the role indicated by the output bool"
 
         if not (added := await db.HiddenChannel._.add({db.HiddenChannel.ID: channel.id, db.HiddenChannel.SERVER: interaction.guild.id})):
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"{channel.mention} is already a hidden-channel.\nTo get a list of all the hidden-channels use `/config info`."))
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"{channel.mention} is already a hidden-channel.\nTo get a list of all the hidden-channels use `/config info`."))
             return added
 
-        await interaction.send(embed=EmbedFunctions().get_success_message(f"{channel.mention} has been added to the hidden-channels."))
+        await interaction.send(embed=EmbedFunctions.get_success_message(f"{channel.mention} has been added to the hidden-channels."))
         return added
 
 
@@ -102,10 +102,10 @@ class ConfigHiddenChannels(nextcord_C.Cog):
         "removes or doesn't remove the channel indicated by the output bool"
 
         if not (deleted := await db.HiddenChannel._.delete(channel.id)):
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"{channel.mention} isn't a hidden-channel.\nTo get a list of all the hidden-channels use `/config info`."))
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"{channel.mention} isn't a hidden-channel.\nTo get a list of all the hidden-channels use `/config info`."))
             return deleted
 
-        await interaction.send(embed=EmbedFunctions().get_success_message(f"{channel.mention} has been removed from the hidden-channels."))
+        await interaction.send(embed=EmbedFunctions.get_success_message(f"{channel.mention} has been removed from the hidden-channels."))
         return deleted
 
 
@@ -113,19 +113,19 @@ class ConfigHiddenChannels(nextcord_C.Cog):
         """Removes all hidden-channels after user confirmation."""
 
         if not await db.HiddenChannel._.get_all(where={db.HiddenChannel.SERVER: interaction.guild.id}):
-            await interaction.send(embed=EmbedFunctions().get_error_message("There are no hidden-channels set.\nTo get a list of all the hidden-channels use `/config info`."))
+            await interaction.send(embed=EmbedFunctions.get_error_message("There are no hidden-channels set.\nTo get a list of all the hidden-channels use `/config info`."))
             return False
 
         view = YesNoButtons(interaction=interaction) # type: ignore
-        await interaction.send(embed=EmbedFunctions().get_info_message("Do you really want to remove **ALL** your hidden-channels __**(they can't be recovered)**__?"), view=view)
+        await interaction.send(embed=EmbedFunctions.get_info_message("Do you really want to remove **ALL** your hidden-channels __**(they can't be recovered)**__?"), view=view)
         await view.wait()
 
         if not view.value:
-            await interaction.send(embed=EmbedFunctions().get_error_message("Your hidden-channels have **not** been removed!"), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions.get_error_message("Your hidden-channels have **not** been removed!"), ephemeral=True)
             return False
 
         await db.HiddenChannel._.delete(where={db.HiddenChannel.SERVER: interaction.guild.id}, limit=1_000_000)
-        await interaction.send(embed=EmbedFunctions().get_success_message("**ALL** hidden-channels have been removed!"), ephemeral=True)
+        await interaction.send(embed=EmbedFunctions.get_success_message("**ALL** hidden-channels have been removed!"), ephemeral=True)
 
         return True
 

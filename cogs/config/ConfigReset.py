@@ -24,11 +24,11 @@ class ConfigReset(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         view = YesNoButtons(interaction=interaction) # type: ignore
-        await interaction.send(embed=EmbedFunctions().get_info_message("Do you really want to reset your entire config for the bot. This includes: Custom Commands, the Default Role, Hidden Channels, Level Ignore Channels, Level Roles and Logs __**(this can't be recovered)**__?"), view=view)
+        await interaction.send(embed=EmbedFunctions.get_info_message("Do you really want to reset your entire config for the bot. This includes: Custom Commands, the Default Role, Hidden Channels, Level Ignore Channels, Level Roles and Logs __**(this can't be recovered)**__?"), view=view)
         await view.wait()
 
         if not view.value:
-            await interaction.send(embed=EmbedFunctions().get_error_message("Your config has **not** been reset!"), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions.get_error_message("Your config has **not** been reset!"), ephemeral=True)
             return
 
         data = typing.cast(dict[Table, int | str | None], {db.Server.DEFAULT_ROLE: None} | {log: None for log in db.Server.get_log_types()})
@@ -38,7 +38,7 @@ class ConfigReset(nextcord_C.Cog):
         await db.LevelIgnoreChannel._.delete(where={db.LevelIgnoreChannel.SERVER: interaction.guild.id})
         await db.LevelRole._.delete(where={db.LevelRole.SERVER: interaction.guild.id})
 
-        await interaction.send(embed=EmbedFunctions().get_success_message("Your config has succesfully been reset!"), ephemeral=True)
+        await interaction.send(embed=EmbedFunctions.get_success_message("Your config has succesfully been reset!"), ephemeral=True)
 
 
 

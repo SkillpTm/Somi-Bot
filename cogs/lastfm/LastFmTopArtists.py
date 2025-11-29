@@ -43,7 +43,7 @@ class LastFmTopArtists(nextcord_C.Cog):
         timeframe = timeframe or Lists().LASTFM_TIMEFRAMES["All Time"]
 
         if not (lastfm_username := str(await db.User.LASTFM.get(interaction.user.id) or "")):
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"{user.mention} has not setup their LastFm account.\nTo setup a LastFm account use `/lf set`."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
@@ -64,7 +64,7 @@ class LastFmTopArtists(nextcord_C.Cog):
         top_artists_response = requests.get(f"http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&username={lastfm_username}&limit=10&page={page_number}&period={timeframe}&api_key={Keychain().LAST_FM_API_KEY}&format=json", timeout=10)
 
         if top_artists_response.status_code != 200:
-            await interaction.edit_original_message(embed=EmbedFunctions().get_error_message("LastFm didn't respond correctly, try in a few minutes again!"), view=None)
+            await interaction.edit_original_message(embed=EmbedFunctions.get_error_message("LastFm didn't respond correctly, try in a few minutes again!"), view=None)
             return
 
         top_artists_data = top_artists_response.json()
@@ -82,7 +82,7 @@ class LastFmTopArtists(nextcord_C.Cog):
         if (scrobbles_this_month := Get.lf_scrobbles_this_month(lastfm_username)) is not None:
             footer = f"{scrobbles_this_month} total Scrobbles, Past Month"
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().LASTFM_COLOR,
             author = f"{user.display_name} Top Artists: {Lists().LASTFM_TIMEFRAMES_TEXT[timeframe]}",
             author_icon = Config().LASTFM_ICON,

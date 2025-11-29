@@ -47,7 +47,7 @@ class Help(nextcord_C.Cog):
         name = name[1:] if name.startswith("/") else name
 
         if name not in Commands().overview.values():
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"`{name}` isn't a valid command name."))
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"`{name}` isn't a valid command name."))
             return
 
         parent_alias = Commands().data[name].parent.alias or Commands().data[name].parent.name

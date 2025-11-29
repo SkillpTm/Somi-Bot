@@ -42,11 +42,11 @@ class ReminderAdd(nextcord_C.Cog):
         """This command let's you add a reminder for anytime within the next 10 years"""
 
         if 0 == (total_seconds := Get.seconds_from_time(reminder_time)):
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"`{reminder_time}` is not a valid time period. Make sure to use the formating in the input description."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"`{reminder_time}` is not a valid time period. Make sure to use the formating in the input description."), ephemeral=True)
             return
 
         if total_seconds > 315576000: #10y in seconds
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"`{reminder_time}` is too long for a reminder. Reminders have to be under 10 years long."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"`{reminder_time}` is too long for a reminder. Reminders have to be under 10 years long."), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
@@ -60,7 +60,7 @@ class ReminderAdd(nextcord_C.Cog):
             if not await db.Reminder.ID.get(reminder_id):
                 break
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
             author = f"Reminder Set for {interaction.user.display_name}",
             author_icon = interaction.user.display_avatar.url,

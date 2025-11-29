@@ -38,7 +38,7 @@ class Purge(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
         messages = await interaction.channel.purge(limit=amount) # type: ignore
-        await interaction.send(embed=EmbedFunctions().get_success_message(f"Succesfully purged the last `{amount}` messages from {interaction.channel.mention}.")) # type: ignore
+        await interaction.send(embed=EmbedFunctions.get_success_message(f"Succesfully purged the last `{amount}` messages from {interaction.channel.mention}.")) # type: ignore
         await PurgeLog.send_purge_log(messages, interaction.user) # type: ignore
 
 

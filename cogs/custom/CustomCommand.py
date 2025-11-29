@@ -38,7 +38,7 @@ class CustomCommand(nextcord_C.Cog):
         name = Get.clean_input_command(name)
 
         if not (commandtext := str(await db.CustomCommand.TEXT.get({db.CustomCommand.NAME: name, db.CustomCommand.SERVER: interaction.guild.id}))):
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"There is no custom-command with the name `{name}`.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"There is no custom-command with the name `{name}`.\nTo get a list of the custom-commands use `/custom-list`."), ephemeral=True)
             return
 
         await interaction.send(commandtext)

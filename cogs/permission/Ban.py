@@ -51,15 +51,15 @@ class Ban(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if interaction.user.id == member.id:
-            await interaction.send(embed=EmbedFunctions().get_error_message("You can't ban yourself!"))
+            await interaction.send(embed=EmbedFunctions.get_error_message("You can't ban yourself!"))
             return
 
         if interaction.user.top_role.position < member.top_role.position and interaction.user != interaction.guild.owner: # type: ignore
-            await interaction.send(embed=EmbedFunctions().get_error_message("You can only ban a member, if your current top-role is above their current top-role!"))
+            await interaction.send(embed=EmbedFunctions.get_error_message("You can only ban a member, if your current top-role is above their current top-role!"))
             return
 
         await interaction.guild.ban(user=member, reason=reason, delete_message_seconds=delete_message_hours * 60 * 60)
-        await interaction.send(embed=EmbedFunctions().get_success_message(f"Succesfully banned {member.mention}."))
+        await interaction.send(embed=EmbedFunctions.get_success_message(f"Succesfully banned {member.mention}."))
         await BanLog.send_ban_log(interaction.guild, interaction.user, member, reason) # type: ignore
 
 
@@ -94,22 +94,22 @@ class Ban(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if not user_id.isdigit():
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"`{user_id}` isn't a valid discord user id."))
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"`{user_id}` isn't a valid discord user id."))
             return
 
         # the user_id might still not be a valid user id, it could be snowflake for something other than a user or simply a deleted user, so we test against that
         try:
             user = await self.client.fetch_user(int(user_id))
         except nextcord.NotFound:
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"`{user_id}` isn't a valid discord user id."))
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"`{user_id}` isn't a valid discord user id."))
             return
 
         # fail save in case for whatever reason the unban fails
         try:
             await interaction.guild.unban(user, reason=reason)
-            await interaction.send(embed=EmbedFunctions().get_success_message(f"{user.mention} has been unbanned."))
+            await interaction.send(embed=EmbedFunctions.get_success_message(f"{user.mention} has been unbanned."))
         except nextcord.Forbidden:
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"{user.mention} wasn't unbanned."))
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"{user.mention} wasn't unbanned."))
             return
 
         await BanLog.send_unban_log(interaction.guild, interaction.user, user, reason) # type: ignore

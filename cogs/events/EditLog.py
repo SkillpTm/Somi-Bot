@@ -69,7 +69,7 @@ class EditLog(nextcord_C.Cog):
     ) -> tuple[nextcord.Embed, str]:
         """takes in smaller message edits and displays them in a singular embed with fields"""
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.yellow(),
             author = "Edit Log",
             author_icon = message_before.author.display_avatar.url,
@@ -102,7 +102,7 @@ class EditLog(nextcord_C.Cog):
     ) -> tuple[nextcord.Embed, nextcord.Embed, str]:
         """takes in bigger message edits and displays them in two embed with the description (one embed for before and another for after)"""
 
-        embed_before = EmbedFunctions().builder(
+        embed_before = EmbedFunctions.builder(
             color = nextcord.Color.yellow(),
             author = "Edit Log",
             author_icon = message_before.author.display_avatar.url,
@@ -112,7 +112,7 @@ class EditLog(nextcord_C.Cog):
             footer_timestamp = message_before.created_at
         )
 
-        embed_after = EmbedFunctions().builder(
+        embed_after = EmbedFunctions.builder(
             color = nextcord.Color.yellow(),
             description = f"**After:**\n{message_after.content}",
         )

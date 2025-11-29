@@ -47,12 +47,12 @@ class Send(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         message_object: nextcord.Message = await channel.send(message)
-        await interaction.send(embed=EmbedFunctions().get_success_message(f"Message sent in: {channel.mention} - [Link]({message_object.jump_url})"))
+        await interaction.send(embed=EmbedFunctions.get_success_message(f"Message sent in: {channel.mention} - [Link]({message_object.jump_url})"))
 
         if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):
             return
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().PERMISSION_COLOR,
             author = "Command Log",
             author_icon = interaction.user.display_avatar.url,
@@ -100,20 +100,20 @@ class Send(nextcord_C.Cog):
         await interaction.response.defer(ephemeral=True, with_message=True)
 
         if not (message_object := await self.client.get_message_from_link(link)):
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"`{link}` isn't a valid message link."))
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"`{link}` isn't a valid message link."))
             return
 
         if message_object.author.id != self.client.user.id or message_object.guild.id != interaction.guild.id:
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"`{link}` isn't the link of a message sent by the bot in this server."))
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"`{link}` isn't the link of a message sent by the bot in this server."))
             return
 
         await message_object.edit(content=message)
-        await interaction.send(embed=EmbedFunctions().get_success_message(f"Message edited in: {message_object.channel.mention} - [Link]({message_object.jump_url})")) # type: ignore
+        await interaction.send(embed=EmbedFunctions.get_success_message(f"Message edited in: {message_object.channel.mention} - [Link]({message_object.jump_url})")) # type: ignore
 
         if not (command_log := interaction.guild.get_channel(int(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0))):
             return
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().PERMISSION_COLOR,
             author = "Command Log",
             author_icon = interaction.user.display_avatar.url,

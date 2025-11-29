@@ -19,7 +19,7 @@ class Welcome(nextcord_C.Cog):
         if member.guild.id != Config().MODMAIL_SERVER_ID:
             return
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
             description = f"Hey {member.mention}, welcome to `{member.guild.name}`!\nWhat you waiting for - start chatting.",
             image = Config().SOMICORD_WELCOME_GIF

@@ -46,7 +46,7 @@ class Rules(nextcord_C.Cog):
 
         # "0 All Rules" has a empty description, all other rules have a description
         if rule:
-            embed = EmbedFunctions().builder(
+            embed = EmbedFunctions.builder(
                 color = Lists().SOMICORD_RULES[rule][0],
                 author = f"Rule: {rule}",
                 author_icon = interaction.guild.icon.url,
@@ -55,12 +55,12 @@ class Rules(nextcord_C.Cog):
             )
 
             await channel.send(embed=embed) # type: ignore
-            await interaction.send(embed=EmbedFunctions().get_success_message(f"Rule: `{rule}` sent in {channel.mention}"))
+            await interaction.send(embed=EmbedFunctions.get_success_message(f"Rule: `{rule}` sent in {channel.mention}"))
             return
 
 
         for key, val in Lists().SOMICORD_RULES.items():
-            embed = EmbedFunctions().builder(
+            embed = EmbedFunctions.builder(
                 color = val[0],
                 author = f"Rule: {key}",
                 author_icon = interaction.guild.icon.url,
@@ -70,7 +70,7 @@ class Rules(nextcord_C.Cog):
 
             await channel.send(embed=embed) # type: ignore
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = 0xe97ead,
             image = Config().BAN_HAMMER_GIF,
             author = "Failing to follow the rules",
@@ -79,7 +79,7 @@ class Rules(nextcord_C.Cog):
         )
 
         await channel.send(embed=embed) # type: ignore
-        await interaction.send(embed=EmbedFunctions().get_success_message(f"All rules sent in {channel.mention}"))
+        await interaction.send(embed=EmbedFunctions.get_success_message(f"All rules sent in {channel.mention}"))
 
 
 

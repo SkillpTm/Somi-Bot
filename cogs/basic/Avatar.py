@@ -40,7 +40,7 @@ class Avatar(nextcord_C.Cog):
 
         user = user or interaction.user
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
             image = user.display_avatar.url,
             title = f"Avatar: `{user.display_name}`",

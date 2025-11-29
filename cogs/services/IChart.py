@@ -38,7 +38,7 @@ class IChart(nextcord_C.Cog):
         response = requests.get("https://www.ichart.kr/rank", timeout=10)
 
         if response.status_code != 200:
-            await interaction.send(embed=EmbedFunctions().get_error_message("iChart didn't respond correctly, try in a few minutes again!"))
+            await interaction.send(embed=EmbedFunctions.get_error_message("iChart didn't respond correctly, try in a few minutes again!"))
             return None
 
         soup = BeautifulSoup(response.content, "html.parser")
@@ -46,7 +46,7 @@ class IChart(nextcord_C.Cog):
         try:
             song_data, cover_image_url = self.get_rankings(soup)
         except Exception:
-            await interaction.send(embed=EmbedFunctions().get_error_message("iChart didn't respond correctly, try in a few minutes again!"))
+            await interaction.send(embed=EmbedFunctions.get_error_message("iChart didn't respond correctly, try in a few minutes again!"))
             return None
 
         output = ""
@@ -61,7 +61,7 @@ class IChart(nextcord_C.Cog):
             output += f"`{rank}.` {change} **[{song['title']}]({song['url']})** by {song['artist']} - [{song['score']}]"
             output += f" `PAKs: {song['paks']}`\n\n" if song['paks'] else "\n\n"
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().ICHART_COLOR,
             thumbnail = cover_image_url,
             author = "iChart Top 10",

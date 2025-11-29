@@ -63,7 +63,7 @@ class Translate(nextcord_C.Cog):
         """Translates text from one language to another using Google Translate API"""
 
         if (new_lang not in self.languages_key_name.keys()) or (old_lang and old_lang not in self.languages_key_name.keys()):
-            await interaction.response.send_message(embed=EmbedFunctions().get_error_message(f"The language `{new_lang}` is not supported!"), ephemeral=True)
+            await interaction.response.send_message(embed=EmbedFunctions.get_error_message(f"The language `{new_lang}` is not supported!"), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
@@ -72,7 +72,7 @@ class Translate(nextcord_C.Cog):
             result: dict[str, str] = Keychain().translator.translate(text, target_language=new_lang, source_language=old_lang if old_lang else None)
             old_lang = old_lang if old_lang else result["detectedSourceLanguage"]
         except exceptions.Forbidden:
-            await interaction.followup.send(embed=EmbedFunctions().get_error_message("The daily API qouta was exceded, please try tomorrow again."))
+            await interaction.followup.send(embed=EmbedFunctions.get_error_message("The daily API qouta was exceded, please try tomorrow again."))
             return
 
         embed = EmbedFunctions.builder(

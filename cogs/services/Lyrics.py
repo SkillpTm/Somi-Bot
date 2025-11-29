@@ -54,7 +54,7 @@ class Lyrics(nextcord_C.Cog):
         # if the user didn't provide an artist and song pull what they're listening to from Spotify
         if not artist and not song:
             if not interaction.guild:
-                await interaction.send(embed=EmbedFunctions().get_error_message("Please select a valid artist **and** a valid song!"), ephemeral=True)
+                await interaction.send(embed=EmbedFunctions.get_error_message("Please select a valid artist **and** a valid song!"), ephemeral=True)
                 return
 
             for activity in interaction.guild.get_member(interaction.user.id).activities:
@@ -64,7 +64,7 @@ class Lyrics(nextcord_C.Cog):
                     break
 
         if not artist or not song:
-            await interaction.send(embed=EmbedFunctions().get_error_message("Please select a valid artist **and** a valid song or play a song on Spotify!"), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions.get_error_message("Please select a valid artist **and** a valid song or play a song on Spotify!"), ephemeral=True)
             return
 
         # search genius for a matching song
@@ -75,7 +75,7 @@ class Lyrics(nextcord_C.Cog):
 
         # make sure there are results and they're songs
         if not search_response["response"]["hits"] or search_response["response"]["hits"][0]["type"] != "song":
-            await interaction.send(embed=EmbedFunctions().get_error_message("Please select a valid artist **and** a valid song or play a song on Spotify!"), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions.get_error_message("Please select a valid artist **and** a valid song or play a song on Spotify!"), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)
@@ -87,13 +87,13 @@ class Lyrics(nextcord_C.Cog):
         )
 
         if song_response.status_code != 200:
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"Genius couldn't find: `{artist}` - `{song}`, please try again!"))
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"Genius couldn't find: `{artist}` - `{song}`, please try again!"))
             return
 
         song_data = song_response.json()
 
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().GENIUS_COLOR,
             image = song_data["response"]["song"]["song_art_image_url"],
             title = f"Lyrics: {Get.markdown_safe(song_data['response']['song']['title'])}",

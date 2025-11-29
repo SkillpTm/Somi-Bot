@@ -68,7 +68,7 @@ class MuteLog(nextcord_C.Cog):
             }
         )
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.yellow(),
             author = "Mute Log",
             author_icon = muter.display_avatar.url,
@@ -105,7 +105,7 @@ class MuteLog(nextcord_C.Cog):
             {"unmuted": str(unmuted.id)}
         )
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = nextcord.Color.green(),
             author = "Unmute Log",
             author_icon = unmuter.display_avatar.url,

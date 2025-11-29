@@ -53,7 +53,7 @@ class FeedbackModal(nextcord.ui.Modal):
             db.Feedback.MESSAGE: self.feedback.value
         })
 
-        embed = EmbedFunctions().builder(
+        embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
             title = f"Feedback by: `{interaction.user.name}` | `({interaction.user.id})`",
             thumbnail = interaction.user.display_avatar.url,
@@ -61,7 +61,7 @@ class FeedbackModal(nextcord.ui.Modal):
         )
 
         await self.client.get_channel(Config().SUPPORT_SERVER_FEEDBACK_ID).send(embed=embed) # type: ignore
-        await interaction.send(embed=EmbedFunctions().get_success_message("Your feedback has been submitted!"), ephemeral=True)
+        await interaction.send(embed=EmbedFunctions.get_success_message("Your feedback has been submitted!"), ephemeral=True)
 
 
 

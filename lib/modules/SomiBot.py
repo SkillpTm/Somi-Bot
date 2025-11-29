@@ -8,11 +8,35 @@ import typing
 
 import nextcord
 import nextcord.ext.commands as nextcord_C
+import nextcord.state
 import requests
 
 from lib.database import Database, db
 from lib.helpers import EmbedFunctions
 from lib.managers import Config, Keychain, Logger, Singleton
+
+
+
+_original_get_users_from_interaction = nextcord.application_command.get_users_from_interaction
+
+def patched_get_users_from_interaction(state: nextcord.state.ConnectionState, interaction: nextcord.Interaction[nextcord_C.Bot]) -> list[typing.Any] | list[nextcord.User | nextcord.Member]:
+    """Monkey patch to get users from resolved data in case of user install command (with user input) in guild, otherwise we error before reaching the command block"""
+
+    if interaction.guild is None and interaction.context == nextcord.InteractionContextType.guild:
+        users = []
+
+        if interaction.data and "resolved" in interaction.data:
+            resolved = interaction.data["resolved"]
+
+            if "users" in resolved:
+                for _, user_data in resolved["users"].items():
+                    users.append(state.store_user(user_data))
+
+        return users
+
+    return _original_get_users_from_interaction(state, interaction)
+
+nextcord.application_command.get_users_from_interaction = patched_get_users_from_interaction
 
 
 
@@ -121,7 +145,7 @@ class SomiBot(nextcord_C.Bot):
             and not interaction.authorizing_integration_owners.get(nextcord.IntegrationType.user_install, None)
             and not self.get_guild(interaction.authorizing_integration_owners.get(nextcord.IntegrationType.guild_install, 0)) # the bot can only get guilds it is in
         ): # type: ignore
-            await interaction.send(embed=EmbedFunctions().get_error_message(f"This command can only be used in servers with {self.user.name}."), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions().get_error_message(f"This command can only be used in servers with {self.user.mention}."), ephemeral=True)
             return False
 
         return True
@@ -175,18 +199,19 @@ class SomiBot(nextcord_C.Bot):
         if isinstance(exception, nextcord.ApplicationCheckFailure):
             return
 
-        meta_data = Logger.get_log_message(interaction, "error") # type: ignore
-
         Logger().application_command_error(f"- exception: `{exception}`" + (log_context := f"""
             - authorizing_integration_owners: `{interaction.authorizing_integration_owners}`
             - context: `{interaction.context}`
-            - created_at: `{interaction.created_at}`
-            - expires_at: `{interaction.expires_at}`
-            - type: `{interaction.type._name_}`
+            - user: `{interaction.user}` | `{interaction.user.id if interaction.user else 'no ID'}`
+            - guild: `{interaction.guild}` | `{interaction.guild.id if interaction.guild else 'no ID'}`
+            - channel: `{interaction.channel}` | `{interaction.channel.id if interaction.channel else 'no ID'}`
+            - created_at: `{interaction.created_at.strftime("%Y-%m-%d %H:%M:%S")}`
+            - expires_at: `{interaction.expires_at.strftime("%Y-%m-%d %H:%M:%S")}`
+            - type: `{interaction.type}`
             - file: `{interaction.application_command.parent_cog}`
-            - meta_data: `{meta_data}`
             - app_permissions: `{interaction.app_permissions.value}`
             - user_permissions: `{interaction.permissions.value}`
+            - data: `{interaction.data}`
         """))
 
         error_message = f"An error has occured while executing this command, make sure {self.user.mention} has all the required permissions. (this includes her role being above others)\n```{exception}```\nA bug-report has been send to the developer."

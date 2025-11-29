@@ -7,7 +7,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
 from lib.helpers import EmbedField, EmbedFunctions, Misc
-from lib.managers import Logger
+from lib.managers import Config, Logger
 from lib.modules import SomiBot
 
 
@@ -23,7 +23,7 @@ class PurgeLog(nextcord_C.Cog):
     async def purge_log(self, messages: list[nextcord.Message]) -> None:
         """A log that activates, when someone gets purged without using the bot"""
 
-        if not (purge_log := messages[0].guild.get_channel(int(await db.Server.PURGE_LOG.get(messages[0].guild.id) or 0))):
+        if not messages[0].guild.get_channel(int(await db.Server.PURGE_LOG.get(messages[0].guild.id) or 0)):
             return
 
         if await db.HiddenChannel._.get_entry(messages[0].channel.id):
@@ -42,7 +42,17 @@ class PurgeLog(nextcord_C.Cog):
             if (entry_count := entry_count + 1) ==  100: # 100 is the default limit
                 return
 
-        if not entry:
+        if not entry or entry.user.id == self.client.user.id:
+            return
+
+        await self.send_purge_log(messages, entry.user) # type: ignore
+
+
+    @staticmethod
+    async def send_purge_log(messages: list[nextcord.Message], purger: nextcord.User | nextcord.Member) -> None:
+        """A log that activates, when someone gets purged without using the bot"""
+
+        if not (purge_log := messages[0].guild.get_channel(int(await db.Server.PURGE_LOG.get(messages[0].guild.id) or 0))):
             return
 
         Logger().action_log(
@@ -57,11 +67,14 @@ class PurgeLog(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),
             author = "Purge Log",
-            author_icon = entry.user.display_avatar.url,
+            author_icon = purger.display_avatar.url,
+            footer = "Purged until:",
+            footer_icon = Config().CLOCK_ICON,
+            footer_timestamp = messages[len(messages)-1].created_at,
             fields = [
                 EmbedField(
                     "Messages Purged:",
-                    f"{entry.user.mention} purged: `{len(messages)} message(s)` in {entry.target.mention}", # type: ignore
+                    f"{purger.mention} purged: `{len(messages)} message(s)` in {messages[0].channel.mention}", # type: ignore
                     False
                 )
             ]

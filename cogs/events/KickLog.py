@@ -22,7 +22,7 @@ class KickLog(nextcord_C.Cog):
     async def kick_log(self, member: nextcord.Member) -> None:
         """A log that activates, when someone gets kicked and a kick log is set"""
 
-        if not (kick_log := member.guild.get_channel(int(await db.Server.KICK_LOG.get(member.guild.id) or 0))):
+        if not member.guild.get_channel(int(await db.Server.KICK_LOG.get(member.guild.id) or 0)):
             return
 
         entry: nextcord.AuditLogEntry | None = None
@@ -38,28 +38,38 @@ class KickLog(nextcord_C.Cog):
             if (entry_count := entry_count + 1) ==  100: # 100 is the default limit
                 return
 
-        if not entry:
+        if not entry or entry.user.id == self.client.user.id:
+            return
+
+        await self.send_kick_log(entry.user, member, entry.reason) # type: ignore
+
+
+    @staticmethod
+    async def send_kick_log(kicker: nextcord.User | nextcord.Member, kicked: nextcord.Member, reason: str = "") -> None:
+        """A log that activates, when someone gets kicked and a kick log is set"""
+
+        if not (kick_log := kicked.guild.get_channel(int(await db.Server.KICK_LOG.get(kicked.guild.id) or 0))):
             return
 
         Logger().action_log(
-            member,
+            kicker,
             "kick log",
-            {"kicked by": str(entry.user.id), "reason": entry.reason or ""}
+            {"kicked": str(kicked.id), "reason": reason}
         )
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),
             author = "Kick Log",
-            author_icon = entry.user.display_avatar.url,
+            author_icon = kicker.display_avatar.url,
             fields = [
                 EmbedField(
                     "Member kicked:",
-                    f"{entry.user.mention} kicked: {entry.target.mention}", # type: ignore
+                    f"{kicker.mention} kicked: {kicked.mention}", # type: ignore
                     False
                 ),
                 EmbedField(
                     "Reason:",
-                    entry.reason or "",
+                    reason,
                     False
                 )
             ]

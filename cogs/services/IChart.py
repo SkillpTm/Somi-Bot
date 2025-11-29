@@ -68,7 +68,7 @@ class IChart(nextcord_C.Cog):
             author_url = "https://www.ichart.kr/rank",
             author_icon = Config().ICHART_ICON,
             description = output,
-            footer = "Score out of 220 points.",
+            footer = "Score out of 250 points.",
             footer_icon = Config().CLOCK_ICON,
             footer_timestamp = self.get_last_half_past()
         )

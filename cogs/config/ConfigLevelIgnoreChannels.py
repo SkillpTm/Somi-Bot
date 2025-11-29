@@ -44,13 +44,13 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
         channel = channel or interaction.channel
 
         if action == "Add":
-            if not await self._add_channel(interaction, channel):
+            if not await self.add_channel(interaction, channel):
                 return
 
             mod_action = f"{interaction.user.mention} added: {channel.mention} as a level-ignore-channel."
 
         elif action == "Remove":
-            if not await self._remove_channel(interaction, channel):
+            if not await self.remove_channel(interaction, channel):
                 return
 
             mod_action = f"{interaction.user.mention} removed: {channel.mention} from the level-ignore-channels."
@@ -67,7 +67,7 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = Config().PERMISSION_COLOR,
-            author = "Bot Command Log",
+            author = "Command Log",
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
@@ -81,7 +81,7 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
         await command_log.send(embed=embed) # type: ignore
 
 
-    async def _add_channel(
+    async def add_channel(
         self,
         interaction: nextcord.Interaction[SomiBot],
         channel: nextcord.TextChannel | nextcord.Thread
@@ -96,14 +96,14 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
         return added
 
 
-    async def _remove_channel(
+    async def remove_channel(
         self,
         interaction: nextcord.Interaction[SomiBot],
         channel: nextcord.TextChannel | nextcord.Thread
     ) -> bool:
         "removes or doesn't remove the channel indicated by the output bool"
 
-        if not (deleted := await db.LevelIgnoreChannel._.delete(interaction.guild.id, channel.id)):
+        if not (deleted := await db.LevelIgnoreChannel._.delete(channel.id)):
             await interaction.send(embed=EmbedFunctions().get_error_message(f"{channel.mention} isn't a level-ignore-channel.\nTo get a list of all the level-ignore-channels use `/config info`."), ephemeral=True)
             return deleted
 
@@ -114,16 +114,20 @@ class ConfigLevelIgnoreChannels(nextcord_C.Cog):
     async def remove_all(self, interaction: nextcord.Interaction[SomiBot]) -> bool:
         """Removes all level-ignore-channels after user confirmation."""
 
+        if not await db.LevelIgnoreChannel._.get_all(where={db.LevelIgnoreChannel.SERVER: interaction.guild.id}):
+            await interaction.send(embed=EmbedFunctions().get_error_message("There are no level-ignore-channels set.\nTo get a list of all the level-ignore-channels use `/config info`."))
+            return False
+
         view = YesNoButtons(interaction=interaction) # type: ignore
         await interaction.send(embed=EmbedFunctions().get_info_message("Do you really want to remove **ALL** your level-ignore-channels __**(they can't be recovered)**__?"), view=view)
         await view.wait()
 
         if not view.value:
-            await interaction.send(embed=EmbedFunctions().get_error_message("Your level-ignore-channels have **not** been removed!"))
+            await interaction.send(embed=EmbedFunctions().get_error_message("Your level-ignore-channels have **not** been removed!"), ephemeral=True)
             return False
 
         await db.LevelIgnoreChannel._.delete(where={db.LevelIgnoreChannel.SERVER: interaction.guild.id}, limit=1_000_000)
-
+        await interaction.send(embed=EmbedFunctions().get_success_message("**ALL** level-ignore-channels have been removed!"), ephemeral=True)
         return True
 
 

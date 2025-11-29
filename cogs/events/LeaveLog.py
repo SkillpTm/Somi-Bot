@@ -6,7 +6,7 @@ import nextcord.ext.commands as nextcord_C
 
 from lib.database import db
 from lib.helpers import EmbedField, EmbedFunctions
-from lib.managers import Logger
+from lib.managers import Config, Logger
 from lib.modules import SomiBot
 
 
@@ -51,6 +51,9 @@ class LeaveLog(nextcord_C.Cog):
             color = nextcord.Color.brand_red(),
             author = "Leave Log",
             author_icon = member.display_avatar.url,
+            footer = "Joined at:",
+            footer_icon = Config().CLOCK_ICON,
+            footer_timestamp = member.joined_at,
             fields = [
                 EmbedField(
                     "ID:",
@@ -63,15 +66,10 @@ class LeaveLog(nextcord_C.Cog):
                     True
                 ),
                 EmbedField(
-                    "Created at:",
+                    "Joined Discord:",
                     f"<t:{int(time.mktime(member.created_at.timetuple()))}>",
                     True
-                ),
-                EmbedField(
-                    "Joined at",
-                    f"<t:{int(time.mktime(member.joined_at.timetuple()))}>",
-                    True
-                ),
+                )
             ]
         )
 

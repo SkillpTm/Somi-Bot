@@ -23,11 +23,11 @@ class LinkEmbed(nextcord_C.Cog):
             return
 
         # gets the link from a message (works for both discord.com and canary.discord.com)
-        if not (result := re.search(fr"https?://(ptb\.|canary\.)?discord\.com/channels/{message.guild.id}/[0-9/]\S+", message.content)):
+        if not (result := re.search(fr"https?://(ptb\.|canary\.)?discord\.com/channels/{message.guild.id}/[0-9/]+", message.content)):
             return
 
         # if the message link is surrounded by <> it won't embed
-        if re.search(fr"https?://(ptb\.|canary\.)?discord\.com/channels/{message.guild.id}/[0-9/]\S+", message.content):
+        if re.search(fr"<https?://(ptb\.|canary\.)?discord\.com/channels/{message.guild.id}/[0-9/]+>", message.content):
             return
 
         link = result.group()

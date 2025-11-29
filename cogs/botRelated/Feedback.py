@@ -44,7 +44,7 @@ class FeedbackModal(nextcord.ui.Modal):
             origin_text = f"Feedback from server: `{interaction.guild.name}` | `({interaction.guild.id})`:"
         else:
             server_id = 0 # DMs are indecated by a 0
-            origin_text = f"Feedback from DM channel: `{interaction.user.name}` | `({interaction.user.id})`:"
+            origin_text = "Feedback from a private channel:"
 
         await db.Feedback._.add({
             db.Feedback.SERVER: server_id,

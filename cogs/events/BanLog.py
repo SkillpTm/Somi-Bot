@@ -22,7 +22,7 @@ class BanLog(nextcord_C.Cog):
     async def ban_log(self, guild: nextcord.Guild, user: nextcord.User) -> None:
         """A log that activates, when someone gets banned and a ban log is set"""
 
-        if not (ban_log := guild.get_channel(int(await db.Server.BAN_LOG.get(guild.id) or 0))):
+        if not guild.get_channel(int(await db.Server.BAN_LOG.get(guild.id) or 0)):
             return
 
         entry: nextcord.AuditLogEntry | None = None
@@ -39,28 +39,38 @@ class BanLog(nextcord_C.Cog):
             if (entry_count := entry_count + 1) == 100: # 100 is the default limit
                 return
 
-        if not entry:
+        if not entry or entry.user.id == self.client.user.id:
+            return
+
+        await self.send_ban_log(guild, entry.user, user, entry.reason) # type: ignore
+
+
+    @staticmethod
+    async def send_ban_log(guild: nextcord.Guild, banner: nextcord.User | nextcord.Member, banned: nextcord.User, reason: str = "") -> None:
+        """A log that activates, when someone gets banned and a ban log is set"""
+
+        if not (ban_log := guild.get_channel(int(await db.Server.BAN_LOG.get(guild.id) or 0))):
             return
 
         Logger().action_log(
-            user,
+            banner,
             "ban log",
-            {"guild": str(guild.id), "banned by": str(entry.user.id), "reason": entry.reason or ""}
+            {"guild": str(guild.id), "banned": str(banned.id), "reason": reason or ""}
         )
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),
             author = "Ban Log",
-            author_icon = entry.user.display_avatar.url,
+            author_icon = banner.display_avatar.url,
             fields = [
                 EmbedField(
                     "Member banned:",
-                    f"{entry.user.mention} banned: {entry.target.mention}", # type: ignore
+                    f"{banner.mention} banned: {banned.mention}", # type: ignore
                     False
                 ),
                 EmbedField(
                     "Reason:",
-                    entry.reason or "",
+                    reason or "",
                     False
                 )
             ]
@@ -73,7 +83,7 @@ class BanLog(nextcord_C.Cog):
     async def unban_log(self, guild: nextcord.Guild, user: nextcord.User) -> None:
         """A log that activates, when someone gets unbanned and an unban log is set"""
 
-        if not (unban_log := guild.get_channel(int(await db.Server.UNBAN_LOG.get(guild.id) or 0))):
+        if not guild.get_channel(int(await db.Server.UNBAN_LOG.get(guild.id) or 0)):
             return
 
         entry: nextcord.AuditLogEntry | None = None
@@ -89,28 +99,38 @@ class BanLog(nextcord_C.Cog):
             if (entry_count := entry_count + 1) ==  100: # 100 is the default limit
                 return
 
-        if not entry:
+        if not entry or entry.user.id == self.client.user.id:
+            return
+
+        await self.send_unban_log(guild, entry.user, user, entry.reason) # type: ignore
+
+
+    @staticmethod
+    async def send_unban_log(guild: nextcord.Guild, unbanner: nextcord.User | nextcord.Member, unbanned: nextcord.User, reason: str = "") -> None:
+        """A log that activates, when someone gets unbanned and an unban log is set"""
+
+        if not (unban_log := guild.get_channel(int(await db.Server.UNBAN_LOG.get(guild.id) or 0))):
             return
 
         Logger().action_log(
-            user,
+            unbanner,
             "unban log",
-            {"guild": str(guild.id), "unbanned by": str(entry.user.id)}
+            {"guild": str(guild.id), "unbanned": str(unbanned.id), "reason": reason}
         )
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.orange(),
             author = "Unban Log",
-            author_icon = entry.user.display_avatar.url,
+            author_icon = unbanner.display_avatar.url,
             fields = [
                 EmbedField(
-                    "Member unbanned:",
-                    f"{entry.user.mention} unbanned: `{entry.target.name}` | `({entry.target.id})`", # type: ignore
+                    "User unbanned:",
+                    f"{unbanner.mention} unbanned: `{unbanned.name}` *({unbanned.id})*", # type: ignore
                     False
                 ),
                 EmbedField(
                     "Reason:",
-                    entry.reason or "",
+                    reason,
                     False
                 )
             ]

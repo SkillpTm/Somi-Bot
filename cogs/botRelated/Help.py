@@ -74,7 +74,7 @@ class Help(nextcord_C.Cog):
 
         embed = EmbedFunctions.builder(
             color = Config().BOT_COLOR,
-            title = f"Help for `/{Commands().data[name].full_name}`",
+            title = f"Help: `/{Commands().data[name].full_name}`",
             description = f"{Commands().data[name].description}\n" + alias_line + permission_line,
             footer = f"Example: {Commands().data[name].example}",
             fields = [

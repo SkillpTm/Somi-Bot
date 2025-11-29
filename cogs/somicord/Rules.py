@@ -29,19 +29,7 @@ class Rules(nextcord_C.Cog):
             Commands().data["rules"].parameters["rule"].name,
             Commands().data["rules"].parameters["rule"].description,
             required = False,
-            choices = [
-                "1 NSFW Content",
-                "2 Doxxing",
-                "3 Cursing",
-                "4 Language",
-                "5 Discrimination",
-                "6 Channel Use",
-                "7 Unboxing Spoiler Tags",
-                "8 Spam",
-                "9 Negativity",
-                "10 Selfpromotion",
-                "11 Relationships"
-            ]
+            choices = Lists().SOMICORD_RULES.keys()
         ),
         channel: nextcord.TextChannel | nextcord.Thread = nextcord.SlashOption(
             Commands().data["rules"].parameters["channel"].name,

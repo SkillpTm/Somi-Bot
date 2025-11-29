@@ -42,12 +42,13 @@ class Keychain(metaclass=Singleton):
         self.LAST_FM_COOKIES: dict[str, typing.Any] = json.loads(os.getenv("LAST_FM_COOKIES") or "")
         self.LAST_FM_HEADERS: dict[str, typing.Any] = json.loads(os.getenv("LAST_FM_HEADERS") or "")
 
-        self.spotify_oauth = spotipy.SpotifyOAuth(
+        self.spotipy = spotipy.Spotify(auth_manager = spotipy.SpotifyOAuth(
             client_id = self.SPOTIPY_CLIENT_ID,
             client_secret = self.SPOTIPY_CLIENT_SECRET,
             redirect_uri = self.SPOTIPY_REDIRECT_URI,
-            scope = "user-read-currently-playing"
-        )
+            scope = "user-read-currently-playing",
+            cache_path=".spotipy_cache"
+        ))
 
         self.translator = translate.Client(credentials=service_account.Credentials.from_service_account_info({
             "type": "service_account",

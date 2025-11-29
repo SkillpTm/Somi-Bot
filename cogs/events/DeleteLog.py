@@ -37,20 +37,18 @@ class DeleteLog(nextcord_C.Cog):
             action=nextcord.AuditLogAction.message_delete
         ):
             if message.author.id == entry.target.id and message.author.id != entry.user.id:
-                if (remove_log := message.guild.get_channel(int(await db.Server.REMOVE_LOG.get(message.guild.id) or 0))):
-                    await self.remove_log(message,entry,  remove_log) # type: ignore
+                await self.send_remove_log(message, entry.user) # type: ignore
                 return
 
-        if (delete_log := message.guild.get_channel(int(await db.Server.DELETE_LOG.get(message.guild.id) or 0))):
-            await self.delete_log(message, delete_log) # type: ignore
+        await self.send_delete_log(message) # type: ignore
 
 
-    async def delete_log(
-        self,
-        message: nextcord.Message,
-        delete_log: nextcord.TextChannel | nextcord.Thread
-    ) -> None:
+    @staticmethod
+    async def send_delete_log(message: nextcord.Message) -> None:
         """logs a deleted message"""
+
+        if not (delete_log := message.guild.get_channel(int(await db.Server.DELETE_LOG.get(message.guild.id) or 0))):
+            return
 
         Logger().action_log(
             message,
@@ -69,7 +67,7 @@ class DeleteLog(nextcord_C.Cog):
         )
 
         embed, file_urls = EmbedFunctions.get_or_add_attachments(message.attachments, embed)
-        sent_message = await delete_log.send(embed=embed)
+        sent_message = await delete_log.send(embed=embed) # type: ignore
 
         if file_urls:
             await sent_message.reply(content=file_urls, mention_author=False)
@@ -77,29 +75,31 @@ class DeleteLog(nextcord_C.Cog):
         await db.Telemetry.AMOUNT.increment("delete log")
 
 
-    async def remove_log(
-        self,
-        message: nextcord.Message,
-        entry: nextcord.AuditLogEntry,
-        remove_log: nextcord.TextChannel | nextcord.Thread
-    ) -> None:
+    @staticmethod
+    async def send_remove_log(message: nextcord.Message, remover: nextcord.User) -> None:
         """logs a removed message"""
+
+        if not (remove_log := message.guild.get_channel(int(await db.Server.REMOVE_LOG.get(message.guild.id) or 0))):
+            return
 
         Logger().action_log(
             message,
             "remove log",
-            {"message": message.content, "removed by": str(entry.user.id)}
+            {"message": message.content, "removed by": str(remover.id)}
         )
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.brand_red(),
             author = "Remove Log",
-            author_icon = entry.user.display_avatar.url,
-            description = f"{entry.user.mention} removed a message from {message.author.mention} in: {message.channel.mention}\n\n{message.content}" # type: ignore
+            author_icon = remover.display_avatar.url,
+            description = f"{remover.mention} removed a message from {message.author.mention} in: {message.channel.mention}\n\n{message.content}", # type: ignore
+            footer = "Originally sent:",
+            footer_icon = Config().CLOCK_ICON,
+            footer_timestamp = message.created_at
         )
 
         embed, file_urls = EmbedFunctions.get_or_add_attachments(message.attachments, embed)
-        sent_message = await remove_log.send(embed=embed)
+        sent_message = await remove_log.send(embed=embed) # type: ignore
 
         if file_urls:
             await sent_message.reply(content=file_urls, mention_author=False)

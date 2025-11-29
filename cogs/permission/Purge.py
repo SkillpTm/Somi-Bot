@@ -1,6 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
+from cogs.events.PurgeLog import PurgeLog
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands
 from lib.modules import SomiBot
@@ -36,8 +37,9 @@ class Purge(nextcord_C.Cog):
         """This command removes the given amount of last messages from a channel."""
 
         await interaction.response.defer(ephemeral=True, with_message=True)
-        await interaction.channel.purge(limit=amount) # type: ignore
+        messages = await interaction.channel.purge(limit=amount) # type: ignore
         await interaction.send(embed=EmbedFunctions().get_success_message(f"Succesfully purged the last `{amount}` messages from {interaction.channel.mention}.")) # type: ignore
+        await PurgeLog.send_purge_log(messages, interaction.user) # type: ignore
 
 
 

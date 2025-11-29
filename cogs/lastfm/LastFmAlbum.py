@@ -106,7 +106,7 @@ class LastFmAlbum(nextcord_C.Cog):
             author = f"{user.display_name} × {type_name}: {Lists().LASTFM_TIMEFRAMES_WEBSCRAPING_TEXT[timeframe]}",
             author_url = f"https://www.last.fm/user/{lastfm_username}/library/music/{artist_for_url}/{album_for_url}?date_preset={timeframe}",
             author_icon = Config().LASTFM_ICON,
-            description = f"Total plays: __**{metadata_list[0]}**__\n" +
+            description = f"# __`{metadata_list[0]}`__ Total Plays\n" +
                           f"by [{artist_name}](https://www.last.fm/music/{artist_for_url})\n\n" +
                           "**Top Tracks**\n" +
                           f"{track_output}\n",

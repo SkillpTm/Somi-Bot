@@ -63,7 +63,7 @@ class KeywordSend(nextcord_C.Cog):
                 output_keywords = f"{user_keywords_in_content[0]}"
                 keywords_info = f"{output_keywords} has"
 
-            keywords_info += f"{keywords_info} been mentioned in {message.channel.mention} by {message.author.mention}:" # type: ignore
+            keywords_info = f"{keywords_info} been mentioned in {message.channel.mention} by {message.author.mention}:" # type: ignore
 
             embed = EmbedFunctions().builder(
                 color = Config().BOT_COLOR,
@@ -75,7 +75,7 @@ class KeywordSend(nextcord_C.Cog):
             embed, _ = EmbedFunctions.get_or_add_attachments(message.attachments, embed, limit = 1)
 
             try:
-                await self.client.fetch_user(user_id).send(embed=embed) # type: ignore
+                await (await self.client.fetch_user(user_id)).send(embed=embed) # type: ignore
             except nextcord.Forbidden:
                 Logger().action_warning(f"keyword send ~ User: {user_id} couldn't be notified, because their pms aren't open to the client")
 

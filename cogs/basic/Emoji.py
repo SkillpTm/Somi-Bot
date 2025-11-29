@@ -5,7 +5,7 @@ import nextcord.ext.commands as nextcord_C
 import requests
 
 from lib.helpers import EmbedFunctions
-from lib.managers import Commands
+from lib.managers import Config, Commands
 from lib.modules import SomiBot
 
 
@@ -59,7 +59,14 @@ class Emoji(nextcord_C.Cog):
             await interaction.send(embed=EmbedFunctions().get_error_message("Please select a custom emoji."), ephemeral=True)
             return
 
-        await interaction.send(f"`Link:` [{partial_emoji_object.name}]({partial_emoji_object.url})")
+        embed = EmbedFunctions().builder(
+            color = Config().BOT_COLOR,
+            image = partial_emoji_object.url,
+            title = f"Emoji: `{partial_emoji_object.name}`",
+            title_url = partial_emoji_object.url
+        )
+
+        await interaction.send(embed=embed)
 
 
 

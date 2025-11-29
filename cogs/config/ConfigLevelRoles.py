@@ -35,7 +35,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
         role: nextcord.Role = nextcord.SlashOption(
             Commands().data["config level-roles"].parameters["role"].name,
             Commands().data["config level-roles"].parameters["role"].description,
-            required = True
+            required = False
         ),
         level: int = nextcord.SlashOption(
             Commands().data["config level-roles"].parameters["level"].name,
@@ -49,18 +49,22 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner:  # type: ignore
+        if role and role.is_default():
+            await interaction.send(embed=EmbedFunctions().get_error_message("You cannot set the @everyone role as the default-role."))
+            return
+
+        if role and interaction.user.top_role.position < role.position and interaction.user.id != interaction.guild.owner.id:  # type: ignore
             await interaction.send(embed=EmbedFunctions().get_error_message("You can only add/remove a role as a level-role, if the role is below your current top role!"))
             return
 
         if action == "Add":
-            if not await self._add_role(interaction, role, level):
+            if not await self.add_role(interaction, role, level):
                 return
 
             mod_action = f"{interaction.user.mention} added: {role.mention} as a level-role at level `{level}`."
 
         elif action == "Remove":
-            if not await self._remove_role(interaction, role):
+            if not await self.remove_role(interaction, role):
                 return
 
             mod_action = f"{interaction.user.mention} removed: {role.mention} from the level-roles."
@@ -77,7 +81,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = Config().PERMISSION_COLOR,
-            author = "Bot Command Log",
+            author = "Command Log",
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
@@ -91,7 +95,7 @@ class ConfigLevelRoles(nextcord_C.Cog):
         await command_log.send(embed=embed) # type: ignore
 
 
-    async def _add_role(
+    async def add_role(
         self,
         interaction: nextcord.Interaction[SomiBot],
         role: nextcord.Role,
@@ -101,6 +105,10 @@ class ConfigLevelRoles(nextcord_C.Cog):
 
         if not level:
             await interaction.send(embed=EmbedFunctions().get_error_message("You need to define a role **and** a level to add a new level-role."))
+            return False
+
+        if level in await db.LevelRole.LEVEL.get_all(where={db.LevelRole.SERVER: interaction.guild.id}):
+            await interaction.send(embed=EmbedFunctions().get_error_message(f"The level `{level}` already has a role assigned!\nTo get a list of all the level-roles use `/config info`."))
             return False
 
         if not (added := await db.LevelRole._.add({db.LevelRole.ID: role.id, db.LevelRole.LEVEL: level, db.LevelRole.SERVER: interaction.guild.id})):
@@ -114,14 +122,18 @@ class ConfigLevelRoles(nextcord_C.Cog):
         return added
 
 
-    async def _remove_role(
+    async def remove_role(
         self,
         interaction: nextcord.Interaction[SomiBot],
         role: nextcord.Role
     ) -> bool:
         "removes or doesn't remove the role indicated by the output bool"
 
-        if not (deleted := await db.LevelRole._.delete(interaction.guild.id, role.id)):
+        if not role:
+            await interaction.send(embed=EmbedFunctions().get_error_message("You need to define a role to remove a level-role."))
+            return False
+
+        if not (deleted := await db.LevelRole._.delete(role.id)):
             await interaction.send(embed=EmbedFunctions().get_error_message(f"{role.mention} isn't a level-role.\nTo get a list of all the level-roles use `/config info`."), ephemeral=True)
             return deleted
 
@@ -135,15 +147,25 @@ class ConfigLevelRoles(nextcord_C.Cog):
     async def remove_all(self, interaction: nextcord.Interaction[SomiBot]) -> bool:
         """Removes all level-roles after user confirmation"""
 
+        if not (level_roles := await db.LevelRole.ID.get_all(where={db.LevelRole.SERVER: interaction.guild.id})):
+            await interaction.send(embed=EmbedFunctions().get_error_message("There are no level-roles set.\nTo get a list of all the level-roles use `/config info`."))
+            return False
+
+        for role_id in level_roles:
+            if interaction.user.top_role.position < interaction.guild.get_role(role_id).position and interaction.user.id != interaction.guild.owner.id: # type: ignore
+                await interaction.send(embed=EmbedFunctions().get_error_message("You can only remove all level-roles, if all level-roles are below your current top role!"))
+                return False
+
         view = YesNoButtons(interaction=interaction) # type: ignore
         await interaction.send(embed=EmbedFunctions().get_info_message("Do you really want to remove **ALL** your level-roles __**(they can't be recovered)**__?"), view=view)
         await view.wait()
 
         if not view.value:
-            await interaction.send(embed=EmbedFunctions().get_error_message("Your level-roles have **not** been removed!"))
+            await interaction.send(embed=EmbedFunctions().get_error_message("Your level-roles have **not** been removed!"), ephemeral=True)
             return False
 
         await db.LevelRole._.delete(where={db.LevelRole.SERVER: interaction.guild.id}, limit=1_000_000)
+        await interaction.send(embed=EmbedFunctions().get_success_message("**ALL** level-roles have been removed!"), ephemeral=True)
 
         return True
 

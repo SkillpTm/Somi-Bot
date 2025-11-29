@@ -65,13 +65,13 @@ class LastFmProfile(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = Config().LASTFM_COLOR,
             thumbnail = lastfm_user_pfp,
-            author = f"{user.display_name} LastFm User Data",
+            author = f"LastFm: {user.display_name}",
             author_icon = Config().LASTFM_ICON,
             footer = footer,
             footer_icon = Config().HEADPHONES_ICON,
             fields = [
                 EmbedField(
-                    "LastFm name:",
+                    "Username:",
                     f"[{Get.markdown_safe(profile_user_data['user']['name'])}]({profile_user_data['user']['url']})",
                     True
                 ),

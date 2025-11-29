@@ -56,9 +56,10 @@ class Userinfo(nextcord_C.Cog):
             joined_time = f"<t:{int(time.mktime(member.joined_at.timetuple()))}>"
 
         embed = EmbedFunctions().builder(
-            color = user.color,
+            color = user.accent_color or Config().BOT_COLOR,
             thumbnail = user.display_avatar.url,
-            title = f"User Information: `{user.display_name}`",
+            image = user.banner.url if user.banner else "",
+            title = f"User: `{user.display_name}`",
             footer = "Joined Discord:",
             footer_icon = Config().CLOCK_ICON,
             footer_timestamp = user.created_at,
@@ -74,8 +75,13 @@ class Userinfo(nextcord_C.Cog):
                     True
                 ),
                 EmbedField(
+                    "Global Name:",
+                    user.global_name or "",
+                    True
+                ),
+                EmbedField(
                     "Display Name:",
-                    user.display_name,
+                    user.display_name if interaction.guild else "",
                     True
                 ),
                 EmbedField(

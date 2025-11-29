@@ -50,8 +50,6 @@ class YouTube(nextcord_C.Cog):
             await interaction.send(embed=EmbedFunctions().get_error_message(f"YouTube couldn't find a video for your query:\n`{query}`"))
             return
 
-        await interaction.send(content=results[0])
-
         await self.youtube_rec(interaction=interaction, results=results, page_number=1)
 
 

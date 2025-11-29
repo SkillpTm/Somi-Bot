@@ -96,7 +96,7 @@ class Lyrics(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = Config().GENIUS_COLOR,
             image = song_data["response"]["song"]["song_art_image_url"],
-            title = f"Click Here: {Get.markdown_safe(song_data['response']['song']['title'])}",
+            title = f"Lyrics: {Get.markdown_safe(song_data['response']['song']['title'])}",
             title_url = song_data["response"]["song"]["url"],
             footer = "Lyrics powered by Genius",
             footer_icon = Config().GENIUS_ICON

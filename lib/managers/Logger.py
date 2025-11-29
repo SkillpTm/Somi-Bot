@@ -89,7 +89,7 @@ class Logger(metaclass=Singleton):
         output = ""
 
         for row in error.splitlines():
-            output += row.strip()
+            output += f"{row.strip()}\n"
 
         self.error_logger.error(output)
 

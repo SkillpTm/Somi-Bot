@@ -35,14 +35,14 @@ class JoinLog(nextcord_C.Cog):
             footer_timestamp = member.created_at,
             fields = [
                 EmbedField(
-                    "ID:",
-                    f"`{member.id}`",
-                    False
-                ),
-                EmbedField(
                     "Username:",
                     member.name,
                     True
+                ),
+                EmbedField(
+                    "ID:",
+                    f"`{member.id}`",
+                    False
                 ),
                 EmbedField(
                     "Public Flags:",

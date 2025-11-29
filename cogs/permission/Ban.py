@@ -1,6 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
+from cogs.events.BanLog import BanLog
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands
 from lib.modules import SomiBot
@@ -58,8 +59,8 @@ class Ban(nextcord_C.Cog):
             return
 
         await interaction.guild.ban(user=member, reason=reason, delete_message_seconds=delete_message_hours * 60 * 60)
-
         await interaction.send(embed=EmbedFunctions().get_success_message(f"Succesfully banned {member.mention}."))
+        await BanLog.send_ban_log(interaction.guild, interaction.user, member, reason) # type: ignore
 
 
     @nextcord.slash_command(
@@ -111,6 +112,8 @@ class Ban(nextcord_C.Cog):
             await interaction.send(embed=EmbedFunctions().get_error_message(f"{user.mention} wasn't unbanned."))
             return
 
+        await BanLog.send_unban_log(interaction.guild, interaction.user, user, reason) # type: ignore
+
 
     @unban.on_autocomplete("user_id")
     async def unban_autocomplete_user_id(
@@ -123,7 +126,7 @@ class Ban(nextcord_C.Cog):
         await interaction.response.send_autocomplete(
             Get.autocomplete(
                 user_id,
-                [str(ban.user.id) async for ban in interaction.guild.bans()]
+                {f"{ban.user.id}: {ban.user.name}": str(ban.user.id) async for ban in interaction.guild.bans()}
             )
         )
 

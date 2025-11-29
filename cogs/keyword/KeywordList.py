@@ -24,7 +24,7 @@ class KeywordList(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        if not (all_keywords := typing.cast(list[dict[str, str]], await db.Keyword.KEYWORD.get_all(
+        if not (all_keywords := typing.cast(list[str], await db.Keyword.KEYWORD.get_all(
             where = {db.Keyword.SERVER: interaction.guild.id, db.Keyword.USER: interaction.user.id},
             order_by = db.Keyword.KEYWORD,
             order = Order.ASCENDING)
@@ -35,16 +35,16 @@ class KeywordList(nextcord_C.Cog):
         await self.keyword_list_rec(interaction, all_keywords, 1)
 
 
-    async def keyword_list_rec(self, interaction: nextcord.Interaction[SomiBot], all_keywords: list[dict[str, str]], page: int) -> None:
+    async def keyword_list_rec(self, interaction: nextcord.Interaction[SomiBot], all_keywords: list[str], page: int) -> None:
         """This function is used to paginate through the keyword list"""
 
         output: list[str] = []
 
-        for index, entry in enumerate(all_keywords[10*(page-1):]):
+        for index, keyword in enumerate(all_keywords[10*(page-1):]):
             if len(output) >= 10:
                 break
 
-            output.append(f"`{index+1 + 10*(page-1)}.` {db.Keyword.KEYWORD.retrieve(entry)}")
+            output.append(f"`{index+1 + 10*(page-1)}.` {keyword}")
 
         embed = EmbedFunctions().builder(
             color = Config().BOT_COLOR,

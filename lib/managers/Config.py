@@ -32,6 +32,7 @@ class Config(metaclass=Singleton):
         self.LASTFM_COLOR = int(config_data["COLORS"]["LASTFM"], 16)
         self.PERMISSION_COLOR = int(config_data["COLORS"]["PERMISSION"], 16)
         self.TRANSLATE_COLOR = int(config_data["COLORS"]["TRANSLATE"], 16)
+        self.WOLFRAM_COLOR = int(config_data["COLORS"]["WOLFRAM"], 16)
 
         # Emotes
         self.HEADS_EMOTE: str = config_data["EMOTES"]["HEADS"]
@@ -61,6 +62,7 @@ class Config(metaclass=Singleton):
         self.SPOTIFY_ICON: str = config_data["LINKS"]["SPOTIFY_ICON"]
         self.SUPPORT_SERVER_INVITE: str = config_data["LINKS"]["SUPPORT_SERVER_INVITE"]
         self.TRANSLATE_ICON: str = config_data["LINKS"]["TRANSLATE_ICON"]
+        self.WOLFRAM_ICON: str = config_data["LINKS"]["WOLFRAM_ICON"]
 
         # Paths
         self.APPLICATION_BANNER_PATH: str = config_data["PATHS"]["APPLICATION_BANNER"]

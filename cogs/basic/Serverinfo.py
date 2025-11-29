@@ -23,9 +23,6 @@ class Severinfo(nextcord_C.Cog):
     async def serverinfo(self, interaction: nextcord.Interaction[SomiBot]) -> None:
         """This command gives you infomration about a server"""
 
-        if not interaction.guild:
-            return
-
         await interaction.response.defer(with_message=True)
 
         guild_with_counts = await self.client.fetch_guild(interaction.guild.id, with_counts=True)
@@ -33,14 +30,15 @@ class Severinfo(nextcord_C.Cog):
         embed = EmbedFunctions().builder(
             color = Config().BOT_COLOR,
             thumbnail = interaction.guild.icon.url if interaction.guild.icon else Config().DEFAULT_PFP,
-            title = f"Server Information: `{interaction.guild.name}`",
+            image = interaction.guild.banner.url if interaction.guild.banner else "",
+            title = f"Server: `{interaction.guild.name}`",
             footer = "Created:",
             footer_icon = Config().CLOCK_ICON,
             footer_timestamp = interaction.guild.created_at,
             fields = [
                 EmbedField(
                     "ID:",
-                    str(interaction.guild.id),
+                    f"`{interaction.guild.id}`",
                     False
                 ),
                 EmbedField(
@@ -49,8 +47,13 @@ class Severinfo(nextcord_C.Cog):
                     True
                 ),
                 EmbedField(
+                    "Boost Level:",
+                    f"Level: `{interaction.guild.premium_tier}`\nBoosters: `{interaction.guild.premium_subscription_count}`",
+                    True
+                ),
+                EmbedField(
                     "Members:",
-                    f"Total: `{guild_with_counts.approximate_member_count}`\nOnline: `{guild_with_counts.approximate_presence_count}`",
+                    f"Total: `{interaction.guild.member_count}`\nOnline: `{guild_with_counts.approximate_presence_count}`\nBots: `{len(interaction.guild.bots)}`",
                     True
                 ),
                 EmbedField(
@@ -59,13 +62,18 @@ class Severinfo(nextcord_C.Cog):
                     True
                 ),
                 EmbedField(
-                    "Boost Level:",
-                    f"Level: `{interaction.guild.premium_tier}`\nBoosters: `{interaction.guild.premium_subscription_count}`",
+                    "Roles:",
+                    f"Total: `{len(interaction.guild.roles)}`\nTop Role: {interaction.guild.roles[len(interaction.guild.roles)-1].mention}",
                     True
                 ),
                 EmbedField(
-                    "Vanity Invite:",
-                    vanity.url if (vanity := await interaction.guild.vanity_invite()) else "",
+                    "Emojis:",
+                    f"Static: `{(static_emotes_amount := len([emote for emote in interaction.guild.emojis if not emote.animated]))}/{interaction.guild.emoji_limit}`\nAnimated: `{len(interaction.guild.emojis) - static_emotes_amount}/{interaction.guild.emoji_limit}`",
+                    True
+                ),
+                EmbedField(
+                    "Stickers:",
+                    f"Total: `{len(interaction.guild.stickers)}/{interaction.guild.sticker_limit}`",
                     True
                 ),
                 EmbedField(

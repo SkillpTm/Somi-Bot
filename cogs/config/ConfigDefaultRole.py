@@ -38,11 +38,13 @@ class ConfigDefaultRole(nextcord_C.Cog):
 
         await interaction.response.defer(ephemeral=True, with_message=True)
 
-        if action == "Set":
-            if not await self._set_role(interaction, role):
-                return
+        if role and role.is_default():
+            await interaction.send(embed=EmbedFunctions().get_error_message("You cannot set the @everyone role as the default-role."))
+            return
 
-            mod_action = f"{interaction.user.mention} set: {role.mention} as the new default-role."
+        if action == "Set":
+            if not await self.set_role(interaction, role):
+                return
 
         elif action == "Reset":
             if not (role := role or interaction.guild.get_role(await db.Server.DEFAULT_ROLE.get(interaction.guild.id) or 0)):
@@ -50,25 +52,23 @@ class ConfigDefaultRole(nextcord_C.Cog):
                 return
 
             if role != await db.Server.DEFAULT_ROLE.get(interaction.guild.id):
-                await interaction.send(embed=EmbedFunctions().get_error_message("The role you provided is not this server's default-role."))
+                await interaction.send(embed=EmbedFunctions().get_error_message("The role you provided is not this server's default-role. To look up the default-role use `/config info`."))
                 return
 
-            if not await self._reset_role(interaction, role):
+            if not await self.reset_role(interaction, role):
                 return
-
-            mod_action = f"{interaction.user.mention} reset: {role.mention} as the default-role."
 
         if not (command_log := interaction.guild.get_channel(await db.Server.COMMAND_LOG.get(interaction.guild.id) or 0)): # type: ignore
             return
 
         embed = EmbedFunctions().builder(
             color = Config().PERMISSION_COLOR,
-            author = "Bot Command Log",
+            author = "Command Log",
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
                     f"/{Commands().data["config default-role"].full_name}:",
-                    mod_action,
+                    f"{interaction.user.mention} {action.lower()}: {role.mention} as the default-role.",
                     False
                 )
             ]
@@ -77,7 +77,7 @@ class ConfigDefaultRole(nextcord_C.Cog):
         await command_log.send(embed=embed) # type: ignore
 
 
-    async def _set_role(
+    async def set_role(
         self,
         interaction: nextcord.Interaction[SomiBot],
         role: nextcord.Role
@@ -89,8 +89,8 @@ class ConfigDefaultRole(nextcord_C.Cog):
             await interaction.send(embed=EmbedFunctions().get_error_message("To set a new default-role you need to provide a role in the command."))
             return False
 
-        if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner:  # type: ignore
-            await interaction.send(embed=EmbedFunctions().get_error_message("You can only make role the default-role, if the role is below your current top role!"))
+        if interaction.user.top_role.position < role.position and interaction.user.id != interaction.guild.owner.id:  # type: ignore
+            await interaction.send(embed=EmbedFunctions().get_error_message("You can only make a role the default-role, if the role is below your current top role!"))
             return False
 
         await db.Server.DEFAULT_ROLE.set(interaction.guild.id, role.id)
@@ -104,15 +104,15 @@ class ConfigDefaultRole(nextcord_C.Cog):
         return True
 
 
-    async def _reset_role(
+    async def reset_role(
         self,
         interaction: nextcord.Interaction[SomiBot],
         role: nextcord.Role
     ) -> bool:
         "resets or doesn't reset the role indicated by the output bool"
 
-        if interaction.user.top_role.position < role.position and interaction.user != interaction.guild.owner: # type: ignore
-            await interaction.send(embed=EmbedFunctions().get_error_message("You can only make role the default-role, if the role is below your current top role!"))
+        if interaction.user.top_role.position < role.position and interaction.user.id != interaction.guild.owner.id: # type: ignore
+            await interaction.send(embed=EmbedFunctions().get_error_message("You can only reset default-role, if the default-role is below your current top role!"))
             return False
 
         await db.Server.DEFAULT_ROLE.set(interaction.guild.id, None)

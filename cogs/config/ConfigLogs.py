@@ -57,8 +57,8 @@ class ConfigLogs(nextcord_C.Cog):
                 mod_action = f"{interaction.user.mention} {action.lower()}: **all** this server's logs in {channel.mention}."
             else:
                 data = channel.id
-                response = f"You successfully set this server's `{log_type} Log` channel in {channel.mention}."
-                mod_action = f"{interaction.user.mention} {action.lower()}: {channel.mention} as the `{log_type} Log` channel."
+                response = f"You successfully set this server's `{log_type}` channel in {channel.mention}."
+                mod_action = f"{interaction.user.mention} {action.lower()}: {channel.mention} as the `{log_type}` channel."
 
         elif action == "Reset":
             if not self.log_types[log_type].value:
@@ -66,21 +66,21 @@ class ConfigLogs(nextcord_C.Cog):
                 return
 
             if not (channel_id := int(await self.log_types[log_type].get(interaction.guild.id) or 0)):
-                await interaction.send(embed=EmbedFunctions().get_error_message(f"This server has no `{log_type} Log` to reset."))
+                await interaction.send(embed=EmbedFunctions().get_error_message(f"This server has no `{log_type}` to reset."))
                 return
 
             channel = typing.cast(nextcord.TextChannel | nextcord.Thread | None, interaction.guild.get_channel(channel_id)) or channel
 
             data = None
-            response = f"You successfully reset this server's `{log_type} Log` channel."
-            mod_action = f"{interaction.user.mention} {action.lower()}: <#{channel_id}> as the `{log_type} Log` channel."
+            response = f"You successfully reset this server's `{log_type}` channel."
+            mod_action = f"{interaction.user.mention} {action.lower()}: <#{channel_id}> as the `{log_type}` channel."
 
         await self.log_types[log_type].set(interaction.guild.id, data)
         await interaction.send(embed=EmbedFunctions().get_success_message(response))
 
         embed = EmbedFunctions().builder(
             color = Config().PERMISSION_COLOR,
-            author = f"{log_type} Log" if self.log_types[log_type].value else "All Logs",
+            author = log_type if self.log_types[log_type].value else "All Logs",
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(

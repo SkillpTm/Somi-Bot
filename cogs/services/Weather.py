@@ -53,7 +53,7 @@ class Weather(nextcord_C.Cog):
         if response.status_code != 200:
             await interaction.send(embed=EmbedFunctions().get_error_message(f"{location} couldn't be found."), ephemeral=True)
             return
-        
+
         await interaction.response.defer(with_message=True)
 
         if location != db_location:
@@ -80,7 +80,7 @@ class Weather(nextcord_C.Cog):
             title = f"Weather in: {output_data["name"]}, {output_data["country"]}",
             title_url = f"https://openweathermap.org/city/{output_data["id"]}",
             description = "\n".join([line.strip() for line in f"""
-            **{output_data["descirption"]}**
+            ### {output_data["descirption"].title()}
             🕒 Local measurement time: `{output_data["local_time"]}`
             🌡️ Temperature: **{output_data["metric_temp"]} °C** ({output_data["imperial_temp"]} °F)
             💨 Wind: {output_data["metric_wind_speed"]} km/h ({output_data["imperial_wind_speed"]} mph)

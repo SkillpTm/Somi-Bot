@@ -115,9 +115,8 @@ class Spotify(nextcord_C.Cog):
     ) -> dict[str, str]:
         """uses the Spotify API to get the output data (potentially with details, if specified)"""
 
-        spotify_object = spotipy.Spotify(auth=Keychain().spotify_oauth.get_cached_token()["access_token"]) # type: ignore
-        track_data: dict[str, typing.Any] = spotify_object.track(f"spotify:track:{member_activity.track_id}") # type: ignore
-        artist_data: dict[str, typing.Any] = spotify_object.artist(f"spotify:artist:{track_data['artists'][0]['id']}") # type: ignore
+        track_data: dict[str, typing.Any] = Keychain().spotipy.track(f"spotify:track:{member_activity.track_id}") # type: ignore
+        artist_data: dict[str, typing.Any] = Keychain().spotipy.artist(f"spotify:artist:{track_data['artists'][0]['id']}") # type: ignore
         output_data: dict[str, str] = {}
 
         # the artists are seperated by commas and have a markdown link to their SF page on them: [name](link), [name2](link2)...

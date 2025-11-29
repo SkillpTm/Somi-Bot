@@ -60,7 +60,7 @@ class Close(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.dark_red(),
-            author = "Bot Command Log",
+            author = "Command Log",
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(
@@ -121,7 +121,7 @@ class Close(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.dark_red(),
-            author = "Bot Command Log",
+            author = "Command Log",
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(

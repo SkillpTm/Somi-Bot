@@ -52,8 +52,11 @@ class ChooseModal(nextcord.ui.Modal):
 
         Logger().action_log(interaction, "/choose", options) # type: ignore
 
-        chosen_key = random.choice(list(options.keys()))
+        if len(options) < 2:
+            await interaction.send(embed=EmbedFunctions().get_error_message("Please provide at least 2 options."), ephemeral=True)
+            return
 
+        chosen_key = random.choice(list(options.keys()))
         choice_text = f"```{self.choice_text.value}```" if self.choice_text.value else ""
 
         view = OptionsButton(interaction=interaction) # type: ignore

@@ -59,11 +59,11 @@ class LevelRoles():
                 new_role_id: int = db.LevelRole.ID.retrieve(role_entry)
 
             if not new_role_id:
-                await member.remove_roles(level_role_list) # type: ignore
+                await member.remove_roles(*level_role_list)
                 continue
 
             # remove all the roles, but the "new" one
-            await member.remove_roles([level_role.id != new_role_id for level_role in level_role_list]) # type: ignore
+            await member.remove_roles(*[level_role for level_role in level_role_list if level_role.id != new_role_id]) # type: ignore
 
             # only add the "new" role if the user doesn't have it
             if not [new_role_id == role.id for role in member.roles]:

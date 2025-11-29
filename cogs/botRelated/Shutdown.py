@@ -27,10 +27,10 @@ class Shutdown(nextcord_C.Cog):
         await view.wait()
 
         if not view.value:
-            await interaction.send(embed=EmbedFunctions().get_error_message("The bot has not been shutdown"))
+            await interaction.send(embed=EmbedFunctions().get_error_message("The bot has not been shutdown"), ephemeral=True)
             return
 
-        await interaction.send(embed=EmbedFunctions().get_success_message("The bot is being shutdown..."))
+        await interaction.send(embed=EmbedFunctions().get_success_message("The bot is being shutdown..."), ephemeral=True)
 
 
         embed = EmbedFunctions().builder(

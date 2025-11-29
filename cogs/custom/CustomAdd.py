@@ -45,7 +45,7 @@ class CustomAdd(nextcord_C.Cog):
 
         # make sure name is only letters and numbers
         if not re.match(r"^[a-z0-9]+$", name):
-            await interaction.send(embed=EmbedFunctions().get_error_message("You can only have letters and numbers in your custom-name!"))
+            await interaction.send(embed=EmbedFunctions().get_error_message("You can only have letters and numbers in your custom-command name!"))
             return
 
         if not await db.CustomCommand._.add({db.CustomCommand.NAME: name, db.CustomCommand.TEXT: text, db.CustomCommand.SERVER: interaction.guild.id}):
@@ -60,7 +60,7 @@ class CustomAdd(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = Config().PERMISSION_COLOR,
-            author = "Bot Command Log",
+            author = "Command Log",
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(

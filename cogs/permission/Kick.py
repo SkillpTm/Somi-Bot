@@ -1,6 +1,7 @@
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
+from cogs.events.KickLog import KickLog
 from lib.helpers import EmbedFunctions
 from lib.managers import Commands
 from lib.modules import SomiBot
@@ -51,6 +52,7 @@ class Kick(nextcord_C.Cog):
 
         await interaction.guild.kick(member, reason=reason)
         await interaction.send(embed=EmbedFunctions().get_success_message(f"Succesfully kicked {member.mention}."))
+        await KickLog.send_kick_log(interaction.user, member, reason) # type: ignore
 
 
 

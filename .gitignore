@@ -1,8 +1,8 @@
 __pycache__/
 debug/backups/*
 
-.cache
 .env
+.spotipy_cache
 config.json
 
 *.code-workspace

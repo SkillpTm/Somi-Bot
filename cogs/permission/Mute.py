@@ -4,6 +4,7 @@ import zoneinfo
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
+from cogs.events.MuteLog import MuteLog
 from lib.helpers import EmbedFunctions, Get
 from lib.managers import Commands
 from lib.modules import SomiBot
@@ -66,8 +67,8 @@ class Mute(nextcord_C.Cog):
             return
 
         await member.edit(timeout=datetime.datetime.now(zoneinfo.ZoneInfo("UTC"))+datetime.timedelta(seconds=total_seconds), reason=reason)
-
         await interaction.send(embed=EmbedFunctions().get_success_message(f"Succesfully muted {member.mention}."))
+        await MuteLog.send_mute_log(interaction.user, member, reason) # type: ignore
 
 
     @nextcord.slash_command(
@@ -85,6 +86,13 @@ class Mute(nextcord_C.Cog):
             Commands().data["unmute"].parameters["member"].name,
             Commands().data["unmute"].parameters["member"].description,
             required = True
+        ),
+        reason: str = nextcord.SlashOption(
+            Commands().data["unmute"].parameters["reason"].name,
+            Commands().data["unmute"].parameters["reason"].description,
+            required = False,
+            min_length = 2,
+            max_length = 1000
         )
     ) -> None:
         """This command unmutes a member, if they were muted."""
@@ -95,9 +103,9 @@ class Mute(nextcord_C.Cog):
             await interaction.send(embed=EmbedFunctions().get_error_message(f"{member.mention} wasn't muted."))
             return
 
-        await member.edit(timeout=None)
-
+        await member.edit(timeout=None, reason=reason)
         await interaction.send(embed=EmbedFunctions().get_success_message(f"{member.mention} has been unmuted"))
+        await MuteLog.send_unmute_log(interaction.user, member, reason) # type: ignore
 
 
 

@@ -107,11 +107,11 @@ class Webscrape():
             scrobbles += " play" if int(scrobbles) == 1 else " plays"
 
             if current_element_album != 1 or type_flag == "album":
-                track_output += f"{position}. "
+                track_output += f"`{position}.` "
                 track_output += f"[{safe_name}](https://www.last.fm/music/{artist_for_url}/_/{element_name_for_url}/) "
                 track_output += f"- *({scrobbles})*\n"
             else:
-                album_output += f"{position}. "
+                album_output += f"`{position}.` "
                 album_output += f"[{safe_name}](https://www.last.fm/music/{artist_for_url}/{element_name_for_url}/) "
                 album_output += f"- *({scrobbles})*\n"
 

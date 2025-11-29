@@ -54,7 +54,7 @@ class Send(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = Config().PERMISSION_COLOR,
-            author = "Bot Command Log",
+            author = "Command Log",
             author_icon = interaction.user.display_avatar.url,
             description = f"{interaction.user.mention} sent a bot message in: {channel.mention} - [Link]({message_object.jump_url})",
             fields = [
@@ -115,9 +115,12 @@ class Send(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = Config().PERMISSION_COLOR,
-            author = "Bot Command Log",
+            author = "Command Log",
             author_icon = interaction.user.display_avatar.url,
             description = f"{interaction.user.mention} edited a bot message in: {message_object.channel.mention} - [Link]({message_object.jump_url})", # type: ignore
+            footer = "Originally sent:",
+            footer_icon = Config().CLOCK_ICON,
+            footer_timestamp = message_object.created_at, # type: ignore
             fields = [
                 EmbedField(
                     "Before:",

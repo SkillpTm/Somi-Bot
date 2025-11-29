@@ -25,7 +25,7 @@ class KeywordDelete(nextcord_C.Cog):
         keyword: str = nextcord.SlashOption(
             Commands().data["keyword delete"].parameters["keyword"].name,
             Commands().data["keyword delete"].parameters["keyword"].description,
-            required = True,
+            required = False,
             min_length = 2,
             max_length = 50
         ),
@@ -72,12 +72,12 @@ class KeywordDelete(nextcord_C.Cog):
         await view.wait()
 
         if not view.value:
-            await interaction.send(embed=EmbedFunctions().get_error_message("Your keywords have **not** been deleted!"))
+            await interaction.send(embed=EmbedFunctions().get_error_message("Your keywords have **not** been deleted!"), ephemeral=True)
             return
 
         await db.Keyword._.delete(where={db.Keyword.SERVER: interaction.guild.id, db.Keyword.USER: interaction.user.id}, limit=1_000_000)
 
-        await interaction.send(embed=EmbedFunctions().get_success_message("**ALL** your keywords have been deleted!"))
+        await interaction.send(embed=EmbedFunctions().get_success_message("**ALL** your keywords have been deleted!"), ephemeral=True)
 
 
     @keyword_delete.on_autocomplete("keyword")

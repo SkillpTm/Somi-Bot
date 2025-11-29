@@ -251,9 +251,9 @@
 			},
 			"role": {
 				"name": "role",
-				"description": "The role you want to make a level role",
+				"description": "The role you want to make a level role. Optional on Remove All",
 				"type": "Discord Role",
-				"required": true,
+				"required": false,
 				"default": ""
 			},
 			"level": {
@@ -954,8 +954,8 @@
 			},
 			"reason": {
 				"name": "reason",
-				"description": "The reason why they were muted (this will NOT be DMed to the User)",
-				"type": "Time between 2 to 50 Characters",
+				"description": "The reason why they were muted",
+				"type": "Text between 2 to 1000 Characters",
 				"required": false,
 				"default": ""
 			}
@@ -1383,6 +1383,13 @@
 				"description": "The member to be unmuted",
 				"type": "Discord Server Member",
 				"required": true,
+				"default": ""
+			},
+			"reason": {
+				"name": "reason",
+				"description": "The reason why they were unmuted",
+				"type": "Text between 2 to 1000 Characters",
+				"required": false,
 				"default": ""
 			}
 		},

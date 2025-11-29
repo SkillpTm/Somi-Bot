@@ -21,6 +21,9 @@ class NameLog(nextcord_C.Cog):
     ) -> None:
         """A log that activates, when someone changes their name/display name/nickname and a name log is set"""
 
+        # This SHOULD also be run with on_user_update, because the member wrapper around user updates global name/username changes too fast,
+        # but on_member_update is currentrly bugged and is missing the global_name on the before attribute
+
         # check if the user's display-, global- or username changed
         if (member_before.display_name == member_after.display_name) and (member_before.global_name == member_after.global_name) and (member_before.name == member_after.name):
             return

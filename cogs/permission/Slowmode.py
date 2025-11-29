@@ -60,7 +60,7 @@ class Slowmode(nextcord_C.Cog):
 
         embed = EmbedFunctions().builder(
             color = nextcord.Color.orange(),
-            author = "Bot Command Log",
+            author = "Command Log",
             author_icon = interaction.user.display_avatar.url,
             fields = [
                 EmbedField(

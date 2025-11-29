@@ -1,8 +1,10 @@
+import urllib.parse
+
 import nextcord
 import nextcord.ext.commands as nextcord_C
 
 from lib.helpers import EmbedFunctions
-from lib.managers import Commands, Keychain
+from lib.managers import Commands, Config, Keychain
 from lib.modules import SomiBot
 
 
@@ -43,9 +45,20 @@ class Wolfram(nextcord_C.Cog):
         await interaction.response.defer(with_message=True)
 
         try:
-            await interaction.send(f"Query: `{query}`\n```{next(Keychain().wolfram_client.query(query).results).text}```")
+            result = next(Keychain().wolfram_client.query(query).results).text
         except StopIteration:
             await interaction.send(embed=EmbedFunctions().get_error_message(f"Wolfram couldn't find a result for your query:\n`{query}`"))
+            return
+
+        embed = EmbedFunctions.builder(
+            color = Config().WOLFRAM_COLOR,
+            author = query,
+            author_icon = Config().WOLFRAM_ICON,
+            author_url = f"https://www.wolframalpha.com/input?i={urllib.parse.quote_plus(query)}",
+            description = f"```{result}```"
+        )
+
+        await interaction.send(embed=embed)
 
 
 

@@ -12,7 +12,8 @@
 		"ICHART": "0x000000",
         "LASTFM": "0x000000",
         "PERMISSION": "0x000000"
-		"TRANSLATE": "0x000000"
+		"TRANSLATE": "0x000000",
+		"WOLFRAM": "0x000000"
     },
     "EMOTES": {
         "HEADS": "<name:000000000000000000>",
@@ -41,7 +42,8 @@
         "SOMICORD_WELCOME_GIF": "https://example.com/name.ext",
         "SPOTIFY_ICON": "https://example.com/name.ext",
 		"SUPPORT_SERVER_INVITE": "https://example.com/name.ext",
-		"TRANSLATE_ICON": "https://example.com/name.ext"
+		"TRANSLATE_ICON": "https://example.com/name.ext",
+		"WOLFRAM_ICON": "https://example.com/name.ext"
     },
 	"PATHS": {
 		"APPLICATION_BANNER": "./assets/icon/bot/banner.png",

@@ -2,7 +2,6 @@ import typing
 
 import nextcord
 import nextcord.ext.commands as nextcord_C
-import spotipy # type: ignore
 
 from lib.helpers import EmbedField, EmbedFunctions
 from lib.managers import Commands, Config, Keychain

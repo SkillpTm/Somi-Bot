@@ -69,6 +69,30 @@
 	},
 	{
 		"parent": {},
+		"name": "bang",
+		"alias": "duckduckgo",
+		"description": "Makes a search with a service of your choice using DuckDuckGo bangs",
+		"example": "/bang [!g] [When is Somi's birthday?]",
+		"parameters": {
+			"bang": {
+				"name": "bang",
+				"description": "The DuckDuckGo bang you want to use",
+				"type": "Set Choice",
+				"required": true,
+				"default": ""
+			},
+			"query": {
+				"name": "query",
+				"description": "What you want to search for",
+				"type": "Text between 2 to 200 Characters",
+				"required": false,
+				"default": "1"
+			}
+		},
+		"permissions": []
+	},
+	{
+		"parent": {},
 		"name": "banner",
 		"alias": "",
 		"description": "Posts the banner of a user",

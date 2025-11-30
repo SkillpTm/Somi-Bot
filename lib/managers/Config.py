@@ -1,5 +1,7 @@
 import json
 
+import requests
+
 from lib.managers.Singleton import Singleton
 
 
@@ -8,10 +10,17 @@ class Config(metaclass=Singleton):
     """Holds all the config.json and ISOCountryTags.json data on it"""
 
     def __init__(self):
-        with open("./assets/res/ISOCountryTags.json", "r", encoding="UTF-8") as file:
-            iso_data = json.load(file)
+        self.BANG_LINKS: dict[str, str] = {}
+        self.BANG_TITLES: dict[str, str] = {}
 
-        self.ISO_COUNTRY_TAGS: dict[str, str] = iso_data
+        response = requests.get("https://duckduckgo.com/bang.js", timeout=10)
+        if response.status_code == 200:
+            for bang in json.loads(response.text):
+                self.BANG_LINKS[bang["t"]] = bang["u"]
+                self.BANG_TITLES[f"!{bang['t']}: {bang['s']}"] = bang["t"]
+
+        with open("./assets/res/ISOCountryTags.json", "r", encoding="UTF-8") as file:
+            self.ISO_COUNTRY_TAGS: dict[str, str] = json.load(file)
 
         with open("./config.json", "r", encoding="UTF-8") as file:
             config_data = json.load(file)

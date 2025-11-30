@@ -62,8 +62,11 @@ class Translate(nextcord_C.Cog):
     ) -> None:
         """Translates text from one language to another using Google Translate API"""
 
+        new_lang = new_lang.lower()
+        old_lang = old_lang.lower() if old_lang else ""
+
         if (new_lang not in self.languages_key_name.keys()) or (old_lang and old_lang not in self.languages_key_name.keys()):
-            await interaction.response.send_message(embed=EmbedFunctions.get_error_message(f"The language `{new_lang}` is not supported!"), ephemeral=True)
+            await interaction.send(embed=EmbedFunctions.get_error_message(f"The language `{new_lang}` is not supported!"), ephemeral=True)
             return
 
         await interaction.response.defer(with_message=True)

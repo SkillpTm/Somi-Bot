@@ -29,7 +29,9 @@ class Get():
             0: {},
             1: {},
             2: {},
-            3: {}
+            3: {},
+            4: {},
+            5: {}
         }
 
         # the key is what discord will display and the value what is actually behind it:
@@ -37,18 +39,22 @@ class Get():
         for key, value in haystack.items():
             key, value = str(key), str(value)
 
-            # neddle is the beginning of value
-            if value.lower().startswith(neddle):
+            if value.lower() == neddle:
                 priority = 0
+            # neddle is the beginning of value
+            elif value.lower().startswith(neddle):
+                priority = 1
             # neddle in the value
             elif neddle in value.lower():
-                priority = 1
+                priority = 2
+            elif key.lower() == neddle:
+                priority = 3
             # neddle is the beginning of the key
             elif key.lower().startswith(neddle):
-                priority = 2
+                priority = 4
             # neddle in the key
             elif neddle in key.lower():
-                priority = 3
+                priority = 5
             # neddle is not found
             else:
                 priority = None
